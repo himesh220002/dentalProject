@@ -39,7 +39,7 @@ exports.verifyAdminPassword = async (req, res) => {
 
         const currentPassword = config ? config.value : 'admin123';
 
-        console.log(`Verifying password: Input='${password}', Expected='${currentPassword}'`);
+
 
         if (password?.trim() === currentPassword.trim()) {
             res.status(200).json({ success: true });
@@ -47,7 +47,6 @@ exports.verifyAdminPassword = async (req, res) => {
             res.status(401).json({ success: false, message: 'Incorrect password' });
         }
     } catch (error) {
-        console.error('Error verifying password:', error);
         res.status(500).json({ message: 'Error verifying password', error: error.message });
     }
 };
