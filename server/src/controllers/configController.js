@@ -37,15 +37,17 @@ exports.verifyAdminPassword = async (req, res) => {
         const { password } = req.body;
         const config = await Config.findOne({ key: 'admin_password' });
 
-        // Handle case where config doesn't exist yet but we are trying to verify
         const currentPassword = config ? config.value : 'admin123';
 
-        if (password === currentPassword) {
+        console.log(`Verifying password: Input='${password}', Expected='${currentPassword}'`);
+
+        if (password?.trim() === currentPassword.trim()) {
             res.status(200).json({ success: true });
         } else {
             res.status(401).json({ success: false, message: 'Incorrect password' });
         }
     } catch (error) {
+        console.error('Error verifying password:', error);
         res.status(500).json({ message: 'Error verifying password', error: error.message });
     }
 };
