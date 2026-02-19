@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@layer utilities {
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .font-outline {
+        -webkit-text-stroke: 1px currentColor;
+        color: transparent;
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
