@@ -7,9 +7,26 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const https = require('https');
 
 const app = express();
 const server = http.createServer(app);
+
+// Keep-alive mechanism to prevent Render from sleeping
+const keepAlive = (url) => {
+    setInterval(() => {
+        try {
+            console.log(`Pinging server at ${url} to keep it alive...`);
+            https.get(url, (res) => {
+                console.log(`Ping response: ${res.statusCode}`);
+            }).on('error', (err) => {
+                console.error('Keep-alive ping error:', err.message);
+            });
+        } catch (error) {
+            console.error('Keep-alive error:', error.message);
+        }
+    }, 5 * 60 * 1000); // 5 minutes
+};
 
 // Middleware
 app.use(cors({
@@ -66,4 +83,13 @@ const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+
+    // Start keep-alive if RENDER_EXTERNAL_URL is available
+    const externalUrl = process.env.RENDER_EXTERNAL_URL;
+    if (externalUrl) {
+        keepAlive(externalUrl);
+        console.log(`Keep-alive started for: ${externalUrl}`);
+    } else {
+        console.log('Keep-alive not started: RENDER_EXTERNAL_URL not found (likely local environment).');
+    }
 });
