@@ -30,7 +30,7 @@ const keepAlive = (url) => {
 
 // Middleware
 app.use(cors({
-    origin: [process.env.FRONTEND_URL, "http://localhost:3000", "http://localhost:5173"].filter(Boolean),
+    origin: [process.env.FRONTEND_URL, "http://localhost:3000", "http://localhost:5173", "https://dental-project-zeta.vercel.app"].filter(Boolean),
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
@@ -40,7 +40,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Socket.io Setup
 const io = new Server(server, {
     cors: {
-        origin: [process.env.FRONTEND_URL, "http://localhost:3000", "http://localhost:5173"].filter(Boolean), // Allow frontend connection
+        origin: [process.env.FRONTEND_URL, "http://localhost:3000", "http://localhost:5173", "https://dental-project-zeta.vercel.app"].filter(Boolean), // Allow frontend connection
         methods: ["GET", "POST"]
     }
 });
