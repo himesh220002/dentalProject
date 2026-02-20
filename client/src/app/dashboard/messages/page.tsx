@@ -65,7 +65,7 @@ export default function DashboardMessages() {
     return (
         <div className="space-y-8">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-gray-800">Inquiries & Messages</h1>
+                <h1 className="text-xl sm:text-3xl font-bold text-gray-800">Inquiries & Messages</h1>
                 <span className="bg-blue-100 text-blue-700 px-4 py-1 rounded-full font-bold text-sm">
                     {messages.filter(m => m.status === 'Unread').length} New
                 </span>
@@ -75,69 +75,69 @@ export default function DashboardMessages() {
                 {messages.map((msg) => (
                     <div
                         key={msg._id}
-                        className={`bg-white p-6 rounded-3xl shadow-sm border-l-8 transition ${msg.status === 'Scheduled'
+                        className={`bg-white p-4 sm:p-6 rounded-xl sm:rounded-3xl shadow-sm border-l-4 transition ${msg.status === 'Scheduled'
                             ? 'border-emerald-500 shadow-emerald-500/5'
                             : msg.status === 'Unread'
                                 ? 'border-blue-500 shadow-md'
                                 : 'border-gray-200 opacity-75'
                             }`}
                     >
-                        <div className="flex flex-col md:flex-row justify-between gap-4">
-                            <div className="space-y-4 flex-grow">
+                        <div className="flex flex-col md:flex-row justify-between gap-2 md:gap-4">
+                            <div className="space-y-2 sm:space-y-4 flex-grow">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <h3 className="text-xl font-bold text-gray-900">{msg.name}</h3>
+                                        <h3 className="text-lg sm:text-xl font-bold text-gray-900">{msg.name}</h3>
                                         {msg.patientType === 'prev' && (
                                             <span className="bg-blue-100 text-blue-700 font-black text-[9px] uppercase tracking-tighter px-2 py-0.5 rounded-md border border-blue-200 shadow-sm shadow-blue-500/10">
                                                 Prev
                                             </span>
                                         )}
                                     </div>
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2 sm:gap-3">
                                         {msg.status === 'Scheduled' && (
-                                            <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
-                                                <FaCheckCircle /> Scheduled
+                                            <span className="bg-emerald-100 text-emerald-700 px-2 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
+                                                <FaCheckCircle /> <span className="hidden sm:inline">Scheduled</span>
                                             </span>
                                         )}
-                                        <div className="flex items-center gap-2 text-gray-400 text-sm font-medium">
+                                        <div className="flex items-center gap-2 text-gray-400 text-xs sm:text-sm font-medium">
                                             <FaClock />
                                             <span>{new Date(msg.createdAt).toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-6 text-gray-600 font-medium">
+                                <div className="flex items-center gap-6 text-gray-600 font-medium text-xs sm:text-base">
                                     <a href={`tel:${msg.phone}`} className="flex items-center gap-2 hover:text-blue-600">
                                         <FaPhone /> {msg.phone}
                                     </a>
                                 </div>
-                                <div className="bg-gray-50 p-4 rounded-2xl text-gray-700 leading-relaxed border border-gray-100">
+                                <div className="bg-gray-50 p-3 sm:p-4 rounded-2xl text-gray-700 text-xs sm:text-base leading-relaxed border border-gray-100 break-words">
                                     {msg.message}
                                 </div>
                             </div>
 
-                            <div className="flex flex-col justify-center gap-3">
+                            <div className="flex flex-col justify-center gap-3 mt-2 md:mt-0">
                                 {msg.status !== 'Scheduled' && (
                                     <>
                                         {msg.status === 'Unread' && (
                                             <button
                                                 onClick={() => markAsRead(msg._id)}
-                                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg transition transform hover:scale-105"
+                                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-2xl font-bold text-xs sm:text-base flex items-center gap-2 shadow-lg transition transform hover:scale-105 justify-center"
                                             >
                                                 <FaCheckCircle /> Mark as Read
                                             </button>
                                         )}
                                         <button
                                             onClick={() => handleCreateAppointment(msg.name, msg.phone, msg._id, msg.message)}
-                                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg transition transform hover:scale-105"
+                                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-2xl font-bold text-xs sm:text-base flex items-center gap-2 shadow-lg transition transform hover:scale-105 justify-center"
                                         >
-                                            <FaCalendarPlus /> Create Appointment
+                                            <FaCalendarPlus /> Create Appt
                                         </button>
                                     </>
                                 )}
                                 {msg.status === 'Scheduled' && (
                                     <div className="flex flex-col gap-3">
-                                        <div className="text-emerald-600 font-bold flex items-center justify-center gap-2 bg-emerald-50 px-6 py-3 rounded-2xl border border-emerald-100">
-                                            <FaCheckCircle className="text-xl" /> Appointment Fixed
+                                        <div className="text-emerald-600 font-bold flex items-center justify-center gap-2 bg-emerald-50 px-4 py-3 sm:px-6 sm:py-3 rounded-2xl border border-emerald-100 text-xs sm:text-base">
+                                            <FaCheckCircle className="text-lg sm:text-xl" /> Appt Fixed
                                         </div>
                                         <button
                                             onClick={() => handleCreateAppointment(msg.name, msg.phone, msg._id, msg.message)}

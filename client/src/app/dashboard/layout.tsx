@@ -50,13 +50,12 @@ export default function DashboardLayout({
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row rounded-xl">
+            <div className="min-h-screen bg-gray-100 flex flex-col lg:flex-row rounded-xl">
                 {/* Mobile Top Bar */}
-                <div className="md:hidden bg-gray-900 p-4 flex justify-between items-center sticky top-0 z-0">
-                    <h2 className="text-xl font-bold text-blue-400">Clinic Admin</h2>
+                <div className="lg:hidden sticky top-0 z-0">
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="text-white p-2 hover:bg-gray-800 rounded-xl transition"
+                        className="text-gray-600 w-12 h-12 flex items-center justify-center hover:bg-gray-800 rounded-xl transition"
                     >
                         {isSidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
                     </button>
@@ -65,21 +64,21 @@ export default function DashboardLayout({
                 {/* Sidebar Overlay */}
                 {isSidebarOpen && (
                     <div
-                        className="fixed inset-0 bg-black/50 z-[55] md:hidden backdrop-blur-sm"
+                        className="fixed inset-0 bg-black/50 z-[40] lg:hidden backdrop-blur-sm transition-opacity"
                         onClick={() => setIsSidebarOpen(false)}
                     />
                 )}
 
                 {/* Sidebar */}
                 <aside className={`
-                    fixed inset-y-0 left-0 w-64 max-h-screen md:max-h-[90vh] bg-gray-900 text-white flex flex-col shadow-xl z-[10] md:sticky md:top-0 md:h-screen transition-transform duration-300 transform rounded-r-3xl md:rounded-xl
-                    ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+                    fixed inset-y-0 left-0 w-64 max-h-screen lg:max-h-[90vh] bg-gray-900 text-white flex flex-col shadow-xl z-[50] lg:sticky lg:top-0 lg:h-screen transition-transform duration-300 transform rounded-r-3xl lg:rounded-xl overflow-hidden
+                    ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                 `}>
-                    <div className="p-6 hidden md:block">
+                    <div className="p-6 hidden lg:block shrink-0">
                         <h2 className="text-2xl font-bold text-blue-400">Clinic Admin</h2>
                     </div>
 
-                    <nav className="flex-grow mt-6 md:mt-0">
+                    <nav className="flex-grow mt-6 lg:mt-0 overflow-y-auto">
                         <ul className="space-y-2 px-4">
                             {menuItems.map((item) => {
                                 const Icon = item.icon;
@@ -110,7 +109,7 @@ export default function DashboardLayout({
                         </ul>
                     </nav>
 
-                    <div className="p-6 border-t border-gray-800 space-y-4">
+                    <div className="p-6 border-t border-gray-800 space-y-4 shrink-0">
                         <Link href="/" className="flex items-center gap-3 text-gray-400 hover:text-white transition">
                             <FaHome /> <span>Back to Site</span>
                         </Link>
@@ -124,7 +123,7 @@ export default function DashboardLayout({
                 </aside>
 
                 {/* Main Content */}
-                <main className="flex-grow p-4 md:p-8 overflow-y-auto w-full">
+                <main className="flex-grow p-2 sm:p-4 lg:p-8 overflow-y-auto w-full">
                     <div className="max-w-8xl xl:max-w-none mx-auto">
                         {children}
                     </div>

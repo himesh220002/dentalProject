@@ -63,8 +63,8 @@ export default function Home() {
             <div className="overflow-hidden">
                 <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-12">
                     <div className="space-y-4">
-                        <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-gray-900 leading-tight">Voices of Success</h2>
-                        <p className="text-gray-500 text-base sm:text-lg font-medium">Real stories from real patients who trusted us with their smiles.</p>
+                        <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">Voices of Success</h2>
+                        <p className="text-gray-500 text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-xl">Real stories from real patients who trusted us with their smiles.</p>
                     </div>
                     <Link href="/about" className="group flex items-center gap-3 font-black text-blue-600 uppercase tracking-widest text-xs sm:text-sm hover:gap-6 transition-all">
                         Read All Reviews <FaArrowRight />

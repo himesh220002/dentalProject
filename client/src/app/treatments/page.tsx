@@ -128,12 +128,12 @@ export default function Treatments() {
     );
 
     return (
-        <div className="space-y-16 py-12 px-4 md:px-8">
-            <div className="text-center space-y-6 max-w-4xl mx-auto">
-                <h1 className="text-5xl md:text-7xl font-black tracking-tight text-gray-900">
+        <div className="space-y-16 py-5 sm:py-12 px-0 sm:px-4 md:px-8">
+            <div className="text-center space-y-3 sm:space-y-6 max-w-4xl mx-auto">
+                <h1 className="text-3xl sm:text-5xl md:text-7xl font-black tracking-tight text-gray-900">
                     Premium <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Dental Care</span>
                 </h1>
-                <p className="text-xl text-gray-500 font-medium">
+                <p className="text-lg sm:text-xl text-gray-500 font-medium">
                     State-of-the-art technology meets compassionate care. Explore our precision treatments for your perfect smile.
                 </p>
                 <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
@@ -181,7 +181,7 @@ export default function Treatments() {
                                 <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
                                     <div className="flex flex-col">
                                         <span className="text-xs text-gray-400 font-bold uppercase tracking-tight">Starting from</span>
-                                        <span className={`text-2xl font-black ${theme.icon}`}>{item.price}</span>
+                                        <span className={`text-md sm:text-2xl font-black ${theme.icon}`}>{item.price}</span>
                                     </div>
                                     <button
                                         onClick={() => handleBookNow(item.name)}

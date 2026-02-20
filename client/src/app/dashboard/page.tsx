@@ -42,7 +42,11 @@ export default function DashboardOverview() {
 
                 // Calculate Recent Activity (merge appointments and messages)
                 const combinedActivity = [
-                    ...appointmentsRes.data.map((a: any) => ({ ...a, type: 'appointment', timeStamp: new Date(a.createdAt) })),
+                    ...appointmentsRes.data.map((a: any) => ({
+                        ...a,
+                        type: 'appointment',
+                        timeStamp: (a.status === 'Completed' && a.completedAt) ? new Date(a.completedAt) : new Date(a.createdAt)
+                    })),
                     ...messagesRes.data.map((m: any) => ({ ...m, type: 'message', timeStamp: new Date(m.createdAt) }))
                 ].sort((a, b) => b.timeStamp - a.timeStamp).slice(0, 5);
                 setRecentActivity(combinedActivity);
@@ -83,16 +87,23 @@ export default function DashboardOverview() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 {statCards.map((stat, idx) => {
                     const Icon = stat.icon;
+                    let href = '#';
+                    if (stat.label === 'Total Patients') href = '/patients';
+                    else if (stat.label === 'New Messages') href = '/dashboard/messages';
+                    else if (stat.label === "Today's Appts" || stat.label === "Today's Collection") href = '/dashboard/schedules';
+
                     return (
-                        <div key={idx} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition group">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition`}>
-                                    <Icon className="text-2xl" />
+                        <Link href={href} key={idx} className="block group cursor-pointer">
+                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition`}>
+                                        <Icon className="text-2xl" />
+                                    </div>
+                                    <span className="text-3xl font-black text-gray-900">{stat.value}</span>
                                 </div>
-                                <span className="text-3xl font-black text-gray-900">{stat.value}</span>
+                                <h3 className="text-gray-500 font-bold uppercase tracking-wider text-[10px]">{stat.label}</h3>
                             </div>
-                            <h3 className="text-gray-500 font-bold uppercase tracking-wider text-[10px]">{stat.label}</h3>
-                        </div>
+                        </Link>
                     );
                 })}
             </div>
@@ -101,7 +112,7 @@ export default function DashboardOverview() {
 
             <div className="grid lg:grid-cols-2 gap-8 mt-8">
                 {/* Recent Activity */}
-                <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+                <div className="bg-white p-4 sm:p-4 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
                     <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-blue-600"></div>
                         Recent Activity

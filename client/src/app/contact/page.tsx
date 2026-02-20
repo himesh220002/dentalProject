@@ -97,7 +97,7 @@ function ContactContent() {
 
             {/* Header */}
             <div className="text-center space-y-4">
-                <h1 className="text-4xl md:text-5xl font-extrabold text-blue-900">Get in Touch</h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900">Get in Touch</h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                     Have a question or want to book an appointment? We are here to help.
                     Reach out to us via phone, email, or visit our clinic directly.

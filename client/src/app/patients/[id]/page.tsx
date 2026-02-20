@@ -160,7 +160,7 @@ export default function PatientProfile() {
     return (
         <div className="min-h-screen bg-gray-50/50 pb-20">
 
-            <div className="container mx-auto px-4 py-8 max-w-6xl">
+            <div className="container mx-auto px-0 sm:px-4 py-8 max-w-6xl">
                 {/* Back Button */}
                 <button
                     onClick={() => window.history.back()}
@@ -173,13 +173,13 @@ export default function PatientProfile() {
                 </button>
 
                 {/* Profile Header Card */}
-                <div className="bg-white rounded-[3rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-gray-100 mb-10">
+                <div className="bg-white rounded-[2rem] sm:rounded-[3rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-gray-100 mb-10">
                     <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 px-8 md:px-12 py-10 md:py-16 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
                         <div className="absolute bottom-0 left-0 w-48 h-48 bg-teal-400/10 rounded-full -ml-10 -mb-10 blur-2xl"></div>
 
-                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-                            <div className="w-24 h-24 md:w-32 md:h-32 bg-white/10 backdrop-blur-md rounded-3xl flex items-center justify-center border border-white/20 shadow-2xl">
+                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-2 sm:gap-8 text-center md:text-left">
+                            <div className="w-16 h-16 md:w-32 md:h-32 bg-white/10 backdrop-blur-md rounded-3xl flex items-center justify-center border border-white/20 shadow-2xl">
                                 <FaUser className="text-white text-4xl md:text-6xl" />
                             </div>
                             <div className="flex-grow">
@@ -198,10 +198,10 @@ export default function PatientProfile() {
                                         <FaIdCard className="text-blue-200" />
                                         ID: {patient._id.slice(-8).toUpperCase()}
                                     </div>
-                                    <div className="bg-emerald-400/20 backdrop-blur-md px-4 py-1.5 rounded-full text-emerald-50 text-xs font-black uppercase tracking-widest border border-emerald-400/20 flex items-center gap-2">
+                                    {/* <div className="bg-emerald-400/20 backdrop-blur-md px-4 py-1.5 rounded-full text-emerald-50 text-xs font-black uppercase tracking-widest border border-emerald-400/20 flex items-center gap-2">
                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
                                         Active Patient
-                                    </div>
+                                    </div> */}
                                     {upcomingAppointment && (
                                         <div className="bg-amber-400/20 backdrop-blur-md px-4 py-1.5 rounded-full text-amber-50 text-xs font-black uppercase tracking-widest border border-amber-400/30 flex items-center gap-2">
                                             <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></div>
@@ -239,7 +239,7 @@ export default function PatientProfile() {
                         </div>
                     </div>
 
-                    <div className="p-8 md:p-12">
+                    <div className="p-4 sm:p-8 md:p-12">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                             {/* Personal Details */}
                             <div className="space-y-8">
@@ -247,7 +247,7 @@ export default function PatientProfile() {
                                     <div className="w-2 h-8 bg-blue-600 rounded-full"></div>
                                     Personal Profile
                                 </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6">
                                     <div className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100 hover:bg-gray-50 transition group">
                                         <div className="flex items-center gap-4">
                                             <div className="p-3 bg-white rounded-2xl text-blue-600 shadow-sm border border-gray-100 group-hover:scale-110 transition">
@@ -263,7 +263,7 @@ export default function PatientProfile() {
                                                         className="text-lg font-black text-gray-800 bg-transparent border-b border-gray-200 focus:border-blue-500 focus:outline-none w-full"
                                                     />
                                                 ) : (
-                                                    <p className="text-lg font-black text-gray-800">{patient.age} Years</p>
+                                                    <p className="text-sm sm:text-lg font-black text-gray-800">{patient.age} Years</p>
                                                 )}
                                             </div>
                                         </div>
@@ -286,7 +286,7 @@ export default function PatientProfile() {
                                                         <option value="Female">FEMALE</option>
                                                     </select>
                                                 ) : (
-                                                    <p className="text-lg font-black text-gray-800 uppercase">{(patient.gender === 'Other' || patient.gender === 'others' || !patient.gender) ? '-__-' : patient.gender}</p>
+                                                    <p className="text-sm sm:text-lg font-black text-gray-800 uppercase">{(patient.gender === 'Other' || patient.gender === 'others' || !patient.gender) ? '-__-' : patient.gender}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -316,7 +316,7 @@ export default function PatientProfile() {
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <p className="text-lg font-black text-gray-800">{patient.contact}</p>
+                                                    <p className="text-sm sm:text-lg font-black text-gray-800">{patient.contact}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -337,7 +337,7 @@ export default function PatientProfile() {
                                                         placeholder="patient@example.com"
                                                     />
                                                 ) : (
-                                                    <p className="text-lg font-black text-gray-800">{patient.email || 'Not Provided'}</p>
+                                                    <p className="text-sm sm:text-lg font-black text-gray-800">{patient.email || 'Not Provided'}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -357,7 +357,7 @@ export default function PatientProfile() {
                                                         className="text-base font-bold text-gray-700 leading-relaxed bg-transparent border-b border-gray-200 focus:border-blue-500 focus:outline-none w-full"
                                                     />
                                                 ) : (
-                                                    <p className="text-base font-bold text-gray-700 leading-relaxed">{patient.address || '-__-'}</p>
+                                                    <p className="text-xs sm:text-base font-bold text-gray-700 leading-relaxed">{patient.address || '-__-'}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -372,7 +372,7 @@ export default function PatientProfile() {
                                     Medical Summary
                                 </h2>
 
-                                <div className="space-y-6">
+                                <div className="space-y-2 sm:space-y-6">
                                     {/* Last Visit */}
                                     {lastVisit ? (
                                         <div className="bg-emerald-50/50 p-8 rounded-[2.5rem] border border-emerald-100 relative overflow-hidden group">
@@ -383,7 +383,7 @@ export default function PatientProfile() {
                                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                                 Last Clinical Visit
                                             </p>
-                                            <h3 className="text-2xl font-black text-emerald-900 mb-2 uppercase tracking-tight">{lastVisit.treatmentName}</h3>
+                                            <h3 className="text-md sm:text-2xl font-black text-emerald-900 mb-2 uppercase tracking-tight">{lastVisit.treatmentName}</h3>
                                             <p className="text-emerald-700/70 font-bold text-sm bg-white/50 inline-block px-4 py-1.5 rounded-full border border-emerald-100/50">
                                                 {new Date(lastVisit.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                                             </p>

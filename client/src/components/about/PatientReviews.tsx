@@ -50,7 +50,7 @@ export default function PatientReviews() {
                                     <FaStar key={i} className="text-yellow-400 text-sm sm:text-base" />
                                 ))}
                             </div>
-                            <p className="text-gray-700 text-lg sm:text-xl leading-relaxed italic mb-6 sm:mb-8 font-medium">
+                            <p className="text-gray-700 text-sm md:text-base lg:text-lg leading-relaxed italic mb-6 sm:mb-8 font-medium">
                                 "{review.text}"
                             </p>
                             <div className="flex items-center gap-3 sm:gap-4">

@@ -282,7 +282,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-2 max-h-[750px] overflow-y-auto custom-scrollbar">
+                <form onSubmit={handleSubmit} className="p-8 space-y-2 max-h-[80vh] sm:max-h-[750px] overflow-y-auto custom-scrollbar">
                     {/* Search & Select Patient */}
                     <div className="space-y-2">
                         <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">

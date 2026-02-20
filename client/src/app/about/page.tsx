@@ -9,9 +9,9 @@ export const metadata = {
 
 export default function About() {
     return (
-        <div className="space-y-12 py-4 sm:py-10">
+        <div className="space-y-12 sm:py-4 sm:py-10">
             {/* Hero Section - Refined */}
-            <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-16 pb-5">
+            <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">
                     <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-5 py-2 rounded-2xl text-xs font-black tracking-widest uppercase">
                         <FaCertificate className="text-blue-500 animate-pulse" />
@@ -39,7 +39,7 @@ export default function About() {
                 {/* Doctor Image Refined */}
                 <div className="relative order-1 lg:order-2">
                     <div className="absolute -inset-10 bg-gradient-to-tr from-blue-100 via-teal-50 to-indigo-100 rounded-[3rem] opacity-50 blur-3xl -z-10 animate-pulse"></div>
-                    <div className="relative h-[500px] w-full bg-gray-200 rounded-[3rem] shadow-2xl overflow-hidden flex items-center justify-center text-gray-400 group">
+                    <div className="relative h-[60vh] sm:h-[80vh] w-full bg-gray-200 rounded-[3rem] shadow-2xl overflow-hidden flex items-center justify-center text-gray-400 group">
                         <FaUserMd className="text-[12rem] group-hover:scale-110 transition-transform duration-700" />
                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent"></div>
 
@@ -89,7 +89,7 @@ export default function About() {
 
             {/* Our Values / Mission Refined */}
             <section className="bg-gray-900 py-16 sm:py-24 -mx-4 sm:-mx-6 lg:-mx-8 px-6 sm:px-12 rounded-t-0 lg:rounded-t-[1rem] xl:rounded-t-[5rem] overflow-hidden relative">
-                <div className="max-w-5xl mx-auto space-y-12 sm:space-y-20">
+                <div className="max-w-5xl mx-auto space-y-5 sm:space-y-20">
                     <div className="text-center space-y-4 sm:space-y-6">
                         <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-white leading-tight">Why We Are Different</h2>
                         <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">We combine state-of-the-art dental technology with a deep human touch to ensure your journey is seamless.</p>

@@ -77,12 +77,12 @@ export default function PatientsPage() {
         <ProtectedRoute>
             <div className="min-h-screen bg-gray-50">
 
-                <div className="container mx-auto px-4 py-8">
+                <div className="container mx-auto px-1 sm:px-4 py-1 sm:py-8 rounded-xl">
                     <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-800">Patient Management</h1>
+                        <h1 className="text-xl sm:text-3xl font-bold text-gray-800">Patient Management</h1>
                     </div>
 
-                    <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-4 sm:mb-6 gap-4">
                         <AddPatientForm onPatientAdded={fetchPatients} />
 
                         <div className="flex flex-col sm:flex-col xl:flex-row gap-4 w-full md:w-auto">

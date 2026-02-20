@@ -3,7 +3,7 @@ import { FaTooth, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebookF, FaTwitter
 
 export default function Footer() {
     return (
-        <footer className="bg-slate-950 text-white pt-20 pb-10 mt-20 relative overflow-hidden">
+        <footer className="bg-slate-950 text-white pt-20 pb-10  sm:mt-10 lg:mt-20 relative overflow-hidden">
             {/* Background Decorative Elements */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50" />
             <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px]" />

@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function Timings() {
     return (
-        <div className="max-w-6xl mx-auto py-12 px-4 md:px-8 space-y-16">
+        <div className="max-w-6xl mx-auto py-12 px- 2 sm:px-4 md:px-8 space-y-16">
 
             {/* Header */}
             <div className="text-center space-y-4 max-w-3xl mx-auto">
@@ -25,17 +25,17 @@ export default function Timings() {
                 <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 transform hover:scale-[1.01] transition-transform duration-500">
                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="bg-white/20 p-4 rounded-2xl backdrop-blur-sm">
+                            <div className="bg-white/20 sm:p-4 p-3 rounded-2xl backdrop-blur-sm">
                                 <FaCalendarCheck className="text-3xl" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black uppercase tracking-wider">Weekly Schedule</h2>
+                                <h2 className="text-sm sm:text-2xl font-black uppercase tracking-wider">Weekly Schedule</h2>
                                 <p className="text-blue-100 text-xs font-bold uppercase tracking-widest mt-1">Standard Operating Hours</p>
                             </div>
                         </div>
-                        <FaDoorOpen className="text-4xl opacity-20" />
+                        <FaDoorOpen className="text-4xl opacity-40" />
                     </div>
-                    <div className="p-10 space-y-6">
+                    <div className="p-4 sm:p-10 space-y-6">
                         {[
                             { day: 'Monday', time: '10:00 AM - 08:00 PM', open: true },
                             { day: 'Tuesday', time: '10:00 AM - 08:00 PM', open: true },
@@ -101,9 +101,9 @@ export default function Timings() {
                             </div>
                             <a
                                 href="tel:+919876543210"
-                                className="inline-flex items-center justify-center gap-3 w-full bg-rose-600 text-white font-black py-5 rounded-2xl hover:bg-rose-500 transition shadow-xl hover:shadow-rose-500/20 active:scale-95 group text-lg"
+                                className="inline-flex items-center justify-center gap-3 w-full bg-rose-600 text-white font-black py-5 rounded-2xl hover:bg-rose-500 transition shadow-xl hover:shadow-rose-500/20 active:scale-95 group text-base sm:text-lg"
                             >
-                                <FaPhoneAlt className="group-hover:rotate-12 transition-transform" /> Call Now: +91 98765 43210
+                                <FaPhoneAlt className="group-hover:rotate-12 transition-transform" /> +91 98765 43210
                             </a>
                         </div>
                     </div>

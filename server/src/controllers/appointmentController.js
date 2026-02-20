@@ -44,6 +44,12 @@ exports.updateAppointmentStatus = async (req, res) => {
             req.body.markedPaidAt = null; // Undo/Clear timer
         }
 
+        if (req.body.status === 'Completed') {
+            req.body.completedAt = new Date();
+        } else if (req.body.status && req.body.status !== 'Completed') {
+            req.body.completedAt = null;
+        }
+
         const updatedAppointment = await Appointment.findByIdAndUpdate(
             req.params.id,
             req.body,

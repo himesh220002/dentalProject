@@ -33,10 +33,13 @@ const appointmentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Scheduled', 'Completed', 'Cancelled'],
+        enum: ['Scheduled', 'Completed', 'Cancelled', 'Operating', 'Delayed'],
         default: 'Scheduled'
     },
     markedPaidAt: {
+        type: Date
+    },
+    completedAt: {
         type: Date
     },
     createdAt: {

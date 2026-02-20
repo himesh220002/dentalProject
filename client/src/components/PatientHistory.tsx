@@ -398,9 +398,9 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
             )}
 
             {/* Activity Feed Timeline */}
-            <div className="relative pl-8 md:pl-10 space-y-10">
-                {/* Timeline Line */}
-                <div className="absolute left-[15px] md:left-[19px] top-4 bottom-4 w-1 bg-gradient-to-b from-blue-600 via-indigo-600 to-gray-200 rounded-full opacity-20"></div>
+            <div className="relative pl-4 sm:pl-8 md:pl-10 space-y-10 border-l-2 border-indigo-100/50 sm:border-l-0 ml-1 sm:ml-0">
+                {/* Timeline Line (Desktop Gradient) */}
+                <div className="hidden sm:block absolute left-[15px] md:left-[19px] top-4 bottom-4 w-1 bg-gradient-to-b from-blue-600 via-indigo-600 to-gray-200 rounded-full opacity-20"></div>
 
                 {records.length > 0 ? (
                     records.map((record, index) => {

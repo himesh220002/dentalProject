@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCalendarPlus, FaClock, FaUser, FaCheckCircle, FaTrash, FaNotesMedical } from 'react-icons/fa';
+import { FaCalendarPlus, FaClock, FaUser, FaCheckCircle, FaTrash, FaNotesMedical, FaChevronDown } from 'react-icons/fa';
 import Link from 'next/link';
 import QuickScheduler from '@/components/QuickScheduler';
+import MobileAppointmentCard from '@/components/dashboard/MobileAppointmentCard';
 import { parseDateTime } from '@/utils/dateUtils';
 
 interface Appointment {
@@ -103,17 +104,17 @@ export default function DashboardSchedules() {
     return (
         <div className="space-y-8">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-black text-gray-900">Appointment Schedules</h1>
+                <h1 className="text-xl sm:text-3xl font-black text-gray-900">Appointment Schedules</h1>
                 <button
                     onClick={() => setIsSchedulerOpen(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-black shadow-lg transition active:scale-95 flex items-center gap-2"
+                    className="bg-blue-600 hover:bg-blue-700 text-xs text-white px-4 sm:px-8 py-2 sm:py-3 rounded-2xl font-black shadow-lg transition active:scale-95 flex items-center gap-2"
                 >
                     <FaCalendarPlus /> Add Appointment
                 </button>
             </div>
 
             <div className="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-gray-100">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto hidden 2xl:block">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
@@ -129,7 +130,7 @@ export default function DashboardSchedules() {
                         <tbody className="divide-y divide-gray-100">
                             {filteredAppointments.map((apt) => {
                                 const expired = isPastTime(apt.date, apt.time);
-                                const isReadyForPayment = (expired || apt.isTicked) && apt.paymentStatus !== 'Paid';
+                                const isReadyForPayment = (apt.status === 'Completed' || apt.isTicked) && apt.paymentStatus !== 'Paid';
 
                                 return (
                                     <tr key={apt._id} className="hover:bg-gray-50/50 transition-colors">
@@ -171,35 +172,75 @@ export default function DashboardSchedules() {
                                             {apt.amount && <div className="text-[10px] font-black text-blue-600 mt-0.5">₹{apt.amount}</div>}
                                         </td>
                                         <td className="px-8 py-6 whitespace-nowrap">
-                                            {apt.paymentStatus === 'Paid' ? (
-                                                <button
-                                                    onClick={() => updateAppointment(apt._id, { paymentStatus: 'Pending' })}
-                                                    className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-rose-100 hover:text-rose-700 transition group"
-                                                    title="Click to mark as Pending (Undo)"
+                                            <div className="relative group w-36">
+                                                <select
+                                                    value={apt.paymentStatus}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        const updates: any = { paymentStatus: val };
+                                                        if (val === 'Paid') {
+                                                            updates.status = 'Completed';
+                                                            updates.isTicked = true;
+                                                        }
+                                                        updateAppointment(apt._id, updates);
+                                                    }}
+                                                    className={`appearance-none w-full px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm transition-all border outline-none cursor-pointer pr-8 ${apt.paymentStatus === 'Paid'
+                                                        ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+                                                        : (apt.status === 'Completed' || apt.isTicked)
+                                                            ? 'bg-amber-100 text-amber-700 border-amber-200 animate-pulse'
+                                                            : 'bg-gray-100 text-gray-500 border-gray-200'
+                                                        }`}
                                                 >
-                                                    <span className="group-hover:hidden">Paid</span>
-                                                    <span className="hidden group-hover:inline">Undo?</span>
-                                                </button>
-                                            ) : isReadyForPayment ? (
-                                                <button
-                                                    onClick={() => updateAppointment(apt._id, { paymentStatus: 'Paid', status: 'Completed', isTicked: true })}
-                                                    className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-amber-200 transition"
-                                                >
-                                                    Pending - Mark Paid?
-                                                </button>
-                                            ) : (
-                                                <span className="text-gray-300 italic text-[10px]">Upcoming</span>
-                                            )}
+                                                    <option value="None">Payment: None</option>
+                                                    <option value="Pending">Payment Pending</option>
+                                                    <option value="Paid">Paid</option>
+                                                </select>
+                                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[8px] text-gray-400">
+                                                    <FaChevronDown />
+                                                </div>
+                                            </div>
                                         </td>
                                         <td className="px-8 py-6 whitespace-nowrap">
-                                            <button
-                                                onClick={() => updateAppointment(apt._id, { isTicked: !apt.isTicked })}
-                                                className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition shadow-sm ${apt.isTicked || apt.status === 'Completed' ? 'bg-emerald-600 text-white' :
-                                                    expired ? 'bg-gray-300 text-gray-600' : 'bg-blue-50 text-blue-600 border border-blue-100'
-                                                    }`}
-                                            >
-                                                {apt.status === 'Completed' || apt.isTicked ? 'Done' : expired ? 'Passed' : 'Scheduled'}
-                                            </button>
+                                            <div className="relative group w-32">
+                                                {(() => {
+                                                    const displayStatus = (apt.status === 'Scheduled' && expired) ? 'Delayed' : apt.status;
+                                                    return (
+                                                        <>
+                                                            <select
+                                                                value={displayStatus}
+                                                                onChange={(e) => {
+                                                                    const val = e.target.value;
+                                                                    const updates: any = {
+                                                                        status: val,
+                                                                        isTicked: val === 'Completed'
+                                                                    };
+                                                                    // Auto-set payment to Pending if marked Completed
+                                                                    if (val === 'Completed' && apt.paymentStatus === 'None') {
+                                                                        updates.paymentStatus = 'Pending';
+                                                                    }
+                                                                    updateAppointment(apt._id, updates);
+                                                                }}
+                                                                className={`appearance-none w-full px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm transition-all border outline-none cursor-pointer pr-8 ${displayStatus === 'Completed'
+                                                                    ? 'bg-emerald-600 text-white border-emerald-600'
+                                                                    : displayStatus === 'Operating'
+                                                                        ? 'bg-blue-600 text-white border-blue-600'
+                                                                        : displayStatus === 'Delayed'
+                                                                            ? 'bg-amber-500 text-white border-amber-600'
+                                                                            : 'bg-white text-gray-500 border-gray-200'
+                                                                    }`}
+                                                            >
+                                                                <option value="Scheduled">Scheduled</option>
+                                                                <option value="Delayed">Passed</option>
+                                                                <option value="Operating">Operating</option>
+                                                                <option value="Completed">Done</option>
+                                                            </select>
+                                                            <div className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[8px] ${['Completed', 'Operating', 'Delayed'].includes(displayStatus) ? 'text-white' : 'text-gray-400'}`}>
+                                                                <FaChevronDown />
+                                                            </div>
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
                                         </td>
                                         <td className="px-8 py-6 whitespace-nowrap">
                                             <div className="flex gap-2">
@@ -225,6 +266,21 @@ export default function DashboardSchedules() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Mobile View (Cards) */}
+                <div className="2xl:hidden p-4 space-y-4">
+                    {filteredAppointments.map((apt) => (
+                        <MobileAppointmentCard
+                            key={apt._id}
+                            apt={apt}
+                            isPastTime={isPastTime}
+                            updateAppointment={updateAppointment}
+                            handleReschedule={handleReschedule}
+                            deleteAppointment={deleteAppointment}
+                        />
+                    ))}
+                </div>
+
                 {filteredAppointments.length === 0 && (
                     <div className="text-center py-20 text-gray-400 italic font-medium">
                         No appointments found.
