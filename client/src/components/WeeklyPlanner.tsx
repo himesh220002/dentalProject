@@ -192,7 +192,7 @@ export default function WeeklyPlanner() {
                     </div>
                 </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4">
                 {weekDays.map((day) => {
                     const dayAppointments = getAppointmentsForDay(day.date);
                     const isExpanded = expandedDate === day.date.toISOString();
