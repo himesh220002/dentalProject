@@ -18,7 +18,7 @@ export default function RootLayout({
             <body className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
                 <Providers>
                     <Navbar />
-                    <main className="flex-grow max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 sm:py-8 lg:py-20">
+                    <main className="flex-grow max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 sm:pt-8 lg:pt-20">
                         {children}
                     </main>
                     <Footer />

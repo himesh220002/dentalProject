@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function About() {
     return (
-        <div className="space-y-12 sm:py-4 sm:py-10">
+        <div className="space-y-12 sm:pt-4 lg:pt-10">
             {/* Hero Section - Refined */}
             <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">
@@ -40,7 +40,11 @@ export default function About() {
                 <div className="relative order-1 lg:order-2">
                     <div className="absolute -inset-10 bg-gradient-to-tr from-blue-100 via-teal-50 to-indigo-100 rounded-[3rem] opacity-50 blur-3xl -z-10 animate-pulse"></div>
                     <div className="relative h-[60vh] sm:h-[80vh] w-full bg-gray-200 rounded-[3rem] shadow-2xl overflow-hidden flex items-center justify-center text-gray-400 group">
-                        <FaUserMd className="text-[12rem] group-hover:scale-110 transition-transform duration-700" />
+                        <img
+                            src="/images/doctor_portrait.png"
+                            alt="Dr. Tooth"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent"></div>
 
                         {/* Interactive Badges */}
