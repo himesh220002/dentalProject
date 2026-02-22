@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'next/navigation';
-import { FaArrowLeft, FaUser, FaIdCard, FaBirthdayCake, FaVenusMars, FaPhoneAlt, FaMapMarkerAlt, FaHistory, FaClinicMedical, FaEdit, FaSave, FaTimes, FaPlus, FaEnvelope } from 'react-icons/fa';
+import { FaArrowLeft, FaUser, FaIdCard, FaBirthdayCake, FaVenusMars, FaPhoneAlt, FaMapMarkerAlt, FaHistory, FaClinicMedical, FaEdit, FaSave, FaTimes, FaPlus, FaEnvelope, FaNotesMedical } from 'react-icons/fa';
 import Navbar from '../../../components/Navbar';
 import PatientHistory from '../../../components/PatientHistory';
 
@@ -173,14 +173,15 @@ export default function PatientProfile() {
                 </button>
 
                 {/* Profile Header Card */}
-                <div className="bg-white rounded-[2rem] sm:rounded-[3rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-gray-100 mb-10">
-                    <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 px-8 md:px-12 py-10 md:py-16 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-teal-400/10 rounded-full -ml-10 -mb-10 blur-2xl"></div>
+                <div className="bg-white rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-gray-100 mb-10">
+                    <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 px-6 sm:px-12 py-10 sm:py-16 relative overflow-hidden">
+                        {/* Decorative elements */}
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-400/5 rounded-full -ml-16 -mb-16 blur-2xl"></div>
 
-                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-2 sm:gap-8 text-center md:text-left">
-                            <div className="w-16 h-16 md:w-32 md:h-32 bg-white/10 backdrop-blur-md rounded-3xl flex items-center justify-center border border-white/20 shadow-2xl">
-                                <FaUser className="text-white text-4xl md:text-6xl" />
+                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 sm:gap-10 text-center md:text-left">
+                            <div className="w-16 h-16 md:w-24 md:h-24 bg-white/10 backdrop-blur-xl rounded-[2.5rem] flex items-center justify-center border border-white/20 shadow-2xl group transition-transform duration-500 hover:scale-105">
+                                <FaUser className="text-white text-3xl md:text-4xl opacity-90 group-hover:opacity-100 transition-opacity" />
                             </div>
                             <div className="flex-grow">
                                 {isEditing ? (
@@ -188,33 +189,34 @@ export default function PatientProfile() {
                                         type="text"
                                         value={editedPatient?.name || ''}
                                         onChange={(e) => setEditedPatient(prev => prev ? { ...prev, name: e.target.value } : null)}
-                                        className="text-4xl md:text-6xl font-black text-white leading-tight mb-2 uppercase tracking-tight bg-white/10 border-b-2 border-white/30 focus:border-white focus:outline-none w-full"
+                                        className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight mb-4 uppercase tracking-tight bg-white/10 border-b-2 border-white/30 focus:border-white focus:outline-none w-full px-4 rounded-xl"
                                     />
                                 ) : (
-                                    <h1 className="text-4xl md:text-6xl font-black text-white leading-tight mb-2 uppercase tracking-tight">{patient.name}</h1>
+                                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight mb-3 uppercase tracking-tighter">{patient.name}</h1>
                                 )}
-                                <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                                    <div className="bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full text-blue-50 text-xs font-black uppercase tracking-widest border border-white/10 flex items-center gap-2">
+                                <div className="flex flex-wrap justify-center md:justify-start gap-3">
+                                    <div className="bg-white/10 backdrop-blur-md px-5 py-2 rounded-2xl text-blue-50 text-[10px] font-black uppercase tracking-widest border border-white/10 flex items-center gap-2">
                                         <FaIdCard className="text-blue-200" />
-                                        ID: {patient._id.slice(-8).toUpperCase()}
+                                        RECORD ID: {patient._id.slice(-8).toUpperCase()}
                                     </div>
-                                    {/* <div className="bg-emerald-400/20 backdrop-blur-md px-4 py-1.5 rounded-full text-emerald-50 text-xs font-black uppercase tracking-widest border border-emerald-400/20 flex items-center gap-2">
+                                    <div className="bg-emerald-400/20 backdrop-blur-md px-5 py-2 rounded-2xl text-emerald-50 text-[10px] font-black uppercase tracking-widest border border-emerald-400/20 flex items-center gap-2">
                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
                                         Active Patient
-                                    </div> */}
+                                    </div>
                                     {upcomingAppointment && (
-                                        <div className="bg-amber-400/20 backdrop-blur-md px-4 py-1.5 rounded-full text-amber-50 text-xs font-black uppercase tracking-widest border border-amber-400/30 flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></div>
-                                            Upcoming: {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
+                                        <div className="bg-amber-400/20 backdrop-blur-md px-5 py-2 rounded-2xl text-amber-50 text-[10px] font-black uppercase tracking-widest border border-amber-400/30 flex items-center gap-2">
+                                            <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping absolute"></div>
+                                            <div className="w-2 h-2 rounded-full bg-amber-400 relative"></div>
+                                            Upcoming: {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
                                         </div>
                                     )}
                                 </div>
                             </div>
-                            <div className="flex flex-col gap-3">
+                            <div className="flex flex-col gap-3 min-w-[180px]">
                                 {!isEditing ? (
                                     <button
                                         onClick={handleEdit}
-                                        className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest border border-white/20 transition flex items-center gap-2"
+                                        className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] border border-white/20 transition-all active:scale-95 flex items-center justify-center gap-3 shadow-xl"
                                     >
                                         <FaEdit /> Edit Profile
                                     </button>
@@ -223,15 +225,15 @@ export default function PatientProfile() {
                                         <button
                                             onClick={handleSave}
                                             disabled={isSaving}
-                                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg border border-emerald-400/50 transition flex items-center gap-2 disabled:opacity-50"
+                                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-emerald-900/20 border border-emerald-400/50 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
                                         >
                                             <FaSave /> {isSaving ? 'Saving...' : 'Save Changes'}
                                         </button>
                                         <button
                                             onClick={handleCancel}
-                                            className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest border border-white/20 transition flex items-center gap-2"
+                                            className="bg-white/10 hover:bg-white text-white hover:text-gray-900 px-8 py-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] border border-white/20 transition-all active:scale-95 flex items-center justify-center gap-3"
                                         >
-                                            <FaTimes /> Cancel
+                                            <FaTimes /> Discard
                                         </button>
                                     </>
                                 )}
@@ -239,65 +241,65 @@ export default function PatientProfile() {
                         </div>
                     </div>
 
-                    <div className="p-4 sm:p-8 md:p-12">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div className="p-6 sm:p-12 md:p-16">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                             {/* Personal Details */}
-                            <div className="space-y-8">
-                                <h2 className="text-xl font-black text-gray-900 flex items-center gap-3">
-                                    <div className="w-2 h-8 bg-blue-600 rounded-full"></div>
-                                    Personal Profile
+                            <div className="space-y-10">
+                                <h2 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-4">
+                                    <div className="w-1.5 h-10 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full"></div>
+                                    Biological & Contact Data
                                 </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6">
-                                    <div className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100 hover:bg-gray-50 transition group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="p-3 bg-white rounded-2xl text-blue-600 shadow-sm border border-gray-100 group-hover:scale-110 transition">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="bg-gray-50/70 p-2 sm:p-6 rounded-[1rem] sm:rounded-[2rem] border border-gray-100 hover:bg-white hover:shadow-xl hover:shadow-blue-900/5 transition-all group">
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white rounded-2xl text-blue-600 shadow-sm border border-gray-200 flex items-center justify-center text-xl group-hover:bg-blue-600 group-hover:text-white group-hover:-translate-y-1 transition-all duration-300">
                                                 <FaBirthdayCake />
                                             </div>
                                             <div className="flex-grow">
-                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-1">Age</p>
+                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-2">Patient Age</p>
                                                 {isEditing ? (
                                                     <input
                                                         type="number"
                                                         value={editedPatient?.age || ''}
                                                         onChange={(e) => setEditedPatient(prev => prev ? { ...prev, age: parseInt(e.target.value) || 0 } : null)}
-                                                        className="text-lg font-black text-gray-800 bg-transparent border-b border-gray-200 focus:border-blue-500 focus:outline-none w-full"
+                                                        className="text-lg font-black text-gray-800 bg-white border-2 border-gray-100 rounded-xl px-3 py-1 focus:border-blue-500 focus:outline-none w-full"
                                                     />
                                                 ) : (
-                                                    <p className="text-sm sm:text-lg font-black text-gray-800">{patient.age} Years</p>
+                                                    <p className="text-lg font-black text-gray-800">{patient.age} <span className="text-gray-400 font-bold ml-1">Years</span></p>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100 hover:bg-gray-50 transition group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="p-3 bg-white rounded-2xl text-rose-500 shadow-sm border border-gray-100 group-hover:scale-110 transition">
+                                    <div className="bg-gray-50/70 p-2 sm:p-6 sm:rounded-[2rem] rounded-[1rem] border border-gray-100 hover:bg-white hover:shadow-xl hover:shadow-blue-900/5 transition-all group">
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white rounded-2xl text-rose-500 shadow-sm border border-gray-200 flex items-center justify-center text-xl group-hover:bg-rose-500 group-hover:text-white group-hover:-translate-y-1 transition-all duration-300">
                                                 <FaVenusMars />
                                             </div>
                                             <div className="flex-grow">
-                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-1">Gender</p>
+                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-2">Gender</p>
                                                 {isEditing ? (
                                                     <select
                                                         value={editedPatient?.gender || '-__-'}
                                                         onChange={(e) => setEditedPatient(prev => prev ? { ...prev, gender: e.target.value } : null)}
-                                                        className="text-lg font-black text-gray-800 bg-transparent border-b border-gray-200 focus:border-blue-500 focus:outline-none w-full"
+                                                        className="text-lg font-black text-gray-800 bg-white border-2 border-gray-100 rounded-xl px-3 py-1 focus:border-blue-500 focus:outline-none w-full uppercase"
                                                     >
                                                         <option value="-__-">-__-</option>
                                                         <option value="Male">MALE</option>
                                                         <option value="Female">FEMALE</option>
                                                     </select>
                                                 ) : (
-                                                    <p className="text-sm sm:text-lg font-black text-gray-800 uppercase">{(patient.gender === 'Other' || patient.gender === 'others' || !patient.gender) ? '-__-' : patient.gender}</p>
+                                                    <p className="text-lg font-black text-gray-800 uppercase">{(patient.gender === 'Other' || patient.gender === 'others' || !patient.gender) ? 'Not Recorded' : patient.gender}</p>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100 hover:bg-gray-50 transition group sm:col-span-2">
-                                        <div className="flex items-center gap-4">
-                                            <div className="p-3 bg-white rounded-2xl text-indigo-600 shadow-sm border border-gray-100 group-hover:scale-110 transition">
+                                    <div className="bg-gray-50/70 p-2 sm:p-6 sm:rounded-[2rem] rounded-[1rem] border border-gray-100 hover:bg-white hover:shadow-xl hover:shadow-blue-900/5 transition-all group sm:col-span-2">
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white rounded-2xl text-indigo-600 shadow-sm border border-gray-200 flex items-center justify-center text-xl group-hover:bg-indigo-600 group-hover:text-white group-hover:-translate-y-1 transition-all duration-300">
                                                 <FaPhoneAlt />
                                             </div>
                                             <div className="flex-grow">
-                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-1">Contact Number</p>
+                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-2">Primary Contact</p>
                                                 {isEditing ? (
                                                     <div className="space-y-1 w-full">
                                                         <input
@@ -307,57 +309,57 @@ export default function PatientProfile() {
                                                                 const val = e.target.value.replace(/\D/g, '').slice(0, 10);
                                                                 setEditedPatient(prev => prev ? { ...prev, contact: val } : null);
                                                             }}
-                                                            className={`text-lg font-black bg-transparent border-b-2 border-gray-100 focus:border-blue-500 focus:outline-none w-full transition-colors ${(editedPatient?.contact?.length || 0) === 10 ? 'text-emerald-600' : (editedPatient?.contact?.length || 0) > 0 ? 'text-rose-600' : 'text-gray-800'
+                                                            className={`text-lg font-black bg-white border-2 border-gray-100 rounded-xl px-4 py-2 focus:border-blue-500 focus:outline-none w-full transition-colors ${(editedPatient?.contact?.length || 0) === 10 ? 'text-emerald-600' : (editedPatient?.contact?.length || 0) > 0 ? 'text-rose-600' : 'text-gray-800'
                                                                 }`}
                                                             placeholder="10 digit phone number"
                                                         />
                                                         {(editedPatient?.contact?.length || 0) > 0 && (editedPatient?.contact?.length || 0) < 10 && (
-                                                            <p className="text-[9px] text-rose-500 font-black animate-pulse">Incomplete: {(editedPatient?.contact?.length || 0)}/10 digits</p>
+                                                            <p className="text-[10px] text-rose-500 font-black tracking-tight animate-pulse ml-1">Incomplete: {(editedPatient?.contact?.length || 0)}/10 digits</p>
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <p className="text-sm sm:text-lg font-black text-gray-800">{patient.contact}</p>
+                                                    <p className="text-lg font-black text-gray-800 tracking-wider">+91 {patient.contact}</p>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100 hover:bg-gray-50 transition group sm:col-span-2">
-                                        <div className="flex items-center gap-4">
-                                            <div className="p-3 bg-white rounded-2xl text-blue-500 shadow-sm border border-gray-100 group-hover:scale-110 transition">
+                                    <div className="bg-gray-50/70 p-2 sm:p-6 sm:rounded-[2rem] rounded-[1rem] border border-gray-100 hover:bg-white hover:shadow-xl hover:shadow-blue-900/5 transition-all group sm:col-span-2">
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white rounded-2xl text-blue-500 shadow-sm border border-gray-200 flex items-center justify-center text-xl group-hover:bg-blue-500 group-hover:text-white group-hover:-translate-y-1 transition-all duration-300">
                                                 <FaEnvelope />
                                             </div>
                                             <div className="flex-grow">
-                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-1">Email Address</p>
+                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-2">Email Address</p>
                                                 {isEditing ? (
                                                     <input
                                                         type="email"
                                                         value={editedPatient?.email || ''}
                                                         onChange={(e) => setEditedPatient(prev => prev ? { ...prev, email: e.target.value } : null)}
-                                                        className="text-lg font-black text-gray-800 bg-transparent border-b border-gray-200 focus:border-blue-500 focus:outline-none w-full"
+                                                        className="text-md font-black text-gray-800 bg-white border-2 border-gray-100 rounded-xl px-4 py-2 focus:border-blue-500 focus:outline-none w-full"
                                                         placeholder="patient@example.com"
                                                     />
                                                 ) : (
-                                                    <p className="text-sm sm:text-lg font-black text-gray-800">{patient.email || 'Not Provided'}</p>
+                                                    <p className="text-md font-black text-gray-800 truncate">{patient.email || 'Email not registered'}</p>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100 hover:bg-gray-50 transition group sm:col-span-2">
-                                        <div className="flex items-start gap-4">
-                                            <div className="p-3 bg-white rounded-2xl text-amber-500 shadow-sm border border-gray-100 group-hover:scale-110 transition">
+                                    <div className="bg-gray-50/70 p-2 sm:p-6 sm:rounded-[2rem] rounded-[1rem] border border-gray-100 hover:bg-white hover:shadow-xl hover:shadow-blue-900/5 transition-all group sm:col-span-2">
+                                        <div className="flex items-start gap-5">
+                                            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white rounded-2xl text-amber-500 shadow-sm border border-gray-200 flex items-center justify-center text-xl group-hover:bg-amber-500 group-hover:text-white group-hover:-translate-y-1 transition-all duration-300 flex-shrink-0">
                                                 <FaMapMarkerAlt />
                                             </div>
                                             <div className="flex-grow">
-                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-1">Residential Address</p>
+                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-3">Residential Location</p>
                                                 {isEditing ? (
                                                     <textarea
                                                         value={editedPatient?.address || ''}
                                                         onChange={(e) => setEditedPatient(prev => prev ? { ...prev, address: e.target.value } : null)}
-                                                        rows={2}
-                                                        className="text-base font-bold text-gray-700 leading-relaxed bg-transparent border-b border-gray-200 focus:border-blue-500 focus:outline-none w-full"
+                                                        rows={3}
+                                                        className="text-base font-bold text-gray-700 leading-relaxed bg-white border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-blue-500 focus:outline-none w-full"
                                                     />
                                                 ) : (
-                                                    <p className="text-xs sm:text-base font-bold text-gray-700 leading-relaxed">{patient.address || '-__-'}</p>
+                                                    <p className="text-sm sm:text-base font-bold text-gray-700 leading-relaxed italic pr-2">{patient.address === '-__-' ? 'Permanent address not on file' : patient.address}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -366,80 +368,95 @@ export default function PatientProfile() {
                             </div>
 
                             {/* Medical Summary */}
-                            <div className="space-y-8">
-                                <h2 className="text-xl font-black text-gray-900 flex items-center gap-3">
-                                    <div className="w-2 h-8 bg-emerald-500 rounded-full"></div>
-                                    Medical Summary
+                            <div className="space-y-10">
+                                <h2 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-4">
+                                    <div className="w-1.5 h-10 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full"></div>
+                                    Clinical Metadata
                                 </h2>
 
-                                <div className="space-y-2 sm:space-y-6">
-                                    {/* Last Visit */}
+                                <div className="space-y-6">
+                                    {/* Last Visit Highlight Card */}
                                     {lastVisit ? (
-                                        <div className="bg-emerald-50/50 p-8 rounded-[2.5rem] border border-emerald-100 relative overflow-hidden group">
-                                            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition">
-                                                <FaHistory size={64} />
+                                        <div className="bg-emerald-50/70 p-8 sm:p-10 rounded-[2.5rem] border border-emerald-100 relative overflow-hidden group hover:shadow-2xl hover:shadow-emerald-900/10 transition-all duration-500 cursor-default">
+                                            <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity rotate-12 group-hover:rotate-6">
+                                                <FaHistory size={120} />
                                             </div>
-                                            <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                                Last Clinical Visit
-                                            </p>
-                                            <h3 className="text-md sm:text-2xl font-black text-emerald-900 mb-2 uppercase tracking-tight">{lastVisit.treatmentName}</h3>
-                                            <p className="text-emerald-700/70 font-bold text-sm bg-white/50 inline-block px-4 py-1.5 rounded-full border border-emerald-100/50">
-                                                {new Date(lastVisit.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                                            </p>
+                                            <div className="relative z-10">
+                                                <div className="inline-flex items-center gap-2 bg-white text-emerald-600 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl mb-6 shadow-sm border border-emerald-100">
+                                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                                    Most Recent Treatment
+                                                </div>
+                                                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-emerald-900 mb-4 uppercase tracking-tighter leading-tight group-hover:translate-x-1 transition-transform">{lastVisit.treatmentName}</h3>
+                                                <div className="inline-block bg-emerald-600/10 px-5 py-2 rounded-2xl text-emerald-800 font-black text-xs border border-emerald-200/50">
+                                                    {new Date(lastVisit.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                                </div>
+                                            </div>
                                         </div>
                                     ) : (
-                                        <div className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 border-dashed text-center">
-                                            <p className="text-gray-400 font-bold italic">No previous clinical history recorded.</p>
+                                        <div className="bg-gray-50/50 p-12 rounded-[2.5rem] border-2 border-dashed border-gray-200 text-center flex flex-col items-center justify-center">
+                                            <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-gray-300 shadow-sm border border-gray-100 mb-4">
+                                                <FaHistory size={24} />
+                                            </div>
+                                            <p className="text-gray-400 font-bold italic text-sm">Patient has no clinical history on record.</p>
                                         </div>
                                     )}
 
                                     {/* Medical History Tags */}
-                                    <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-6 flex items-center gap-2">
+                                    <div className="bg-white p-8 sm:p-10 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all">
+                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
                                             <FaClinicMedical className="text-blue-600" />
-                                            Pre-existing Conditions
+                                            Pre-existing Health Conditions
                                         </p>
                                         <div className="flex flex-wrap gap-3">
                                             {isEditing ? (
-                                                <>
-                                                    {editedPatient?.medicalHistory.map((item, index) => (
-                                                        <span key={index} className="px-4 py-2 bg-rose-50 text-rose-600 rounded-2xl text-xs font-black uppercase tracking-wider border border-rose-100 flex items-center gap-2 group/tag transition hover:bg-rose-100">
-                                                            {item}
-                                                            <button
-                                                                onClick={() => removeTag(item)}
-                                                                className="text-rose-300 hover:text-rose-600 transition"
-                                                            >
-                                                                <FaTimes size={10} />
-                                                            </button>
-                                                        </span>
-                                                    ))}
-                                                    <div className="flex items-center gap-2 w-full mt-2">
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Add condition..."
-                                                            value={newTag}
-                                                            onChange={(e) => setNewTag(e.target.value)}
-                                                            onKeyPress={(e) => e.key === 'Enter' && addTag()}
-                                                            className="flex-grow bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500 transition"
-                                                        />
+                                                <div className="w-full space-y-4">
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {editedPatient?.medicalHistory.map((item, index) => (
+                                                            <span key={index} className="px-4 py-2 bg-rose-50 text-rose-600 rounded-2xl text-[10px] font-black uppercase tracking-wider border border-rose-100 flex items-center gap-3 transition hover:bg-rose-100 animate-in zoom-in duration-200">
+                                                                {item}
+                                                                <button
+                                                                    onClick={() => removeTag(item)}
+                                                                    className="w-5 h-5 bg-white rounded-lg flex items-center justify-center text-rose-300 hover:text-rose-600 transition shadow-sm"
+                                                                >
+                                                                    <FaTimes size={10} />
+                                                                </button>
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="relative flex-grow">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Type a condition (e.g. Diabetes, BP)..."
+                                                                value={newTag}
+                                                                onChange={(e) => setNewTag(e.target.value)}
+                                                                onKeyPress={(e) => e.key === 'Enter' && addTag()}
+                                                                className="w-full bg-gray-50 border-2 border-gray-100 rounded-[1.25rem] px-5 py-4 text-sm font-bold text-gray-700 focus:outline-none focus:border-blue-500 focus:bg-white transition shadow-sm"
+                                                            />
+                                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
+                                                                <FaPlus size={14} />
+                                                            </div>
+                                                        </div>
                                                         <button
                                                             onClick={addTag}
-                                                            className="bg-blue-600 text-white p-2.5 rounded-xl hover:bg-blue-700 transition shadow-sm"
+                                                            className="bg-blue-600 text-white p-4.5 aspect-square rounded-[1.25rem] hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20 transition-all active:scale-90"
                                                         >
-                                                            <FaPlus size={12} />
+                                                            <FaPlus size={18} />
                                                         </button>
                                                     </div>
-                                                </>
+                                                </div>
                                             ) : (
                                                 patient.medicalHistory && patient.medicalHistory.length > 0 ? (
                                                     patient.medicalHistory.map((item, index) => (
-                                                        <span key={index} className="px-5 py-2.5 bg-rose-50 text-rose-600 rounded-2xl text-xs font-black uppercase tracking-wider border border-rose-100 hover:bg-rose-100 transition cursor-default">
+                                                        <span key={index} className="px-6 py-3 bg-rose-50/50 text-rose-600 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest border border-rose-100/50 hover:bg-rose-600 hover:text-white transition-all duration-300 cursor-default shadow-sm hover:shadow-rose-600/20 hover:-translate-y-0.5">
                                                             {item}
                                                         </span>
                                                     ))
                                                 ) : (
-                                                    <p className="text-gray-400 text-sm font-medium italic">No pre-existing conditions disclosed.</p>
+                                                    <div className="w-full py-8 border-2 border-dashed border-gray-100 rounded-[2rem] flex flex-col items-center justify-center opacity-40">
+                                                        <div className="text-gray-400 mb-2 mt-2"><FaNotesMedical size={18} /></div>
+                                                        <p className="text-gray-400 text-xs font-black uppercase tracking-[0.2em]">No Conditions Listed</p>
+                                                    </div>
                                                 )
                                             )}
                                         </div>

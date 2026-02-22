@@ -31,7 +31,7 @@ export default function ActionTiles() {
                 {tiles.map((tile, index) => (
                     <div
                         key={index}
-                        className="bg-white p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-50 flex flex-col gap-5 sm:gap-6 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 group transform hover:-translate-y-2"
+                        className="bg-white p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-50 flex flex-col gap-5 sm:gap-6 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 group transform hover:-translate-y-2 active:scale-95 cursor-pointer"
                     >
                         <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-6
                             ${tile.color === 'blue' ? 'bg-blue-50 text-blue-600' :
@@ -48,7 +48,10 @@ export default function ActionTiles() {
                             <p className="text-gray-400 text-xs sm:text-sm font-medium">{tile.subContent}</p>
                         </div>
                         <div className="pt-4 mt-auto">
-                            <div className="w-8 h-1 bg-gray-100 group-hover:w-full group-hover:bg-blue-500 transition-all duration-500 rounded-full"></div>
+                            <div className={`h-1.5 rounded-full transition-all duration-500 ${tile.color === 'blue' ? 'bg-blue-100 group-hover:bg-blue-600 w-12 group-hover:w-full' :
+                                    tile.color === 'teal' ? 'bg-teal-100 group-hover:bg-teal-600 w-12 group-hover:w-full' :
+                                        'bg-indigo-100 group-hover:bg-indigo-600 w-12 group-hover:w-full'
+                                }`}></div>
                         </div>
                     </div>
                 ))}

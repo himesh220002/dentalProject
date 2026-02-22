@@ -211,10 +211,10 @@ export default function ProfilePage() {
 
     return (
         <SessionGuard>
-            <div className="max-w-7xl mx-auto px-4 py-10">
-                <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100">
+            <div className="max-w-7xl mx-auto sm:px-4 py-10">
+                <div className="bg-white rounded-[1rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-10 text-white">
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-2 sm:px-8 py-10 text-white">
                         <div className="flex items-center gap-6">
                             <div className="relative">
                                 {session?.user?.image ? (
@@ -394,7 +394,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Treatment History Section */}
-                <div className="mt-10 bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 p-8 md:p-12">
+                <div className="mt-10 bg-white rounded-[1rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 p-2 pt-4 sm:pt-0 sm:p-8 md:p-12">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                         <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
                             <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
@@ -444,7 +444,7 @@ export default function ProfilePage() {
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path>
                                                 </svg>
                                             </div>
-                                            <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight">{record.treatmentName}</h3>
+                                            <h3 className="text-xs sm:text-lg font-black text-gray-900 uppercase tracking-tight">{record.treatmentName}</h3>
                                         </div>
                                         <div className="flex flex-col items-end gap-2">
                                             <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase ${record.paymentStatus === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
@@ -455,7 +455,7 @@ export default function ProfilePage() {
                                     </div>
 
                                     {expandedRecords[record._id] && (
-                                        <div className="px-6 pb-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <div className="px-2 sm:px-6 pb-6 animate-in fade-in slide-in-from-top-2 duration-300">
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-2 pt-4 border-t border-gray-100">
                                                 <div className="bg-white p-4 rounded-xl">
                                                     <p className="text-gray-400 font-black uppercase text-[10px] mb-2 tracking-widest">Diagnosis/Notes</p>
@@ -553,7 +553,7 @@ export default function ProfilePage() {
                         </button>
                     </div>
 
-                    <div className="bg-white p-6 rounded-[2rem] shadow-lg border border-gray-50 text-center space-y-3">
+                    <div className="bg-white p-6 mb-4 sm:mb-0 rounded-[2rem] shadow-lg border border-gray-50 text-center space-y-3">
                         <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto">
                             <FaLock size={20} />
                         </div>

@@ -8,7 +8,7 @@ import { FaUserMd, FaArrowRight } from 'react-icons/fa';
 
 export default function Home() {
     return (
-        <div className="space-y-32">
+        <div className="space-y-32 overflow-x-hidden">
             {/* Hero Section - Elite Landing */}
             <HomeHero />
 
@@ -19,11 +19,11 @@ export default function Home() {
             <TrustSection />
 
             {/* Why Patients Trust - Preview Section with refined layout */}
-            <section className="bg-gray-900 -mx-4 sm:-mx-6 lg:-mx-8 px-6 sm:px-12 py-20 sm:py-32 rounded-[0rem] xl:rounded-[5rem] text-white overflow-hidden relative">
+            <section className="bg-gray-900 mx-auto px-8 sm:px-16 lg:px-24 py-20 sm:py-32 rounded-[1.5rem] sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
                 <div className="max-w-7xl mx-auto space-y-20">
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
                         <div className="space-y-6">
-                            <h2 className="text-4xl xl:text-7xl font-black leading-tight">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl xl:text-6xl font-black leading-tight">
                                 A healthy smile is the <br />
                                 <span className="text-blue-500">gateway</span> to a healthy life.
                             </h2>
@@ -42,7 +42,7 @@ export default function Home() {
                         </div>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-12 pt-12 border-t border-white/10">
+                    <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6 sm:gap-12 pt-6 sm:pt-12 border-t border-white/10">
                         <div className="space-y-4">
                             <h3 className="text-2xl font-black">Conservative Approach</h3>
                             <p className="text-gray-500 leading-relaxed font-medium">We prioritize saving your natural teeth and only recommend aggressive treatments when absolutely necessary.</p>
