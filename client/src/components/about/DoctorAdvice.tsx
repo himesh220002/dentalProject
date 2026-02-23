@@ -56,7 +56,7 @@ export default function DoctorAdvice() {
                 ))}
             </div>
 
-            <div className="bg-gray-900 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 text-white flex flex-col md:flex-row items-center gap-8 sm:gap-10 -mx-4 sm:-mx-6 lg:-mx-8 overflow-hidden relative">
+            <div className="bg-gray-900 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 text-white flex flex-col md:flex-row items-center gap-8 sm:gap-10 overflow-hidden relative">
                 <div className="flex-1 space-y-4 sm:space-y-6 text-center md:text-left">
                     <h3 className="text-2xl sm:text-3xl font-black">Ask Dr. Tooth Anything</h3>
                     <p className="text-gray-400 text-base sm:text-lg">

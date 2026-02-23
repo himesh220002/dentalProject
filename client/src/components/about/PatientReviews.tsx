@@ -29,7 +29,7 @@ const reviews = [
 
 export default function PatientReviews() {
     return (
-        <section className="py-12 sm:py-20 bg-blue-50/50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 rounded-[2rem] sm:rounded-[3rem]">
+        <section className="py-12 sm:py-20 bg-blue-50/50 -mx-2 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 rounded-[2rem] sm:rounded-[3rem]">
             <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16 space-y-3 sm:space-y-4">
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight">What Our Patients Say</h2>
                 <div className="h-1 sm:h-1.5 w-16 sm:w-24 bg-blue-500 mx-auto rounded-full"></div>

@@ -37,36 +37,37 @@ export default function About() {
                 </div>
 
                 {/* Doctor Image Refined */}
-                <div className="relative order-1 lg:order-2">
-                    <div className="absolute -inset-10 bg-gradient-to-tr from-blue-100 via-teal-50 to-indigo-100 rounded-[3rem] opacity-50 blur-3xl -z-10 animate-pulse"></div>
-                    <div className="relative h-[60vh] sm:h-[80vh] w-full bg-gray-200 rounded-[3rem] shadow-2xl overflow-hidden flex items-center justify-center text-gray-400 group">
+                <div className="relative order-1 lg:order-2 flex justify-center mt-12 sm:mt-16 lg:mt-0">
+                    <div className="absolute -inset-10 bg-gradient-to-tr from-blue-100 via-teal-50 to-indigo-100 rounded-full opacity-50 blur-3xl -z-10 animate-pulse"></div>
+
+                    {/* Interactive Badge Moved Above */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white/95 backdrop-blur-md px-4 py-2 sm:px-8 sm:py-5 rounded-2xl sm:rounded-[2rem] shadow-2xl flex items-center gap-3 sm:gap-5 border border-blue-50 animate-bounce whitespace-nowrap">
+                        <div className="bg-yellow-100 p-2 sm:p-3 rounded-xl sm:rounded-2xl text-yellow-600 shadow-inner">
+                            <FaAward size={18} className="sm:size-[24px]" />
+                        </div>
+                        <div>
+                            <p className="text-[8px] sm:text-[11px] font-black uppercase text-blue-500 tracking-[0.2em] leading-none mb-1 sm:mb-2 text-center lg:text-left">Top Rated</p>
+                            <p className="font-black text-gray-900 text-xs sm:text-xl">Elite Dentist</p>
+                        </div>
+                    </div>
+
+                    <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-[450px] lg:h-[450px] bg-gray-200 rounded-full shadow-2xl overflow-hidden flex items-center justify-center text-gray-400 group border-8 border-white">
                         <img
                             src="/images/doctor_portrait.png"
                             alt="Dr. Tooth"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent"></div>
-
-                        {/* Interactive Badges */}
-                        <div className="absolute top-8 left-8 bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-xl flex items-center gap-4 border border-white/50 animate-bounce">
-                            <div className="bg-yellow-100 p-2 rounded-xl text-yellow-600">
-                                <FaAward size={20} />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black uppercase text-gray-400 leading-none mb-1">Top Rated</p>
-                                <p className="font-black text-gray-900">Elite Dentist</p>
-                            </div>
-                        </div>
                     </div>
 
                     {/* Experience Badge Refined */}
-                    <div className="absolute -bottom-4 -right-4 sm:-bottom-8 sm:-right-8 bg-white p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl border-4 border-blue-50 flex items-center gap-4 sm:gap-6">
-                        <div className="bg-blue-600 text-white w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                            <FaSmile size={24} className="sm:size-[32px]" />
+                    <div className="absolute -bottom-2 -right-2 sm:-bottom-8 sm:-right-8 bg-white p-3 sm:p-8 rounded-[1.2rem] sm:rounded-[2.5rem] shadow-2xl border-4 border-blue-50 flex items-center gap-3 sm:gap-6">
+                        <div className="bg-blue-600 text-white w-10 h-10 sm:w-16 sm:h-16 rounded-xl sm:rounded-3xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                            <FaSmile size={20} className="sm:size-[32px]" />
                         </div>
                         <div>
-                            <p className="text-2xl sm:text-4xl font-black text-gray-900 leading-none mb-1">10+</p>
-                            <p className="text-[10px] sm:text-xs text-gray-400 uppercase font-black tracking-widest">Years of Trust</p>
+                            <p className="text-xl sm:text-4xl font-black text-gray-900 leading-none mb-0.5 sm:mb-1">10+</p>
+                            <p className="text-[8px] sm:text-xs text-gray-400 uppercase font-black tracking-widest">Years of Trust</p>
                         </div>
                     </div>
                 </div>
@@ -92,7 +93,7 @@ export default function About() {
             </div>
 
             {/* Our Values / Mission Refined */}
-            <section className="bg-gray-900 py-16 sm:py-24 -mx-4 sm:-mx-6 lg:-mx-8 px-6 sm:px-12 rounded-t-0 lg:rounded-t-[1rem] xl:rounded-t-[5rem] overflow-hidden relative">
+            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-6 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative">
                 <div className="max-w-5xl mx-auto space-y-5 sm:space-y-20">
                     <div className="text-center space-y-4 sm:space-y-6">
                         <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-white leading-tight">Why We Are Different</h2>
