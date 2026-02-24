@@ -43,8 +43,20 @@ const getHandoverById = async (req, res) => {
     }
 };
 
+// Delete a specific handover version
+const deleteHandover = async (req, res) => {
+    try {
+        const handover = await Handover.findOneAndDelete({ handoverformId: req.params.id });
+        if (!handover) return res.status(404).json({ message: 'Handover not found' });
+        res.status(200).json({ message: 'Handover deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting handover', error: error.message });
+    }
+};
+
 module.exports = {
     saveHandover,
     getHandoverHistory,
-    getHandoverById
+    getHandoverById,
+    deleteHandover
 };

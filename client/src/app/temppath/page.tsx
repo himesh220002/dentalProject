@@ -159,6 +159,22 @@ export default function TempClinicForm() {
         }));
     };
 
+    const deleteFromHistory = async (handoverformId: string) => {
+        if (!confirm(`Are you sure you want to delete ${handoverformId}?`)) return;
+
+        try {
+            await axios.delete(`${API_BASE_URL}/handover/${handoverformId}`);
+            // Fetch updated history
+            const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
+            setHistory(historyRes.data);
+            setSaveStatus('Version deleted successfully');
+            setTimeout(() => setSaveStatus(''), 3000);
+        } catch (error) {
+            console.error('Delete error:', error);
+            setSaveStatus('Error deleting version');
+        }
+    };
+
     const finalizeHandover = async () => {
         // First generate the JSON for the preview
         setJsonOutput(JSON.stringify(formData, null, 4));
@@ -463,16 +479,25 @@ export default function TempClinicForm() {
                                 {history.length > 0 ? history.map((item) => (
                                     <div key={item._id} className="p-4 bg-gray-50 rounded-2xl hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all group relative">
                                         <div className="flex flex-col gap-1">
-                                            <span className="font-black text-xs text-indigo-600 truncate mr-8">{item.handoverformId}</span>
+                                            <span className="font-black text-xs text-indigo-600 truncate mr-16">{item.handoverformId}</span>
                                             <span className="text-[10px] text-gray-400 font-medium">Updated: {new Date(item.updatedAt).toLocaleString()}</span>
                                         </div>
-                                        <button
-                                            onClick={() => loadFromHistory(item)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white text-indigo-600 rounded-xl shadow-sm hover:bg-indigo-600 hover:text-white transition-all opacity-0 group-hover:opacity-100"
-                                            title="Load for Editing"
-                                        >
-                                            <FaEdit size={14} />
-                                        </button>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                            <button
+                                                onClick={() => loadFromHistory(item)}
+                                                className="p-2 bg-white text-indigo-600 rounded-xl shadow-sm hover:bg-indigo-600 hover:text-white transition-all"
+                                                title="Load for Editing"
+                                            >
+                                                <FaEdit size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => deleteFromHistory(item.handoverformId)}
+                                                className="p-2 bg-white text-rose-500 rounded-xl shadow-sm hover:bg-rose-500 hover:text-white transition-all"
+                                                title="Delete Version"
+                                            >
+                                                <FaTrash size={14} />
+                                            </button>
+                                        </div>
                                     </div>
                                 )) : (
                                     <p className="text-center text-gray-400 text-xs py-8 font-medium italic">No saved versions found</p>
