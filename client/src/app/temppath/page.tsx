@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { FaTooth, FaUpload, FaCopy, FaCheck, FaGlobe, FaFacebook, FaTwitter, FaLinkedin, FaInstagram, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUserMd, FaCalendarAlt, FaPlus, FaTrash, FaAward, FaUserCheck, FaPercentage, FaShieldAlt, FaStethoscope, FaUserFriends, FaLightbulb, FaFlask, FaSearch, FaSave, FaHistory, FaCloudUploadAlt, FaEdit } from 'react-icons/fa';
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
+    (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
 
 export default function TempClinicForm() {
     const [formData, setFormData] = useState({

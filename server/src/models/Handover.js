@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const handoverTempSchema = new mongoose.Schema({
+const handoverSchema = new mongoose.Schema({
     handoverformId: {
         type: String,
         required: true,
@@ -12,4 +12,4 @@ const handoverTempSchema = new mongoose.Schema({
     }
 }, { timestamps: true, collection: 'handover' });
 
-module.exports = mongoose.model('HandoverTemp', handoverTempSchema);
+module.exports = mongoose.model('Handover', handoverSchema);
