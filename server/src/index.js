@@ -30,10 +30,12 @@ const keepAlive = (url) => {
 
 // Middleware
 app.use(cors({
-    origin: [process.env.FRONTEND_URL, "http://localhost:3000", "http://localhost:5173", "https://dental-project-zeta.vercel.app"].filter(Boolean),
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: ["http://localhost:3000", "http://localhost:5173", "https://dental-project-zeta.vercel.app", process.env.FRONTEND_URL].filter(Boolean),
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }));
+app.options('*', cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

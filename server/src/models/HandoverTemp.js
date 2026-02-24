@@ -10,6 +10,6 @@ const handoverTempSchema = new mongoose.Schema({
         type: Object,
         required: true
     }
-}, { timestamps: true });
+}, { timestamps: true, collection: 'handover' });
 
 module.exports = mongoose.model('HandoverTemp', handoverTempSchema);
