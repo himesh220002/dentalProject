@@ -482,7 +482,7 @@ export default function TempClinicForm() {
                                             <span className="font-black text-xs text-indigo-600 truncate mr-16">{item.handoverformId}</span>
                                             <span className="text-[10px] text-gray-400 font-medium">Updated: {new Date(item.updatedAt).toLocaleString()}</span>
                                         </div>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-all">
                                             <button
                                                 onClick={() => loadFromHistory(item)}
                                                 className="p-2 bg-white text-indigo-600 rounded-xl shadow-sm hover:bg-indigo-600 hover:text-white transition-all"
