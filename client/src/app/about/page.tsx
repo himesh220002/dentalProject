@@ -5,13 +5,18 @@ import AchievementsGrid from '@/components/about/AchievementsGrid';
 import PatientReviews from '@/components/about/PatientReviews';
 import DoctorAdvice from '@/components/about/DoctorAdvice';
 import { useClinic } from '@/context/ClinicContext';
+import { formatExperience } from '@/utils/urlHelper';
 
 export default function About() {
     const { clinicData } = useClinic();
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
     const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental';
-    const experience = clinicData?.clinicExperience || '10+';
-    const year = clinicData?.establishedYear || '2012';
+    const experience = formatExperience(clinicData?.clinicExperience);
+    const year = clinicData?.establishedYear || '2014';
+
+    // Calculate clinic operation years
+    const currentYear = new Date().getFullYear();
+    const clinicYears = Math.max(0, currentYear - parseInt(year));
 
     return (
         <div className="space-y-12 sm:pt-4 lg:pt-10">
@@ -26,7 +31,7 @@ export default function About() {
                         Meet <span className="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">{doctorName}</span>, Your Smile's Guardian
                     </h1>
                     <p className="text-lg sm:text-xl text-gray-600 leading-relaxed font-medium max-w-xl">
-                        With over {experience.includes('+') ? experience : experience + ' years'} of dedicated service in dentistry, {doctorName} is committed to providing top-tier dental care. His philosophy is simple: treating patients with compassion, empathy, and the highest medical standards.
+                        With {experience} of dedicated service in dentistry, {doctorName} is committed to providing top-tier dental care. His philosophy is simple: treating patients with compassion, empathy, and the highest medical standards.
                     </p>
                     <div className="relative p-8 bg-gray-900 text-white rounded-[2.5rem] overflow-hidden group shadow-2xl">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full -mr-16 -mt-16 blur-xl group-hover:bg-blue-600/40 transition-colors"></div>
@@ -58,7 +63,7 @@ export default function About() {
 
                     <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-[450px] lg:h-[450px] bg-gray-200 rounded-full shadow-2xl overflow-hidden flex items-center justify-center text-gray-400 group border-8 border-white">
                         <img
-                            src="/images/doctor_portrait.png"
+                            src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1964&auto=format&fit=crop"
                             alt={doctorName}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
@@ -72,14 +77,37 @@ export default function About() {
                         </div>
                         <div>
                             <p className="text-xl sm:text-4xl font-black text-gray-900 leading-none mb-0.5 sm:mb-1">{experience}</p>
-                            <p className="text-[8px] sm:text-xs text-gray-400 uppercase font-black tracking-widest">Years of Trust</p>
+                            <p className="text-[8px] sm:text-xs text-gray-400 uppercase font-black tracking-widest">Experience</p>
                         </div>
                     </div>
                 </div>
             </section>
 
+            {/* Meet Our Team - Synchronized Grid */}
+            <section className="space-y-16 px-6 sm:px-16">
+                <div className="text-center space-y-4">
+                    <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">Our Experts</h2>
+                    <h3 className="text-3xl xl:text-5xl font-black text-gray-900">The Dream Team Behind <br />{clinicName}</h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {clinicData?.consultants.map((consultant, idx) => (
+                        <div key={idx} className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-50 hover:border-blue-100 hover:shadow-2xl transition-all group">
+                            <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
+                                <FaUserMd size={40} className="text-blue-600" />
+                            </div>
+                            <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
+                            <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultant.role}</p>
+                            <div className="space-y-2">
+                                <p className="text-gray-500 text-sm font-medium">{consultant.info}</p>
+                                <p className="text-gray-900 text-sm font-black italic">{consultant.experience} Experience</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             {/* Achievements Grid Section */}
-            <div className="pt-12 sm:pt-20">
+            <div className="pt-12 sm:pt-20 px-6 sm:px-16">
                 <div className="space-y-4 mb-12">
                     <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">Our Milestones</h2>
                     <p className="text-3xl xl:text-5xl font-black text-gray-900">Proven Results, <br /> Proven Smiles.</p>
@@ -98,7 +126,7 @@ export default function About() {
             </div>
 
             {/* Our Values / Mission Refined */}
-            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-6 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative">
+            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-6 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative mx-4">
                 <div className="max-w-5xl mx-auto space-y-5 sm:space-y-20">
                     <div className="text-center space-y-4 sm:space-y-6">
                         <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-white leading-tight">Why We Are Different</h2>
@@ -136,7 +164,7 @@ export default function About() {
                     </div>
 
                     <div className="pt-12 border-t border-white/10 text-center">
-                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">{clinicName} • Established {year}</p>
+                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">{clinicName} • Established {clinicYears}+ Years Ago ({year})</p>
                     </div>
                 </div>
             </section>

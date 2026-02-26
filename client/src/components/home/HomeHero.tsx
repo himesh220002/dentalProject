@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FaPhoneAlt, FaPlus, FaCheck } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
+import { formatExperience } from '../../utils/urlHelper';
 
 export default function HomeHero() {
     const { clinicData } = useClinic();
@@ -10,6 +11,11 @@ export default function HomeHero() {
     const city = clinicData?.address.city || 'Katihar';
     const clinicName = clinicData?.clinicName || 'Dr. Tooth';
     const tagline = clinicData?.tagline || 'Experience gentle, precision dental care with Dr. Tooth.';
+
+    // Clinic operation years
+    const currentYear = new Date().getFullYear();
+    const estYear = clinicData ? parseInt(clinicData.establishedYear) : 2014;
+    const clinicYears = Math.max(0, currentYear - estYear);
 
     return (
         <section className="relative min-h-[550px] sm:min-h-[600px] lg:h-[750px] rounded-[2rem] sm:rounded-[3rem] lg:rounded-[4rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] flex items-center group mx-2 sm:mx-0">
@@ -33,7 +39,7 @@ export default function HomeHero() {
                     <div className="space-y-4 sm:space-y-6">
                         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-black tracking-[0.1em] sm:tracking-[0.2em] uppercase transition-all hover:bg-white/20">
                             <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-400 rounded-full animate-ping"></span>
-                            Expert Dental Care in {city}
+                            {clinicYears}+ Years of Success in {city}
                         </div>
 
                         <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] sm:leading-[0.95] tracking-tighter">
@@ -42,7 +48,7 @@ export default function HomeHero() {
                         </h1>
 
                         <p className="text-base sm:text-xl lg:text-2xl opacity-80 font-medium max-w-2xl leading-relaxed">
-                            {tagline} We combine {clinicData?.clinicExperience || '10+'} years of expertise with high-end technology for your comfort.
+                            {tagline} We combine {formatExperience(clinicData?.clinicExperience)} years of expertise with high-end technology for your comfort.
                         </p>
                     </div>
 

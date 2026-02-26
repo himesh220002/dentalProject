@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FaTooth, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
 import { useClinic } from '../context/ClinicContext';
+import { ensureAbsoluteUrl } from '../utils/urlHelper';
 
 export default function Footer() {
     const { clinicData, isLoading } = useClinic();
@@ -13,6 +14,13 @@ export default function Footer() {
     const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}` : 'Dental Clinic Road, Katihar, Bihar - 854105';
     const phone = clinicData?.phone || '+91 98765 43210';
     const email = clinicData?.email || 'care@drToothdental.in';
+
+    const socialPlatforms = [
+        { icon: <FaFacebookF />, href: ensureAbsoluteUrl(clinicData?.socialLinks.facebook), color: 'hover:bg-[#1877F2]' },
+        { icon: <FaTwitter />, href: ensureAbsoluteUrl(clinicData?.socialLinks.twitter), color: 'hover:bg-[#1DA1F2]' },
+        { icon: <FaLinkedinIn />, href: ensureAbsoluteUrl(clinicData?.socialLinks.linkedin), color: 'hover:bg-[#0A66C2]' },
+        { icon: <FaInstagram />, href: ensureAbsoluteUrl(clinicData?.socialLinks.instagram), color: 'hover:bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]' }
+    ];
 
     return (
         <footer className="bg-slate-950 text-white pt-20 pb-10 relative overflow-hidden">
@@ -92,12 +100,7 @@ export default function Footer() {
                     <div>
                         <h4 className="text-sm font-black uppercase tracking-[0.2em] text-blue-500 mb-8">Follow Our Journey</h4>
                         <div className="flex gap-4">
-                            {[
-                                { icon: <FaFacebookF />, href: clinicData?.socialLinks.facebook || '#', color: 'hover:bg-[#1877F2]' },
-                                { icon: <FaTwitter />, href: clinicData?.socialLinks.twitter || '#', color: 'hover:bg-[#1DA1F2]' },
-                                { icon: <FaLinkedinIn />, href: clinicData?.socialLinks.linkedin || '#', color: 'hover:bg-[#0A66C2]' },
-                                { icon: <FaInstagram />, href: clinicData?.socialLinks.instagram || '#', color: 'hover:bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]' }
-                            ].map((social, i) => (
+                            {socialPlatforms.map((social, i) => (
                                 <a
                                     key={i}
                                     href={social.href}

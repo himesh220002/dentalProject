@@ -1,14 +1,25 @@
 'use client';
+
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaPaperPlane } from 'react-icons/fa';
-
+import { useClinic } from '../../context/ClinicContext';
 function ContactContent() {
+    const { clinicData } = useClinic();
     const { data: session } = useSession();
     const searchParams = useSearchParams();
     const router = useRouter();
+
+    // Fallbacks
+    const phone = clinicData?.phone || '+91 98765 43210';
+    const email = clinicData?.email || 'care@drToothdental.in';
+    const address = clinicData
+        ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}`
+        : 'Dental Clinic Road, Katihar, Bihar - 854105';
+    const whatsappLink = `https://wa.me/${phone.replace(/\D/g, '')}`;
+
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
@@ -117,9 +128,9 @@ function ContactContent() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-800">Call Us</h3>
                         </div>
-                        <p className="text-gray-600 mb-2">Mon-Sat from 10am to 8pm</p>
-                        <a href="tel:+919876543210" className="text-lg font-bold text-blue-700 hover:underline">
-                            +91 98765 43210
+                        <p className="text-gray-600 mb-2">{clinicData?.timings.monday || 'Mon-Sat from 10am to 8pm'}</p>
+                        <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline">
+                            {phone}
                         </a>
                     </div>
 
@@ -132,7 +143,7 @@ function ContactContent() {
                             <h3 className="text-xl font-bold text-gray-800">WhatsApp</h3>
                         </div>
                         <p className="text-gray-600 mb-2">Chat with us for quick queries</p>
-                        <a href="https://wa.me/919876543210" target="_blank" className="text-lg font-bold text-green-700 hover:underline">
+                        <a href={whatsappLink} target="_blank" className="text-lg font-bold text-green-700 hover:underline">
                             Chat Now
                         </a>
                     </div>
@@ -145,10 +156,8 @@ function ContactContent() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-800">Visit Us</h3>
                         </div>
-                        <p className="text-gray-600 leading-relaxed">
-                            Near V-Mart, Officers Colony Road,<br />
-                            Behind Anand Complex, Mirchaibari,<br />
-                            Katihar, Bihar - 854105
+                        <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                            {address}
                         </p>
                     </div>
                 </div>

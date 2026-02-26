@@ -1,5 +1,7 @@
 //src/controllers/handoverController.js
 const Handover = require('../models/Handover');
+const Treatment = require('../models/Treatment');
+const Config = require('../models/Config');
 
 // Save or Update handover data
 const saveHandover = async (req, res) => {

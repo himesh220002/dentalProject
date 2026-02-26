@@ -3,10 +3,28 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Providers from '../components/Providers';
 
-export const metadata = {
-    title: 'Dr. Tooth Dental Clinic',
-    description: 'Professional Dental Care with 10+ Years Experience',
-};
+import axios from 'axios';
+
+export async function generateMetadata() {
+    try {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
+            (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
+
+        const response = await axios.get(`${API_BASE_URL}/handover/active`);
+        const seo = response.data.jsondata.seo;
+
+        return {
+            title: seo.metaTitle || 'Dr. Tooth Dental Clinic',
+            description: seo.metaDescription || 'Professional Dental Care with Years of Experience',
+            keywords: seo.keywords || 'dental clinic, dentist, dr tooth',
+        };
+    } catch (error) {
+        return {
+            title: 'Dr. Tooth Dental Clinic',
+            description: 'Professional Dental Care with Years of Experience',
+        };
+    }
+}
 
 export default function RootLayout({
     children,

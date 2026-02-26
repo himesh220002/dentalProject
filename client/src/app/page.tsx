@@ -14,6 +14,16 @@ export default function Home() {
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
     const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
     const doctorRole = chiefConsultant?.role || 'Chief Dental Surgeon';
+
+    // Default highlights if none provided
+    const defaultHighlights = [
+        { title: 'Conservative Approach', description: 'We prioritize saving your natural teeth and only recommend aggressive treatments when absolutely necessary.' },
+        { title: 'Sterile Excellence', description: 'Our clinic follows international hygiene standards with ultra-strict sterilization protocols for every session.' },
+        { title: 'Painless Dentistry', description: 'We use modern numbing techniques and gentle clinical practices to ensure your visit is completely anxiety-free.' }
+    ];
+
+    const highlights = clinicData?.highlights && clinicData.highlights.length > 0 ? clinicData.highlights : defaultHighlights;
+
     return (
         <div className="space-y-32 overflow-x-hidden">
             {/* Hero Section - Elite Landing */}
@@ -50,19 +60,40 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6 sm:gap-12 pt-6 sm:pt-12 border-t border-white/10">
-                        <div className="space-y-4">
-                            <h3 className="text-2xl font-black">Conservative Approach</h3>
-                            <p className="text-gray-500 leading-relaxed font-medium">We prioritize saving your natural teeth and only recommend aggressive treatments when absolutely necessary.</p>
-                        </div>
-                        <div className="space-y-4">
-                            <h3 className="text-2xl font-black">Sterile Excellence</h3>
-                            <p className="text-gray-500 leading-relaxed font-medium">Our clinic follows international hygiene standards with ultra-strict sterilization protocols for every session.</p>
-                        </div>
-                        <div className="space-y-4">
-                            <h3 className="text-2xl font-black">Painless Dentistry</h3>
-                            <p className="text-gray-500 leading-relaxed font-medium">We use modern numbing techniques and gentle clinical practices to ensure your visit is completely anxiety-free.</p>
-                        </div>
+                        {highlights.map((highlight, idx) => (
+                            <div key={idx} className="space-y-4">
+                                <h3 className="text-2xl font-black">{highlight.title}</h3>
+                                <p className="text-gray-500 leading-relaxed font-medium">{highlight.description}</p>
+                            </div>
+                        ))}
                     </div>
+                </div>
+            </section>
+
+            {/* Meet Our Team - New Dynamic Section */}
+            <section className="space-y-16">
+                <div className="flex flex-col md:flex-row items-end justify-between gap-6">
+                    <div className="space-y-4">
+                        <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">Meet Our Specialists</h2>
+                        <p className="text-gray-500 text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-xl">
+                            Our team of experienced dental professionals is dedicated to your oral health and comfort.
+                        </p>
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {clinicData?.consultants.map((consultant, idx) => (
+                        <div key={idx} className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-50 hover:border-blue-100 hover:shadow-2xl transition-all group">
+                            <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
+                                <FaUserMd size={40} className="text-blue-600" />
+                            </div>
+                            <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
+                            <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultant.role}</p>
+                            <div className="space-y-2">
+                                <p className="text-gray-500 text-sm font-medium">{consultant.info}</p>
+                                <p className="text-gray-900 text-sm font-black italic">{consultant.experience} Experience</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </section>
 
