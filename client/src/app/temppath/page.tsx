@@ -29,10 +29,10 @@ export default function TempClinicForm() {
             zip: '854105'
         },
         socialLinks: {
-            facebook: '#',
-            twitter: '#',
-            linkedin: '#',
-            instagram: '#'
+            facebook: '',
+            twitter: '',
+            linkedin: '',
+            instagram: ''
         },
         timings: {
             monday: '09:00 AM - 08:00 PM',
@@ -49,17 +49,17 @@ export default function TempClinicForm() {
             { name: 'Dr. nefario', role: 'Orthodontist', info: 'Expert in Braces & Aligners', experience: '8 Years' }
         ],
         treatments: [
-            { name: 'General Consultation', price: '₹300 - ₹500' },
-            { name: 'Scaling & Cleaning', price: '₹800 - ₹1,500' },
-            { name: 'Dental Fillings', price: '₹1,000 - ₹2,500' },
-            { name: 'Tooth Extraction', price: '₹500 - ₹2,000' },
-            { name: 'Root Canal Treatment', price: '₹3,500 - ₹5,000' },
-            { name: 'Dental Implants', price: '₹25,000 - ₹45,000' },
-            { name: 'Teeth Whitening', price: '₹5,000 - ₹8,000' },
-            { name: 'Orthodontic Braces', price: '₹15,000 - ₹60,000' },
-            { name: 'Crowns & Bridges', price: '₹3,500 - ₹15,000' },
-            { name: 'Kid\'s Dentistry', price: 'Based on Treatment' },
-            { name: 'Full Mouth X-Ray', price: '₹500' }
+            { name: 'General Consultation', price: '300', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
+            { name: 'Scaling & Cleaning', price: '800', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
+            { name: 'Dental Fillings', price: '1000', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
+            { name: 'Tooth Extraction', price: '500', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
+            { name: 'Root Canal Treatment', price: '3500', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
+            { name: 'Dental Implants', price: '25000', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
+            { name: 'Teeth Whitening', price: '5000', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
+            { name: 'Orthodontic Braces', price: '15000', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
+            { name: 'Crowns & Bridges', price: '3500', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
+            { name: "Kid's Dentistry", price: '500', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
+            { name: 'Full Mouth X-Ray', price: '500', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' }
         ],
         highlights: [
             { title: 'Advanced Technology', description: 'Intraoral scanners & 3D imaging for precise diagnosis.' },
@@ -144,7 +144,7 @@ export default function TempClinicForm() {
 
     const addListItem = (listName: 'treatments' | 'consultants' | 'highlights') => {
         let newItem;
-        if (listName === 'treatments') newItem = { name: '', price: '' };
+        if (listName === 'treatments') newItem = { name: '', price: '', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' };
         else if (listName === 'consultants') newItem = { name: '', role: '', info: '', experience: '' };
         else newItem = { title: '', description: '' };
 
@@ -332,14 +332,31 @@ export default function TempClinicForm() {
                                     <FaPlus /> Add Treatment
                                 </button>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 {formData.treatments.map((t, i) => (
-                                    <div key={i} className="flex gap-2 items-center bg-gray-50 p-2 rounded-xl border border-gray-100 group">
-                                        <div className="flex-grow space-y-1">
-                                            <input type="text" placeholder="Treatment" value={t.name} onChange={(e) => handleListChange('treatments', i, 'name', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white border-none focus:ring-1 focus:ring-teal-500 font-bold text-xs" />
-                                            <input type="text" placeholder="Price" value={t.price} onChange={(e) => handleListChange('treatments', i, 'price', e.target.value)} className="w-full px-3 py-1 rounded-lg bg-white border-none focus:ring-1 focus:ring-teal-500 text-[10px] text-gray-500 font-medium" />
+                                    <div key={i} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4 relative group">
+                                        <button onClick={() => removeListItem('treatments', i)} className="absolute top-4 right-4 p-2 text-rose-500 hover:bg-rose-100 rounded-lg transition-all"><FaTrash size={14} /></button>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Treatment Name</label>
+                                                <input type="text" placeholder="Treatment" value={t.name} onChange={(e) => handleListChange('treatments', i, 'name', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-sm" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Price</label>
+                                                <div className="relative">
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
+                                                    <input type="text" placeholder="Price" value={t.price} onChange={(e) => handleListChange('treatments', i, 'price', e.target.value)} className="w-full pl-8 pr-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-sm text-teal-600" />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Description</label>
+                                                <textarea placeholder="Description" value={t.description} onChange={(e) => handleListChange('treatments', i, 'description', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" rows={2} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Why Choose This?</label>
+                                                <textarea placeholder="Why Choose This?" value={t.whyChooseThis} onChange={(e) => handleListChange('treatments', i, 'whyChooseThis', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" rows={2} />
+                                            </div>
                                         </div>
-                                        <button onClick={() => removeListItem('treatments', i)} className="p-2 text-rose-400 hover:text-rose-600 transition-colors"><FaTrash size={12} /></button>
                                     </div>
                                 ))}
                             </div>

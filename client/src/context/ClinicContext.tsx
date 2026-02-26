@@ -37,7 +37,7 @@ interface ClinicData {
         sunday: string;
     };
     certifications: string;
-    treatments: Array<{ name: string; price: string }>;
+    treatments: Array<{ name: string; price: string; description: string; whyChooseThis: string }>;
     consultants: Array<{ name: string; role: string; info: string; experience: string }>;
     highlights: Array<{ title: string; description: string }>;
     seo: {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaTooth, FaMagic, FaUserMd, FaNotesMedical, FaRegSmileBeam, FaMedkit } from 'react-icons/fa';
+import { useClinic } from '../../context/ClinicContext';
 
 // Map icon strings from backend to React Icons components
 const iconMap: { [key: string]: any } = {
@@ -89,7 +90,7 @@ interface Treatment {
 export default function Treatments() {
     const [treatments, setTreatments] = useState<Treatment[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const { clinicData, isLoading: contextLoading } = useClinic();
     const router = useRouter();
 
     const handleBookNow = (treatmentName: string) => {
@@ -99,6 +100,20 @@ export default function Treatments() {
     useEffect(() => {
         const fetchTreatments = async () => {
             try {
+                if (clinicData?.treatments && clinicData.treatments.length > 0) {
+                    const mappedTreatments: Treatment[] = clinicData.treatments.map((t: any, idx: number) => ({
+                        _id: `context_${idx}`,
+                        name: t.name,
+                        description: t.description,
+                        whyNeed: t.whyChooseThis,
+                        price: t.price.toString().startsWith('₹') ? t.price : `₹${t.price}`,
+                        icon: 'FaTooth'
+                    }));
+                    setTreatments(mappedTreatments);
+                    setLoading(false);
+                    return;
+                }
+
                 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
                     (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
                 const res = await fetch(`${API_BASE_URL}/treatments`);
@@ -108,24 +123,18 @@ export default function Treatments() {
                 const data = await res.json();
                 setTreatments(data);
             } catch (err: any) {
-                setError(err.message);
+                console.error('Error fetching treatments:', err);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchTreatments();
-    }, []);
+    }, [clinicData]);
 
-    if (loading) return (
+    if (loading || contextLoading) return (
         <div className="flex items-center justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-    );
-    if (error) return (
-        <div className="text-center py-20 text-rose-500 bg-rose-50 rounded-2xl border border-rose-100 max-w-lg mx-auto m-8">
-            <h2 className="text-2xl font-bold mb-2">Error</h2>
-            <p>{error}</p>
         </div>
     );
 
