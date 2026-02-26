@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { saveHandover, getHandoverHistory, getHandoverById, deleteHandover, activateHandover, getActiveHandover } = require('../controllers/handoverController');
+const { saveHandover, getHandoverHistory, getHandoverById, deleteHandover, activateHandover, getActiveHandover, deactivateHandover } = require('../controllers/handoverController');
 
 // 1. Literal Routes (Must be first)
 router.get('/history', getHandoverHistory);
@@ -15,6 +15,7 @@ router.get('/debug/all', async (req, res) => {
     }
 });
 router.post('/save', saveHandover);
+router.post('/deactivate', deactivateHandover);
 
 // 2. Dynamic Routes with Prefix
 router.post('/activate/:id', activateHandover);

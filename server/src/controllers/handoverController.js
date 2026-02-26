@@ -123,11 +123,22 @@ const getActiveHandover = async (req, res) => {
     }
 };
 
+// Deactivate the currently active handover
+const deactivateHandover = async (req, res) => {
+    try {
+        await Handover.updateMany({}, { isActive: false });
+        res.status(200).json({ message: 'Handover deactivated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deactivating handover', error: error.message });
+    }
+};
+
 module.exports = {
     saveHandover,
     getHandoverHistory,
     getHandoverById,
     deleteHandover,
     activateHandover,
-    getActiveHandover
+    getActiveHandover,
+    deactivateHandover
 };

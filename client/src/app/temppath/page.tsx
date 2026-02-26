@@ -181,18 +181,31 @@ export default function TempClinicForm() {
         setIsLoading(true);
         try {
             await axios.post(`${API_BASE_URL}/handover/activate/${handoverformId}`);
-            // Fetch updated history to see the new active status
             const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
             setHistory(historyRes.data);
-
-            // Refresh the global site data
             await refreshClinicData();
-
             setSaveStatus(`Version ${handoverformId} activated successfully!`);
             setTimeout(() => setSaveStatus(''), 5000);
         } catch (error) {
             console.error('Activation error:', error);
             setSaveStatus('Error activating version');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const deactivateVersion = async () => {
+        setIsLoading(true);
+        try {
+            await axios.post(`${API_BASE_URL}/handover/deactivate`);
+            const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
+            setHistory(historyRes.data);
+            await refreshClinicData();
+            setSaveStatus('Handover deactivated. Reverting to default site data.');
+            setTimeout(() => setSaveStatus(''), 5000);
+        } catch (error) {
+            console.error('Deactivation error:', error);
+            setSaveStatus('Error deactivating version');
         } finally {
             setIsLoading(false);
         }
@@ -508,7 +521,15 @@ export default function TempClinicForm() {
                                             <span className="text-[10px] text-gray-400 font-medium">Updated: {new Date(item.updatedAt).toLocaleString()}</span>
                                         </div>
                                         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-all">
-                                            {!item.isActive && (
+                                            {item.isActive ? (
+                                                <button
+                                                    onClick={() => deactivateVersion()}
+                                                    className="p-1.5 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition-all ring-1 ring-blue-100 animate-pulse"
+                                                    title="Deactivate (Revert to Default)"
+                                                >
+                                                    <FaGlobe size={12} />
+                                                </button>
+                                            ) : (
                                                 <button
                                                     onClick={() => activateVersion(item.handoverformId)}
                                                     className="p-1.5 bg-white text-blue-600 rounded-lg shadow-sm hover:bg-blue-600 hover:text-white transition-all ring-1 ring-blue-100"

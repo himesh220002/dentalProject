@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import ClinicCarousel from '@/components/ClinicCarousel';
 import HomeHero from '@/components/home/HomeHero';
@@ -5,8 +7,13 @@ import ActionTiles from '@/components/home/ActionTiles';
 import TrustSection from '@/components/home/TrustSection';
 import PatientReviews from '@/components/about/PatientReviews';
 import { FaUserMd, FaArrowRight } from 'react-icons/fa';
+import { useClinic } from '../context/ClinicContext';
 
 export default function Home() {
+    const { clinicData } = useClinic();
+    const doctorName = clinicData?.doctorName || 'Dr. Tooth';
+    const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
+    const doctorRole = chiefConsultant?.role || 'Chief Dental Surgeon';
     return (
         <div className="space-y-32 overflow-x-hidden">
             {/* Hero Section - Elite Landing */}
@@ -36,8 +43,8 @@ export default function Home() {
                                 <FaUserMd size={40} className="text-white" />
                             </div>
                             <div>
-                                <h4 className="text-xl font-black">Dr. Tooth</h4>
-                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs">Chief Dental Surgeon</p>
+                                <h4 className="text-xl font-black">{doctorName}</h4>
+                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs">{doctorRole}</p>
                             </div>
                         </div>
                     </div>

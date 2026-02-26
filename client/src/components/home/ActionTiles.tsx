@@ -1,30 +1,39 @@
 import { FaClock, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
-
-const tiles = [
-    {
-        icon: <FaClock size={24} />,
-        title: 'Working Hours',
-        content: 'Mon - Sat: 10:00 AM - 08:00 PM',
-        subContent: 'Sunday: Emergency Only',
-        color: 'blue'
-    },
-    {
-        icon: <FaMapMarkerAlt size={24} />,
-        title: 'Visit Our Clinic',
-        content: 'Market Road, Near Dental Square',
-        subContent: 'Katihar, Bihar - 854105',
-        color: 'teal'
-    },
-    {
-        icon: <FaPhoneAlt size={24} />,
-        title: 'Quick Contact',
-        content: '+91 98765 43210',
-        subContent: 'Call for urgent queries',
-        color: 'indigo'
-    }
-];
+import { useClinic } from '../../context/ClinicContext';
 
 export default function ActionTiles() {
+    const { clinicData } = useClinic();
+
+    const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}` : 'Market Road, Near Dental Square';
+    const subAddress = clinicData ? `${clinicData.address.state} - ${clinicData.address.zip}` : 'Katihar, Bihar - 854105';
+    const phone = clinicData?.phone || '+91 98765 43210';
+    const hours = clinicData ? `Mon - Sat: ${clinicData.timings.monday}` : 'Mon - Sat: 10:00 AM - 08:00 PM';
+    const subHours = clinicData ? `Sunday: ${clinicData.timings.sunday}` : 'Sunday: Emergency Only';
+
+    const tiles = [
+        {
+            icon: <FaClock size={24} />,
+            title: 'Working Hours',
+            content: hours,
+            subContent: subHours,
+            color: 'blue'
+        },
+        {
+            icon: <FaMapMarkerAlt size={24} />,
+            title: 'Visit Our Clinic',
+            content: address,
+            subContent: subAddress,
+            color: 'teal'
+        },
+        {
+            icon: <FaPhoneAlt size={24} />,
+            title: 'Quick Contact',
+            content: phone,
+            subContent: 'Call for urgent queries',
+            color: 'indigo'
+        }
+    ];
+
     return (
         <section className="-mt-10 sm:-mt-12 lg:-mt-16 relative z-20 px-4 sm:px-6">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
@@ -49,8 +58,8 @@ export default function ActionTiles() {
                         </div>
                         <div className="pt-4 mt-auto">
                             <div className={`h-1.5 rounded-full transition-all duration-500 ${tile.color === 'blue' ? 'bg-blue-100 group-hover:bg-blue-600 w-12 group-hover:w-full' :
-                                    tile.color === 'teal' ? 'bg-teal-100 group-hover:bg-teal-600 w-12 group-hover:w-full' :
-                                        'bg-indigo-100 group-hover:bg-indigo-600 w-12 group-hover:w-full'
+                                tile.color === 'teal' ? 'bg-teal-100 group-hover:bg-teal-600 w-12 group-hover:w-full' :
+                                    'bg-indigo-100 group-hover:bg-indigo-600 w-12 group-hover:w-full'
                                 }`}></div>
                         </div>
                     </div>

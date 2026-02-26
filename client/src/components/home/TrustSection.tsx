@@ -1,27 +1,39 @@
 import { FaUserMd, FaTooth, FaSmile, FaCertificate } from 'react-icons/fa';
-
-const features = [
-    {
-        icon: <FaUserMd size={28} />,
-        title: '12+ Years Expertise',
-        description: 'Decades of specialized experience in advanced dental surgery and patient diagnostics.',
-        color: 'blue'
-    },
-    {
-        icon: <FaTooth size={28} />,
-        title: 'Modern Technology',
-        description: 'Using low-radiation digital X-rays and painless laser dentistry for your safety.',
-        color: 'teal'
-    },
-    {
-        icon: <FaSmile size={28} />,
-        title: 'Patient-First Care',
-        description: 'We prioritize your comfort with a friendly staff and a stress-free environment.',
-        color: 'indigo'
-    }
-];
+import { useClinic } from '../../context/ClinicContext';
 
 export default function TrustSection() {
+    const { clinicData } = useClinic();
+
+    // Default features if no data
+    const defaultFeatures = [
+        {
+            icon: <FaUserMd size={28} />,
+            title: '12+ Years Expertise',
+            description: 'Decades of specialized experience in advanced dental surgery and patient diagnostics.',
+            color: 'blue'
+        },
+        {
+            icon: <FaTooth size={28} />,
+            title: 'Modern Technology',
+            description: 'Using low-radiation digital X-rays and painless laser dentistry for your safety.',
+            color: 'teal'
+        },
+        {
+            icon: <FaSmile size={28} />,
+            title: 'Patient-First Care',
+            description: 'We prioritize your comfort with a friendly staff and a stress-free environment.',
+            color: 'indigo'
+        }
+    ];
+
+    // Use highlights from clinicData if available, otherwise use defaults
+    const features = clinicData?.highlights.map((h, i) => ({
+        icon: i === 0 ? <FaUserMd size={28} /> : i === 1 ? <FaTooth size={28} /> : <FaSmile size={28} />,
+        title: h.title,
+        description: h.description,
+        color: i === 0 ? 'blue' : i === 1 ? 'teal' : 'indigo'
+    })) || defaultFeatures;
+
     return (
         <section className="py-12 sm:py-20 lg:py-24 space-y-12 sm:space-y-20 px-6 sm:px-20 overflow-hidden">
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">

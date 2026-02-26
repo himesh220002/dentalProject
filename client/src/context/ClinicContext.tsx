@@ -11,6 +11,10 @@ interface ClinicData {
     clinicExperience: string;
     phone: string;
     email: string;
+    expertise: string;
+    visitPolicy: string;
+    happyCustomers: string;
+    successRate: string;
     address: {
         street: string;
         city: string;
@@ -23,8 +27,18 @@ interface ClinicData {
         linkedin: string;
         instagram: string;
     };
+    timings: {
+        monday: string;
+        tuesday: string;
+        wednesday: string;
+        thursday: string;
+        friday: string;
+        saturday: string;
+        sunday: string;
+    };
+    certifications: string;
     treatments: Array<{ name: string; price: string }>;
-    consultants: Array<{ name: string; role: string; experience: string }>;
+    consultants: Array<{ name: string; role: string; info: string; experience: string }>;
     highlights: Array<{ title: string; description: string }>;
     seo: {
         metaTitle: string;

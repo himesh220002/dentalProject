@@ -42,7 +42,7 @@ export default function HomeHero() {
                         </h1>
 
                         <p className="text-base sm:text-xl lg:text-2xl opacity-80 font-medium max-w-2xl leading-relaxed">
-                            {tagline} We combine 10+ years of expertise with high-end technology for your comfort.
+                            {tagline} We combine {clinicData?.clinicExperience || '10+'} years of expertise with high-end technology for your comfort.
                         </p>
                     </div>
 

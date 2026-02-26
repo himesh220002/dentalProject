@@ -1,33 +1,43 @@
 import { FaUsers, FaRegThumbsUp, FaAward, FaCalendarAlt } from 'react-icons/fa';
-
-const achievements = [
-    {
-        icon: <FaUsers className="text-3xl text-blue-500" />,
-        count: '15,000+',
-        label: 'Happy Patients',
-        description: 'Successfully treated with care and precision.'
-    },
-    {
-        icon: <FaRegThumbsUp className="text-3xl text-teal-500" />,
-        count: '99%',
-        label: 'Success Rate',
-        description: 'Consistent high-quality dental outcomes.'
-    },
-    {
-        icon: <FaAward className="text-3xl text-yellow-500" />,
-        count: '25+',
-        label: 'Certifications',
-        description: 'Accredited by major dental organizations.'
-    },
-    {
-        icon: <FaCalendarAlt className="text-3xl text-indigo-500" />,
-        count: '12+',
-        label: 'Years Excellence',
-        description: 'A decade of dedicated service to patients.'
-    }
-];
+import { useClinic } from '../../context/ClinicContext';
 
 export default function AchievementsGrid() {
+    const { clinicData } = useClinic();
+
+    const stats = {
+        patients: clinicData?.happyCustomers || '5,000+',
+        success: (clinicData?.successRate || '99') + '%',
+        experience: (clinicData?.clinicExperience || '10') + '+',
+        certifications: clinicData?.certifications ? 'Certified' : 'IDA Certified'
+    };
+
+    const achievements = [
+        {
+            icon: <FaUsers className="text-3xl text-blue-500" />,
+            count: stats.patients,
+            label: 'Happy Patients',
+            description: 'Successfully treated with care and precision.'
+        },
+        {
+            icon: <FaRegThumbsUp className="text-3xl text-teal-500" />,
+            count: stats.success,
+            label: 'Success Rate',
+            description: 'Consistent high-quality dental outcomes.'
+        },
+        {
+            icon: <FaAward className="text-3xl text-yellow-500" />,
+            count: stats.certifications,
+            label: 'Global Standard',
+            description: 'Accredited by major dental organizations.'
+        },
+        {
+            icon: <FaCalendarAlt className="text-3xl text-indigo-500" />,
+            count: stats.experience,
+            label: 'Years Excellence',
+            description: 'A decade of dedicated service to patients.'
+        }
+    ];
+
     return (
         <section className="py-8 sm:py-12">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
