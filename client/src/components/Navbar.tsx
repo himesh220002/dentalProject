@@ -7,6 +7,7 @@ import { FaTooth, FaBars, FaTimes, FaLock, FaLockOpen, FaSignOutAlt, FaUserCircl
 import { useSession, signOut } from 'next-auth/react';
 import axios from 'axios';
 import AdminLockModal from './AdminLockModal';
+import { useClinic } from '../context/ClinicContext';
 
 const navLinks = [
     { name: 'Home', href: '/' },
@@ -18,6 +19,7 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+    const { clinicData } = useClinic();
     const { data: session, status } = useSession();
     const [isOpen, setIsOpen] = useState(false);
     const [isLockModalOpen, setIsLockModalOpen] = useState(false);
@@ -126,7 +128,15 @@ export default function Navbar() {
                                 <FaTooth className="text-white text-2xl" />
                             </div>
                             <span className="text-2xl font-black text-blue-900 tracking-tight">
-                                Dr. Tooth <span className="text-blue-600 font-medium">Dental</span>
+                                {(() => {
+                                    const name = clinicData?.clinicName || 'Dr. Tooth Dental';
+                                    const parts = name.split(' ');
+                                    return (
+                                        <>
+                                            {parts[0]} <span className="text-blue-600 font-medium">{parts.slice(1).join(' ')}</span>
+                                        </>
+                                    );
+                                })()}
                             </span>
                         </Link>
 

@@ -1,13 +1,18 @@
+'use client';
+
 import { FaAward, FaUserMd, FaSmile, FaCertificate, FaQuoteLeft, FaCheckCircle, FaStar } from 'react-icons/fa';
 import AchievementsGrid from '@/components/about/AchievementsGrid';
 import PatientReviews from '@/components/about/PatientReviews';
 import DoctorAdvice from '@/components/about/DoctorAdvice';
-
-export const metadata = {
-    title: 'About Us - Dr. Tooth Dental Clinic',
-};
+import { useClinic } from '@/context/ClinicContext';
 
 export default function About() {
+    const { clinicData } = useClinic();
+    const doctorName = clinicData?.doctorName || 'Dr. Tooth';
+    const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental';
+    const experience = clinicData?.clinicExperience || '10+';
+    const year = clinicData?.establishedYear || '2012';
+
     return (
         <div className="space-y-12 sm:pt-4 lg:pt-10">
             {/* Hero Section - Refined */}
@@ -18,10 +23,10 @@ export default function About() {
                         Dedicated Excellence
                     </div>
                     <h1 className="text-4xl sm:text-5xl xl:text-7xl font-black text-gray-900 leading-[1.05] tracking-tight">
-                        Meet <span className="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">Dr. Tooth</span>, Your Smile's Guardian
+                        Meet <span className="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">{doctorName}</span>, Your Smile's Guardian
                     </h1>
                     <p className="text-lg sm:text-xl text-gray-600 leading-relaxed font-medium max-w-xl">
-                        With over a decade of dedicated service in dentistry, Dr. Tooth is committed to providing top-tier dental care. His philosophy is simple: treating patients with compassion, empathy, and the highest medical standards.
+                        With over {experience.includes('+') ? experience : experience + ' years'} of dedicated service in dentistry, {doctorName} is committed to providing top-tier dental care. His philosophy is simple: treating patients with compassion, empathy, and the highest medical standards.
                     </p>
                     <div className="relative p-8 bg-gray-900 text-white rounded-[2.5rem] overflow-hidden group shadow-2xl">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full -mr-16 -mt-16 blur-xl group-hover:bg-blue-600/40 transition-colors"></div>
@@ -31,7 +36,7 @@ export default function About() {
                         </p>
                         <div className="mt-6 flex items-center gap-3">
                             <div className="w-10 h-1 bg-blue-500 rounded-full"></div>
-                            <span className="font-black uppercase tracking-widest text-[10px]">Dr. Tooth • Chief Surgeon</span>
+                            <span className="font-black uppercase tracking-widest text-[10px]">{doctorName} • Chief Surgeon</span>
                         </div>
                     </div>
                 </div>
@@ -54,7 +59,7 @@ export default function About() {
                     <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-[450px] lg:h-[450px] bg-gray-200 rounded-full shadow-2xl overflow-hidden flex items-center justify-center text-gray-400 group border-8 border-white">
                         <img
                             src="/images/doctor_portrait.png"
-                            alt="Dr. Tooth"
+                            alt={doctorName}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent"></div>
@@ -66,7 +71,7 @@ export default function About() {
                             <FaSmile size={20} className="sm:size-[32px]" />
                         </div>
                         <div>
-                            <p className="text-xl sm:text-4xl font-black text-gray-900 leading-none mb-0.5 sm:mb-1">10+</p>
+                            <p className="text-xl sm:text-4xl font-black text-gray-900 leading-none mb-0.5 sm:mb-1">{experience}</p>
                             <p className="text-[8px] sm:text-xs text-gray-400 uppercase font-black tracking-widest">Years of Trust</p>
                         </div>
                     </div>
@@ -107,7 +112,7 @@ export default function About() {
                             </div>
                             <h3 className="text-2xl font-black">Expert Care</h3>
                             <p className="text-gray-400 leading-relaxed font-medium">
-                                Dr. Tooth stays updated with the latest in dental science to provide the best possible treatments tailored to your needs.
+                                {doctorName} stays updated with the latest in dental science to provide the best possible treatments tailored to your needs.
                             </p>
                         </div>
                         <div className="space-y-6 group">
@@ -131,7 +136,7 @@ export default function About() {
                     </div>
 
                     <div className="pt-12 border-t border-white/10 text-center">
-                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Dr. Tooth Dental Clinic • Established 2012</p>
+                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">{clinicName} • Established {year}</p>
                     </div>
                 </div>
             </section>

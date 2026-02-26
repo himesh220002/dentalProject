@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react';
 import { FaTooth, FaUpload, FaCopy, FaCheck, FaGlobe, FaFacebook, FaTwitter, FaLinkedin, FaInstagram, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUserMd, FaCalendarAlt, FaPlus, FaTrash, FaAward, FaUserCheck, FaPercentage, FaShieldAlt, FaStethoscope, FaUserFriends, FaLightbulb, FaFlask, FaSearch, FaSave, FaHistory, FaCloudUploadAlt, FaEdit } from 'react-icons/fa';
 import axios from 'axios';
+import { useClinic } from '../../context/ClinicContext';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
     (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
 
 export default function TempClinicForm() {
+    const { refreshClinicData } = useClinic();
     const [formData, setFormData] = useState({
         clinicName: 'Dr. Tooth Dental Clinic',
         doctorName: 'Dr. Tooth',
@@ -175,6 +177,27 @@ export default function TempClinicForm() {
         }
     };
 
+    const activateVersion = async (handoverformId: string) => {
+        setIsLoading(true);
+        try {
+            await axios.post(`${API_BASE_URL}/handover/activate/${handoverformId}`);
+            // Fetch updated history to see the new active status
+            const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
+            setHistory(historyRes.data);
+
+            // Refresh the global site data
+            await refreshClinicData();
+
+            setSaveStatus(`Version ${handoverformId} activated successfully!`);
+            setTimeout(() => setSaveStatus(''), 5000);
+        } catch (error) {
+            console.error('Activation error:', error);
+            setSaveStatus('Error activating version');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const finalizeHandover = async () => {
         // First generate the JSON for the preview
         setJsonOutput(JSON.stringify(formData, null, 4));
@@ -226,45 +249,9 @@ export default function TempClinicForm() {
                     <p className="mt-2 text-gray-600 font-medium tracking-tight">Finalize branding, team details, and service pricing for handover.</p>
                 </div>
 
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    {/* Form Section */}
-                    <div className="xl:col-span-2 space-y-8">
-
-                        {/* Database Control */}
-                        <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border-2 border-blue-500/20 space-y-6">
-                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <span className="w-2 h-8 bg-blue-500 rounded-full" />
-                                Database Persistence
-                            </h2>
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="flex-grow">
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Handover ID (Unique Version Name)</label>
-                                    <input
-                                        type="text"
-                                        value={handoverId}
-                                        onChange={(e) => setHandoverId(e.target.value)}
-                                        placeholder="e.g. initial_handover_final"
-                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold"
-                                    />
-                                </div>
-                                <div className="flex items-end">
-                                    <button
-                                        onClick={saveToDb}
-                                        disabled={isLoading}
-                                        className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                                    >
-                                        <FaCloudUploadAlt size={20} />
-                                        {isLoading ? 'Saving...' : 'Save to DB'}
-                                    </button>
-                                </div>
-                            </div>
-                            {saveStatus && (
-                                <p className={`text-sm font-bold ${saveStatus.includes('Error') ? 'text-rose-500' : 'text-green-600'}`}>
-                                    {saveStatus}
-                                </p>
-                            )}
-                        </div>
-
+                <div className="max-w-4xl mx-auto space-y-8">
+                    {/* Form Sections */}
+                    <div className="space-y-8">
                         {/* Branding */}
                         <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
                             <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
@@ -467,8 +454,43 @@ export default function TempClinicForm() {
                         </button>
                     </div>
 
-                    {/* Output & History Section */}
-                    <div className="space-y-6">
+                    {/* Persistence & History (Now below Form) */}
+                    <div className="space-y-8 pt-8 border-t border-gray-200">
+
+                        {/* Database Control */}
+                        <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border-2 border-blue-500/20 space-y-6">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <span className="w-2 h-8 bg-blue-500 rounded-full" />
+                                Database Persistence
+                            </h2>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="flex-grow">
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Handover ID (Unique Version Name)</label>
+                                    <input
+                                        type="text"
+                                        value={handoverId}
+                                        onChange={(e) => setHandoverId(e.target.value)}
+                                        placeholder="e.g. initial_handover_final"
+                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                    />
+                                </div>
+                                <div className="flex items-end">
+                                    <button
+                                        onClick={saveToDb}
+                                        disabled={isLoading}
+                                        className="sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 h-[52px]"
+                                    >
+                                        <FaCloudUploadAlt size={20} />
+                                        {isLoading ? 'Saving...' : 'Save to DB'}
+                                    </button>
+                                </div>
+                            </div>
+                            {saveStatus && (
+                                <p className={`text-sm font-bold ${saveStatus.includes('Error') ? 'text-rose-500' : 'text-green-600'}`}>
+                                    {saveStatus}
+                                </p>
+                            )}
+                        </div>
 
                         {/* History Panel */}
                         <div className="bg-white rounded-[3rem] shadow-xl p-8 border border-gray-100 flex flex-col max-h-[500px]">
@@ -477,25 +499,37 @@ export default function TempClinicForm() {
                             </h2>
                             <div className="flex-grow overflow-auto custom-scrollbar space-y-3 pr-2">
                                 {history.length > 0 ? history.map((item) => (
-                                    <div key={item._id} className="p-4 bg-gray-50 rounded-2xl hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all group relative">
+                                    <div key={item._id} className={`p-4 rounded-2xl border transition-all group relative ${item.isActive ? 'bg-blue-50 border-blue-200 ring-2 ring-blue-400/20' : 'bg-gray-50 border-transparent hover:bg-indigo-50 hover:border-indigo-100'}`}>
                                         <div className="flex flex-col gap-1">
-                                            <span className="font-black text-xs text-indigo-600 truncate mr-16">{item.handoverformId}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`font-black text-xs truncate max-w-[150px] ${item.isActive ? 'text-blue-700' : 'text-indigo-600'}`}>{item.handoverformId}</span>
+                                                {item.isActive && <span className="text-[7px] font-black uppercase bg-blue-600 text-white px-1.5 py-0.5 rounded-full tracking-widest">Active</span>}
+                                            </div>
                                             <span className="text-[10px] text-gray-400 font-medium">Updated: {new Date(item.updatedAt).toLocaleString()}</span>
                                         </div>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-all">
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-all">
+                                            {!item.isActive && (
+                                                <button
+                                                    onClick={() => activateVersion(item.handoverformId)}
+                                                    className="p-1.5 bg-white text-blue-600 rounded-lg shadow-sm hover:bg-blue-600 hover:text-white transition-all ring-1 ring-blue-100"
+                                                    title="Go Live (Activate Site-wide)"
+                                                >
+                                                    <FaGlobe size={12} />
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => loadFromHistory(item)}
-                                                className="p-2 bg-white text-indigo-600 rounded-xl shadow-sm hover:bg-indigo-600 hover:text-white transition-all"
+                                                className="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white transition-all ring-1 ring-indigo-100"
                                                 title="Load for Editing"
                                             >
-                                                <FaEdit size={14} />
+                                                <FaEdit size={12} />
                                             </button>
                                             <button
                                                 onClick={() => deleteFromHistory(item.handoverformId)}
-                                                className="p-2 bg-white text-rose-500 rounded-xl shadow-sm hover:bg-rose-500 hover:text-white transition-all"
+                                                className="p-1.5 bg-white text-rose-500 rounded-lg shadow-sm hover:bg-rose-500 hover:text-white transition-all ring-1 ring-rose-100"
                                                 title="Delete Version"
                                             >
-                                                <FaTrash size={14} />
+                                                <FaTrash size={12} />
                                             </button>
                                         </div>
                                     </div>

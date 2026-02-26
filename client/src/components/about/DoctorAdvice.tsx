@@ -1,4 +1,5 @@
 import { FaLightbulb, FaCheckCircle, FaUserShield } from 'react-icons/fa';
+import { useClinic } from '../../context/ClinicContext';
 
 const tips = [
     {
@@ -19,12 +20,15 @@ const tips = [
 ];
 
 export default function DoctorAdvice() {
+    const { clinicData } = useClinic();
+    const doctorName = clinicData?.doctorName || 'Dr. Tooth';
+
     return (
         <section className="py-12 sm:py-20 space-y-10 sm:space-y-16 px-4 sm:px-0">
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pb-6 sm:pb-8 border-b-2 border-gray-100">
                 <div className="space-y-3 sm:space-y-4">
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight">
-                        Dr. Tooth's Advice <br /> & Thoughts
+                        {doctorName}'s Advice <br /> & Thoughts
                     </h2>
                     <p className="text-gray-500 text-base sm:text-lg max-w-xl">
                         A healthy smile requires more than just clinical visits. Here are my top tips for maintaining your dental well-being.
@@ -58,7 +62,7 @@ export default function DoctorAdvice() {
 
             <div className="bg-gray-900 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 text-white flex flex-col md:flex-row items-center gap-8 sm:gap-10 overflow-hidden relative">
                 <div className="flex-1 space-y-4 sm:space-y-6 text-center md:text-left">
-                    <h3 className="text-2xl sm:text-3xl font-black">Ask Dr. Tooth Anything</h3>
+                    <h3 className="text-2xl sm:text-3xl font-black">Ask {doctorName} Anything</h3>
                     <p className="text-gray-400 text-base sm:text-lg">
                         Have a specific question about your dental health? Send me a message and I'll get back to you with professional advice.
                     </p>

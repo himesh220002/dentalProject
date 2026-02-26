@@ -99,7 +99,9 @@ export default function Treatments() {
     useEffect(() => {
         const fetchTreatments = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/treatments`);
+                const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
+                    (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
+                const res = await fetch(`${API_BASE_URL}/treatments`);
                 if (!res.ok) {
                     throw new Error('Failed to fetch treatments');
                 }

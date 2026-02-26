@@ -9,6 +9,10 @@ const handoverSchema = new mongoose.Schema({
     jsondata: {
         type: Object,
         required: true
+    },
+    isActive: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true, collection: 'handover' });
 

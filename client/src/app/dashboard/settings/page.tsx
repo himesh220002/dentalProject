@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import axios from 'axios';
-import { FaLock, FaShieldAlt, FaSave } from 'react-icons/fa';
+import { FaLock, FaShieldAlt, FaSave, FaHistory, FaDatabase } from 'react-icons/fa';
+import Link from 'next/link';
 
 export default function SettingsPage() {
     const [passwords, setPasswords] = useState({
@@ -33,14 +34,17 @@ export default function SettingsPage() {
 
         setLoading(true);
         try {
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
+                (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
+
             // First verify current password
-            const verifyRes = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/config/verify-password`, {
+            const verifyRes = await axios.post(`${API_BASE_URL}/config/verify-password`, {
                 password: passwords.current
             });
 
             if (verifyRes.data.success) {
                 // Then update to new password
-                await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/config/update-password`, {
+                await axios.put(`${API_BASE_URL}/config/update-password`, {
                     newPassword: passwords.new
                 });
                 setStatus({ type: 'success', message: 'Admin password updated successfully!' });
@@ -72,10 +76,19 @@ export default function SettingsPage() {
                             <p className="text-blue-100 text-xs uppercase tracking-widest font-bold">Admin Portal</p>
                         </div>
                     </div>
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
                         <p className="text-xs text-gray-400 font-bold leading-relaxed lowercase italic">
                             Changing your admin password will affect all devices currently logged into the dashboard. Make sure to keep it secure.
                         </p>
+                        <div className="pt-4 border-t border-gray-50">
+                            <Link
+                                href="/temppath"
+                                className="flex items-center justify-center gap-2 w-full p-4 bg-indigo-50 text-indigo-600 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm group/btn"
+                            >
+                                <FaDatabase className="group-hover/btn:rotate-12 transition-transform" />
+                                Clinic Data Manager
+                            </Link>
+                        </div>
                     </div>
                 </div>
 

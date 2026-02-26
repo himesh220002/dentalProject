@@ -1,14 +1,23 @@
+'use client';
+
 import Link from 'next/link';
 import { FaPhoneAlt, FaPlus, FaCheck } from 'react-icons/fa';
+import { useClinic } from '../../context/ClinicContext';
 
 export default function HomeHero() {
+    const { clinicData } = useClinic();
+    const phone = clinicData?.phone || '+91 98765 43210';
+    const city = clinicData?.address.city || 'Katihar';
+    const clinicName = clinicData?.clinicName || 'Dr. Tooth';
+    const tagline = clinicData?.tagline || 'Experience gentle, precision dental care with Dr. Tooth.';
+
     return (
         <section className="relative min-h-[550px] sm:min-h-[600px] lg:h-[750px] rounded-[2rem] sm:rounded-[3rem] lg:rounded-[4rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] flex items-center group mx-2 sm:mx-0">
             {/* Immersive Background */}
             <div className="absolute inset-0">
                 <img
                     src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop"
-                    alt="Dr. Tooth Clinic"
+                    alt={`${clinicName} Clinic`}
                     className="w-full h-full object-cover transition-transform duration-[10s] group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-900/80 to-blue-800/40"></div>
@@ -24,7 +33,7 @@ export default function HomeHero() {
                     <div className="space-y-4 sm:space-y-6">
                         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-black tracking-[0.1em] sm:tracking-[0.2em] uppercase transition-all hover:bg-white/20">
                             <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-400 rounded-full animate-ping"></span>
-                            Expert Dental Care in Katihar
+                            Expert Dental Care in {city}
                         </div>
 
                         <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] sm:leading-[0.95] tracking-tighter">
@@ -33,7 +42,7 @@ export default function HomeHero() {
                         </h1>
 
                         <p className="text-base sm:text-xl lg:text-2xl opacity-80 font-medium max-w-2xl leading-relaxed">
-                            Experience gentle, precision dental care with Dr. Tooth. We combine 10+ years of expertise with high-end technology for your comfort.
+                            {tagline} We combine 10+ years of expertise with high-end technology for your comfort.
                         </p>
                     </div>
 
@@ -45,13 +54,13 @@ export default function HomeHero() {
                             Book Appointment
                         </Link>
                         <a
-                            href="tel:+919876543210"
+                            href={`tel:${phone.replace(/\s+/g, '')}`}
                             className="w-full sm:w-auto flex items-center justify-center gap-4 bg-white/10 backdrop-blur-md border-2 border-white/20 text-white px-8 py-4 sm:px-10 sm:py-[1.125rem] rounded-2xl sm:rounded-[2rem] font-bold hover:bg-white/20 transition-all group text-sm sm:text-base"
                         >
                             <div className="bg-blue-500 p-1.5 sm:p-2 rounded-lg sm:rounded-xl group-hover:rotate-12 transition-transform shadow-lg">
                                 <FaPhoneAlt size={12} className="sm:size-[14px]" />
                             </div>
-                            +91 98765 43210
+                            {phone}
                         </a>
                     </div>
 

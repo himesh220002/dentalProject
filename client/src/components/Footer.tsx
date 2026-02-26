@@ -1,7 +1,19 @@
+'use client';
+
 import Link from 'next/link';
 import { FaTooth, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
+import { useClinic } from '../context/ClinicContext';
 
 export default function Footer() {
+    const { clinicData, isLoading } = useClinic();
+
+    // Fallback data if context is loading or fails
+    const name = clinicData?.clinicName || 'Dr. Tooth Dental';
+    const tagline = clinicData?.tagline || 'Providing world-class dental care since 2014.';
+    const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}` : 'Dental Clinic Road, Katihar, Bihar - 854105';
+    const phone = clinicData?.phone || '+91 98765 43210';
+    const email = clinicData?.email || 'care@drToothdental.in';
+
     return (
         <footer className="bg-slate-950 text-white pt-20 pb-10 relative overflow-hidden">
             {/* Background Decorative Elements */}
@@ -18,11 +30,11 @@ export default function Footer() {
                                 <FaTooth className="text-white text-xl" />
                             </div>
                             <span className="text-xl font-black tracking-tight">
-                                Dr. Tooth <span className="text-blue-500 font-medium">Dental</span>
+                                {name.split(' ')[0]} <span className="text-blue-500 font-medium">{name.split(' ').slice(1).join(' ')}</span>
                             </span>
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed font-medium">
-                            Providing world-class dental care with a focus on patient comfort and advanced technology. Your smile is our priority since 2014.
+                            {tagline}
                         </p>
                     </div>
 
@@ -57,22 +69,21 @@ export default function Footer() {
                                 <div className="bg-slate-900 p-2.5 rounded-lg text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                                     <FaMapMarkerAlt size={14} />
                                 </div>
-                                <span className="text-gray-400 text-sm font-bold leading-relaxed">
-                                    Dental Clinic Road, Near Market,<br />
-                                    Katihar, Bihar - 854105
+                                <span className="text-gray-400 text-sm font-bold leading-relaxed whitespace-pre-line">
+                                    {address}
                                 </span>
                             </li>
                             <li className="flex items-center gap-4 group">
                                 <div className="bg-slate-900 p-2.5 rounded-lg text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                                     <FaPhoneAlt size={14} />
                                 </div>
-                                <a href="tel:+919876543210" className="text-gray-400 hover:text-white text-sm font-black transition-colors">+91 98765 43210</a>
+                                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-gray-400 hover:text-white text-sm font-black transition-colors">{phone}</a>
                             </li>
                             <li className="flex items-center gap-4 group">
                                 <div className="bg-slate-900 p-2.5 rounded-lg text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                                     <FaEnvelope size={14} />
                                 </div>
-                                <a href="mailto:care@drToothdental.in" className="text-gray-400 hover:text-white text-sm font-bold transition-colors">care@drToothdental.in</a>
+                                <a href={`mailto:${email}`} className="text-gray-400 hover:text-white text-sm font-bold transition-colors">{email}</a>
                             </li>
                         </ul>
                     </div>
@@ -82,10 +93,10 @@ export default function Footer() {
                         <h4 className="text-sm font-black uppercase tracking-[0.2em] text-blue-500 mb-8">Follow Our Journey</h4>
                         <div className="flex gap-4">
                             {[
-                                { icon: <FaFacebookF />, href: '#', color: 'hover:bg-[#1877F2]' },
-                                { icon: <FaTwitter />, href: '#', color: 'hover:bg-[#1DA1F2]' },
-                                { icon: <FaLinkedinIn />, href: '#', color: 'hover:bg-[#0A66C2]' },
-                                { icon: <FaInstagram />, href: '#', color: 'hover:bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]' }
+                                { icon: <FaFacebookF />, href: clinicData?.socialLinks.facebook || '#', color: 'hover:bg-[#1877F2]' },
+                                { icon: <FaTwitter />, href: clinicData?.socialLinks.twitter || '#', color: 'hover:bg-[#1DA1F2]' },
+                                { icon: <FaLinkedinIn />, href: clinicData?.socialLinks.linkedin || '#', color: 'hover:bg-[#0A66C2]' },
+                                { icon: <FaInstagram />, href: clinicData?.socialLinks.instagram || '#', color: 'hover:bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]' }
                             ].map((social, i) => (
                                 <a
                                     key={i}
@@ -102,7 +113,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                        &copy; {new Date().getFullYear()} Dr. Tooth Dental Clinic. Engineered for Excellence.
+                        &copy; {new Date().getFullYear()} {name}. Engineered for Excellence.
                     </p>
                     <div className="flex gap-8">
                         <Link href="/privacy" className="text-gray-600 hover:text-gray-400 text-[10px] font-bold uppercase tracking-widest transition-colors">Privacy Policy</Link>
