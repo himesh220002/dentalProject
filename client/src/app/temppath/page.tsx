@@ -81,30 +81,53 @@ export default function TempClinicForm() {
     const [history, setHistory] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [saveStatus, setSaveStatus] = useState('');
-    const [isAuthorized, setIsAuthorized] = useState(false);
+    const [isAuthorized, setIsAuthorized] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const auth = localStorage.getItem('handover_authorized');
+            const expiry = localStorage.getItem('handover_expiry');
+            const now = Date.now();
+            return auth === 'true' && expiry && now < Number(expiry);
+        }
+        return false;
+    });
     const [password, setPassword] = useState('');
 
     useEffect(() => {
         const checkHandoverAuth = () => {
             const auth = localStorage.getItem('handover_authorized');
-            const expiry = localStorage.getItem('clinic_admin_expiry');
+            const expiry = localStorage.getItem('handover_expiry');
             const now = Date.now();
 
-            if (auth === 'true' && expiry && now < Number(expiry)) {
+            if (expiry && now >= Number(expiry)) {
+                localStorage.removeItem('handover_authorized');
+                localStorage.removeItem('handover_expiry');
+                setIsAuthorized(false);
+            } else if (auth === 'true' && expiry && now < Number(expiry)) {
                 setIsAuthorized(true);
             }
         };
         checkHandoverAuth();
+        // Set up interval to check expiry periodically
+        const interval = setInterval(checkHandoverAuth, 60000); // Check every minute
+        return () => clearInterval(interval);
     }, []);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
         if (password === 'drtooth2026') {
+            const expiry = Date.now() + 2 * 60 * 60 * 1000; // 2 hours
             localStorage.setItem('handover_authorized', 'true');
+            localStorage.setItem('handover_expiry', expiry.toString());
             setIsAuthorized(true);
         } else {
             alert('Incorrect delivery password.');
         }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('handover_authorized');
+        localStorage.removeItem('handover_expiry');
+        setIsAuthorized(false);
     };
 
     useEffect(() => {
@@ -331,11 +354,18 @@ export default function TempClinicForm() {
     return (
         <ProtectedRoute>
             <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative">
-                {/* Sticky Navigation Header for Dashboard */}
-                <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] w-auto">
+                {/* Contextual Navigation Header for Dashboard */}
+                <div className="max-w-7xl mx-auto mb-8 flex justify-between items-center">
+                    <button
+                        onClick={handleLogout}
+                        className="px-6 py-3 rounded-2xl flex items-center gap-3 text-red-600 font-black text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all transform hover:-translate-x-1 active:scale-95 border border-red-50 bg-white/50 backdrop-blur-sm"
+                    >
+                        <FaShieldAlt size={16} />
+                        <span>Logout</span>
+                    </button>
                     <Link
                         href="/"
-                        className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-2xl border border-blue-100 flex items-center gap-3 text-blue-600 font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1 active:scale-95"
+                        className="px-6 py-3 rounded-2xl flex items-center gap-3 text-blue-600 font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-x-1 active:scale-95"
                     >
                         <FaHome size={16} />
                         <span>Back to Website</span>
@@ -351,7 +381,7 @@ export default function TempClinicForm() {
                         <p className="mt-2 text-gray-600 font-medium tracking-tight">Finalize branding, team details, and service pricing for handover.</p>
                     </div>
 
-                    <div className="max-w-4xl mx-auto space-y-8">
+                    <div className="max-w-7xl mx-auto space-y-8">
                         {/* Form Sections */}
                         <div className="space-y-8">
                             {/* Branding */}
