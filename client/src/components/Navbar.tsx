@@ -3,23 +3,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaTooth, FaBars, FaTimes, FaLock, FaLockOpen, FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
+import { FaTooth, FaBars, FaTimes, FaLock, FaLockOpen, FaSignOutAlt, FaUserCircle, FaLanguage } from 'react-icons/fa';
 import { useSession, signOut } from 'next-auth/react';
 import axios from 'axios';
 import AdminLockModal from './AdminLockModal';
 import { useClinic } from '../context/ClinicContext';
-
-const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Treatments', href: '/treatments' },
-    { name: 'Timings', href: '/timings' },
-    { name: 'Contact', href: '/contact' },
-    { name: 'Dashboard', href: '/dashboard', protected: true },
-];
+import { translations } from '../constants/translations';
 
 export default function Navbar() {
-    const { clinicData } = useClinic();
+    const { clinicData, language, toggleLanguage } = useClinic();
+    const t = translations[language];
     const { data: session, status } = useSession();
     const [isOpen, setIsOpen] = useState(false);
     const [isLockModalOpen, setIsLockModalOpen] = useState(false);
@@ -29,6 +22,15 @@ export default function Navbar() {
     const [isMobileUserMenuOpen, setIsMobileUserMenuOpen] = useState(false);
     // @ts-ignore
     const [hasUpcomingAppointment, setHasUpcomingAppointment] = useState(session?.user?.hasUpcomingAppointment || false);
+
+    const navLinks = [
+        { name: t.home, href: '/' },
+        { name: t.about, href: '/about' },
+        { name: t.treatments, href: '/treatments' },
+        { name: t.timings, href: '/timings' },
+        { name: t.contact, href: '/contact' },
+        { name: t.dashboard, href: '/dashboard', protected: true },
+    ];
 
     useEffect(() => {
         const checkUpcomingAppointments = async () => {
@@ -45,7 +47,6 @@ export default function Navbar() {
 
                 const upcoming = appointments.some((apt: any) => {
                     const aptDate = new Date(apt.date);
-                    // Include today and future appointments that are not completed/ticked
                     return aptDate >= startOfToday && apt.status !== 'Completed' && !apt.isTicked;
                 });
                 setHasUpcomingAppointment(upcoming);
@@ -63,7 +64,7 @@ export default function Navbar() {
 
     const pathname = usePathname();
     const router = useRouter();
-    // ... checkSession effect remains the same ...
+
     useEffect(() => {
         const checkSession = () => {
             const lockedBase = localStorage.getItem('clinic_admin_locked');
@@ -106,11 +107,13 @@ export default function Navbar() {
         localStorage.removeItem('clinic_admin_locked');
         localStorage.removeItem('clinic_admin_expiry');
         setIsUnlocked(false);
+        setIsOpen(false);
         router.push('/');
     };
 
     const handleUnlockSuccess = () => {
         setIsUnlocked(true);
+        setIsOpen(false);
         if (pendingHref) {
             router.push(pendingHref);
             setPendingHref('');
@@ -147,7 +150,7 @@ export default function Navbar() {
                                     <Link
                                         href={link.href}
                                         onClick={(e) => link.protected && handleProtectedClick(e, link.href)}
-                                        className={`px-3 xl:px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${pathname === link.href || (link.name === 'Dashboard' && pathname.startsWith('/dashboard'))
+                                        className={`px-3 xl:px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${pathname === link.href || (link.name === t.dashboard && pathname.startsWith('/temppath'))
                                             ? 'bg-blue-600 text-white shadow-lg'
                                             : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600'
                                             }`}
@@ -157,12 +160,11 @@ export default function Navbar() {
                                             isUnlocked ? <FaLockOpen size={10} className="text-green-500" /> : <FaLock size={10} className="text-gray-400" />
                                         )}
                                     </Link>
-                                    {/* ... dropdown remains ... */}
                                     {link.protected && isUnlocked && (
                                         <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
                                             <div className="bg-white border border-gray-100 rounded-2xl shadow-2xl p-2 w-48">
                                                 <div className="px-3 py-2 border-b border-gray-50 mb-1">
-                                                    <span className="text-[10px] uppercase tracking-wider font-black text-gray-400">Session Active</span>
+                                                    <span className="text-[10px] uppercase tracking-wider font-black text-gray-400">{t.sessionActive}</span>
                                                     <div className="text-blue-600 font-mono font-bold text-xs">{timeLeft} remaining</div>
                                                 </div>
                                                 <button
@@ -170,7 +172,7 @@ export default function Navbar() {
                                                     className="w-full flex items-center space-x-2 px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-xl transition font-bold text-sm"
                                                 >
                                                     <FaLock size={12} />
-                                                    <span>Lock Dashboard</span>
+                                                    <span>{t.lockDashboard}</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -202,11 +204,10 @@ export default function Navbar() {
                                                     {hasUpcomingAppointment && <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 border-2 border-white rounded-full animate-pulse" />}
                                                 </div>
                                             )}
-                                            {/* ... user dropdown ... */}
                                             <div className="absolute top-full right-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover/user:opacity-100 group-hover/user:translate-y-0 group-hover/user:pointer-events-auto transition-all duration-200 z-50">
                                                 <div className="bg-white border border-gray-100 rounded-2xl shadow-2xl p-2 w-48">
                                                     <div className="px-3 py-2 border-b border-gray-50 mb-1">
-                                                        <span className="text-[10px] uppercase tracking-wider font-black text-gray-400">Account</span>
+                                                        <span className="text-[10px] uppercase tracking-wider font-black text-gray-400">{t.account}</span>
                                                         <div className="text-gray-900 font-bold text-xs truncate">{session.user?.email}</div>
                                                     </div>
                                                     <Link
@@ -215,7 +216,7 @@ export default function Navbar() {
                                                     >
                                                         <FaUserCircle size={14} />
                                                         <div className="flex flex-col items-start">
-                                                            <span>My Profile</span>
+                                                            <span>{t.profile}</span>
                                                             {hasUpcomingAppointment && <span className="text-[8px] font-black uppercase text-blue-500 animate-pulse">Appointment Scheduled</span>}
                                                         </div>
                                                     </Link>
@@ -224,7 +225,7 @@ export default function Navbar() {
                                                         className="w-full flex items-center space-x-2 px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-xl transition font-bold text-sm"
                                                     >
                                                         <FaSignOutAlt size={12} />
-                                                        <span>Logout</span>
+                                                        <span>{t.logout}</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -235,14 +236,14 @@ export default function Navbar() {
                                         href="/login"
                                         className="bg-gray-900 text-white px-4 xl:px-6 py-2 xl:py-2.5 rounded-lg xl:rounded-xl text-xs xl:text-sm font-black shadow-lg shadow-gray-900/20 hover:bg-gray-800 transition active:scale-95"
                                     >
-                                        Log In
+                                        {t.login}
                                     </Link>
                                 )}
                             </div>
                         </div>
 
-                        {/* Mobile Button */}
-                        <div className="flex items-center gap-2 lg:hidden">
+                        {/* Mobile Button Area */}
+                        <div className="flex items-center gap-4 lg:hidden">
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
                                 className="p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition"
@@ -255,9 +256,40 @@ export default function Navbar() {
 
                 {/* Mobile Menu */}
                 {isOpen && (
-                    <div className="lg:hidden bg-white border-t border-gray-100 p-4 space-y-2 animate-in slide-in-from-top duration-300">
+                    <div className="lg:hidden bg-white border-t border-gray-100 p-4 space-y-4 animate-in slide-in-from-top duration-300">
+                        {/* Mobile Language Switcher - Inside Menu */}
+                        <div className="px-2 pb-2 border-b border-gray-50">
+                            <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-blue-600 p-2 rounded-lg">
+                                        <FaLanguage className="text-white text-xl" />
+                                    </div>
+                                </div>
+                                <div className="flex bg-white p-1 rounded-xl shadow-inner border border-blue-100">
+                                    <button
+                                        onClick={() => {
+                                            if (language !== 'en') toggleLanguage();
+                                            setIsOpen(false);
+                                        }}
+                                        className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${language === 'en' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400 hover:text-blue-600'}`}
+                                    >
+                                        ENGLISH
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            if (language !== 'hi') toggleLanguage();
+                                            setIsOpen(false);
+                                        }}
+                                        className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${language === 'hi' ? 'bg-blue-600 text-white shadow-md font-serif' : 'text-gray-400 hover:text-blue-600'}`}
+                                    >
+                                        हिन्दी
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         {navLinks.map((link) => (
-                            <div key={link.name} className="space-y-1">
+                            <div key={link.name} className="space-y-1 text-left">
                                 <Link
                                     href={link.href}
                                     onClick={(e) => {
@@ -267,7 +299,7 @@ export default function Navbar() {
                                             setIsOpen(false);
                                         }
                                     }}
-                                    className={`flex justify-between items-center px-4 py-3 rounded-xl text-base font-bold transition ${pathname === link.href || (link.name === 'Dashboard' && pathname.startsWith('/dashboard'))
+                                    className={`flex justify-between items-center px-4 py-3 rounded-xl text-base font-bold transition ${pathname === link.href || (link.name === t.dashboard && pathname.startsWith('/temppath'))
                                         ? 'bg-blue-600 text-white'
                                         : 'text-gray-600 hover:bg-blue-50'
                                         }`}
@@ -284,7 +316,7 @@ export default function Navbar() {
                                             onClick={handleLock}
                                             className="text-rose-600 font-black text-xs uppercase"
                                         >
-                                            Lock Now
+                                            {t.lockDashboard}
                                         </button>
                                     </div>
                                 )}
@@ -314,8 +346,8 @@ export default function Navbar() {
                                                 {hasUpcomingAppointment && <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 border-2 border-white rounded-full animate-pulse" />}
                                             </div>
                                         )}
-                                        <div className="flex flex-col items-start translate-y-[1px]">
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-0.5">Account</span>
+                                        <div className="flex flex-col items-start translate-y-[1px] text-left">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-0.5">{t.account}</span>
                                             <span className="text-sm font-bold text-gray-900 truncate max-w-[180px] leading-tight">{session.user?.name}</span>
                                         </div>
                                     </div>
@@ -331,24 +363,28 @@ export default function Navbar() {
                                     <div className="px-2 pt-1 pb-2 space-y-1 animate-in fade-in slide-in-from-top-2 duration-300">
                                         <Link
                                             href="/profile"
-                                            onClick={() => setIsOpen(false)}
-                                            className="flex items-center justify-between px-12 py-3 text-sm font-bold text-blue-600 hover:bg-blue-50 rounded-xl transition"
+                                            onClick={() => {
+                                                setIsOpen(false);
+                                                setIsMobileUserMenuOpen(false);
+                                            }}
+                                            className="flex items-center justify-between px-12 py-3 text-sm font-bold text-blue-600 hover:bg-blue-50 rounded-xl transition text-left"
                                         >
                                             <div className="flex items-center gap-3">
                                                 <FaUserCircle size={16} />
-                                                <span>My Profile Portal</span>
+                                                <span>{t.profile}</span>
                                             </div>
                                             {hasUpcomingAppointment && <span className="text-[8px] font-black bg-blue-600 text-white px-1.5 py-0.5 rounded-full animate-pulse">APPT</span>}
                                         </Link>
                                         <button
                                             onClick={() => {
                                                 setIsOpen(false);
+                                                setIsMobileUserMenuOpen(false);
                                                 signOut({ callbackUrl: '/' });
                                             }}
-                                            className="w-full flex items-center gap-3 px-12 py-3 text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition"
+                                            className="w-full flex items-center gap-3 px-12 py-3 text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition text-left"
                                         >
                                             <FaSignOutAlt size={16} />
-                                            <span>Sign Out</span>
+                                            <span>{t.logout}</span>
                                         </button>
                                     </div>
                                 )}
@@ -360,7 +396,7 @@ export default function Navbar() {
                                     onClick={() => setIsOpen(false)}
                                     className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-2xl text-base font-black shadow-lg shadow-gray-900/10 active:scale-95 transition"
                                 >
-                                    Log In to Account
+                                    {t.login}
                                 </Link>
                             </div>
                         )}

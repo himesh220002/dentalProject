@@ -11,7 +11,9 @@ export default function About() {
     const { clinicData } = useClinic();
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
     const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental';
-    const experience = formatExperience(clinicData?.clinicExperience);
+    const clinicExperience = formatExperience(clinicData?.clinicExperience || '10');
+    const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
+    const doctorExperience = chiefConsultant?.experience || '12 Years';
     const year = clinicData?.establishedYear || '2014';
 
     // Calculate clinic operation years
@@ -31,7 +33,7 @@ export default function About() {
                         Meet <span className="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">{doctorName}</span>, Your Smile's Guardian
                     </h1>
                     <p className="text-lg sm:text-xl text-gray-600 leading-relaxed font-medium max-w-xl">
-                        With {experience} of dedicated service in dentistry, {doctorName} is committed to providing top-tier dental care. His philosophy is simple: treating patients with compassion, empathy, and the highest medical standards.
+                        With {doctorExperience} of dedicated service in dentistry, {doctorName} is committed to providing top-tier dental care. His philosophy is simple: treating patients with compassion, empathy, and the highest medical standards.
                     </p>
                     <div className="relative p-8 bg-gray-900 text-white rounded-[2.5rem] overflow-hidden group shadow-2xl">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full -mr-16 -mt-16 blur-xl group-hover:bg-blue-600/40 transition-colors"></div>
@@ -76,7 +78,7 @@ export default function About() {
                             <FaSmile size={20} className="sm:size-[32px]" />
                         </div>
                         <div>
-                            <p className="text-xl sm:text-4xl font-black text-gray-900 leading-none mb-0.5 sm:mb-1">{experience}</p>
+                            <p className="text-xl sm:text-4xl font-black text-gray-900 leading-none mb-0.5 sm:mb-1">{doctorExperience}</p>
                             <p className="text-[8px] sm:text-xs text-gray-400 uppercase font-black tracking-widest">Experience</p>
                         </div>
                     </div>
@@ -164,7 +166,8 @@ export default function About() {
                     </div>
 
                     <div className="pt-12 border-t border-white/10 text-center">
-                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">{clinicName} • Established {clinicYears}+ Years Ago ({year})</p>
+                        <p className="text-blue-500 font-black uppercase tracking-[0.2em] text-xl mb-2">{clinicExperience}+ Years Excellence</p>
+                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">A decade of dedicated service to patients.</p>
                     </div>
                 </div>
             </section>

@@ -54,7 +54,9 @@ export default function Footer() {
                                 { name: 'Home', href: '/' },
                                 { name: 'Treatments', href: '/treatments' },
                                 { name: 'Schedules', href: '/dashboard/schedules' },
-                                { name: 'Contact Us', href: '/contact' }
+                                { name: 'Contact Us', href: '/contact' },
+                                { name: 'Privacy Policy', href: '/privacy' },
+                                { name: 'Terms of Service', href: '/terms' }
                             ].map((link) => (
                                 <li key={link.name}>
                                     <Link

@@ -51,6 +51,8 @@ interface ClinicContextType {
     clinicData: ClinicData | null;
     isLoading: boolean;
     error: string | null;
+    language: 'en' | 'hi';
+    toggleLanguage: () => void;
     refreshClinicData: () => Promise<void>;
 }
 
@@ -60,6 +62,19 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
     const [clinicData, setClinicData] = useState<ClinicData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [language, setLanguage] = useState<'en' | 'hi'>('en');
+
+    // Load language preference from localStorage
+    useEffect(() => {
+        const savedLang = localStorage.getItem('clinic_lang') as 'en' | 'hi';
+        if (savedLang) setLanguage(savedLang);
+    }, []);
+
+    const toggleLanguage = () => {
+        const newLang = language === 'en' ? 'hi' : 'en';
+        setLanguage(newLang);
+        localStorage.setItem('clinic_lang', newLang);
+    };
 
     const fetchActiveHandover = async () => {
         setIsLoading(true);
@@ -72,7 +87,6 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
         } catch (err: any) {
             console.error('Error fetching active clinic data:', err);
             setError(err.response?.data?.message || 'Connecting to server...');
-            // Don't set clinicData to null if it fails, keep the last successful one or let it be null initially
         } finally {
             setIsLoading(false);
         }
@@ -83,7 +97,14 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <ClinicContext.Provider value={{ clinicData, isLoading, error, refreshClinicData: fetchActiveHandover }}>
+        <ClinicContext.Provider value={{
+            clinicData,
+            isLoading,
+            error,
+            language,
+            toggleLanguage,
+            refreshClinicData: fetchActiveHandover
+        }}>
             {children}
         </ClinicContext.Provider>
     );

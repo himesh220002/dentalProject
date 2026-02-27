@@ -2,6 +2,7 @@ import './globals.css';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Providers from '../components/Providers';
+import LanguageToggle from '../components/LanguageToggle';
 
 import axios from 'axios';
 
@@ -40,6 +41,7 @@ export default function RootLayout({
                         {children}
                     </main>
                     <Footer />
+                    <LanguageToggle />
                 </Providers>
             </body>
         </html>

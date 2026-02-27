@@ -24,51 +24,64 @@ export default function DoctorAdvice() {
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
 
     return (
-        <section className="py-12 sm:py-20 space-y-10 sm:space-y-16 px-4 sm:px-0">
-            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pb-6 sm:pb-8 border-b-2 border-gray-100">
-                <div className="space-y-3 sm:space-y-4">
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight">
-                        {doctorName}'s Advice <br /> & Thoughts
+        <section className="py-20 sm:py-32 space-y-20 sm:space-y-32 px-4 sm:px-0 relative overflow-hidden">
+            {/* Background Accent */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/50 rounded-full blur-3xl -z-10 -mr-64 -mt-64"></div>
+
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-12 sm:gap-16">
+                <div className="space-y-6 sm:space-y-8 max-w-2xl text-center lg:text-left">
+                    <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-blue-600 text-white rounded-full font-black tracking-[0.2em] text-[10px] uppercase shadow-lg shadow-blue-500/20">
+                        <FaLightbulb /> Expert Guidance
+                    </div>
+                    <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black text-gray-900 leading-[1.1] tracking-tight">
+                        {doctorName}'s Advice <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">& Thoughts</span>
                     </h2>
-                    <p className="text-gray-500 text-base sm:text-lg max-w-xl">
-                        A healthy smile requires more than just clinical visits. Here are my top tips for maintaining your dental well-being.
+                    <p className="text-gray-500 text-lg sm:text-xl font-medium leading-relaxed">
+                        "Your oral health is a reflection of your overall well-being. Beyond clinical visits, small daily habits define the future of your smile."
                     </p>
                 </div>
-                <div className="hidden lg:block">
-                    <div className="px-6 py-3 bg-gray-900 text-white rounded-2xl font-bold tracking-widest text-xs uppercase">
-                        Knowledge Corner
+                <div className="hidden lg:block shrink-0">
+                    <div className="w-40 h-40 bg-gray-100 rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center rotate-12 hover:rotate-0 transition-all duration-700">
+                        <FaUserShield size={64} className="text-blue-500" />
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
                 {tips.map((tip, index) => (
                     <div
                         key={index}
-                        className="group bg-white p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] border border-gray-100 hover:border-blue-200 transition-all duration-300"
+                        className="group bg-white p-10 sm:p-12 rounded-[3rem] border border-gray-100 hover:border-blue-200 transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 relative overflow-hidden"
                     >
-                        <div className="mb-6 sm:mb-8 w-14 h-14 sm:w-16 sm:h-16 bg-gray-50 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                            <div className="scale-90 sm:scale-100">
-                                {tip.icon}
-                            </div>
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-gray-50 rounded-bl-[3rem] group-hover:bg-blue-50 transition-colors"></div>
+                        <div className="mb-10 w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner overflow-hidden relative z-10">
+                            {tip.icon}
                         </div>
-                        <h3 className="text-xl sm:text-2xl font-black text-gray-900 mb-3 sm:mb-4">{tip.title}</h3>
-                        <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
-                            {tip.content}
-                        </p>
+                        <div className="space-y-4 relative z-10">
+                            <h3 className="text-2xl sm:text-3xl font-black text-gray-900 group-hover:text-blue-600 transition-colors">{tip.title}</h3>
+                            <p className="text-gray-500 text-base sm:text-lg leading-relaxed font-medium">
+                                {tip.content}
+                            </p>
+                        </div>
                     </div>
                 ))}
             </div>
 
-            <div className="bg-gray-900 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 text-white flex flex-col md:flex-row items-center gap-8 sm:gap-10 overflow-hidden relative">
-                <div className="flex-1 space-y-4 sm:space-y-6 text-center md:text-left">
-                    <h3 className="text-2xl sm:text-3xl font-black">Ask {doctorName} Anything</h3>
-                    <p className="text-gray-400 text-base sm:text-lg">
-                        Have a specific question about your dental health? Send me a message and I'll get back to you with professional advice.
+            <div className="bg-gradient-to-br from-gray-900 to-slate-900 rounded-[3rem] sm:rounded-[5rem] p-12 sm:p-24 text-white flex flex-col items-center text-center gap-10 sm:gap-16 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] relative overflow-hidden group">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] -ml-48 -mb-48"></div>
+
+                <div className="space-y-6 sm:space-y-8 relative z-10 max-w-3xl">
+                    <h3 className="text-4xl sm:text-6xl font-black tracking-tight">Ask {doctorName} Anything</h3>
+                    <p className="text-gray-400 text-lg sm:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
+                        Have a specific question about your dental health or a treatment you're considering? Send me a direct message and I'll personally get back to you.
                     </p>
                 </div>
-                <button className="w-full md:w-auto bg-white text-gray-900 px-8 sm:px-10 py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black hover:bg-blue-500 hover:text-white transition-all transform hover:-translate-y-1 text-sm sm:text-base">
-                    SEND A MESSAGE
+
+                <button className="relative z-10 bg-white text-gray-900 px-12 py-6 rounded-[2rem] font-black hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-2 active:scale-95 shadow-2xl flex items-center gap-4 text-xs sm:text-lg">
+                    SEND A MESSAGE <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-900 group-hover:bg-white group-hover:translate-x-2 transition-all"><FaLightbulb size={14} /></div>
                 </button>
             </div>
         </section>

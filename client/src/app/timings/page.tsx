@@ -1,10 +1,32 @@
-import { FaClock, FaCalendarCheck, FaPhoneAlt, FaExclamationCircle, FaDoorOpen } from 'react-icons/fa';
+'use client';
 
-export const metadata = {
-    title: 'Clinic Timings - Dr. Tooth Dental Clinic',
-};
+import { FaClock, FaCalendarCheck, FaPhoneAlt, FaExclamationCircle, FaDoorOpen } from 'react-icons/fa';
+import { useClinic } from '../../context/ClinicContext';
 
 export default function Timings() {
+    const { clinicData } = useClinic();
+
+    const phone = clinicData?.phone || '+91 98765 43210';
+    const visitPolicy = clinicData?.visitPolicy || 'We recommend booking an appointment in advance to avoid long waiting times. Priority is always given to scheduled patients.';
+
+    const weekDays = [
+        { key: 'monday', label: 'Monday' },
+        { key: 'tuesday', label: 'Tuesday' },
+        { key: 'wednesday', label: 'Wednesday' },
+        { key: 'thursday', label: 'Thursday' },
+        { key: 'friday', label: 'Friday' },
+        { key: 'saturday', label: 'Saturday' },
+        { key: 'sunday', label: 'Sunday' }
+    ];
+
+    const timings = weekDays.map(day => {
+        const timeStr = clinicData?.timings?.[day.key as keyof typeof clinicData.timings] || (day.key === 'sunday' ? 'Closed' : '10:00 AM - 08:00 PM');
+        return {
+            day: day.label,
+            time: timeStr,
+            open: !timeStr.toLowerCase().includes('closed')
+        };
+    });
     return (
         <div className="max-w-6xl mx-auto py-12 px- 2 sm:px-4 md:px-8 space-y-16">
 
@@ -36,15 +58,7 @@ export default function Timings() {
                         <FaDoorOpen className="text-4xl opacity-40" />
                     </div>
                     <div className="p-4 sm:p-10 space-y-6">
-                        {[
-                            { day: 'Monday', time: '10:00 AM - 08:00 PM', open: true },
-                            { day: 'Tuesday', time: '10:00 AM - 08:00 PM', open: true },
-                            { day: 'Wednesday', time: '10:00 AM - 08:00 PM', open: true },
-                            { day: 'Thursday', time: '10:00 AM - 08:00 PM', open: true },
-                            { day: 'Friday', time: '10:00 AM - 08:00 PM', open: true },
-                            { day: 'Saturday', time: '10:00 AM - 08:00 PM', open: true },
-                            { day: 'Sunday', time: 'Closed / Appointment Only', open: false },
-                        ].map((item, idx) => (
+                        {timings.map((item, idx) => (
                             <div key={idx} className={`flex justify-between items-center pb-4 ${idx !== 6 ? 'border-b border-gray-50' : ''}`}>
                                 <span className="font-black text-gray-700 tracking-tight uppercase text-sm">{item.day}</span>
                                 <span className={`font-black px-4 py-2 rounded-xl text-sm shadow-sm ${item.open
@@ -75,8 +89,7 @@ export default function Timings() {
                             </h3>
                             <div className="space-y-4 text-emerald-800 font-medium leading-relaxed">
                                 <p>
-                                    We recommend booking an appointment in advance to avoid long waiting times.
-                                    Priority is always given to scheduled patients.
+                                    {visitPolicy}
                                 </p>
                                 <div className="bg-white/50 p-4 rounded-2xl border border-emerald-200/50">
                                     <p className="text-sm font-black uppercase tracking-widest text-emerald-950">
@@ -100,10 +113,10 @@ export default function Timings() {
                                 </p>
                             </div>
                             <a
-                                href="tel:+919876543210"
+                                href={`tel:${phone.replace(/\s+/g, '')}`}
                                 className="inline-flex items-center justify-center gap-3 w-full bg-rose-600 text-white font-black py-5 rounded-2xl hover:bg-rose-500 transition shadow-xl hover:shadow-rose-500/20 active:scale-95 group text-base sm:text-lg"
                             >
-                                <FaPhoneAlt className="group-hover:rotate-12 transition-transform" /> +91 98765 43210
+                                <FaPhoneAlt className="group-hover:rotate-12 transition-transform" /> {phone}
                             </a>
                         </div>
                     </div>

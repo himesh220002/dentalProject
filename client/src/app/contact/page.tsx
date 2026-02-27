@@ -6,8 +6,11 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaPaperPlane } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
+import { translations } from '../../constants/translations';
+
 function ContactContent() {
-    const { clinicData } = useClinic();
+    const { clinicData, language } = useClinic();
+    const t = translations[language];
     const { data: session } = useSession();
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -54,29 +57,33 @@ function ContactContent() {
         if (treatment) {
             setFormData(prev => ({
                 ...prev,
-                message: `I would like to book an appointment for: ${treatment.toUpperCase()}`
+                message: language === 'hi'
+                    ? `मैं इनके लिए अपॉइंटमेंट बुक करना चाहता हूँ: ${treatment.toUpperCase()}`
+                    : `I would like to book an appointment for: ${treatment.toUpperCase()}`
             }));
             // Clean up the URL to prevent repeating on refresh
             const newUrl = window.location.pathname;
             router.replace(newUrl, { scroll: false });
         }
-    }, [searchParams, router]);
+    }, [searchParams, router, language]);
 
     const suggestions = [
-        { label: 'Tooth Pain', color: 'bg-rose-100 text-rose-700 hover:bg-rose-200 border-rose-200' },
-        { label: 'Root Canal (RCT)', color: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border-indigo-200' },
-        { label: 'Teeth Cleaning', color: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200' },
-        { label: 'Dental Crowns', color: 'bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-200' },
-        { label: 'Dental Implants', color: 'bg-teal-100 text-teal-700 hover:bg-teal-200 border-teal-200' },
-        { label: 'Composite Fillings', color: 'bg-violet-100 text-violet-700 hover:bg-violet-200 border-violet-200' },
-        { label: 'Braces & Aligners', color: 'bg-sky-100 text-sky-700 hover:bg-sky-200 border-sky-200' },
-        { label: 'Full Dentures', color: 'bg-orange-100 text-orange-700 hover:bg-orange-200 border-orange-200' },
-        { label: 'Extraction', color: 'bg-red-100 text-red-700 hover:bg-red-200 border-red-200' },
-        { label: 'Checkup', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200 border-blue-200' },
+        { label: language === 'hi' ? 'दांत दर्द' : 'Tooth Pain', value: 'Tooth Pain', color: 'bg-rose-100 text-rose-700 hover:bg-rose-200 border-rose-200' },
+        { label: language === 'hi' ? 'रूट कैनाल' : 'Root Canal (RCT)', value: 'Root Canal (RCT)', color: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border-indigo-200' },
+        { label: language === 'hi' ? 'सफाई' : 'Teeth Cleaning', value: 'Teeth Cleaning', color: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200' },
+        { label: language === 'hi' ? 'क्राउन' : 'Dental Crowns', value: 'Dental Crowns', color: 'bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-200' },
+        { label: language === 'hi' ? 'इंप्लांट' : 'Dental Implants', value: 'Dental Implants', color: 'bg-teal-100 text-teal-700 hover:bg-teal-200 border-teal-200' },
+        { label: language === 'hi' ? 'फिलिंग' : 'Composite Fillings', value: 'Composite Fillings', color: 'bg-violet-100 text-violet-700 hover:bg-violet-200 border-violet-200' },
+        { label: language === 'hi' ? 'ब्रेसेस' : 'Braces & Aligners', value: 'Braces & Aligners', color: 'bg-sky-100 text-sky-700 hover:bg-sky-200 border-sky-200' },
+        { label: language === 'hi' ? 'बत्तीसी' : 'Full Dentures', value: 'Full Dentures', color: 'bg-orange-100 text-orange-700 hover:bg-orange-200 border-orange-200' },
+        { label: language === 'hi' ? 'दांत निकालना' : 'Extraction', value: 'Extraction', color: 'bg-red-100 text-red-700 hover:bg-red-200 border-red-200' },
+        { label: language === 'hi' ? 'जांच' : 'Checkup', value: 'Checkup', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200 border-blue-200' },
     ];
 
     const handleSuggestionClick = (label: string) => {
-        const textToAppend = formData.message ? `\nI would like to discuss: ${label}` : `I would like to discuss: ${label}`;
+        const textToAppend = formData.message
+            ? `\n${language === 'hi' ? 'मैं चर्चा करना चाहता हूं' : 'I would like to discuss'}: ${label}`
+            : `${language === 'hi' ? 'मैं चर्चा करना चाहता हूं' : 'I would like to discuss'}: ${label}`;
         setFormData(prev => ({
             ...prev,
             message: prev.message + textToAppend
@@ -94,10 +101,10 @@ function ContactContent() {
 
         try {
             await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, formData);
-            setStatus({ type: 'success', message: 'Message sent successfully! We will contact you soon.' });
+            setStatus({ type: 'success', message: language === 'hi' ? 'संदेश सफलतापूर्वक भेजा गया! हम जल्द ही आपसे संपर्क करेंगे।' : 'Message sent successfully! We will contact you soon.' });
             setFormData({ name: '', phone: '', message: '' });
         } catch (error) {
-            setStatus({ type: 'error', message: 'Failed to send message. Please try again or call us.' });
+            setStatus({ type: 'error', message: language === 'hi' ? 'संदेश भेजने में विफल। कृपया पुन: प्रयास करें या हमें कॉल करें।' : 'Failed to send message. Please try again or call us.' });
         } finally {
             setSubmitting(false);
         }
@@ -108,17 +115,18 @@ function ContactContent() {
 
             {/* Header */}
             <div className="text-center space-y-4">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900">Get in Touch</h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900">{t.getIntouch}</h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Have a question or want to book an appointment? We are here to help.
-                    Reach out to us via phone, email, or visit our clinic directly.
+                    {language === 'hi'
+                        ? 'कोई प्रश्न है या अपॉइंटमेंट बुक करना चाहते हैं? हम यहाँ मदद के लिए हैं। फोन, ईमेल द्वारा हमसे संपर्क करें या सीधे हमारे क्लिनिक आएं।'
+                        : 'Have a question or want to book an appointment? We are here to help. Reach out to us via phone, email, or visit our clinic directly.'}
                 </p>
             </div>
 
             <div className="grid lg:grid-cols-3 gap-12">
 
                 {/* Contact Info Column */}
-                <div className="lg:col-span-1 space-y-6">
+                <div className="lg:col-span-1 space-y-6 text-left">
 
                     {/* Phone Card */}
                     <div className="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-blue-500 hover:transform hover:scale-105 transition duration-300">
@@ -126,10 +134,10 @@ function ContactContent() {
                             <div className="bg-blue-100 p-3 rounded-full text-blue-600">
                                 <FaPhoneAlt className="text-xl" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-800">Call Us</h3>
+                            <h3 className="text-xl font-bold text-gray-800">{t.callNow}</h3>
                         </div>
-                        <p className="text-gray-600 mb-2">{clinicData?.timings.monday || 'Mon-Sat from 10am to 8pm'}</p>
-                        <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline">
+                        <p className="text-gray-600 mb-2">{clinicData?.timings.monday || (language === 'hi' ? 'सोम-शनि सुबह 10 बजे से रात 8 बजे तक' : 'Mon-Sat from 10am to 8pm')}</p>
+                        <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline text-left block">
                             {phone}
                         </a>
                     </div>
@@ -142,9 +150,9 @@ function ContactContent() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-800">WhatsApp</h3>
                         </div>
-                        <p className="text-gray-600 mb-2">Chat with us for quick queries</p>
-                        <a href={whatsappLink} target="_blank" className="text-lg font-bold text-green-700 hover:underline">
-                            Chat Now
+                        <p className="text-gray-600 mb-2">{language === 'hi' ? 'त्वरित प्रश्नों के लिए हमारे साथ चैट करें' : 'Chat with us for quick queries'}</p>
+                        <a href={whatsappLink} target="_blank" className="text-lg font-bold text-green-700 hover:underline text-left block">
+                            {language === 'hi' ? 'अभी चैट करें' : 'Chat Now'}
                         </a>
                     </div>
 
@@ -154,9 +162,9 @@ function ContactContent() {
                             <div className="bg-teal-100 p-3 rounded-full text-teal-600">
                                 <FaMapMarkerAlt className="text-xl" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-800">Visit Us</h3>
+                            <h3 className="text-xl font-bold text-gray-800">{t.location}</h3>
                         </div>
-                        <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                        <p className="text-gray-600 leading-relaxed whitespace-pre-line text-left">
                             {address}
                         </p>
                     </div>
@@ -167,8 +175,8 @@ function ContactContent() {
 
                     {/* Contact Form */}
                     <div className="bg-white p-8 rounded-3xl shadow-xl">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                            <FaEnvelope className="text-blue-500" /> Send a Message
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2 text-left">
+                            <FaEnvelope className="text-blue-500" /> {language === 'hi' ? 'संदेश भेजें' : 'Send a Message'}
                         </h2>
 
                         {status.message && (
@@ -178,8 +186,8 @@ function ContactContent() {
                         )}
 
                         <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label htmlFor="name" className="text-sm font-semibold text-gray-700">Full Name</label>
+                            <div className="space-y-2 text-left">
+                                <label htmlFor="name" className="text-sm font-semibold text-gray-700">{t.formName}</label>
                                 <input
                                     type="text"
                                     id="name"
@@ -190,9 +198,9 @@ function ContactContent() {
                                     required
                                 />
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-2 text-left">
                                 <label htmlFor="phone" className="text-sm font-semibold text-gray-700 flex justify-between">
-                                    <span>Phone Number (10 Digits)</span>
+                                    <span>{t.formPhone} (10 {language === 'hi' ? 'अंक' : 'Digits'})</span>
                                     {formData.phone.length > 0 && formData.phone.length < 10 && (
                                         <span className="text-red-500 text-[10px] animate-pulse">Required: {formData.phone.length}/10</span>
                                     )}
@@ -216,9 +224,9 @@ function ContactContent() {
                                 />
                             </div>
                             <div className="md:col-span-2 space-y-4">
-                                <div className="space-y-2">
+                                <div className="space-y-2 text-left">
                                     <label htmlFor="message" className="text-sm font-semibold text-gray-700 flex justify-between items-center">
-                                        <span>Your Message</span>
+                                        <span>{t.formMessage}</span>
                                         <span className="text-gray-400 font-normal text-xs uppercase tracking-widest italic">Optional Selection</span>
                                     </label>
 
@@ -226,7 +234,7 @@ function ContactContent() {
                                     <div className="flex flex-wrap gap-2 mb-3">
                                         {suggestions.map((s) => (
                                             <button
-                                                key={s.label}
+                                                key={s.value}
                                                 type="button"
                                                 onClick={() => handleSuggestionClick(s.label)}
                                                 className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 transform active:scale-90 ${s.color}`}
@@ -253,7 +261,7 @@ function ContactContent() {
                                     disabled={submitting}
                                     className={`w-full ${submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center gap-2`}
                                 >
-                                    <FaPaperPlane /> {submitting ? 'Sending...' : 'Send Message'}
+                                    <FaPaperPlane /> {submitting ? t.submitting : t.send}
                                 </button>
                             </div>
                         </form>
@@ -292,4 +300,3 @@ export default function Contact() {
         </Suspense>
     );
 }
-

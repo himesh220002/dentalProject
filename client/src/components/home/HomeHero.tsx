@@ -4,9 +4,12 @@ import Link from 'next/link';
 import { FaPhoneAlt, FaPlus, FaCheck } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
 import { formatExperience } from '../../utils/urlHelper';
+import { translations } from '../../constants/translations';
 
 export default function HomeHero() {
-    const { clinicData } = useClinic();
+    const { clinicData, language } = useClinic();
+    const t = translations[language];
+
     const phone = clinicData?.phone || '+91 98765 43210';
     const city = clinicData?.address.city || 'Katihar';
     const clinicName = clinicData?.clinicName || 'Dr. Tooth';
@@ -57,7 +60,7 @@ export default function HomeHero() {
                             href="/contact"
                             className="w-full sm:w-auto bg-white text-blue-900 px-10 py-4 sm:px-12 sm:py-5 rounded-2xl sm:rounded-[2rem] font-black shadow-2xl hover:bg-blue-50 transition-all transform hover:-translate-y-1 active:scale-95 text-center text-sm sm:text-base"
                         >
-                            Book Appointment
+                            {t.bookNow}
                         </Link>
                         <a
                             href={`tel:${phone.replace(/\s+/g, '')}`}
@@ -66,20 +69,20 @@ export default function HomeHero() {
                             <div className="bg-blue-500 p-1.5 sm:p-2 rounded-lg sm:rounded-xl group-hover:rotate-12 transition-transform shadow-lg">
                                 <FaPhoneAlt size={12} className="sm:size-[14px]" />
                             </div>
-                            {phone}
+                            {language === 'hi' ? t.callNow : phone}
                         </a>
                     </div>
 
                     {/* Trust Indicators */}
                     <div className="pt-6 sm:pt-10 flex flex-wrap gap-4 sm:gap-8 opacity-60">
                         <div className="flex items-center gap-2 sm:gap-3 font-black text-[10px] sm:text-sm uppercase tracking-widest">
-                            <FaCheck className="text-blue-400" /> Professional
+                            <FaCheck className="text-blue-400" /> {language === 'hi' ? 'पेशेवर' : 'Professional'}
                         </div>
                         <div className="flex items-center gap-2 sm:gap-3 font-black text-[10px] sm:text-sm uppercase tracking-widest">
-                            <FaCheck className="text-blue-400" /> ISO Certified
+                            <FaCheck className="text-blue-400" /> {language === 'hi' ? 'आईएसओ प्रमाणित' : 'ISO Certified'}
                         </div>
                         <div className="flex items-center gap-2 sm:gap-3 font-black text-[10px] sm:text-sm uppercase tracking-widest">
-                            <FaCheck className="text-blue-400" /> Safe & sterile
+                            <FaCheck className="text-blue-400" /> {language === 'hi' ? 'सुरक्षित और स्टेरिल' : 'Safe & sterile'}
                         </div>
                     </div>
                 </div>

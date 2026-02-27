@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaTooth, FaMagic, FaUserMd, FaNotesMedical, FaRegSmileBeam, FaMedkit } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
+import { translations } from '../../constants/translations';
 
 // Map icon strings from backend to React Icons components
 const iconMap: { [key: string]: any } = {
@@ -90,7 +91,8 @@ interface Treatment {
 export default function Treatments() {
     const [treatments, setTreatments] = useState<Treatment[]>([]);
     const [loading, setLoading] = useState(true);
-    const { clinicData, isLoading: contextLoading } = useClinic();
+    const { clinicData, isLoading: contextLoading, language } = useClinic();
+    const t = translations[language];
     const router = useRouter();
 
     const handleBookNow = (treatmentName: string) => {
@@ -142,10 +144,12 @@ export default function Treatments() {
         <div className="space-y-16 py-5 sm:py-12 px-0 sm:px-4 md:px-8">
             <div className="text-center space-y-3 sm:space-y-6 max-w-4xl mx-auto">
                 <h1 className="text-3xl sm:text-5xl md:text-7xl font-black tracking-tight text-gray-900">
-                    Premium <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Dental Care</span>
+                    {language === 'hi' ? 'प्रीमियम' : 'Premium'} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">{language === 'hi' ? 'दंत चिकित्सा' : 'Dental Care'}</span>
                 </h1>
                 <p className="text-lg sm:text-xl text-gray-500 font-medium">
-                    State-of-the-art technology meets compassionate care. Explore our precision treatments for your perfect smile.
+                    {language === 'hi'
+                        ? 'अत्याधुनिक तकनीक और सहानुभूतिपूर्ण देखभाल। अपनी मुस्कान के लिए हमारे सटीक उपचार देखें।'
+                        : 'State-of-the-art technology meets compassionate care. Explore our precision treatments for your perfect smile.'}
                 </p>
                 <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
             </div>
@@ -164,7 +168,7 @@ export default function Treatments() {
                             <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${theme.gradient} opacity-10 rounded-bl-full transform translate-x-10 -translate-y-10 group-hover:scale-110 transition-transform duration-700`}></div>
 
                             {/* Card Content */}
-                            <div className="p-8 space-y-6 relative z-10">
+                            <div className="p-8 space-y-6 relative z-10 text-left">
                                 {/* Header */}
                                 <div className="flex items-center gap-5">
                                     <div className={`${theme.iconBg} p-4 rounded-2xl shadow-inner group-hover:rotate-12 transition-transform duration-500`}>
@@ -175,30 +179,30 @@ export default function Treatments() {
 
                                 {/* Body */}
                                 <div className="space-y-5">
-                                    <div>
+                                    <div className="text-left">
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className={`w-1 h-4 ${theme.btn.split(' ')[0]} rounded-full`}></div>
-                                            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Description</h4>
+                                            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">{language === 'hi' ? 'विवरण' : 'Description'}</h4>
                                         </div>
                                         <p className="text-gray-600 leading-relaxed font-medium">{item.description}</p>
                                     </div>
-                                    <div className={`${theme.bg} p-4 rounded-2xl border ${theme.border}`}>
-                                        <h4 className={`text-xs font-black uppercase tracking-widest mb-2 ${theme.text}`}>Why Choose This?</h4>
+                                    <div className={`${theme.bg} p-4 rounded-2xl border ${theme.border} text-left`}>
+                                        <h4 className={`text-xs font-black uppercase tracking-widest mb-2 ${theme.text}`}>{language === 'hi' ? 'इसे क्यों चुनें?' : 'Why Choose This?'}</h4>
                                         <p className="text-gray-700 text-sm leading-relaxed">{item.whyNeed}</p>
                                     </div>
                                 </div>
 
                                 {/* Footer */}
                                 <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
-                                    <div className="flex flex-col">
-                                        <span className="text-xs text-gray-400 font-bold uppercase tracking-tight">Starting from</span>
+                                    <div className="flex flex-col text-left">
+                                        <span className="text-xs text-gray-400 font-bold uppercase tracking-tight">{t.startsFrom}</span>
                                         <span className={`text-md sm:text-2xl font-black ${theme.icon}`}>{item.price}</span>
                                     </div>
                                     <button
                                         onClick={() => handleBookNow(item.name)}
                                         className={`py-4 px-8 rounded-2xl text-white font-bold text-sm shadow-lg ${theme.gradient.replace('to-', 'hover:to-')} ${theme.btn} transform active:scale-95 transition-all duration-300`}
                                     >
-                                        Book Now
+                                        {t.bookNow}
                                     </button>
                                 </div>
                             </div>
@@ -211,17 +215,16 @@ export default function Treatments() {
             <div className="max-w-4xl mx-auto mt-20 p-12 bg-gray-900 rounded-[3rem] text-center shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600/20 to-indigo-600/20 opacity-50"></div>
                 <div className="relative z-10 space-y-6">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white">Not sure which treatment is right?</h2>
-                    <p className="text-gray-400 text-lg">Schedule a free consultation and let our specialists guide you.</p>
+                    <h2 className="text-3xl md:text-4xl font-bold text-white">{language === 'hi' ? 'पक्का नहीं है कि कौन सा उपचार सही है?' : 'Not sure which treatment is right?'}</h2>
+                    <p className="text-gray-400 text-lg">{language === 'hi' ? 'एक मुफ्त परामर्श शेड्यूल करें और हमारे विशेषज्ञों को आपका मार्गदर्शन करने दें।' : 'Schedule a free consultation and let our specialists guide you.'}</p>
                     <button
                         onClick={() => router.push('/contact')}
                         className="bg-white text-gray-900 px-10 py-4 rounded-2xl font-black hover:bg-blue-50 transition-colors shadow-xl"
                     >
-                        Schedule a Consultation
+                        {language === 'hi' ? 'परामर्श शेड्यूल करें' : 'Schedule a Consultation'}
                     </button>
                 </div>
             </div>
         </div>
     );
 }
-

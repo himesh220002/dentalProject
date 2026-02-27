@@ -80,10 +80,10 @@ export default function Home() {
                         </p>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 ml-5">
                     {clinicData?.consultants.map((consultant, idx) => (
-                        <div key={idx} className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-50 hover:border-blue-100 hover:shadow-2xl transition-all group">
-                            <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
+                        <div key={idx} className="bg-gradient-to-br from-purple-100 to-green-50 p-8 rounded-[2.5rem] shadow-xl border border-gray-50 hover:border-blue-100 hover:shadow-2xl transition-all group">
+                            <div className="w-20 h-20 bg-blue-200 backdrop-blur-lg rounded-3xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
                                 <FaUserMd size={40} className="text-blue-600" />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
@@ -118,7 +118,7 @@ export default function Home() {
                     <div className="h-1.5 sm:h-2 w-16 sm:w-24 bg-blue-500 mx-auto rounded-full"></div>
                     <p className="text-gray-400 font-bold tracking-widest text-xs sm:text-sm uppercase">Take a glimpse inside our state-of-the-art facility</p>
                 </div>
-                <div className="bg-white p-4 sm:p-8 rounded-[2rem] sm:rounded-[4rem] shadow-2xl border border-gray-100 overflow-hidden">
+                <div className="bg-white p-4 sm:p-8 mx-2 sm:mx-6 lg:mx-8 rounded-[2rem] sm:rounded-[4rem] shadow-2xl border border-gray-100 overflow-hidden">
                     <ClinicCarousel />
                 </div>
             </section>
