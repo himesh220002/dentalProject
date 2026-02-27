@@ -361,9 +361,13 @@ export default function TempClinicForm() {
                                     Branding Essentials
                                 </h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="sm:col-span-2">
+                                    <div className="sm:col-span-1">
                                         <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Clinic Name</label>
                                         <input type="text" name="clinicName" value={formData.clinicName} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
+                                    </div>
+                                    <div className="sm:col-span-1">
+                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Doctor Name</label>
+                                        <input type="text" name="doctorName" value={formData.doctorName} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
                                     </div>
                                     <div className="sm:col-span-2">
                                         <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Tagline/Hero Message</label>

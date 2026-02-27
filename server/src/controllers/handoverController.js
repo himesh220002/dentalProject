@@ -94,6 +94,7 @@ const activateHandover = async (req, res) => {
             { key: 'clinic_phone', value: data.phone },
             { key: 'clinic_email', value: data.email },
             { key: 'clinic_name', value: data.clinicName },
+            { key: 'doctor_name', value: data.doctorName },
             { key: 'clinic_address', value: `${data.address.street}, ${data.address.city}, ${data.address.state} - ${data.address.zip}` },
             { key: 'clinic_tagline', value: data.tagline }
         ];

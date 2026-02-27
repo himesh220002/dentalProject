@@ -70,20 +70,30 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Meet Our Team - New Dynamic Section */}
-            <section className="space-y-16">
-                <div className="flex flex-col md:flex-row items-start justify-between gap-6">
+            {/* Meet Our Team - New Dynamic Section with High-tech Pattern */}
+            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[3rem] sm:rounded-[4rem] group mx-2 sm:mx-5">
+                {/* Immersive Lab Background */}
+                <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
+                    <img
+                        src="/images/2307.i105.031.S.m005.c13.isometric biotechnology.jpg"
+                        className="w-full h-full object-cover opacity-[0.8]"
+                        alt="science-bg"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/60 via-transparent to-indigo-50/60"></div>
+                </div>
+
+                <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-16">
                     <div className="space-y-4 text-center sm:text-start">
                         <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">Meet Our Specialists</h2>
-                        <p className="text-gray-500 text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-xl">
+                        <p className="text-black text-sm md:text-base lg:text-xl font-medium leading-relaxed max-w-xl">
                             Our team of experienced dental professionals is dedicated to your oral health and comfort.
                         </p>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 m-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {clinicData?.consultants.map((consultant, idx) => (
-                        <div key={idx} className="bg-gradient-to-br from-purple-100 to-green-50 p-8 rounded-[2.5rem] shadow-xl border border-gray-50 hover:border-blue-100 hover:shadow-2xl transition-all group">
-                            <div className="w-20 h-20 bg-blue-200 backdrop-blur-lg rounded-3xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
+                        <div key={idx} className="bg-white/70 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl border border-gray-100/50 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
+                            <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-12 transition-transform">
                                 <FaUserMd size={40} className="text-blue-600" />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
@@ -132,7 +142,7 @@ export default function Home() {
 
                     <div className="relative z-10 space-y-6 sm:space-y-8">
                         <h2 className="text-3xl sm:text-5xl md:text-6xl font-black leading-tight max-w-4xl mx-auto tracking-tight">
-                            Transforming Smiles, <br /> One Patient at a Time.
+                            Transforming Smiles, <br /> <span className="bg-gradient-to-r from-blue-300 to-teal-300 bg-clip-text text-transparent">One Patient at a Time.</span>
                         </h2>
                         <p className="text-blue-100 text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto font-medium opacity-90">
                             Join hundreds of happy patients who trust our preventative care approach. Book your initial consultation today.

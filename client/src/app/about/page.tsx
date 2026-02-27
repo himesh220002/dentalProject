@@ -21,7 +21,7 @@ export default function About() {
     const clinicYears = Math.max(0, currentYear - parseInt(year));
 
     return (
-        <div className="space-y-12 sm:pt-4 lg:pt-10">
+        <div className="space-y-12 sm:pt-4 lg:pt-0 lg:-mt-20">
             {/* Hero Section - Refined */}
             <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">
@@ -85,16 +85,26 @@ export default function About() {
                 </div>
             </section>
 
-            {/* Meet Our Team - Synchronized Grid */}
-            <section className="space-y-16 px-6 sm:px-16">
-                <div className="text-center space-y-4">
+            {/* Meet Our Team - Synchronized Grid with Classy Pattern */}
+            <section className="relative py-20 px-6 sm:px-16 overflow-hidden rounded-[3rem] sm:rounded-[4rem] mx-4 group">
+                {/* Immersive Background Pattern */}
+                <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
+                    <img
+                        src="/images/sciencehanddrawnbg.jpg"
+                        className="w-full h-full object-cover opacity-[0.4]"
+                        alt="pattern"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-transparent to-teal-50/10"></div>
+                </div>
+
+                <div className="text-start space-y-4 mb-16">
                     <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">Our Experts</h2>
-                    <h3 className="text-3xl xl:text-5xl font-black text-gray-900">The Dream Team Behind <br />{clinicName}</h3>
+                    <h3 className="text-3xl xl:text-5xl font-black text-gray-900">The Dream Team Behind <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent ">{clinicName}</span></h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {clinicData?.consultants.map((consultant, idx) => (
-                        <div key={idx} className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-50 hover:border-blue-100 hover:shadow-2xl transition-all group">
-                            <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
+                        <div key={idx} className="bg-white/80 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-xl border border-2 border-gray-50 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
+                            <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-12 transition-transform">
                                 <FaUserMd size={40} className="text-blue-600" />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
@@ -112,7 +122,7 @@ export default function About() {
             <div className="pt-12 sm:pt-20 px-6 sm:px-16">
                 <div className="space-y-4 mb-12">
                     <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">Our Milestones</h2>
-                    <p className="text-3xl xl:text-5xl font-black text-gray-900">Proven Results, <br /> Proven Smiles.</p>
+                    <p className="text-3xl xl:text-5xl font-black text-gray-900">Proven Results, <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">Proven Smiles.</span></p>
                 </div>
                 <AchievementsGrid />
             </div>

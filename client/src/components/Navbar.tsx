@@ -136,7 +136,7 @@ export default function Navbar() {
                                     const parts = name.split(' ');
                                     return (
                                         <>
-                                            {parts[0]} <span className="text-blue-600 font-medium">{parts.slice(1).join(' ')}</span>
+                                            {parts[0]} <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent font-medium">{parts.slice(1).join(' ')}</span>
                                         </>
                                     );
                                 })()}

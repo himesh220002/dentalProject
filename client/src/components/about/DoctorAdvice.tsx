@@ -55,7 +55,7 @@ export default function DoctorAdvice() {
                         className="group bg-white p-10 sm:p-12 rounded-[3rem] border border-gray-100 hover:border-blue-200 transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 w-24 h-24 bg-gray-50 rounded-bl-[3rem] group-hover:bg-blue-50 transition-colors"></div>
-                        <div className="mb-10 w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner overflow-hidden relative z-10">
+                        <div className="mb-10 w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center group-hover:bg-blue-300 group-hover:text-white transition-all duration-500 shadow-inner overflow-hidden relative z-10">
                             {tip.icon}
                         </div>
                         <div className="space-y-4 relative z-10">

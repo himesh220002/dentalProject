@@ -68,16 +68,16 @@ function ContactContent() {
     }, [searchParams, router, language]);
 
     const suggestions = [
-        { label: language === 'hi' ? 'दांत दर्द' : 'Tooth Pain', value: 'Tooth Pain', color: 'bg-rose-100 text-rose-700 hover:bg-rose-200 border-rose-200' },
+        { label: language === 'hi' ? 'दांत दर्द' : 'Tooth Pain', value: 'Tooth Pain', color: 'bg-indigo-100 text-rose-700 hover:bg-rose-200 border-rose-200' },
         { label: language === 'hi' ? 'रूट कैनाल' : 'Root Canal (RCT)', value: 'Root Canal (RCT)', color: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border-indigo-200' },
-        { label: language === 'hi' ? 'सफाई' : 'Teeth Cleaning', value: 'Teeth Cleaning', color: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200' },
-        { label: language === 'hi' ? 'क्राउन' : 'Dental Crowns', value: 'Dental Crowns', color: 'bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-200' },
-        { label: language === 'hi' ? 'इंप्लांट' : 'Dental Implants', value: 'Dental Implants', color: 'bg-teal-100 text-teal-700 hover:bg-teal-200 border-teal-200' },
-        { label: language === 'hi' ? 'फिलिंग' : 'Composite Fillings', value: 'Composite Fillings', color: 'bg-violet-100 text-violet-700 hover:bg-violet-200 border-violet-200' },
-        { label: language === 'hi' ? 'ब्रेसेस' : 'Braces & Aligners', value: 'Braces & Aligners', color: 'bg-sky-100 text-sky-700 hover:bg-sky-200 border-sky-200' },
-        { label: language === 'hi' ? 'बत्तीसी' : 'Full Dentures', value: 'Full Dentures', color: 'bg-orange-100 text-orange-700 hover:bg-orange-200 border-orange-200' },
-        { label: language === 'hi' ? 'दांत निकालना' : 'Extraction', value: 'Extraction', color: 'bg-red-100 text-red-700 hover:bg-red-200 border-red-200' },
-        { label: language === 'hi' ? 'जांच' : 'Checkup', value: 'Checkup', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200 border-blue-200' },
+        { label: language === 'hi' ? 'सफाई' : 'Teeth Cleaning', value: 'Teeth Cleaning', color: 'bg-indigo-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200' },
+        { label: language === 'hi' ? 'क्राउन' : 'Dental Crowns', value: 'Dental Crowns', color: 'bg-indigo-100 text-amber-700 hover:bg-amber-200 border-amber-200' },
+        { label: language === 'hi' ? 'इंप्लांट' : 'Dental Implants', value: 'Dental Implants', color: 'bg-indigo-100 text-teal-700 hover:bg-teal-200 border-teal-200' },
+        { label: language === 'hi' ? 'फिलिंग' : 'Composite Fillings', value: 'Composite Fillings', color: 'bg-indigo-100 text-violet-700 hover:bg-violet-200 border-violet-200' },
+        { label: language === 'hi' ? 'ब्रेसेस' : 'Braces & Aligners', value: 'Braces & Aligners', color: 'bg-indigo-100 text-sky-700 hover:bg-sky-200 border-sky-200' },
+        { label: language === 'hi' ? 'बत्तीसी' : 'Full Dentures', value: 'Full Dentures', color: 'bg-indigo-100 text-orange-700 hover:bg-orange-200 border-orange-200' },
+        { label: language === 'hi' ? 'दांत निकालना' : 'Extraction', value: 'Extraction', color: 'bg-indigo-100 text-red-700 hover:bg-red-200 border-red-200' },
+        { label: language === 'hi' ? 'जांच' : 'Checkup', value: 'Checkup', color: 'bg-indigo-100 text-blue-700 hover:bg-blue-200 border-blue-200' },
     ];
 
     const handleSuggestionClick = (label: string) => {
@@ -111,7 +111,8 @@ function ContactContent() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto py-10 space-y-16 px-4">
+        <div className="relative p-2 sm:p-5 max-w-6xl mx-auto py-10 space-y-16 px-4">
+
 
             {/* Header */}
             <div className="text-center space-y-4">
@@ -123,13 +124,21 @@ function ContactContent() {
                 </p>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-12">
+            <div className=" grid lg:grid-cols-3 gap-12">
+                <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
+                    <img
+                        src="/images/sciencehanddrawnbg.jpg"
+                        className="w-full h-full rounded-t-2xl object-cover opacity-[0.4]"
+                        alt="pattern"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-transparent to-teal-50/10"></div>
+                </div>
 
                 {/* Contact Info Column */}
                 <div className="lg:col-span-1 space-y-6 text-left">
 
                     {/* Phone Card */}
-                    <div className="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-blue-500 hover:transform hover:scale-105 transition duration-300">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-blue-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
                         <div className="flex items-center gap-4 mb-3">
                             <div className="bg-blue-100 p-3 rounded-full text-blue-600">
                                 <FaPhoneAlt className="text-xl" />
@@ -143,7 +152,7 @@ function ContactContent() {
                     </div>
 
                     {/* Whatsapp Card */}
-                    <div className="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-green-500 hover:transform hover:scale-105 transition duration-300">
+                    <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-green-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
                         <div className="flex items-center gap-4 mb-3">
                             <div className="bg-green-100 p-3 rounded-full text-green-600">
                                 <FaWhatsapp className="text-xl" />
@@ -157,7 +166,7 @@ function ContactContent() {
                     </div>
 
                     {/* Visit Us Card */}
-                    <div className="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-teal-500 hover:transform hover:scale-105 transition duration-300">
+                    <div className="bg-gradient-to-br from-teal-50 to-teal-100 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-teal-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
                         <div className="flex items-center gap-4 mb-3">
                             <div className="bg-teal-100 p-3 rounded-full text-teal-600">
                                 <FaMapMarkerAlt className="text-xl" />
@@ -174,8 +183,8 @@ function ContactContent() {
                 <div className="lg:col-span-2 space-y-8">
 
                     {/* Contact Form */}
-                    <div className="bg-white p-8 rounded-3xl shadow-xl">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2 text-left">
+                    <div className="bg-white p-4 sm:p-8 rounded-3xl shadow-xl">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex justify-center items-center gap-2 text-left">
                             <FaEnvelope className="text-blue-500" /> {language === 'hi' ? 'संदेश भेजें' : 'Send a Message'}
                         </h2>
 

@@ -21,7 +21,7 @@ export default function HomeHero() {
     const clinicYears = Math.max(0, currentYear - estYear);
 
     return (
-        <section className="relative min-h-[550px] sm:min-h-[600px] lg:h-[750px] rounded-[2rem] sm:rounded-[3rem] lg:rounded-[4rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] flex items-center group mx-2 sm:mx-0">
+        <section className="relative min-h-[550px] sm:min-h-[600px] lg:h-[750px] rounded-[2rem] sm:rounded-[3rem] lg:rounded-[4rem] overflow-hidden shadow-[0_0px_20px_-16px_rgba(0,0,0,0.2)] flex items-center group mx-2 sm:mx-5">
             {/* Immersive Background */}
             <div className="absolute inset-0">
                 <img
