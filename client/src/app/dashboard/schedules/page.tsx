@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { FaCalendarPlus, FaClock, FaUser, FaCheckCircle, FaTrash, FaNotesMedical, FaChevronDown } from 'react-icons/fa';
 import Link from 'next/link';
@@ -24,7 +25,10 @@ interface Appointment {
     markedPaidAt?: string;
 }
 
-export default function DashboardSchedules() {
+function DashboardSchedulesContent() {
+    const searchParams = useSearchParams();
+    const highlightId = searchParams?.get('highlight');
+    const highlightedRef = useRef<HTMLTableRowElement | HTMLDivElement | null>(null);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
     const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
@@ -46,6 +50,19 @@ export default function DashboardSchedules() {
         const interval = setInterval(fetchAppointments, 60000); // Refresh every minute
         return () => clearInterval(interval);
     }, []);
+
+    // Scroll highlighted item into view
+    useEffect(() => {
+        if (highlightId && !loading) {
+            // Give a tiny delay for component rendering/expansion
+            setTimeout(() => {
+                const element = document.getElementById(`apt-${highlightId}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 500);
+        }
+    }, [highlightId, loading]);
 
     const sortedAppointments = [...appointments].sort((a, b) => {
         return parseDateTime(a.date, a.time).getTime() - parseDateTime(b.date, b.time).getTime();
@@ -133,7 +150,11 @@ export default function DashboardSchedules() {
                                 const isReadyForPayment = (apt.status === 'Completed' || apt.isTicked) && apt.paymentStatus !== 'Paid';
 
                                 return (
-                                    <tr key={apt._id} className="hover:bg-gray-50/50 transition-colors">
+                                    <tr
+                                        key={apt._id}
+                                        id={`apt-${apt._id}`}
+                                        className={`transition-colors ${apt._id === highlightId ? 'bg-blue-50/80' : 'hover:bg-gray-50/50'}`}
+                                    >
                                         <td className="px-8 py-6 whitespace-nowrap">
                                             <Link
                                                 href={`/patients/${apt.patientId?._id}`}
@@ -277,6 +298,7 @@ export default function DashboardSchedules() {
                             updateAppointment={updateAppointment}
                             handleReschedule={handleReschedule}
                             deleteAppointment={deleteAppointment}
+                            isHighlighted={apt._id === highlightId}
                         />
                     ))}
                 </div>
@@ -295,5 +317,13 @@ export default function DashboardSchedules() {
                 appointmentId={editingAppointmentId}
             />
         </div>
+    );
+}
+
+export default function DashboardSchedules() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>}>
+            <DashboardSchedulesContent />
+        </Suspense>
     );
 }

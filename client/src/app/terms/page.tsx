@@ -5,8 +5,7 @@ import { FaFileSignature, FaMoneyCheckAlt, FaVideo, FaClinicMedical, FaBalanceSc
 import { useClinic } from '../../context/ClinicContext';
 
 export default function TermsOfService() {
-    const { clinicData } = useClinic();
-    const [lang, setLang] = useState<'en' | 'hi'>('en');
+    const { clinicData, language } = useClinic();
 
     const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental Clinic';
     const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}` : 'Bihar, India';
@@ -73,20 +72,10 @@ export default function TermsOfService() {
         }
     };
 
-    const t = content[lang];
+    const t = content[language];
 
     return (
         <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-12 relative text-left">
-            {/* Language Toggle */}
-            <div className="fixed bottom-8 right-8 z-50 sm:absolute sm:top-0 sm:right-8 sm:bottom-auto">
-                <button
-                    onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
-                    className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black shadow-2xl hover:bg-indigo-700 transition-all transform active:scale-95 group"
-                >
-                    <FaLanguage className="text-xl group-hover:rotate-12 transition-transform" />
-                    {lang === 'en' ? 'हिन्दी में पढ़ें' : 'Read in English'}
-                </button>
-            </div>
 
             {/* Header */}
             <div className="text-center space-y-4">

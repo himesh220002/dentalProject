@@ -8,10 +8,11 @@ interface MobileAppointmentCardProps {
     updateAppointment: (id: string, updates: any) => void;
     handleReschedule: (id: string) => void;
     deleteAppointment: (id: string) => void;
+    isHighlighted?: boolean;
 }
 
-const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleReschedule, deleteAppointment }: MobileAppointmentCardProps) => {
-    const [isOpen, setIsOpen] = useState(false);
+const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleReschedule, deleteAppointment, isHighlighted }: MobileAppointmentCardProps) => {
+    const [isOpen, setIsOpen] = useState(isHighlighted || false);
     const [isBlinking, setIsBlinking] = useState(false);
 
     const expired = isPastTime(apt.date, apt.time);
@@ -37,7 +38,13 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
     };
 
     return (
-        <div className="bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300">
+        <div
+            id={`apt-${apt._id}`}
+            className={`rounded-2xl border transition-all duration-300 ${isHighlighted
+                ? 'bg-blue-50 border-blue-400 shadow-lg shadow-blue-500/20 ring-2 ring-blue-500'
+                : 'bg-gray-50 border-gray-100 overflow-hidden'
+                }`}
+        >
             {/* Header (Always Visible) */}
             <div
                 className="p-5 flex justify-between items-center cursor-pointer active:bg-gray-100 transition-colors"

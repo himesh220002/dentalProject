@@ -128,7 +128,7 @@ export default function About() {
             </div>
 
             {/* Our Values / Mission Refined */}
-            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-6 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative mx-4">
+            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-6 mb-10 xl:mb-20 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative mx-4">
                 <div className="max-w-5xl mx-auto space-y-5 sm:space-y-20">
                     <div className="text-center space-y-4 sm:space-y-6">
                         <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-white leading-tight">Why We Are Different</h2>
@@ -166,7 +166,7 @@ export default function About() {
                     </div>
 
                     <div className="pt-12 border-t border-white/10 text-center">
-                        <p className="text-blue-500 font-black uppercase tracking-[0.2em] text-xl mb-2">{clinicExperience}+ Years Excellence</p>
+                        <p className="text-blue-500 font-black uppercase tracking-[0.2em] text-xl mb-2">{clinicExperience} Years Excellence</p>
                         <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">A decade of dedicated service to patients.</p>
                     </div>
                 </div>

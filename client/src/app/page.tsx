@@ -72,15 +72,15 @@ export default function Home() {
 
             {/* Meet Our Team - New Dynamic Section */}
             <section className="space-y-16">
-                <div className="flex flex-col md:flex-row items-end justify-between gap-6">
-                    <div className="space-y-4">
+                <div className="flex flex-col md:flex-row items-start justify-between gap-6">
+                    <div className="space-y-4 text-center sm:text-start">
                         <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">Meet Our Specialists</h2>
                         <p className="text-gray-500 text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-xl">
                             Our team of experienced dental professionals is dedicated to your oral health and comfort.
                         </p>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 ml-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 m-5">
                     {clinicData?.consultants.map((consultant, idx) => (
                         <div key={idx} className="bg-gradient-to-br from-purple-100 to-green-50 p-8 rounded-[2.5rem] shadow-xl border border-gray-50 hover:border-blue-100 hover:shadow-2xl transition-all group">
                             <div className="w-20 h-20 bg-blue-200 backdrop-blur-lg rounded-3xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
@@ -99,8 +99,8 @@ export default function Home() {
 
             {/* Patient Testimony Preview */}
             <div className="overflow-hidden">
-                <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-12">
-                    <div className="space-y-4">
+                <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-12">
+                    <div className="space-y-4 text-center sm:text-start">
                         <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">Voices of Success</h2>
                         <p className="text-gray-500 text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-xl">Real stories from real patients who trusted us with their smiles.</p>
                     </div>
@@ -125,13 +125,13 @@ export default function Home() {
 
             {/* Elite CTA Strip */}
             <section className="pb-12 sm:pb-20 overflow-hidden relative">
-                <div className="bg-gradient-to-br from-blue-800 to-black text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 sm:p-16 md:p-24 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(37,99,235,0.4)] relative overflow-hidden group">
+                <div className="bg-gradient-to-br from-blue-800 to-black text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 sm:p-16 md:p-24 mx-1 sm:mx-5 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(37,99,235,0.4)] relative overflow-hidden group">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-44 -mt-44 blur-[100px] group-hover:bg-white/20 transition-all duration-700"></div>
                     <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-400/20 rounded-full -mr-40 -mb-40 blur-[80px]"></div>
 
                     <div className="relative z-10 space-y-6 sm:space-y-8">
-                        <h2 className="text-3xl sm:text-5xl md:text-7xl font-black leading-tight max-w-4xl mx-auto tracking-tight">
+                        <h2 className="text-3xl sm:text-5xl md:text-6xl font-black leading-tight max-w-4xl mx-auto tracking-tight">
                             Transforming Smiles, <br /> One Patient at a Time.
                         </h2>
                         <p className="text-blue-100 text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto font-medium opacity-90">

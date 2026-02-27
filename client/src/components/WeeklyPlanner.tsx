@@ -164,14 +164,20 @@ export default function WeeklyPlanner() {
                 <div className="flex flex-col xl:flex-row items-center gap-4 w-full lg:w-auto">
                     {/* Collection Stats */}
                     <div className="flex bg-emerald-50 border border-emerald-100 rounded-2xl overflow-hidden shadow-sm w-full sm:w-auto">
-                        <div className="px-4 py-2 md:px-5 md:py-3 border-r border-emerald-100 bg-emerald-100/30 flex-grow sm:flex-grow-0">
-                            <span className="text-[9px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest block mb-0.5">Today</span>
+                        <Link
+                            href="/dashboard/schedules"
+                            className="px-4 py-2 md:px-5 md:py-3 border-r border-emerald-100 bg-emerald-100/30 flex-grow sm:flex-grow-0 hover:bg-emerald-200/50 transition-colors group/stat"
+                        >
+                            <span className="text-[9px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest block mb-0.5 group-hover/stat:text-emerald-700 transition-colors">Today</span>
                             <span className="text-sm md:text-lg font-black text-emerald-700">₹{stats.todayCollection}</span>
-                        </div>
-                        <div className="px-4 py-2 md:px-5 md:py-3 flex-grow sm:flex-grow-0">
-                            <span className="text-[9px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest block mb-0.5">This Week</span>
+                        </Link>
+                        <Link
+                            href="/dashboard/schedules"
+                            className="px-4 py-2 md:px-5 md:py-3 flex-grow sm:flex-grow-0 hover:bg-emerald-100/50 transition-colors group/stat"
+                        >
+                            <span className="text-[9px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest block mb-0.5 group-hover/stat:text-emerald-700 transition-colors">This Week</span>
                             <span className="text-sm md:text-lg font-black text-emerald-700">₹{stats.weekCollection}</span>
-                        </div>
+                        </Link>
                     </div>
 
                     <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
@@ -255,7 +261,7 @@ export default function WeeklyPlanner() {
                                                         </div>
                                                     </div>
                                                     <Link
-                                                        href={`/patients/${app.patientId?._id}`}
+                                                        href={`/dashboard/schedules?highlight=${app._id}`}
                                                         className={`text-xs font-black truncate hover:text-blue-600 hover:underline transition-all ${done ? 'text-gray-500' : 'text-gray-800'}`}
                                                     >
                                                         {app.patientId?.name || 'Unknown'}

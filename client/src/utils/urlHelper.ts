@@ -32,10 +32,13 @@ export const ensureAbsoluteUrl = (url: string | undefined): string => {
 export const formatExperience = (exp: string | undefined): string => {
     if (!exp) return '10+';
 
-    const trimmed = exp.trim();
-    if (trimmed.endsWith('+')) {
-        return trimmed;
+    // Extract numbers only to prevent symbols like '++'
+    const match = exp.match(/\d+/);
+    if (match) {
+        return `${match[0]}+`;
     }
 
-    return `${trimmed}+`;
+    // Fallback if no digits found, but ensure it's not empty
+    const trimmed = exp.trim();
+    return trimmed ? (trimmed.endsWith('+') ? trimmed : `${trimmed}+`) : '10+';
 };
