@@ -1,4 +1,7 @@
 const Appointment = require('../models/Appointment');
+const Patient = require('../models/Patient');
+const Contact = require('../models/Contact');
+const TreatmentRecord = require('../models/TreatmentRecord');
 const { sendAppointmentEmail } = require('../utils/mailer');
 
 // Get all appointments
@@ -32,15 +35,12 @@ exports.createAppointment = async (req, res) => {
         const savedAppointment = await newAppointment.save();
         console.log('✔ Step 1 PASSED: Record saved with ID', savedAppointment._id);
 
-        const Contact = require('../models/Contact');
-        const contactId = req.body.contactId;
-
         if (contactId) {
             console.log('Step 1.5: Marking contact as Scheduled/Linked...');
             await Contact.findByIdAndUpdate(contactId, {
                 status: 'Scheduled',
                 appointmentId: savedAppointment._id,
-                emailSent: false // Reset until background delivery succeeds
+                emailSent: false
             });
             console.log('✔ Step 1.5 PASSED');
         }
@@ -96,7 +96,6 @@ exports.createAppointment = async (req, res) => {
     }
 };
 
-const TreatmentRecord = require('../models/TreatmentRecord');
 
 // Update appointment status and other fields
 exports.updateAppointmentStatus = async (req, res) => {
@@ -129,7 +128,6 @@ exports.updateAppointmentStatus = async (req, res) => {
         }
         console.log('✔ Step 1 PASSED: Record updated');
 
-        const Contact = require('../models/Contact');
         const contactId = req.body.contactId;
 
         // If this is a reschedule from a message, reset its email status until the new one delivers
@@ -290,7 +288,6 @@ exports.resendConfirmationEmail = async (req, res) => {
             console.log('✔ Resend PASSED: MessageId', mailInfo.messageId);
 
             if (contactId) {
-                const Contact = require('../models/Contact');
                 await Contact.findByIdAndUpdate(contactId, {
                     emailSent: true,
                     lastEmailError: null
@@ -300,13 +297,16 @@ exports.resendConfirmationEmail = async (req, res) => {
 
             return res.status(200).json({ success: true, messageId: mailInfo.messageId });
         } else {
-            throw new Error('Mailer returned success but no MessageID was found.');
+            console.warn('⚠ Resend SKIPPED: Mailer did not return a messageId (check mailer logs).');
+            return res.status(200).json({
+                success: false,
+                message: 'Email skipped or failed silently. Check server diagnostics.'
+            });
         }
 
     } catch (error) {
         console.error('✖ RESEND FATAL ERROR:', error.message);
         if (req.body.contactId) {
-            const Contact = require('../models/Contact');
             await Contact.findByIdAndUpdate(req.body.contactId, {
                 emailSent: false,
                 lastEmailError: error.message

@@ -1,4 +1,6 @@
 const Config = require('../models/Config');
+const Contact = require('../models/Contact');
+const { transporter } = require('../utils/mailer');
 
 exports.getAdminPassword = async (req, res) => {
     try {
@@ -51,7 +53,6 @@ exports.verifyAdminPassword = async (req, res) => {
     }
 };
 
-const { transporter } = require('../utils/mailer');
 exports.checkMailer = async (req, res) => {
     try {
         console.log('--- LIVE MAILER CHECK TRIGGERED ---');
@@ -78,8 +79,6 @@ exports.checkMailer = async (req, res) => {
 
 exports.getEmailHistory = async (req, res) => {
     try {
-        const Contact = require('../models/Contact');
-
         // Fetch contacts that are scheduled (linked to appointments) and have an email
         const history = await Contact.find({
             status: 'Scheduled',
