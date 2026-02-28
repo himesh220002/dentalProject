@@ -28,6 +28,7 @@ export default function DashboardMessages() {
     const [schedulerMessageId, setSchedulerMessageId] = useState('');
     const [schedulerInquiry, setSchedulerInquiry] = useState('');
     const [schedulerAppointmentId, setSchedulerAppointmentId] = useState('');
+    const [resendingId, setResendingId] = useState<string | null>(null);
 
     const fetchMessages = async () => {
         try {
@@ -50,6 +51,23 @@ export default function DashboardMessages() {
             fetchMessages();
         } catch (error) {
             console.error('Error marking as read:', error);
+        }
+    };
+
+    const handleResendEmail = async (appointmentId: string, contactId: string) => {
+        if (!appointmentId) return;
+        setResendingId(contactId);
+        try {
+            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${appointmentId}/resend`, {
+                contactId: contactId
+            });
+            alert('Confirmation email resent successfully!');
+            fetchMessages();
+        } catch (error) {
+            console.error('Error resending email:', error);
+            alert('Failed to resend email. Please check server logs.');
+        } finally {
+            setResendingId(null);
         }
     };
 
@@ -162,8 +180,22 @@ export default function DashboardMessages() {
                                                 </div>
                                             )}
                                             {msg.email && !msg.emailSent && (
-                                                <div className="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-1">
-                                                    <FaTimes className="text-[8px]" /> Email Failed
+                                                <div className="flex flex-col items-center gap-1">
+                                                    <div className="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-1">
+                                                        <FaTimes className="text-[8px]" /> Email Failed
+                                                    </div>
+                                                    <button
+                                                        onClick={() => msg.appointmentId && handleResendEmail(msg.appointmentId, msg._id)}
+                                                        disabled={resendingId === msg._id}
+                                                        className="text-[9px] font-black bg-rose-50 text-rose-600 hover:bg-rose-100 px-2 py-0.5 rounded border border-rose-200 transition active:scale-95 disabled:opacity-50 flex items-center gap-1 mt-1"
+                                                    >
+                                                        {resendingId === msg._id ? (
+                                                            <div className="w-2 h-2 border border-rose-600 border-t-transparent rounded-full animate-spin"></div>
+                                                        ) : (
+                                                            <FaEnvelope className="text-[7px]" />
+                                                        )}
+                                                        {resendingId === msg._id ? 'Resending...' : 'Resend'}
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>

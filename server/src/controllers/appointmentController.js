@@ -32,11 +32,21 @@ exports.createAppointment = async (req, res) => {
         const savedAppointment = await newAppointment.save();
         console.log('✔ Step 1 PASSED: Record saved with ID', savedAppointment._id);
 
-        console.log('Step 2: Fetching patient details for email notification...');
-        const populatedApp = await Appointment.findById(savedAppointment._id).populate('patientId');
-
         const Contact = require('../models/Contact');
         const contactId = req.body.contactId;
+
+        if (contactId) {
+            console.log('Step 1.5: Marking contact as Scheduled/Linked...');
+            await Contact.findByIdAndUpdate(contactId, {
+                status: 'Scheduled',
+                appointmentId: savedAppointment._id,
+                emailSent: false // Reset until background delivery succeeds
+            });
+            console.log('✔ Step 1.5 PASSED');
+        }
+
+        console.log('Step 2: Fetching patient details for email notification...');
+        const populatedApp = await Appointment.findById(savedAppointment._id).populate('patientId');
 
         let emailSentTo = null;
         if (populatedApp.patientId && populatedApp.patientId.email) {
@@ -110,6 +120,15 @@ exports.updateAppointmentStatus = async (req, res) => {
         }
         console.log('✔ Step 1 PASSED: Record updated');
 
+        const Contact = require('../models/Contact');
+        const contactId = req.body.contactId;
+
+        // If this is a reschedule from a message, reset its email status until the new one delivers
+        if (contactId && (req.body.date || req.body.time)) {
+            await Contact.findByIdAndUpdate(contactId, { emailSent: false });
+            console.log('✔ Step 1.5: Reset Contact email status for reschedule.');
+        }
+
         let emailSentTo = null;
         if (req.body.date || req.body.time) {
             console.log('Step 2: Reschedule detected, checking patient email...');
@@ -127,9 +146,13 @@ exports.updateAppointmentStatus = async (req, res) => {
                         reason: updatedAppointment.reason,
                         status: 'Rescheduled'
                     }
-                ).then(info => {
+                ).then(async (info) => {
                     if (info && info.messageId) {
                         console.log('✔ Step 3 PASSED: Background Reschedule email delivered. MessageId:', info.messageId);
+                        if (contactId) {
+                            await Contact.findByIdAndUpdate(contactId, { emailSent: true });
+                            console.log(`✔ Step 4: Marked Contact ${contactId} as emailSent: true (Reschedule)`);
+                        }
                     }
                 }).catch(err => {
                     console.error('✖ Step 3 FAILED: Background Reschedule error:', err.message);
@@ -214,7 +237,6 @@ exports.getAppointmentsByPatientId = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 // Delete an appointment
 exports.deleteAppointment = async (req, res) => {
     try {
@@ -223,5 +245,54 @@ exports.deleteAppointment = async (req, res) => {
         res.status(200).json({ message: 'Appointment deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+};
+
+// Resend confirmation email
+exports.resendConfirmationEmail = async (req, res) => {
+    try {
+        console.log('--- RESEND EMAIL FLOW START ---');
+        const appointmentId = req.params.id;
+        const contactId = req.body.contactId;
+
+        const appointment = await Appointment.findById(appointmentId).populate('patientId');
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+
+        if (!appointment.patientId || !appointment.patientId.email) {
+            return res.status(400).json({ message: 'Patient has no email address' });
+        }
+
+        console.log(`Step 1: Attempting resend for ${appointment.patientId.email}...`);
+
+        const mailInfo = await sendAppointmentEmail(
+            appointment.patientId.email,
+            appointment.patientId.name,
+            {
+                date: appointment.date,
+                time: appointment.time,
+                reason: appointment.reason,
+                status: 'Fixed' // or use specific logic for status
+            }
+        );
+
+        if (mailInfo && mailInfo.messageId) {
+            console.log('✔ Resend PASSED: MessageId', mailInfo.messageId);
+
+            if (contactId) {
+                const Contact = require('../models/Contact');
+                await Contact.findByIdAndUpdate(contactId, { emailSent: true });
+                console.log(`✔ Resend Status Updated: Marked Contact ${contactId} as emailSent: true`);
+            }
+
+            return res.status(200).json({ success: true, messageId: mailInfo.messageId });
+        } else {
+            throw new Error('Mailer returned success but no MessageID was found.');
+        }
+
+    } catch (error) {
+        console.error('✖ RESEND FATAL ERROR:', error.message);
+        res.status(500).json({ message: 'Failed to resend email', error: error.message });
     }
 };

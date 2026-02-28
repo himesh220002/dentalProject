@@ -7,6 +7,7 @@ router.get('/stats', appointmentController.getAppointmentStats);
 router.get('/:id', appointmentController.getAppointmentById);
 router.post('/', appointmentController.createAppointment);
 router.put('/:id', appointmentController.updateAppointmentStatus);
+router.post('/:id/resend', appointmentController.resendConfirmationEmail);
 router.get('/patient/:patientId', appointmentController.getAppointmentsByPatientId);
 router.delete('/:id', appointmentController.deleteAppointment);
 
