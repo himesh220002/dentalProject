@@ -42,6 +42,7 @@ exports.markAsRead = async (req, res) => {
 exports.markAsScheduled = async (req, res) => {
     try {
         const { appointmentId, emailSent } = req.body;
+        console.log(`Linking Message ${req.params.id} to Appointment ${appointmentId}... (EmailSent: ${emailSent})`);
         const updateData = { status: 'Scheduled' };
         if (appointmentId) updateData.appointmentId = appointmentId;
         if (emailSent !== undefined) updateData.emailSent = emailSent;

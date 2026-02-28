@@ -26,6 +26,7 @@ exports.getAppointmentById = async (req, res) => {
 exports.createAppointment = async (req, res) => {
     try {
         console.log('--- APPOINTMENT FLOW START ---');
+        console.log('Step 0: Validating payload...', req.body);
         console.log('Step 1: Saving initial appointment record...');
         const newAppointment = new Appointment(req.body);
         const savedAppointment = await newAppointment.save();
@@ -36,28 +37,27 @@ exports.createAppointment = async (req, res) => {
 
         let emailSentTo = null;
         if (populatedApp.patientId && populatedApp.patientId.email) {
+            emailSentTo = populatedApp.patientId.email;
             console.log('✔ Step 2 PASSED: Email address found -', populatedApp.patientId.email);
-            console.log('Step 3: Attempting secure SMTP handshake...');
-            try {
-                const mailInfo = await sendAppointmentEmail(
-                    populatedApp.patientId.email,
-                    populatedApp.patientId.name,
-                    {
-                        date: populatedApp.date,
-                        time: populatedApp.time,
-                        reason: populatedApp.reason,
-                        status: 'Fixed'
-                    }
-                );
-                if (mailInfo && mailInfo.messageId) {
-                    emailSentTo = populatedApp.patientId.email;
-                    console.log('✔ Step 3 PASSED: Email delivered successfully. MessageId:', mailInfo.messageId);
-                } else {
-                    console.log('✖ Step 3 FAILED: Mailer returned no messageId (Partial failure)');
+            console.log('Step 3: Triggering background email notification...');
+
+            // NOTE: We do NOT await this to prevent UI hanging
+            sendAppointmentEmail(
+                populatedApp.patientId.email,
+                populatedApp.patientId.name,
+                {
+                    date: populatedApp.date,
+                    time: populatedApp.time,
+                    reason: populatedApp.reason,
+                    status: 'Fixed'
                 }
-            } catch (err) {
-                console.error('✖ Step 3 FAILED: SMTP delivery error:', err.message);
-            }
+            ).then(info => {
+                if (info && info.messageId) {
+                    console.log('✔ Step 3 PASSED: Background email delivered. MessageId:', info.messageId);
+                }
+            }).catch(err => {
+                console.error('✖ Step 3 FAILED: Background delivery error:', err.message);
+            });
         } else {
             console.log('⚠ Step 2 SKIPPED: No email address found for this patient.');
         }
@@ -76,6 +76,7 @@ const TreatmentRecord = require('../models/TreatmentRecord');
 exports.updateAppointmentStatus = async (req, res) => {
     try {
         console.log('--- RESCHEDULE FLOW START ---');
+        console.log('Step 0: Validating update payload...', req.body);
         // Prepare updates
         if (req.body.paymentStatus === 'Paid') {
             req.body.markedPaidAt = new Date(); // Restart timer
@@ -106,28 +107,26 @@ exports.updateAppointmentStatus = async (req, res) => {
         if (req.body.date || req.body.time) {
             console.log('Step 2: Reschedule detected, checking patient email...');
             if (updatedAppointment.patientId && updatedAppointment.patientId.email) {
+                emailSentTo = updatedAppointment.patientId.email;
                 console.log('✔ Step 2 PASSED: Target email -', updatedAppointment.patientId.email);
-                console.log('Step 3: Attempting Reschedule SMTP handshake...');
-                try {
-                    const mailInfo = await sendAppointmentEmail(
-                        updatedAppointment.patientId.email,
-                        updatedAppointment.patientId.name,
-                        {
-                            date: updatedAppointment.date,
-                            time: updatedAppointment.time,
-                            reason: updatedAppointment.reason,
-                            status: 'Rescheduled'
-                        }
-                    );
-                    if (mailInfo && mailInfo.messageId) {
-                        emailSentTo = updatedAppointment.patientId.email;
-                        console.log('✔ Step 3 PASSED: Reschedule email delivered. MessageId:', mailInfo.messageId);
-                    } else {
-                        console.log('✖ Step 3 FAILED: Mailer returned no messageId');
+                console.log('Step 3: Triggering background Reschedule email...');
+
+                sendAppointmentEmail(
+                    updatedAppointment.patientId.email,
+                    updatedAppointment.patientId.name,
+                    {
+                        date: updatedAppointment.date,
+                        time: updatedAppointment.time,
+                        reason: updatedAppointment.reason,
+                        status: 'Rescheduled'
                     }
-                } catch (err) {
-                    console.error('✖ Step 3 FAILED: Reschedule email error:', err.message);
-                }
+                ).then(info => {
+                    if (info && info.messageId) {
+                        console.log('✔ Step 3 PASSED: Background Reschedule email delivered. MessageId:', info.messageId);
+                    }
+                }).catch(err => {
+                    console.error('✖ Step 3 FAILED: Background Reschedule error:', err.message);
+                });
             } else {
                 console.log('⚠ Step 2 SKIPPED: No email found for reschedule notification.');
             }

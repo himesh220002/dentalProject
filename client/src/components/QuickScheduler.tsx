@@ -217,6 +217,8 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                 amount: totalAmount
             };
 
+            console.log('🚀 Submitting Appointment Payload:', payload);
+
             let res;
             if (appointmentId) {
                 res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${appointmentId}`, payload);

@@ -2,9 +2,6 @@ const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
     auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASS
@@ -14,9 +11,10 @@ const transporter = nodemailer.createTransport({
 // Verify connection configuration
 transporter.verify(function (error, success) {
     if (error) {
-        console.log('Mailer Error:', error);
+        console.log('--- MAILER CONFIG ERROR ---');
+        console.log(error.message);
     } else {
-        console.log('Mailer System: Ready to deliver messages');
+        console.log('✔ Mailer System: Handshake Successful & Ready');
     }
 });
 
