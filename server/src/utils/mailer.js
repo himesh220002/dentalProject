@@ -8,9 +8,11 @@ const transporter = nodemailer.createTransport({
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASS
     },
-    connectionTimeout: 30000, // 30 seconds
+    connectionTimeout: 30000,
     greetingTimeout: 30000,
-    socketTimeout: 30000
+    socketTimeout: 30000,
+    // CRITICAL: Force IPv4 for Render environment to avoid ENETUNREACH on IPv6
+    family: 4
 });
 
 // Verify connection configuration
