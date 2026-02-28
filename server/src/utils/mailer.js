@@ -1,18 +1,21 @@
 const nodemailer = require('nodemailer');
 
+// Node 18+ / 20+ Fix: Force IPv4 as the default DNS result order
+// This is more reliable than the 'family' option for cloud networking
+require('dns').setDefaultResultOrder('ipv4first');
+
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     secure: false, // Use STARTTLS for port 587
+    pool: true,    // Use pooled connections for better stability
     auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASS
     },
-    connectionTimeout: 40000, // 40 seconds
-    greetingTimeout: 40000,
-    socketTimeout: 40000,
-    // CRITICAL: Force IPv4 for Render environment to avoid ENETUNREACH on IPv6
-    family: 4
+    connectionTimeout: 60000, // Increased to 60 seconds
+    greetingTimeout: 60000,
+    socketTimeout: 60000
 });
 
 // Verify connection configuration
