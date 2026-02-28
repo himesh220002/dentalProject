@@ -30,6 +30,7 @@ exports.createAppointment = async (req, res) => {
     try {
         console.log('--- APPOINTMENT FLOW START ---');
         console.log('Step 0: Validating payload...', req.body);
+        const contactId = req.body.contactId;
         console.log('Step 1: Saving initial appointment record...');
         const newAppointment = new Appointment(req.body);
         const savedAppointment = await newAppointment.save();
@@ -102,6 +103,7 @@ exports.updateAppointmentStatus = async (req, res) => {
     try {
         console.log('--- RESCHEDULE FLOW START ---');
         console.log('Step 0: Validating update payload...', req.body);
+        const contactId = req.body.contactId;
         // Prepare updates
         if (req.body.paymentStatus === 'Paid') {
             req.body.markedPaidAt = new Date(); // Restart timer
@@ -127,8 +129,6 @@ exports.updateAppointmentStatus = async (req, res) => {
             return res.status(404).json({ message: 'Appointment not found' });
         }
         console.log('✔ Step 1 PASSED: Record updated');
-
-        const contactId = req.body.contactId;
 
         // If this is a reschedule from a message, reset its email status until the new one delivers
         if (contactId && (req.body.date || req.body.time)) {
