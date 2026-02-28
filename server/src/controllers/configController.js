@@ -50,3 +50,30 @@ exports.verifyAdminPassword = async (req, res) => {
         res.status(500).json({ message: 'Error verifying password', error: error.message });
     }
 };
+
+const { transporter } = require('../utils/mailer');
+exports.checkMailer = async (req, res) => {
+    try {
+        console.log('--- LIVE MAILER CHECK TRIGGERED ---');
+        console.log('Testing GMAIL_USER:', process.env.GMAIL_USER);
+
+        // Test connection
+        await transporter.verify();
+
+        res.status(200).json({
+            success: true,
+            message: 'SMTP Connection Successful',
+            user: process.env.GMAIL_USER,
+            passConfigured: !!process.env.GMAIL_APP_PASS
+        });
+    } catch (error) {
+        console.error('✖ LIVE MAILER CHECK FAILED:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'SMTP Connection Failed',
+            error: error.message,
+            code: error.code,
+            command: error.command
+        });
+    }
+};

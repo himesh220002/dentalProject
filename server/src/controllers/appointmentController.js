@@ -35,6 +35,9 @@ exports.createAppointment = async (req, res) => {
         console.log('Step 2: Fetching patient details for email notification...');
         const populatedApp = await Appointment.findById(savedAppointment._id).populate('patientId');
 
+        const Contact = require('../models/Contact');
+        const contactId = req.body.contactId;
+
         let emailSentTo = null;
         if (populatedApp.patientId && populatedApp.patientId.email) {
             emailSentTo = populatedApp.patientId.email;
@@ -51,9 +54,13 @@ exports.createAppointment = async (req, res) => {
                     reason: populatedApp.reason,
                     status: 'Fixed'
                 }
-            ).then(info => {
+            ).then(async (info) => {
                 if (info && info.messageId) {
                     console.log('✔ Step 3 PASSED: Background email delivered. MessageId:', info.messageId);
+                    if (contactId) {
+                        await Contact.findByIdAndUpdate(contactId, { emailSent: true });
+                        console.log(`✔ Step 4: Marked Contact ${contactId} as emailSent: true`);
+                    }
                 }
             }).catch(err => {
                 console.error('✖ Step 3 FAILED: Background delivery error:', err.message);

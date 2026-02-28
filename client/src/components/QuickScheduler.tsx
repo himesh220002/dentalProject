@@ -214,7 +214,8 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             const payload = {
                 ...formData,
                 reason: finalReason + (formData.notes ? ` (${formData.notes})` : ''),
-                amount: totalAmount
+                amount: totalAmount,
+                contactId: messageId // Pass this for background email tracking
             };
 
             console.log('🚀 Submitting Appointment Payload:', payload);
@@ -225,9 +226,9 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             } else {
                 res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments`, payload);
                 if (messageId) {
+                    // Mark as scheduled immediately, but server will set emailSent: true once SMTP finishes
                     await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts/${messageId}/scheduled`, {
-                        appointmentId: res.data._id,
-                        emailSent: !!res.data.emailSentTo
+                        appointmentId: res.data._id
                     });
                 }
             }

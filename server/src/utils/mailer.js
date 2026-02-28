@@ -84,3 +84,8 @@ exports.sendAppointmentEmail = async (patientEmail, patientName, appointmentDeta
         throw error;
     }
 };
+
+module.exports = {
+    transporter,
+    sendAppointmentEmail
+};
