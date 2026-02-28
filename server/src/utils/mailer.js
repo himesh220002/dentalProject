@@ -2,15 +2,15 @@ const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // Use SSL for port 465
+    port: 587,
+    secure: false, // Use STARTTLS for port 587
     auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASS
     },
-    connectionTimeout: 30000,
-    greetingTimeout: 30000,
-    socketTimeout: 30000,
+    connectionTimeout: 40000, // 40 seconds
+    greetingTimeout: 40000,
+    socketTimeout: 40000,
     // CRITICAL: Force IPv4 for Render environment to avoid ENETUNREACH on IPv6
     family: 4
 });
@@ -45,11 +45,11 @@ const sendAppointmentEmail = async (patientEmail, patientName, appointmentDetail
     const isReschedule = status === 'Rescheduled';
 
     const mailOptions = {
-        from: `"Dr. Tooth Dental Clinic" <${process.env.GMAIL_USER}>`,
+        from: `"Dr. Tooth Dental Clinic" < ${process.env.GMAIL_USER}> `,
         to: patientEmail,
         subject: isReschedule ? 'Appointment Rescheduled - Dr. Tooth' : 'Appointment Fixed - Dr. Tooth',
         html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+    < div style = "font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;" >
                 <div style="background-color: #2563eb; color: white; padding: 24px; text-align: center;">
                     <h1 style="margin: 0; font-size: 24px;">Dr. Tooth Dental Clinic</h1>
                 </div>
@@ -70,15 +70,15 @@ const sendAppointmentEmail = async (patientEmail, patientName, appointmentDetail
                 <div style="background-color: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #94a3b8;">
                     &copy; 2026 Dr. Tooth Dental Clinic. All rights reserved.
                 </div>
-            </div>
-        `
+            </div >
+    `
     };
 
     try {
         console.log('Step 3A: Sending payload to Gmail SMTP...');
         const info = await transporter.sendMail(mailOptions);
         console.log('Step 3B: SMTP Handshake successful.');
-        console.log(`✔ Notification email sent to ${patientEmail}. MessageId: ${info.messageId}`);
+        console.log(`✔ Notification email sent to ${patientEmail}.MessageId: ${info.messageId} `);
         return info;
     } catch (error) {
         console.error('✖ Step 3B ERROR: SMPT failed at handshake.');
