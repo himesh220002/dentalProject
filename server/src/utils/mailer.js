@@ -25,7 +25,7 @@ transporter.verify(function (error, success) {
     }
 });
 
-exports.sendAppointmentEmail = async (patientEmail, patientName, appointmentDetails) => {
+const sendAppointmentEmail = async (patientEmail, patientName, appointmentDetails) => {
     console.log(`Starting email delivery for ${patientEmail}...`);
 
     if (!patientEmail) {
