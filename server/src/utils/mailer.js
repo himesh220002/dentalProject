@@ -9,7 +9,14 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.sendAppointmentEmail = async (patientEmail, patientName, appointmentDetails) => {
-    if (!patientEmail || !process.env.GMAIL_USER) return;
+    if (!patientEmail) {
+        console.log('Skipping email notification: Patient has no email address.');
+        return;
+    }
+    if (!process.env.GMAIL_USER) {
+        console.log('Skipping email notification: GMAIL_USER not configured in environment.');
+        return;
+    }
 
     const { date, time, reason, status } = appointmentDetails;
     const isReschedule = status === 'Rescheduled';

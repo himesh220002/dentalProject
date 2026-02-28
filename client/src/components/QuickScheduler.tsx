@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCalendarAlt, FaClock, FaUser, FaNotesMedical, FaTimes, FaCheck, FaSearch, FaMoneyBillWave, FaPlusCircle } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaUser, FaNotesMedical, FaTimes, FaCheck, FaSearch, FaMoneyBillWave, FaPlusCircle, FaEnvelope } from 'react-icons/fa';
 
 interface Patient {
     _id: string;
@@ -36,6 +36,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
     const [searchTerm, setSearchTerm] = useState(initialSearch || '');
     const [loading, setLoading] = useState(false);
     const [fetchingData, setFetchingData] = useState(true);
+    const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     const getTomorrowDate = () => {
         const tomorrow = new Date();
@@ -210,17 +211,30 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                 amount: totalAmount
             };
 
+            let res;
             if (appointmentId) {
-                await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${appointmentId}`, payload);
+                res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${appointmentId}`, payload);
             } else {
-                await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments`, payload);
+                res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments`, payload);
                 if (messageId) {
                     await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts/${messageId}/scheduled`);
                 }
             }
 
-            onSuccess();
-            onClose();
+            if (res.data.emailSentTo) {
+                setStatusMessage({
+                    type: 'success',
+                    text: `Success! Confirmation email sent to ${res.data.emailSentTo}`
+                });
+                setTimeout(() => {
+                    onSuccess();
+                    onClose();
+                    setStatusMessage(null);
+                }, 3000);
+            } else {
+                onSuccess();
+                onClose();
+            }
             setFormData({
                 patientId: '',
                 date: getTomorrowDate(),
@@ -283,6 +297,22 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                         {appointmentId ? 'Update appointment time & treatments' : 'Configure appointment & charges'}
                     </p>
                 </div>
+
+                {statusMessage && (
+                    <div className="absolute inset-0 z-50 bg-white/90 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-300">
+                        <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/20">
+                            <FaCheck size={40} className="animate-bounce" />
+                        </div>
+                        <h3 className="text-2xl font-black text-gray-900 mb-2">Appointment Secured!</h3>
+                        <div className="flex items-center gap-3 bg-blue-50 text-blue-700 px-6 py-4 rounded-2xl border border-blue-100 shadow-sm transition-all transform hover:scale-105">
+                            <FaEnvelope className="text-xl animate-pulse" />
+                            <p className="font-bold text-sm leading-relaxed">
+                                {statusMessage.text}
+                            </p>
+                        </div>
+                        <p className="mt-8 text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em]">Redirecting to dashboard...</p>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="p-8 space-y-2 max-h-[80vh] sm:max-h-[750px] overflow-y-auto custom-scrollbar">
                     {/* Search & Select Patient */}

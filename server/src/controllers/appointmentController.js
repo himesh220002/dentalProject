@@ -29,9 +29,11 @@ exports.createAppointment = async (req, res) => {
         const savedAppointment = await newAppointment.save();
 
         // Fetch patient details to get email
-        const populatedApp = await Appointment.findById(savedAppointment._id).populate('patientId');
+        let emailSentTo = null;
         if (populatedApp.patientId && populatedApp.patientId.email) {
-            await sendAppointmentEmail(
+            emailSentTo = populatedApp.patientId.email;
+            // Send in background without await
+            sendAppointmentEmail(
                 populatedApp.patientId.email,
                 populatedApp.patientId.name,
                 {
@@ -43,7 +45,7 @@ exports.createAppointment = async (req, res) => {
             );
         }
 
-        res.status(201).json(savedAppointment);
+        res.status(201).json({ ...savedAppointment.toObject(), emailSentTo });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -75,10 +77,12 @@ exports.updateAppointmentStatus = async (req, res) => {
 
         if (!updatedAppointment) return res.status(404).json({ message: 'Appointment not found' });
 
-        // If date/time changed, notify user
+        let emailSentTo = null;
         if (req.body.date || req.body.time) {
             if (updatedAppointment.patientId && updatedAppointment.patientId.email) {
-                await sendAppointmentEmail(
+                emailSentTo = updatedAppointment.patientId.email;
+                // Send in background without await
+                sendAppointmentEmail(
                     updatedAppointment.patientId.email,
                     updatedAppointment.patientId.name,
                     {
@@ -114,7 +118,7 @@ exports.updateAppointmentStatus = async (req, res) => {
             await TreatmentRecord.findOneAndDelete({ appointmentId: updatedAppointment._id });
         }
 
-        res.status(200).json(updatedAppointment);
+        res.status(200).json({ ...updatedAppointment.toObject(), emailSentTo });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
