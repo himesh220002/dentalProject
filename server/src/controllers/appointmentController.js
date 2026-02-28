@@ -39,7 +39,7 @@ exports.createAppointment = async (req, res) => {
         if (populatedApp.patientId && populatedApp.patientId.email) {
             emailSentTo = populatedApp.patientId.email;
             console.log('✔ Step 2 PASSED: Email address found -', populatedApp.patientId.email);
-            console.log('Step 3: Triggering background email notification...');
+            console.log(`Step 3: Triggering background email notification for ${populatedApp.patientId.email}...`);
 
             // NOTE: We do NOT await this to prevent UI hanging
             sendAppointmentEmail(
@@ -109,7 +109,7 @@ exports.updateAppointmentStatus = async (req, res) => {
             if (updatedAppointment.patientId && updatedAppointment.patientId.email) {
                 emailSentTo = updatedAppointment.patientId.email;
                 console.log('✔ Step 2 PASSED: Target email -', updatedAppointment.patientId.email);
-                console.log('Step 3: Triggering background Reschedule email...');
+                console.log(`Step 3: Triggering background Reschedule email notification for ${updatedAppointment.patientId.email}...`);
 
                 sendAppointmentEmail(
                     updatedAppointment.patientId.email,

@@ -5,16 +5,23 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASS
-    }
+    },
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 10000,
+    socketTimeout: 10000
 });
 
 // Verify connection configuration
+console.log('--- MAILER SMTP DIAGNOSTIC ---');
+console.log('GMAIL_USER:', process.env.GMAIL_USER ? '✔ LOADED' : '✖ MISSING');
+console.log('GMAIL_PASS:', process.env.GMAIL_APP_PASS ? '✔ LOADED' : '✖ MISSING');
+
 transporter.verify(function (error, success) {
     if (error) {
-        console.log('--- MAILER CONFIG ERROR ---');
-        console.log(error.message);
+        console.log('✖ MAILER FATAL: SMTP Connection Failed.');
+        console.log('Reason:', error.message);
     } else {
-        console.log('✔ Mailer System: Handshake Successful & Ready');
+        console.log('✔ MAILER SUCCESS: SMTP Connection is live and authenticated.');
     }
 });
 
@@ -67,10 +74,13 @@ exports.sendAppointmentEmail = async (patientEmail, patientName, appointmentDeta
         console.log('Step 3A: Sending payload to Gmail SMTP...');
         const info = await transporter.sendMail(mailOptions);
         console.log('Step 3B: SMTP Handshake successful.');
-        console.log(`Notification email sent to ${patientEmail}. MessageId: ${info.messageId}`);
+        console.log(`✔ Notification email sent to ${patientEmail}. MessageId: ${info.messageId}`);
         return info;
     } catch (error) {
-        console.error('✖ Step 3B ERROR: SMPT failed at handshake:', error.message);
+        console.error('✖ Step 3B ERROR: SMPT failed at handshake.');
+        console.error('ErrorMessage:', error.message);
+        console.error('ErrorCode:', error.code || 'N/A');
+        console.error('Stack:', error.stack);
         throw error;
     }
 };
