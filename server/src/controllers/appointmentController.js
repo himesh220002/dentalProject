@@ -25,29 +25,47 @@ exports.getAppointmentById = async (req, res) => {
 // Create a new appointment
 exports.createAppointment = async (req, res) => {
     try {
+        console.log('--- APPOINTMENT FLOW START ---');
+        console.log('Step 1: Saving initial appointment record...');
         const newAppointment = new Appointment(req.body);
         const savedAppointment = await newAppointment.save();
+        console.log('✔ Step 1 PASSED: Record saved with ID', savedAppointment._id);
 
-        // Fetch patient details to get email
+        console.log('Step 2: Fetching patient details for email notification...');
         const populatedApp = await Appointment.findById(savedAppointment._id).populate('patientId');
+
         let emailSentTo = null;
         if (populatedApp.patientId && populatedApp.patientId.email) {
-            emailSentTo = populatedApp.patientId.email;
-            // Send in background without await
-            sendAppointmentEmail(
-                populatedApp.patientId.email,
-                populatedApp.patientId.name,
-                {
-                    date: populatedApp.date,
-                    time: populatedApp.time,
-                    reason: populatedApp.reason,
-                    status: 'Fixed'
+            console.log('✔ Step 2 PASSED: Email address found -', populatedApp.patientId.email);
+            console.log('Step 3: Attempting secure SMTP handshake...');
+            try {
+                const mailInfo = await sendAppointmentEmail(
+                    populatedApp.patientId.email,
+                    populatedApp.patientId.name,
+                    {
+                        date: populatedApp.date,
+                        time: populatedApp.time,
+                        reason: populatedApp.reason,
+                        status: 'Fixed'
+                    }
+                );
+                if (mailInfo && mailInfo.messageId) {
+                    emailSentTo = populatedApp.patientId.email;
+                    console.log('✔ Step 3 PASSED: Email delivered successfully. MessageId:', mailInfo.messageId);
+                } else {
+                    console.log('✖ Step 3 FAILED: Mailer returned no messageId (Partial failure)');
                 }
-            ).catch(err => console.error('Background Email Error (Create):', err));
+            } catch (err) {
+                console.error('✖ Step 3 FAILED: SMTP delivery error:', err.message);
+            }
+        } else {
+            console.log('⚠ Step 2 SKIPPED: No email address found for this patient.');
         }
 
+        console.log('--- APPOINTMENT FLOW COMPLETE ---');
         res.status(201).json({ ...savedAppointment.toObject(), emailSentTo });
     } catch (error) {
+        console.error('✖ CRITICAL ERROR (Step 1):', error.message);
         res.status(400).json({ message: error.message });
     }
 };
@@ -57,6 +75,7 @@ const TreatmentRecord = require('../models/TreatmentRecord');
 // Update appointment status and other fields
 exports.updateAppointmentStatus = async (req, res) => {
     try {
+        console.log('--- RESCHEDULE FLOW START ---');
         // Prepare updates
         if (req.body.paymentStatus === 'Paid') {
             req.body.markedPaidAt = new Date(); // Restart timer
@@ -70,34 +89,53 @@ exports.updateAppointmentStatus = async (req, res) => {
             req.body.completedAt = null;
         }
 
+        console.log('Step 1: Updating appointment record...');
         const updatedAppointment = await Appointment.findByIdAndUpdate(
             req.params.id,
             req.body,
             { new: true }
         ).populate('patientId');
 
-        if (!updatedAppointment) return res.status(404).json({ message: 'Appointment not found' });
+        if (!updatedAppointment) {
+            console.log('✖ Step 1 FAILED: Appointment ID not found');
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+        console.log('✔ Step 1 PASSED: Record updated');
 
         let emailSentTo = null;
         if (req.body.date || req.body.time) {
+            console.log('Step 2: Reschedule detected, checking patient email...');
             if (updatedAppointment.patientId && updatedAppointment.patientId.email) {
-                emailSentTo = updatedAppointment.patientId.email;
-                // Send in background without await
-                sendAppointmentEmail(
-                    updatedAppointment.patientId.email,
-                    updatedAppointment.patientId.name,
-                    {
-                        date: updatedAppointment.date,
-                        time: updatedAppointment.time,
-                        reason: updatedAppointment.reason,
-                        status: 'Rescheduled'
+                console.log('✔ Step 2 PASSED: Target email -', updatedAppointment.patientId.email);
+                console.log('Step 3: Attempting Reschedule SMTP handshake...');
+                try {
+                    const mailInfo = await sendAppointmentEmail(
+                        updatedAppointment.patientId.email,
+                        updatedAppointment.patientId.name,
+                        {
+                            date: updatedAppointment.date,
+                            time: updatedAppointment.time,
+                            reason: updatedAppointment.reason,
+                            status: 'Rescheduled'
+                        }
+                    );
+                    if (mailInfo && mailInfo.messageId) {
+                        emailSentTo = updatedAppointment.patientId.email;
+                        console.log('✔ Step 3 PASSED: Reschedule email delivered. MessageId:', mailInfo.messageId);
+                    } else {
+                        console.log('✖ Step 3 FAILED: Mailer returned no messageId');
                     }
-                ).catch(err => console.error('Background Email Error (Update):', err));
+                } catch (err) {
+                    console.error('✖ Step 3 FAILED: Reschedule email error:', err.message);
+                }
+            } else {
+                console.log('⚠ Step 2 SKIPPED: No email found for reschedule notification.');
             }
         }
 
         // Handle Treatment Record based on paymentStatus
         if (req.body.paymentStatus === 'Paid') {
+            console.log('Auto-Record: Creating treatment log...');
             // Check if record already exists for this appointment
             const existingRecord = await TreatmentRecord.findOne({ appointmentId: updatedAppointment._id });
 
@@ -112,15 +150,17 @@ exports.updateAppointmentStatus = async (req, res) => {
                     date: updatedAppointment.date,
                     notes: autoNotes
                 });
+                console.log('✔ Auto-Record: Created.');
             }
         } else if (req.body.paymentStatus && req.body.paymentStatus !== 'Paid') {
-            // If it was Paid but now it's something else, we might want to remove the auto-record
-            // Only if it was an auto-record (matching the notes pattern or just by appointmentId)
             await TreatmentRecord.findOneAndDelete({ appointmentId: updatedAppointment._id });
+            console.log('Auto-Record: Removed (Status reverted from Paid).');
         }
 
+        console.log('--- RESCHEDULE FLOW COMPLETE ---');
         res.status(200).json({ ...updatedAppointment.toObject(), emailSentTo });
     } catch (error) {
+        console.error('✖ CRITICAL ERROR (Update Flow):', error.message);
         res.status(400).json({ message: error.message });
     }
 };

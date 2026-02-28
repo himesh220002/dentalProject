@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaEnvelopeOpen, FaPhone, FaClock, FaCheckCircle, FaCalendarPlus, FaEnvelope } from 'react-icons/fa';
+import { FaEnvelopeOpen, FaPhone, FaClock, FaCheckCircle, FaCalendarPlus, FaEnvelope, FaTimes } from 'react-icons/fa';
 import QuickScheduler from '@/components/QuickScheduler';
 
 interface Message {
@@ -14,6 +14,7 @@ interface Message {
     status: string;
     patientType?: 'new' | 'prev';
     appointmentId?: string;
+    emailSent?: boolean;
     createdAt: string;
 }
 
@@ -155,9 +156,14 @@ export default function DashboardMessages() {
                                             <div className="text-emerald-600 font-bold flex items-center justify-center gap-2 text-xs sm:text-base">
                                                 <FaCheckCircle className="text-lg sm:text-xl" /> Appt Fixed
                                             </div>
-                                            {msg.email && (
+                                            {msg.emailSent && (
                                                 <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-1">
                                                     <FaEnvelope className="text-[8px]" /> Confirmation Sent
+                                                </div>
+                                            )}
+                                            {msg.email && !msg.emailSent && (
+                                                <div className="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-1">
+                                                    <FaTimes className="text-[8px]" /> Email Failed
                                                 </div>
                                             )}
                                         </div>

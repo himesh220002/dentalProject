@@ -41,9 +41,10 @@ exports.markAsRead = async (req, res) => {
 // Mark message as scheduled
 exports.markAsScheduled = async (req, res) => {
     try {
-        const { appointmentId } = req.body;
+        const { appointmentId, emailSent } = req.body;
         const updateData = { status: 'Scheduled' };
         if (appointmentId) updateData.appointmentId = appointmentId;
+        if (emailSent !== undefined) updateData.emailSent = emailSent;
 
         const contact = await Contact.findByIdAndUpdate(req.params.id, updateData, { new: true });
         if (!contact) return res.status(404).json({ message: 'Message not found' });

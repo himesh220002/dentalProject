@@ -66,11 +66,13 @@ exports.sendAppointmentEmail = async (patientEmail, patientName, appointmentDeta
     };
 
     try {
+        console.log('Step 3A: Sending payload to Gmail SMTP...');
         const info = await transporter.sendMail(mailOptions);
+        console.log('Step 3B: SMTP Handshake successful.');
         console.log(`Notification email sent to ${patientEmail}. MessageId: ${info.messageId}`);
         return info;
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('✖ Step 3B ERROR: SMPT failed at handshake:', error.message);
         throw error;
     }
 };

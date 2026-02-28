@@ -223,7 +223,10 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             } else {
                 res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments`, payload);
                 if (messageId) {
-                    await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts/${messageId}/scheduled`, { appointmentId: res.data._id });
+                    await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts/${messageId}/scheduled`, {
+                        appointmentId: res.data._id,
+                        emailSent: !!res.data.emailSentTo
+                    });
                 }
             }
 
