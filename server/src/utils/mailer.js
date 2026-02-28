@@ -15,7 +15,13 @@ const transporter = nodemailer.createTransport({
     },
     connectionTimeout: 60000, // Increased to 60 seconds
     greetingTimeout: 60000,
-    socketTimeout: 60000
+    socketTimeout: 60000,
+    // CRITICAL: Force IPv4 at the socket level
+    family: 4,
+    // EXTREME: Custom DNS lookup to strictly return IPv4 only
+    lookup: (hostname, options, callback) => {
+        require('dns').lookup(hostname, { family: 4 }, callback);
+    }
 });
 
 // Verify connection configuration
