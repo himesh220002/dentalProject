@@ -19,22 +19,56 @@ exports.syncUser = async (req, res) => {
             await user.save();
         }
 
-        if (!user.patientId) {
-            const normalizedUserName = name.toLowerCase().replace(/\s+/g, '');
+        // Aggressive Linking: Always check for a "better" match by email if current patient is just a placeholder
+        const normalizedUserName = name.toLowerCase().replace(/\s+/g, '');
+        const emailMatch = await Patient.findOne({ email: email.toLowerCase(), userId: { $exists: false } });
 
-            // 1. Try exact email match first (Priority 1)
-            let matchedPatient = await Patient.findOne({ email: email.toLowerCase() });
+        if (emailMatch) {
+            // If the user already has a patient record, but we found a better match (by email) that is unlinked
+            if (user.patientId && String(user.patientId) !== String(emailMatch._id)) {
+                const oldPatientId = user.patientId;
+                // Check if current patient is a placeholder (not added by admin)
+                const currentPatient = await Patient.findById(oldPatientId);
+                if (currentPatient && !currentPatient.addedByAdmin) {
+                    // Update user
+                    user.patientId = emailMatch._id;
+                    user.contact = emailMatch.contact !== '-__-' ? emailMatch.contact : user.contact;
+                    await user.save();
 
-            // 2. Try name matching for unlinked records (Priority 2)
-            if (!matchedPatient) {
-                const unlinkedPatients = await Patient.find({ userId: { $exists: false } });
-                matchedPatient = unlinkedPatients.find(p => {
-                    const pNormalized = p.name.toLowerCase().replace(/\s+/g, '');
-                    return pNormalized === normalizedUserName ||
-                        normalizedUserName.includes(pNormalized) ||
-                        pNormalized.includes(normalizedUserName);
-                });
+                    // Update New Patient
+                    emailMatch.userId = user._id;
+                    await emailMatch.save();
+
+                    // Safely delete orphan placeholder if it has no history
+                    const [aptCount, recordCount] = await Promise.all([
+                        Appointment.countDocuments({ patientId: oldPatientId }),
+                        require('../models/TreatmentRecord').countDocuments({ patientId: oldPatientId })
+                    ]);
+
+                    if (aptCount === 0 && recordCount === 0) {
+                        await Patient.findByIdAndDelete(oldPatientId);
+                    }
+                }
+            } else if (!user.patientId) {
+                // Initial link
+                user.patientId = emailMatch._id;
+                user.contact = emailMatch.contact !== '-__-' ? emailMatch.contact : user.contact;
+                await user.save();
+
+                emailMatch.userId = user._id;
+                await emailMatch.save();
             }
+        }
+
+        // If still no patient linked, try name matching for unlinked records (Priority 2)
+        if (!user.patientId) {
+            const unlinkedPatients = await Patient.find({ userId: { $exists: false } });
+            const matchedPatient = unlinkedPatients.find(p => {
+                const pNormalized = p.name.toLowerCase().replace(/\s+/g, '');
+                return pNormalized === normalizedUserName ||
+                    normalizedUserName.includes(pNormalized) ||
+                    pNormalized.includes(normalizedUserName);
+            });
 
             if (matchedPatient) {
                 user.patientId = matchedPatient._id;
@@ -118,12 +152,17 @@ exports.updateProfile = async (req, res) => {
                 // 1. Match by Email (Priority 1)
                 if (p.email && p.email.toLowerCase() === inputEmail) return true;
 
-                // 2. Match by Name + Phone (Priority 2)
-                if (inputContact && p.contact && p.contact.replace(/\s+/g, '') === inputContact) {
-                    const pNameNormalized = p.name.toLowerCase().replace(/\s+/g, '');
-                    return pNameNormalized === inputName ||
-                        inputName.includes(pNameNormalized) ||
-                        pNameNormalized.includes(inputName);
+                // 2. Match by Name + Phone (Priority 2: Using last 10 digits for robustness)
+                if (inputContact && p.contact) {
+                    const pContactClean = p.contact.replace(/\D/g, '').slice(-10);
+                    const inputContactClean = inputContact.replace(/\D/g, '').slice(-10);
+
+                    if (pContactClean === inputContactClean && inputContactClean.length === 10) {
+                        const pNameNormalized = p.name.toLowerCase().replace(/\s+/g, '');
+                        return pNameNormalized === inputName ||
+                            inputName.includes(pNameNormalized) ||
+                            pNameNormalized.includes(inputName);
+                    }
                 }
                 return false;
             });

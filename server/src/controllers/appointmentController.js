@@ -29,6 +29,7 @@ exports.createAppointment = async (req, res) => {
         const savedAppointment = await newAppointment.save();
 
         // Fetch patient details to get email
+        const populatedApp = await Appointment.findById(savedAppointment._id).populate('patientId');
         let emailSentTo = null;
         if (populatedApp.patientId && populatedApp.patientId.email) {
             emailSentTo = populatedApp.patientId.email;
