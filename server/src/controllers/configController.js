@@ -71,9 +71,41 @@ exports.checkMailer = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'SMTP Connection Failed',
-            error: error.message,
-            code: error.code,
-            command: error.command
+            error: error.message
         });
+    }
+};
+
+exports.getEmailHistory = async (req, res) => {
+    try {
+        const Contact = require('../models/Contact');
+
+        // Fetch contacts that are scheduled (linked to appointments) and have an email
+        const history = await Contact.find({
+            status: 'Scheduled',
+            email: { $exists: true, $ne: '' }
+        })
+            .populate('appointmentId', 'date time reason')
+            .sort({ createdAt: -1 });
+
+        const formattedHistory = history.map(item => ({
+            id: item._id,
+            patientName: item.name,
+            patientEmail: item.email,
+            appointmentDate: item.appointmentId?.date,
+            appointmentTime: item.appointmentId?.time,
+            treatment: item.appointmentId?.reason,
+            deliveryStatus: item.emailSent ? 'Delivered' : 'Failed',
+            error: item.lastEmailError,
+            timestamp: item.createdAt
+        }));
+
+        res.status(200).json({
+            count: formattedHistory.length,
+            logs: formattedHistory
+        });
+    } catch (error) {
+        console.error('✖ ERROR FETCHING EMAIL HISTORY:', error.message);
+        res.status(500).json({ message: 'Error fetching history', error: error.message });
     }
 };

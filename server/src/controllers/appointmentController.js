@@ -68,12 +68,21 @@ exports.createAppointment = async (req, res) => {
                 if (info && info.messageId) {
                     console.log('✔ Step 3 PASSED: Background email delivered. MessageId:', info.messageId);
                     if (contactId) {
-                        await Contact.findByIdAndUpdate(contactId, { emailSent: true });
+                        await Contact.findByIdAndUpdate(contactId, {
+                            emailSent: true,
+                            lastEmailError: null
+                        });
                         console.log(`✔ Step 4: Marked Contact ${contactId} as emailSent: true`);
                     }
                 }
-            }).catch(err => {
+            }).catch(async (err) => {
                 console.error('✖ Step 3 FAILED: Background delivery error:', err.message);
+                if (contactId) {
+                    await Contact.findByIdAndUpdate(contactId, {
+                        emailSent: false,
+                        lastEmailError: err.message
+                    });
+                }
             });
         } else {
             console.log('⚠ Step 2 SKIPPED: No email address found for this patient.');
@@ -282,7 +291,10 @@ exports.resendConfirmationEmail = async (req, res) => {
 
             if (contactId) {
                 const Contact = require('../models/Contact');
-                await Contact.findByIdAndUpdate(contactId, { emailSent: true });
+                await Contact.findByIdAndUpdate(contactId, {
+                    emailSent: true,
+                    lastEmailError: null
+                });
                 console.log(`✔ Resend Status Updated: Marked Contact ${contactId} as emailSent: true`);
             }
 
@@ -293,6 +305,13 @@ exports.resendConfirmationEmail = async (req, res) => {
 
     } catch (error) {
         console.error('✖ RESEND FATAL ERROR:', error.message);
+        if (req.body.contactId) {
+            const Contact = require('../models/Contact');
+            await Contact.findByIdAndUpdate(req.body.contactId, {
+                emailSent: false,
+                lastEmailError: error.message
+            });
+        }
         res.status(500).json({ message: 'Failed to resend email', error: error.message });
     }
 };

@@ -80,7 +80,7 @@ app.use('/api/config', configRoutes);
 app.use('/api/handover', handoverRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Dr. Tooth Dental Clinic Server is Running');
+    res.send('Dr. Tooth Dental Clinic Server is Running [Build: 2026-02-28 18:15]');
 });
 
 const PORT = process.env.PORT || 5000;

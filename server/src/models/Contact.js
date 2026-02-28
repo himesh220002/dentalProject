@@ -36,6 +36,10 @@ const contactSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    lastEmailError: {
+        type: String,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now
