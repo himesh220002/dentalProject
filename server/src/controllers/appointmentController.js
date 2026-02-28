@@ -43,7 +43,7 @@ exports.createAppointment = async (req, res) => {
                     reason: populatedApp.reason,
                     status: 'Fixed'
                 }
-            );
+            ).catch(err => console.error('Background Email Error (Create):', err));
         }
 
         res.status(201).json({ ...savedAppointment.toObject(), emailSentTo });
@@ -92,7 +92,7 @@ exports.updateAppointmentStatus = async (req, res) => {
                         reason: updatedAppointment.reason,
                         status: 'Rescheduled'
                     }
-                );
+                ).catch(err => console.error('Background Email Error (Update):', err));
             }
         }
 

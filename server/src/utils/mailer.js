@@ -2,19 +2,33 @@ const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASS
     }
 });
 
+// Verify connection configuration
+transporter.verify(function (error, success) {
+    if (error) {
+        console.log('Mailer Error:', error);
+    } else {
+        console.log('Mailer System: Ready to deliver messages');
+    }
+});
+
 exports.sendAppointmentEmail = async (patientEmail, patientName, appointmentDetails) => {
+    console.log(`Starting email delivery for ${patientEmail}...`);
+
     if (!patientEmail) {
         console.log('Skipping email notification: Patient has no email address.');
         return;
     }
-    if (!process.env.GMAIL_USER) {
-        console.log('Skipping email notification: GMAIL_USER not configured in environment.');
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASS) {
+        console.log('Skipping email notification: GMAIL_USER or GMAIL_APP_PASS not configured.');
         return;
     }
 
@@ -52,9 +66,11 @@ exports.sendAppointmentEmail = async (patientEmail, patientName, appointmentDeta
     };
 
     try {
-        await transporter.sendMail(mailOptions);
-        console.log(`Notification email sent to ${patientEmail}`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`Notification email sent to ${patientEmail}. MessageId: ${info.messageId}`);
+        return info;
     } catch (error) {
         console.error('Error sending email:', error);
+        throw error;
     }
 };

@@ -13,6 +13,7 @@ interface Message {
     message: string;
     status: string;
     patientType?: 'new' | 'prev';
+    appointmentId?: string;
     createdAt: string;
 }
 
@@ -25,6 +26,7 @@ export default function DashboardMessages() {
     const [schedulerEmail, setSchedulerEmail] = useState('');
     const [schedulerMessageId, setSchedulerMessageId] = useState('');
     const [schedulerInquiry, setSchedulerInquiry] = useState('');
+    const [schedulerAppointmentId, setSchedulerAppointmentId] = useState('');
 
     const fetchMessages = async () => {
         try {
@@ -50,12 +52,13 @@ export default function DashboardMessages() {
         }
     };
 
-    const handleCreateAppointment = (name: string, phone: string, email: string | undefined, messageId: string, messageText: string) => {
+    const handleCreateAppointment = (name: string, phone: string, email: string | undefined, messageId: string, messageText: string, appointmentId?: string) => {
         setSchedulerSearch(phone);
         setSchedulerName(name);
         setSchedulerEmail(email || '');
         setSchedulerMessageId(messageId);
         setSchedulerInquiry(messageText);
+        setSchedulerAppointmentId(appointmentId || '');
         setIsSchedulerOpen(true);
     };
 
@@ -148,11 +151,18 @@ export default function DashboardMessages() {
                                 )}
                                 {msg.status === 'Scheduled' && (
                                     <div className="flex flex-col gap-3">
-                                        <div className="text-emerald-600 font-bold flex items-center justify-center gap-2 bg-emerald-50 px-4 py-3 sm:px-6 sm:py-3 rounded-2xl border border-emerald-100 text-xs sm:text-base">
-                                            <FaCheckCircle className="text-lg sm:text-xl" /> Appt Fixed
+                                        <div className="flex flex-col items-center gap-1 bg-emerald-50 px-4 py-3 sm:px-6 sm:py-3 rounded-2xl border border-emerald-100 shadow-sm shadow-emerald-500/5">
+                                            <div className="text-emerald-600 font-bold flex items-center justify-center gap-2 text-xs sm:text-base">
+                                                <FaCheckCircle className="text-lg sm:text-xl" /> Appt Fixed
+                                            </div>
+                                            {msg.email && (
+                                                <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-1">
+                                                    <FaEnvelope className="text-[8px]" /> Confirmation Sent
+                                                </div>
+                                            )}
                                         </div>
                                         <button
-                                            onClick={() => handleCreateAppointment(msg.name, msg.phone, msg.email, msg._id, msg.message)}
+                                            onClick={() => handleCreateAppointment(msg.name, msg.phone, msg.email, msg._id, msg.message, msg.appointmentId)}
                                             className="text-indigo-600 hover:text-indigo-700 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 py-2 hover:bg-gray-50 rounded-xl transition"
                                         >
                                             <FaCalendarPlus /> Reschedule
@@ -184,6 +194,7 @@ export default function DashboardMessages() {
                 initialEmail={schedulerEmail}
                 messageId={schedulerMessageId}
                 inquiryMessage={schedulerInquiry}
+                appointmentId={schedulerAppointmentId || undefined}
             />
         </div >
     );

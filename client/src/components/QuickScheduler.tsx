@@ -113,14 +113,19 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     });
                     setSearchTerm(apt.patientId?.name || '');
                 } else if (inquiryMessage) {
-                    const cleanInitialPhone = initialSearch?.replace(/\D/g, '');
-                    const phoneMatch = patientsRes.data.find((p: any) =>
-                        p.contact.replace(/\D/g, '') === cleanInitialPhone
-                    );
+                    const phoneMatch = patientsRes.data.find((p: any) => {
+                        const hasPhone = initialSearch && p.contact.replace(/\D/g, '') === initialSearch.replace(/\D/g, '');
+                        const hasEmail = initialEmail && p.email && p.email.toLowerCase() === initialEmail.toLowerCase();
+                        return hasPhone || hasEmail;
+                    });
 
                     const extractedTreatments: any[] = [];
+                    const msgLower = inquiryMessage.toLowerCase();
+
                     treatmentsRes.data.forEach((t: any) => {
-                        if (inquiryMessage.toLowerCase().includes(t.name.toLowerCase())) {
+                        const tNameLower = t.name.toLowerCase();
+                        // Match if message contains treatment name OR treatment name contains a significant keyword from message
+                        if (msgLower.includes(tNameLower)) {
                             extractedTreatments.push({
                                 name: t.name,
                                 price: parseInt(t.price.replace(/\D/g, ''))
@@ -131,12 +136,13 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     setFormData(prev => ({
                         ...prev,
                         patientId: phoneMatch?._id || '',
-                        selectedTreatments: extractedTreatments.length > 0 ? extractedTreatments : [{ name: '', price: 0 }]
+                        selectedTreatments: extractedTreatments.length > 0 ? extractedTreatments : [{ name: '', price: 0 }],
+                        notes: prev.notes || inquiryMessage // Auto-fill notes with the original inquiry
                     }));
 
                     if (phoneMatch) {
                         setSearchTerm(phoneMatch.name);
-                        setFilteredPatients([phoneMatch]); // Filter to exact match
+                        setFilteredPatients([phoneMatch]);
                     } else if (initialSearch) {
                         setSearchTerm(initialSearch);
                     }
@@ -217,7 +223,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             } else {
                 res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments`, payload);
                 if (messageId) {
-                    await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts/${messageId}/scheduled`);
+                    await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts/${messageId}/scheduled`, { appointmentId: res.data._id });
                 }
             }
 

@@ -28,6 +28,10 @@ const contactSchema = new mongoose.Schema({
         enum: ['new', 'prev'],
         default: 'new'
     },
+    appointmentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Appointment'
+    },
     createdAt: {
         type: Date,
         default: Date.now
