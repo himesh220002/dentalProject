@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaEnvelopeOpen, FaPhone, FaClock, FaCheckCircle, FaCalendarPlus } from 'react-icons/fa';
+import { FaEnvelopeOpen, FaPhone, FaClock, FaCheckCircle, FaCalendarPlus, FaEnvelope } from 'react-icons/fa';
 import QuickScheduler from '@/components/QuickScheduler';
 
 interface Message {
     _id: string;
     name: string;
     phone: string;
+    email?: string;
     message: string;
     status: string;
     patientType?: 'new' | 'prev';
@@ -21,6 +22,7 @@ export default function DashboardMessages() {
     const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
     const [schedulerSearch, setSchedulerSearch] = useState('');
     const [schedulerName, setSchedulerName] = useState('');
+    const [schedulerEmail, setSchedulerEmail] = useState('');
     const [schedulerMessageId, setSchedulerMessageId] = useState('');
     const [schedulerInquiry, setSchedulerInquiry] = useState('');
 
@@ -48,9 +50,10 @@ export default function DashboardMessages() {
         }
     };
 
-    const handleCreateAppointment = (name: string, phone: string, messageId: string, messageText: string) => {
+    const handleCreateAppointment = (name: string, phone: string, email: string | undefined, messageId: string, messageText: string) => {
         setSchedulerSearch(phone);
         setSchedulerName(name);
+        setSchedulerEmail(email || '');
         setSchedulerMessageId(messageId);
         setSchedulerInquiry(messageText);
         setIsSchedulerOpen(true);
@@ -105,10 +108,19 @@ export default function DashboardMessages() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-6 text-gray-600 font-medium text-xs sm:text-base">
+                                <div className="flex flex-wrap items-center gap-6 text-gray-600 font-medium text-xs sm:text-base">
                                     <a href={`tel:${msg.phone}`} className="flex items-center gap-2 hover:text-blue-600">
                                         <FaPhone /> {msg.phone}
                                     </a>
+                                    {msg.email ? (
+                                        <a href={`mailto:${msg.email}`} className="flex items-center gap-2 hover:text-indigo-600">
+                                            <FaEnvelope /> {msg.email}
+                                        </a>
+                                    ) : (
+                                        <div className="flex items-center gap-2 text-rose-500 bg-rose-50 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-rose-100">
+                                            <FaPhone className="text-[8px]" /> Call Confirmation Needed
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="bg-gray-50 p-3 sm:p-4 rounded-2xl text-gray-700 text-xs sm:text-base leading-relaxed border border-gray-100 break-words">
                                     {msg.message}
@@ -127,7 +139,7 @@ export default function DashboardMessages() {
                                             </button>
                                         )}
                                         <button
-                                            onClick={() => handleCreateAppointment(msg.name, msg.phone, msg._id, msg.message)}
+                                            onClick={() => handleCreateAppointment(msg.name, msg.phone, msg.email, msg._id, msg.message)}
                                             className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-2xl font-bold text-xs sm:text-base flex items-center gap-2 shadow-lg transition transform hover:scale-105 justify-center"
                                         >
                                             <FaCalendarPlus /> Create Appt
@@ -140,7 +152,7 @@ export default function DashboardMessages() {
                                             <FaCheckCircle className="text-lg sm:text-xl" /> Appt Fixed
                                         </div>
                                         <button
-                                            onClick={() => handleCreateAppointment(msg.name, msg.phone, msg._id, msg.message)}
+                                            onClick={() => handleCreateAppointment(msg.name, msg.phone, msg.email, msg._id, msg.message)}
                                             className="text-indigo-600 hover:text-indigo-700 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 py-2 hover:bg-gray-50 rounded-xl transition"
                                         >
                                             <FaCalendarPlus /> Reschedule
@@ -169,6 +181,7 @@ export default function DashboardMessages() {
                 }}
                 initialSearch={schedulerSearch}
                 initialName={schedulerName}
+                initialEmail={schedulerEmail}
                 messageId={schedulerMessageId}
                 inquiryMessage={schedulerInquiry}
             />

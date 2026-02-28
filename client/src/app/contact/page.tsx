@@ -26,6 +26,7 @@ function ContactContent() {
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
+        email: '',
         message: ''
     });
     const [status, setStatus] = useState({ type: '', message: '' });
@@ -42,7 +43,8 @@ function ContactContent() {
                     setFormData(prev => ({
                         ...prev,
                         name: patient.name || prev.name,
-                        phone: patient.contact === '-__-' ? prev.phone : (patient.contact || prev.phone)
+                        phone: patient.contact === '-__-' ? prev.phone : (patient.contact || prev.phone),
+                        email: patient.email || prev.email
                     }));
                 }
             } catch (err) {
@@ -102,7 +104,7 @@ function ContactContent() {
         try {
             await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, formData);
             setStatus({ type: 'success', message: language === 'hi' ? 'संदेश सफलतापूर्वक भेजा गया! हम जल्द ही आपसे संपर्क करेंगे।' : 'Message sent successfully! We will contact you soon.' });
-            setFormData({ name: '', phone: '', message: '' });
+            setFormData({ name: '', phone: '', email: '', message: '' });
         } catch (error) {
             setStatus({ type: 'error', message: language === 'hi' ? 'संदेश भेजने में विफल। कृपया पुन: प्रयास करें या हमें कॉल करें।' : 'Failed to send message. Please try again or call us.' });
         } finally {
@@ -230,6 +232,19 @@ function ContactContent() {
                                         }`}
                                     placeholder="98765 00000"
                                     required
+                                />
+                            </div>
+                            <div className="md:col-span-2 space-y-2 text-left">
+                                <label htmlFor="email" className="text-sm font-semibold text-gray-700">
+                                    {language === 'hi' ? 'ईमेल आईडी' : 'Email Address'} <span className="text-gray-400 font-normal text-[10px] uppercase tracking-widest">(Optional)</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    value={(formData as any).email || ''}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                                    placeholder="yourname@gmail.com"
                                 />
                             </div>
                             <div className="md:col-span-2 space-y-4">

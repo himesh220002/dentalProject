@@ -1,4 +1,5 @@
 const Appointment = require('../models/Appointment');
+const { sendAppointmentEmail } = require('../utils/mailer');
 
 // Get all appointments
 exports.getAllAppointments = async (req, res) => {
@@ -26,6 +27,22 @@ exports.createAppointment = async (req, res) => {
     try {
         const newAppointment = new Appointment(req.body);
         const savedAppointment = await newAppointment.save();
+
+        // Fetch patient details to get email
+        const populatedApp = await Appointment.findById(savedAppointment._id).populate('patientId');
+        if (populatedApp.patientId && populatedApp.patientId.email) {
+            await sendAppointmentEmail(
+                populatedApp.patientId.email,
+                populatedApp.patientId.name,
+                {
+                    date: populatedApp.date,
+                    time: populatedApp.time,
+                    reason: populatedApp.reason,
+                    status: 'Fixed'
+                }
+            );
+        }
+
         res.status(201).json(savedAppointment);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -54,9 +71,25 @@ exports.updateAppointmentStatus = async (req, res) => {
             req.params.id,
             req.body,
             { new: true }
-        ).populate('patientId', 'name contact');
+        ).populate('patientId');
 
         if (!updatedAppointment) return res.status(404).json({ message: 'Appointment not found' });
+
+        // If date/time changed, notify user
+        if (req.body.date || req.body.time) {
+            if (updatedAppointment.patientId && updatedAppointment.patientId.email) {
+                await sendAppointmentEmail(
+                    updatedAppointment.patientId.email,
+                    updatedAppointment.patientId.name,
+                    {
+                        date: updatedAppointment.date,
+                        time: updatedAppointment.time,
+                        reason: updatedAppointment.reason,
+                        status: 'Rescheduled'
+                    }
+                );
+            }
+        }
 
         // Handle Treatment Record based on paymentStatus
         if (req.body.paymentStatus === 'Paid') {

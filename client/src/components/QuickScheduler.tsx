@@ -23,12 +23,13 @@ interface QuickSchedulerProps {
     initialDate?: Date;
     initialSearch?: string;
     initialName?: string;
+    initialEmail?: string;
     messageId?: string;
     appointmentId?: string;
     inquiryMessage?: string;
 }
 
-export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate, initialSearch, initialName, messageId, appointmentId, inquiryMessage }: QuickSchedulerProps) {
+export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate, initialSearch, initialName, initialEmail, messageId, appointmentId, inquiryMessage }: QuickSchedulerProps) {
     const [patients, setPatients] = useState<Patient[]>([]);
     const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
     const [treatments, setTreatments] = useState<Treatment[]>([]);
@@ -244,6 +245,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/patients`, {
                 name: initialName,
                 contact: initialSearch,
+                email: initialEmail || '',
                 age: 0,
                 gender: '-__-',
                 address: '-__-',

@@ -4,13 +4,13 @@ const Patient = require('../models/Patient');
 // Submit a new contact message
 exports.submitContact = async (req, res) => {
     try {
-        const { name, phone, message } = req.body;
+        const { name, phone, email, message } = req.body;
 
         // Tag as "prev" if patient exists with this phone
         const existingPatient = await Patient.findOne({ contact: phone });
         const patientType = existingPatient ? 'prev' : 'new';
 
-        const newContact = new Contact({ name, phone, message, patientType });
+        const newContact = new Contact({ name, phone, email, message, patientType });
         await newContact.save();
         res.status(201).json({ message: 'Message sent successfully' });
     } catch (error) {

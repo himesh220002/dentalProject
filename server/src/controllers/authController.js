@@ -19,25 +19,26 @@ exports.syncUser = async (req, res) => {
             await user.save();
         }
 
-        // If user exists but has no patient record, try to link or create
         if (!user.patientId) {
-            const normalizedName = name.toLowerCase().replace(/\s+/g, '');
-            const patients = await Patient.find({
-                $or: [
-                    { email: email.toLowerCase() },
-                    { userId: { $exists: false } }
-                ]
-            });
+            const normalizedUserName = name.toLowerCase().replace(/\s+/g, '');
 
-            const matchedPatient = patients.find(p => {
-                if (p.email === email.toLowerCase()) return true;
-                const pNormalized = p.name.toLowerCase().replace(/\s+/g, '');
-                return pNormalized === normalizedName;
-            });
+            // 1. Try exact email match first (Priority 1)
+            let matchedPatient = await Patient.findOne({ email: email.toLowerCase() });
+
+            // 2. Try name matching for unlinked records (Priority 2)
+            if (!matchedPatient) {
+                const unlinkedPatients = await Patient.find({ userId: { $exists: false } });
+                matchedPatient = unlinkedPatients.find(p => {
+                    const pNormalized = p.name.toLowerCase().replace(/\s+/g, '');
+                    return pNormalized === normalizedUserName ||
+                        normalizedUserName.includes(pNormalized) ||
+                        pNormalized.includes(normalizedUserName);
+                });
+            }
 
             if (matchedPatient) {
                 user.patientId = matchedPatient._id;
-                user.contact = matchedPatient.contact;
+                user.contact = matchedPatient.contact !== '-__-' ? matchedPatient.contact : user.contact;
                 await user.save();
 
                 matchedPatient.userId = user._id;
@@ -53,7 +54,6 @@ exports.syncUser = async (req, res) => {
                 });
                 const savedPatient = await newPatient.save();
                 user.patientId = savedPatient._id;
-                user.contact = savedPatient.contact;
                 await user.save();
 
                 savedPatient.userId = user._id;
@@ -102,41 +102,52 @@ exports.updateProfile = async (req, res) => {
 
         let patient = user.patientId;
 
-        // Robust Merging logic: name (normalized) + contact
-        if (!patient.addedByAdmin && contact && contact !== '-__-') {
-            const normalizedInputName = (name || patient.name).toLowerCase().replace(/\s+/g, '');
-            const searchContact = contact.replace(/\s+/g, ''); // Robust contact match
+        // Robust Merging logic: (name + phone) OR email
+        if (!patient.addedByAdmin) {
+            const inputName = (name || patient.name).toLowerCase().replace(/\s+/g, '');
+            const inputContact = contact ? contact.replace(/\s+/g, '') : '';
+            const inputEmail = user.email.toLowerCase();
 
-            const existingPatients = await Patient.find({
-                $or: [
-                    { contact: contact },
-                    { contact: searchContact }
-                ],
+            // Find candidates for merging: must not have a userId linked yet
+            const candidates = await Patient.find({
                 _id: { $ne: patient._id },
                 userId: { $exists: false }
             });
 
-            const matchedRecord = existingPatients.find(p => {
-                const pNormalized = p.name.toLowerCase().replace(/\s+/g, '');
-                return pNormalized === normalizedInputName;
+            const matchedRecord = candidates.find(p => {
+                // 1. Match by Email (Priority 1)
+                if (p.email && p.email.toLowerCase() === inputEmail) return true;
+
+                // 2. Match by Name + Phone (Priority 2)
+                if (inputContact && p.contact && p.contact.replace(/\s+/g, '') === inputContact) {
+                    const pNameNormalized = p.name.toLowerCase().replace(/\s+/g, '');
+                    return pNameNormalized === inputName ||
+                        inputName.includes(pNameNormalized) ||
+                        pNameNormalized.includes(inputName);
+                }
+                return false;
             });
 
             if (matchedRecord) {
+                // Merge data into the matched record
                 matchedRecord.userId = user._id;
-                matchedRecord.email = user.email.toLowerCase();
+                matchedRecord.email = inputEmail;
                 matchedRecord.name = name || matchedRecord.name;
                 matchedRecord.age = age || matchedRecord.age;
                 matchedRecord.gender = gender || matchedRecord.gender;
                 matchedRecord.address = address || matchedRecord.address;
+                matchedRecord.contact = contact || matchedRecord.contact;
                 matchedRecord.alternateContact = alternateContact || matchedRecord.alternateContact;
 
                 await matchedRecord.save();
 
+                // Update User's patientId to the existing clinic record
                 user.patientId = matchedRecord._id;
                 user.name = matchedRecord.name;
                 user.contact = matchedRecord.contact;
                 await user.save();
 
+                // Delete the placeholder patient record that was created during initial Google Login
                 await Patient.findByIdAndDelete(patient._id);
 
                 return res.status(200).json({
