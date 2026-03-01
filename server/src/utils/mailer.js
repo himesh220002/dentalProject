@@ -6,19 +6,18 @@ require('dns').setDefaultResultOrder('ipv4first');
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Use STARTTLS for port 587
-    pool: true,    // Use pooled connections for better stability
+    port: 465,
+    secure: true, // Use SSL for port 465
+    pool: true,    // Keep pooling for stability
     auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASS
     },
-    connectionTimeout: 60000, // Increased to 60 seconds
+    connectionTimeout: 60000,
     greetingTimeout: 60000,
     socketTimeout: 60000,
-    // CRITICAL: Force IPv4 at the socket level
+    // CRITICAL: Force IPv4 for Render
     family: 4,
-    // EXTREME: Custom DNS lookup to strictly return IPv4 only
     lookup: (hostname, options, callback) => {
         require('dns').lookup(hostname, { family: 4 }, callback);
     }
