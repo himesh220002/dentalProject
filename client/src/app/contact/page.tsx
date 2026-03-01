@@ -164,7 +164,7 @@ function ContactContent() {
                 <div className="lg:col-span-1 space-y-6 text-left">
 
                     {/* Phone Card */}
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-blue-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                    <div className="bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
                         <div className="flex items-center gap-4 mb-3">
                             <div className="bg-blue-100 p-3 rounded-full text-blue-600">
                                 <FaPhoneAlt className="text-xl" />
@@ -178,7 +178,7 @@ function ContactContent() {
                     </div>
 
                     {/* Whatsapp Card */}
-                    <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-green-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                    <div className="bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
                         <div className="flex items-center gap-4 mb-3">
                             <div className="bg-green-100 p-3 rounded-full text-green-600">
                                 <FaWhatsapp className="text-xl" />
@@ -192,7 +192,7 @@ function ContactContent() {
                     </div>
 
                     {/* Visit Us Card */}
-                    <div className="bg-gradient-to-br from-teal-50 to-teal-100 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-teal-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                    <div className="bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
                         <div className="flex items-center gap-4 mb-3">
                             <div className="bg-teal-100 p-3 rounded-full text-teal-600">
                                 <FaMapMarkerAlt className="text-xl" />
