@@ -1,18 +1,18 @@
 const Contact = require('../models/Contact');
 const Patient = require('../models/Patient');
+const User = require('../models/User');
 
 // Submit a new contact message
 exports.submitContact = async (req, res) => {
     try {
         const { name, phone, email, message, userId } = req.body;
 
-        // 1. If user is logged in, sync their profile contact if it's missing
+        // 1. If user is logged in (googleId sent as userId), sync their profile contact if it's missing
         if (userId) {
-            const patient = await Patient.findOne({ userId });
-            if (patient && patient.contact === '-__-') {
-                console.log(`Syncing profile contact for Patient ${patient._id} -> ${phone}`);
-                patient.contact = phone;
-                await patient.save();
+            const user = await User.findOne({ googleId: userId }).populate('patientId');
+            if (user && user.patientId && user.patientId.contact === '-__-') {
+                console.log(`Syncing profile contact for Patient ${user.patientId._id} -> ${phone}`);
+                await Patient.findByIdAndUpdate(user.patientId._id, { contact: phone });
             }
         }
 
