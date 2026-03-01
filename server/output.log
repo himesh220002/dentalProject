@@ -1,0 +1,27 @@
+TRACE: Loading dotenv...
+[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+TRACE: Loading form-data...
+TRACE: Loading mailgun.js...
+TRACE: Initializing Mailgun...
+TRACE: Starting run()...
+--- STANDALONE MAILGUN API DIAGNOSTICS ---
+Domain: sandbox30a759b5f0034fd4904e98c64f80aa59.mailgun.org
+
+--- Testing Mailgun US Region ---
+Step 1: Sending test email via Mailgun US API...
+✖ FAILED on US: Forbidden
+
+US failed, attempting EU region...
+
+--- Testing Mailgun EU Region ---
+Step 1: Sending test email via Mailgun EU API...
+✖ FAILED on EU: Unauthorized
+
+--- 🛑 TROUBLESHOOTING TIPS ---
+1. SANDBOX RESTRICTION: Go to Mailgun Dashboard -> Sending -> Overview.
+   Click "Authorized Recipients" and add [versionname4@gmail.com].
+   You MUST click the confirmation link in the email Mailgun sends you!
+2. API KEY: Ensure your PRIVATE API Key is correct (starts with "key-").
+3. DOMAIN: Ensure your domain is correct (e.g. sandboxXXXX.mailgun.org).
+
+--- DIAGNOSTICS COMPLETE ---

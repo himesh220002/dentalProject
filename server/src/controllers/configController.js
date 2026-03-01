@@ -1,6 +1,5 @@
 const Config = require('../models/Config');
 const Contact = require('../models/Contact');
-const { transporter } = require('../utils/mailer');
 
 exports.getAdminPassword = async (req, res) => {
     try {
@@ -56,22 +55,24 @@ exports.verifyAdminPassword = async (req, res) => {
 exports.checkMailer = async (req, res) => {
     try {
         console.log('--- LIVE MAILER CHECK TRIGGERED ---');
-        console.log('Testing GMAIL_USER:', process.env.GMAIL_USER);
+        const DOMAIN = process.env.MAILGUN_DOMAIN;
+        const API_KEY = process.env.MAILGUN_API_KEY;
 
-        // Test connection
-        await transporter.verify();
+        if (!DOMAIN || !API_KEY) {
+            throw new Error('Mailgun credentials missing from environment variables.');
+        }
 
         res.status(200).json({
             success: true,
-            message: 'SMTP Connection Successful',
-            user: process.env.GMAIL_USER,
-            passConfigured: !!process.env.GMAIL_APP_PASS
+            message: 'Mailgun API Configured',
+            domain: DOMAIN,
+            apiConfigured: !!API_KEY
         });
     } catch (error) {
         console.error('✖ LIVE MAILER CHECK FAILED:', error.message);
         res.status(500).json({
             success: false,
-            message: 'SMTP Connection Failed',
+            message: 'Mailer Configuration Error',
             error: error.message
         });
     }

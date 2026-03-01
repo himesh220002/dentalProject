@@ -1,56 +1,73 @@
+console.log('TRACE: Loading dotenv...');
 require('dotenv').config();
-const nodemailer = require('nodemailer');
+console.log('TRACE: Loading form-data...');
+const formData = require('form-data');
+console.log('TRACE: Loading mailgun.js...');
+const Mailgun = require('mailgun.js');
+console.log('TRACE: Initializing Mailgun...');
+const mailgun = new Mailgun(formData);
 
-console.log('--- STANDALONE SMTP TEST START ---');
-console.log('User:', process.env.GMAIL_USER);
-console.log('Target:', 'versionname4@gmail.com');
+const DOMAIN = process.env.MAILGUN_DOMAIN;
+const API_KEY = process.env.MAILGUN_API_KEY;
 
-const testSMTP = async (port, secure) => {
-    console.log(`\nTesting Port ${port} (Secure: ${secure})...`);
+const testMailgun = async (url) => {
+    const region = url.includes('eu') ? 'EU' : 'US';
+    console.log(`\n--- Testing Mailgun ${region} Region ---`);
 
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: port,
-        secure: secure,
-        auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_APP_PASS
-        },
-        connectionTimeout: 30000,
-        greetingTimeout: 30000,
-        socketTimeout: 30000,
-        family: 4 // Standard IPv4
+    const mg = mailgun.client({
+        username: 'api',
+        key: API_KEY,
+        url: url
     });
 
     try {
-        console.log(`Step 1: Verifying transporter on port ${port}...`);
-        await transporter.verify();
-        console.log(`✔ Step 1: Verification Successful!`);
-
-        console.log(`Step 2: Sending test email...`);
-        const info = await transporter.sendMail({
-            from: `"Dr. Tooth Test" <${process.env.GMAIL_USER}>`,
-            to: 'versionname4@gmail.com',
-            subject: `SMTP Test - Port ${port}`,
-            text: `This is a test email sent during diagnostics on Port ${port}.`,
-            html: `<b>This is a test email sent during diagnostics on Port ${port}.</b>`
+        const TARGET = 'versionname4@gmail.com';
+        console.log(`Step 1: Sending test email via Mailgun ${region} API...`);
+        const info = await mg.messages.create(DOMAIN, {
+            from: `Mailgun Sandbox <postmaster@${DOMAIN}>`,
+            to: [TARGET],
+            subject: `Mailgun ${region} API Test`,
+            text: 'Congratulations, you just sent an email with Mailgun!',
+            html: '<b>Congratulations, you just sent an email with Mailgun!</b>'
         });
-        console.log(`✔ Step 2: Email sent! MessageId: ${info.messageId}`);
+        console.log(`✔ SUCCESS on ${region}: Email queued! ID: ${info.id}`);
+        return true;
     } catch (error) {
-        console.error(`✖ FAILED on Port ${port}:`, error.message);
-        if (error.code) console.error(`Code: ${error.code}`);
+        console.error(`✖ FAILED on ${region}:`, error.message);
+        return false;
     }
 };
 
-const runTests = async () => {
-    // Test 587 first as requested
-    await testSMTP(587, false);
+const run = async () => {
+    console.log('--- STANDALONE MAILGUN API DIAGNOSTICS ---');
+    console.log('Domain:', DOMAIN);
 
-    // Then test 465 as a comparison
-    await testSMTP(465, true);
+    if (!DOMAIN || !API_KEY) {
+        console.error('✖ CRITICAL: MAILGUN_DOMAIN or MAILGUN_API_KEY missing from .env');
+        process.exit(1);
+    }
+
+    // Try US first (default)
+    const usSuccess = await testMailgun('https://api.mailgun.net');
+
+    if (!usSuccess) {
+        // Try EU if US fails
+        console.log('\nUS failed, attempting EU region...');
+        const euSuccess = await testMailgun('https://api.eu.mailgun.net');
+
+        if (!euSuccess) {
+            console.log('\n--- 🛑 TROUBLESHOOTING TIPS ---');
+            console.log('1. SANDBOX RESTRICTION: Go to Mailgun Dashboard -> Sending -> Overview.');
+            console.log('   Click "Authorized Recipients" and add [versionname4@gmail.com].');
+            console.log('   You MUST click the confirmation link in the email Mailgun sends you!');
+            console.log('2. API KEY: Ensure your PRIVATE API Key is correct (starts with "key-").');
+            console.log('3. DOMAIN: Ensure your domain is correct (e.g. sandboxXXXX.mailgun.org).');
+        }
+    }
 
     console.log('\n--- DIAGNOSTICS COMPLETE ---');
     process.exit(0);
 };
 
-runTests();
+console.log('TRACE: Starting run()...');
+run();
