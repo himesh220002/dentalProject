@@ -137,7 +137,7 @@ function ContactContent() {
     };
 
     return (
-        <div className="relative p-2 sm:p-5 max-w-6xl mx-auto py-10 space-y-16 px-4">
+        <div className="relative px-2 py-5 sm:py-20 sm:px-20 max-w-7xl -my-4 mx-auto  space-y-16 px-4">
 
 
             {/* Header */}
@@ -154,52 +154,52 @@ function ContactContent() {
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
                     <img
                         src="/images/sciencehanddrawnbg.jpg"
-                        className="w-full h-full rounded-t-2xl object-cover opacity-[0.4]"
+                        className="w-full h-full sm:rounded-t-xl object-cover opacity-[0.4]"
                         alt="pattern"
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-transparent to-teal-50/10"></div>
                 </div>
 
                 {/* Contact Info Column */}
-                <div className="lg:col-span-1 space-y-6 text-left">
+                <div className="lg:col-span-1 space-y-4 text-left">
 
                     {/* Phone Card */}
-                    <div className="bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
-                        <div className="flex items-center gap-4 mb-3">
+                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
                             <div className="bg-blue-100 p-3 rounded-full text-blue-600">
                                 <FaPhoneAlt className="text-xl" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-800">{t.callNow}</h3>
                         </div>
                         <p className="text-gray-600 mb-2">{clinicData?.timings.monday || (language === 'hi' ? 'सोम-शनि सुबह 10 बजे से रात 8 बजे तक' : 'Mon-Sat from 10am to 8pm')}</p>
-                        <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline text-left block">
+                        <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block">
                             {phone}
                         </a>
                     </div>
 
                     {/* Whatsapp Card */}
-                    <div className="bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
-                        <div className="flex items-center gap-4 mb-3">
+                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
                             <div className="bg-green-100 p-3 rounded-full text-green-600">
                                 <FaWhatsapp className="text-xl" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-800">WhatsApp</h3>
                         </div>
                         <p className="text-gray-600 mb-2">{language === 'hi' ? 'त्वरित प्रश्नों के लिए हमारे साथ चैट करें' : 'Chat with us for quick queries'}</p>
-                        <a href={whatsappLink} target="_blank" className="text-lg font-bold text-green-700 hover:underline text-left block">
+                        <a href={whatsappLink} target="_blank" className="text-center sm:text-left text-lg font-bold text-green-700 hover:underline block">
                             {language === 'hi' ? 'अभी चैट करें' : 'Chat Now'}
                         </a>
                     </div>
 
                     {/* Visit Us Card */}
-                    <div className="bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-2xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
-                        <div className="flex items-center gap-4 mb-3">
+                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
                             <div className="bg-teal-100 p-3 rounded-full text-teal-600">
                                 <FaMapMarkerAlt className="text-xl" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-800">{t.location}</h3>
                         </div>
-                        <p className="text-gray-600 leading-relaxed whitespace-pre-line text-left">
+                        <p className="text-gray-600 leading-relaxed whitespace-pre-line text-center sm:text-left">
                             {address}
                         </p>
                     </div>
@@ -210,7 +210,7 @@ function ContactContent() {
 
                     {/* Contact Form */}
                     <div className="bg-white p-4 sm:p-8 rounded-3xl shadow-xl">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex justify-center items-center gap-2 text-left">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6 mt-2 flex justify-center items-center gap-2 text-left">
                             <FaEnvelope className="text-blue-500" /> {language === 'hi' ? 'संदेश भेजें' : 'Send a Message'}
                         </h2>
 
@@ -229,7 +229,7 @@ function ContactContent() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                                    placeholder="John Doe"
+                                    placeholder="yourname"
                                     required
                                 />
                             </div>
@@ -254,7 +254,7 @@ function ContactContent() {
                                             ? 'border-red-100 focus:border-red-400 text-red-600'
                                             : 'border-gray-200 focus:border-blue-500'
                                         }`}
-                                    placeholder="98765 00000"
+                                    placeholder="00000 00000"
                                     required
                                 />
                             </div>

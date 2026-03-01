@@ -267,7 +267,7 @@ export default function Navbar() {
 
                 {/* Mobile Menu */}
                 {isOpen && (
-                    <div className="lg:hidden bg-white border-t border-gray-100 p-4 space-y-4 animate-in slide-in-from-top duration-300">
+                    <div className="lg:hidden h-screen bg-white border-t border-gray-100 p-4 space-y-4 animate-in slide-in-from-top duration-300">
                         {/* Mobile Language Switcher - Inside Menu */}
                         <div className="px-2 pb-2 border-b border-gray-50">
                             <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-2xl border border-blue-100">

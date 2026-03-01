@@ -67,8 +67,8 @@ export default function AdminLockModal({ isOpen, onClose, onSuccess }: AdminLock
                                     setError('');
                                 }}
                                 id="password"
-                                placeholder="Enter admin password"
-                                className={`w-full pl-12 pr-4 py-5 rounded-2xl border-2 outline-none transition font-black text-center text-lg tracking-widest ${error ? 'border-red-300 bg-red-50 focus:border-red-500' : 'border-gray-50 bg-gray-50 focus:border-blue-500 focus:bg-white'
+                                placeholder="••••••••"
+                                className={`w-full pl-0 pr-4 py-5 rounded-2xl border-2 outline-none transition font-black text-center text-lg tracking-widest ${error ? 'border-red-300 bg-red-50 focus:border-red-500' : 'border-gray-50 bg-gray-50 focus:border-blue-500 focus:bg-white'
                                     }`}
                                 autoFocus
                             />

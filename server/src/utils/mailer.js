@@ -49,9 +49,13 @@ const sendAppointmentEmail = async (patientEmail, patientName, appointmentDetail
                     <p style="margin: 8px 0;"><strong>⏰ Time:</strong> ${time}</p>
                     <p style="margin: 8px 0;"><strong>🦷 Treatment:</strong> ${reason}</p>
                 </div>
-                <p style="margin-top: 24px; font-size: 14px; color: #64748b;">
-                    Please arrive 10 minutes prior to your scheduled time. If you need to change your appointment, please call us directly.
-                </p>
+                <div style="margin-top: 24px; font-size: 14px; color: #64748b;">
+                    <a href="${process.env.NEXT_PUBLIC_FRONTEND_URL}">Click here to view your appointment</a>
+                    <p>Please arrive 10 minutes prior to your scheduled time. If you need to change your appointment, please call us directly.</p>
+                </div>
+                <div style="margin-top: 24px; font-size: 14px; color: #64748b;">
+                    <p>Thank you for choosing Dr. Tooth Dental Clinic.</p>
+                </div>
             </div>
             <div style="background-color: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #94a3b8;">
                 &copy; 2026 Dr. Tooth Dental Clinic. All rights reserved.

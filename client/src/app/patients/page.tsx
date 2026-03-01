@@ -137,7 +137,7 @@ export default function PatientsPage() {
                     ) : (
                         <div className="space-y-6">
                             {/* Mobile/Tablet Card View */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6 md:hidden">
+                            <div className="grid grid-cols-1 gap-2 sm:gap-6 md:hidden">
                                 {sortedPatients.map((patient) => {
                                     const isExpanded = expandedPatients.includes(patient._id);
                                     const today = new Date().setHours(0, 0, 0, 0);
@@ -216,7 +216,7 @@ export default function PatientsPage() {
                                     <thead>
                                         <tr className="bg-gray-50/50">
                                             <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest min-w-[300px]">Patient Details</th>
-                                            <th className="hidden lg:table-cell px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Live Status</th>
+                                            <th className="hidden xl:table-cell px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Live Status</th>
                                             <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Quick Actions</th>
                                             <th className="px-8 py-6 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Action</th>
                                         </tr>
@@ -270,7 +270,7 @@ export default function PatientsPage() {
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td className="hidden lg:table-cell px-8 py-6 whitespace-nowrap">
+                                                        <td className="hidden xl:table-cell px-8 py-6 whitespace-nowrap">
                                                             {liveStatus}
                                                         </td>
                                                         <td className="px-8 py-6 whitespace-nowrap">

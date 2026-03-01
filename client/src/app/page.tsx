@@ -15,6 +15,7 @@ import { useClinic } from '../context/ClinicContext';
 export default function Home() {
     const { data: session } = useSession();
     const [upcomingAppointment, setUpcomingAppointment] = useState<any>(null);
+    const [isAptDismissed, setIsAptDismissed] = useState(false);
     const { clinicData } = useClinic();
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
     const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
@@ -143,7 +144,7 @@ export default function Home() {
 
             {/* Patient Testimony Preview */}
             <div className="overflow-hidden">
-                <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-12">
+                <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-12">
                     <div className="space-y-4 text-center sm:text-start">
                         <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">Voices of Success</h2>
                         <p className="text-gray-500 text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-xl">Real stories from real patients who trusted us with their smiles.</p>
@@ -168,11 +169,12 @@ export default function Home() {
             </section>
 
             {/* Floating Appointment Notification for Logged-in Users */}
-            {session?.user && upcomingAppointment && (
-                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-5 duration-500">
+            {session?.user && upcomingAppointment && !isAptDismissed && (
+                <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-5 duration-500">
                     <Link
                         href="/profile"
-                        className="group relative flex items-center gap-3 bg-white hover:bg-emerald-50 px-6 py-4 rounded-full shadow-2xl border-2 border-emerald-100 transition-all active:scale-95 whitespace-nowrap overflow-hidden"
+                        onClick={() => setIsAptDismissed(true)}
+                        className="group relative flex items-center gap-3 bg-white hover:bg-emerald-50 p-1 rounded-full shadow-2xl border-2 border-emerald-100 transition-all active:scale-95 whitespace-nowrap overflow-hidden"
                     >
                         {/* Ping Animation Background */}
                         <div className="absolute inset-0 bg-emerald-400/20 animate-ping-glow rounded-full"></div>
@@ -180,6 +182,7 @@ export default function Home() {
                         <div className="relative w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shadow-inner">
                             <FaCalendarAlt className="animate-bounce" />
                         </div>
+
                         <div className="relative text-left pr-4">
                             <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">Status: Active</p>
                             <p className="text-sm font-black text-gray-900">Appointment Fixed • View Details</p>

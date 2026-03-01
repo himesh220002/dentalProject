@@ -52,10 +52,10 @@ export default function DashboardLayout({
         <ProtectedRoute>
             <div className="min-h-screen bg-gray-100 flex flex-col lg:flex-row rounded-xl">
                 {/* Mobile Top Bar */}
-                <div className="lg:hidden sticky top-0 z-0">
+                <div className="lg:hidden sticky bg-cyan-900 top-0 z-0 rounded-t-xl">
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="text-gray-600 w-12 h-12 flex items-center justify-center hover:bg-gray-800 rounded-xl transition"
+                        className="text-gray-300 w-full h-12 flex pr-6 items-center justify-end hover:bg-gray-800 rounded-xl transition"
                     >
                         {isSidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
                     </button>
@@ -71,7 +71,7 @@ export default function DashboardLayout({
 
                 {/* Sidebar */}
                 <aside className={`
-                    fixed inset-y-0 left-0 w-64 max-h-screen lg:max-h-[90vh] bg-gray-900 text-white flex flex-col shadow-xl z-[50] lg:sticky lg:top-0 lg:h-screen transition-transform duration-300 transform rounded-r-3xl lg:rounded-xl overflow-hidden
+                    fixed inset-y-0 left-0 w-64 max-h-screen lg:max-h-[90vh] mb-10 bg-gray-900 text-white flex flex-col shadow-xl z-[50] lg:sticky lg:top-0 lg:h-screen transition-transform duration-300 transform rounded-r-lg lg:rounded-r-none lg:rounded-l-xl overflow-hidden
                     ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                 `}>
                     <div className="p-6 hidden lg:block shrink-0">

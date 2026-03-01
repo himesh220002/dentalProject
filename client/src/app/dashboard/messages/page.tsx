@@ -109,7 +109,7 @@ export default function DashboardMessages() {
                     >
                         <div className="flex flex-col md:flex-row justify-between gap-2 md:gap-4">
                             <div className="space-y-2 sm:space-y-4 flex-grow">
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col-reverse sm:flex-row gap-2 items-start sm:items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <h3 className="text-lg sm:text-xl font-bold text-gray-900">{msg.name}</h3>
                                         {msg.patientType === 'prev' && (

@@ -2,13 +2,13 @@ import { FaQuoteLeft, FaStar } from 'react-icons/fa';
 
 const reviews = [
     {
-        name: 'Sarah J.',
+        name: 'Monika J.',
         text: 'Dr. Tooth is incredibly gentle. I used to be terrified of the dentist, but now I look forward to my checkups!',
         rating: 5,
         treatment: 'Dental Cleaning'
     },
     {
-        name: 'Michael R.',
+        name: 'Monty R.',
         text: 'The best clinic in town. Modern equipment, friendly staff, and the treatments are actually painless.',
         rating: 5,
         treatment: 'Root Canal'
@@ -20,7 +20,7 @@ const reviews = [
         treatment: 'Orthodontics'
     },
     {
-        name: 'John D.',
+        name: 'Rahul D.',
         text: "Excellent service and very hygienic. Highly recommended for anyone looking for quality dental care.",
         rating: 5,
         treatment: 'Teeth Whitening'

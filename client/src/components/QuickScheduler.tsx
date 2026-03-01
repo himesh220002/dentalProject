@@ -38,10 +38,9 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
     const [fetchingData, setFetchingData] = useState(true);
     const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-    const getTomorrowDate = () => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        return tomorrow.toISOString().split('T')[0];
+    const getTodayDate = () => {
+        const today = new Date();
+        return today.toISOString().split('T')[0];
     };
 
     const formatTimeForInput = (timeStr: string) => {
@@ -61,7 +60,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
 
     const [formData, setFormData] = useState({
         patientId: '',
-        date: initialDate ? initialDate.toISOString().split('T')[0] : getTomorrowDate(),
+        date: initialDate ? initialDate.toISOString().split('T')[0] : getTodayDate(),
         time: '',
         selectedTreatments: [] as { name: string, price: number }[],
         additionalCost: 0,
@@ -230,7 +229,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             if (res.data.emailSentTo) {
                 setStatusMessage({
                     type: 'success',
-                    text: `Success! Confirmation email sent to ${res.data.emailSentTo}`
+                    text: `Success! Confirmation sent to ${res.data.emailSentTo}`
                 });
                 setTimeout(() => {
                     onSuccess();
@@ -243,7 +242,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             }
             setFormData({
                 patientId: '',
-                date: getTomorrowDate(),
+                date: getTodayDate(),
                 time: '',
                 selectedTreatments: [],
                 additionalCost: 0,
