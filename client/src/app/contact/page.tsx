@@ -29,8 +29,21 @@ function ContactContent() {
         email: '',
         message: ''
     });
+    const [treatments, setTreatments] = useState<any[]>([]);
     const [status, setStatus] = useState({ type: '', message: '' });
     const [submitting, setSubmitting] = useState(false);
+
+    useEffect(() => {
+        const fetchTreatments = async () => {
+            try {
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/treatments`);
+                setTreatments(res.data);
+            } catch (err) {
+                console.error('Error fetching treatments for contact suggestions:', err);
+            }
+        };
+        fetchTreatments();
+    }, []);
 
     useEffect(() => {
         const fetchPatientProfile = async () => {
@@ -69,18 +82,25 @@ function ContactContent() {
         }
     }, [searchParams, router, language]);
 
-    const suggestions = [
-        { label: language === 'hi' ? 'दांत दर्द' : 'Tooth Pain', value: 'Tooth Pain', color: 'bg-indigo-100 text-rose-700 hover:bg-rose-200 border-rose-200' },
-        { label: language === 'hi' ? 'रूट कैनाल' : 'Root Canal (RCT)', value: 'Root Canal (RCT)', color: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border-indigo-200' },
-        { label: language === 'hi' ? 'सफाई' : 'Teeth Cleaning', value: 'Teeth Cleaning', color: 'bg-indigo-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200' },
-        { label: language === 'hi' ? 'क्राउन' : 'Dental Crowns', value: 'Dental Crowns', color: 'bg-indigo-100 text-amber-700 hover:bg-amber-200 border-amber-200' },
-        { label: language === 'hi' ? 'इंप्लांट' : 'Dental Implants', value: 'Dental Implants', color: 'bg-indigo-100 text-teal-700 hover:bg-teal-200 border-teal-200' },
-        { label: language === 'hi' ? 'फिलिंग' : 'Composite Fillings', value: 'Composite Fillings', color: 'bg-indigo-100 text-violet-700 hover:bg-violet-200 border-violet-200' },
-        { label: language === 'hi' ? 'ब्रेसेस' : 'Braces & Aligners', value: 'Braces & Aligners', color: 'bg-indigo-100 text-sky-700 hover:bg-sky-200 border-sky-200' },
-        { label: language === 'hi' ? 'बत्तीसी' : 'Full Dentures', value: 'Full Dentures', color: 'bg-indigo-100 text-orange-700 hover:bg-orange-200 border-orange-200' },
-        { label: language === 'hi' ? 'दांत निकालना' : 'Extraction', value: 'Extraction', color: 'bg-indigo-100 text-red-700 hover:bg-red-200 border-red-200' },
-        { label: language === 'hi' ? 'जांच' : 'Checkup', value: 'Checkup', color: 'bg-indigo-100 text-blue-700 hover:bg-blue-200 border-blue-200' },
-    ];
+    const suggestions = treatments.map((t, idx) => {
+        const colors = [
+            'bg-indigo-100 text-rose-700 hover:bg-rose-200 border-rose-200',
+            'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border-indigo-200',
+            'bg-indigo-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200',
+            'bg-indigo-100 text-amber-700 hover:bg-amber-200 border-amber-200',
+            'bg-indigo-100 text-teal-700 hover:bg-teal-200 border-teal-200',
+            'bg-indigo-100 text-violet-700 hover:bg-violet-200 border-violet-200',
+            'bg-indigo-100 text-sky-700 hover:bg-sky-200 border-sky-200',
+            'bg-indigo-100 text-orange-700 hover:bg-orange-200 border-orange-200',
+            'bg-indigo-100 text-red-700 hover:bg-red-200 border-red-200',
+            'bg-indigo-100 text-blue-700 hover:bg-blue-200 border-blue-200'
+        ];
+        return {
+            label: t.name,
+            value: t.name,
+            color: colors[idx % colors.length]
+        };
+    });
 
     const handleSuggestionClick = (label: string) => {
         const textToAppend = formData.message
@@ -102,7 +122,11 @@ function ContactContent() {
         setStatus({ type: '', message: '' });
 
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, formData);
+            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, {
+                ...formData,
+                // @ts-ignore
+                userId: session?.user?.id
+            });
             setStatus({ type: 'success', message: language === 'hi' ? 'संदेश सफलतापूर्वक भेजा गया! हम जल्द ही आपसे संपर्क करेंगे।' : 'Message sent successfully! We will contact you soon.' });
             setFormData({ name: '', phone: '', email: '', message: '' });
         } catch (error) {

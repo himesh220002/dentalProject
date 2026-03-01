@@ -404,12 +404,16 @@ export default function ProfilePage() {
                         </h2>
                         <div className="flex flex-col sm:flex-row items-center gap-4">
                             {upcomingAppointment ? (
-                                <div className="bg-amber-50 border border-amber-200 px-6 py-3 rounded-2xl flex items-center gap-3 animate-pulse shadow-sm">
-                                    <div className="bg-amber-100 p-2 rounded-xl text-amber-600">
+                                <div className="bg-amber-50 border border-amber-200 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-sm animate-pulse-border">
+                                    <div className="bg-amber-100 p-2 rounded-xl text-amber-600 relative">
                                         <FaCalendarAlt />
+                                        {/* Blinking Dot */}
+                                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full border-2 border-white animate-pulse"></span>
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none">Your Next Appointment</p>
+                                        <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none flex items-center gap-1">
+                                            Your Next Appointment
+                                        </p>
                                         <p className="text-sm font-black text-amber-900">
                                             {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
                                         </p>

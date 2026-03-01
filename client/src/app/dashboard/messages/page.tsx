@@ -174,30 +174,6 @@ export default function DashboardMessages() {
                                             <div className="text-emerald-600 font-bold flex items-center justify-center gap-2 text-xs sm:text-base">
                                                 <FaCheckCircle className="text-lg sm:text-xl" /> Appt Fixed
                                             </div>
-                                            {msg.emailSent && (
-                                                <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-1">
-                                                    <FaEnvelope className="text-[8px]" /> Confirmation Sent
-                                                </div>
-                                            )}
-                                            {msg.email && !msg.emailSent && (
-                                                <div className="flex flex-col items-center gap-1">
-                                                    <div className="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-1">
-                                                        <FaTimes className="text-[8px]" /> Email Failed
-                                                    </div>
-                                                    <button
-                                                        onClick={() => msg.appointmentId && handleResendEmail(msg.appointmentId, msg._id)}
-                                                        disabled={resendingId === msg._id}
-                                                        className="text-[9px] font-black bg-rose-50 text-rose-600 hover:bg-rose-100 px-2 py-0.5 rounded border border-rose-200 transition active:scale-95 disabled:opacity-50 flex items-center gap-1 mt-1"
-                                                    >
-                                                        {resendingId === msg._id ? (
-                                                            <div className="w-2 h-2 border border-rose-600 border-t-transparent rounded-full animate-spin"></div>
-                                                        ) : (
-                                                            <FaEnvelope className="text-[7px]" />
-                                                        )}
-                                                        {resendingId === msg._id ? 'Resending...' : 'Resend'}
-                                                    </button>
-                                                </div>
-                                            )}
                                         </div>
                                         <button
                                             onClick={() => handleCreateAppointment(msg.name, msg.phone, msg.email, msg._id, msg.message, msg.appointmentId)}

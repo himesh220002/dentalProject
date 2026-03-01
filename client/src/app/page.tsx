@@ -6,10 +6,15 @@ import HomeHero from '@/components/home/HomeHero';
 import ActionTiles from '@/components/home/ActionTiles';
 import TrustSection from '@/components/home/TrustSection';
 import PatientReviews from '@/components/about/PatientReviews';
-import { FaUserMd, FaArrowRight } from 'react-icons/fa';
+import { useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { FaUserMd, FaArrowRight, FaCalendarAlt } from 'react-icons/fa';
 import { useClinic } from '../context/ClinicContext';
 
 export default function Home() {
+    const { data: session } = useSession();
+    const [upcomingAppointment, setUpcomingAppointment] = useState<any>(null);
     const { clinicData } = useClinic();
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
     const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
@@ -23,6 +28,35 @@ export default function Home() {
     ];
 
     const highlights = clinicData?.highlights && clinicData.highlights.length > 0 ? clinicData.highlights : defaultHighlights;
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!session?.user) return;
+            try {
+                const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+                // @ts-ignore
+                const userRes = await axios.get(`${backendUrl}/api/auth/google/${session.user.id}`);
+                const patientId = userRes.data?.patientId?._id;
+
+                if (patientId) {
+                    const aptRes = await axios.get(`${backendUrl}/api/appointments/patient/${patientId}`);
+                    const appointments = aptRes.data;
+
+                    const now = new Date();
+                    now.setHours(0, 0, 0, 0);
+
+                    const next = appointments
+                        .filter((a: any) => new Date(a.date) >= now && a.status !== 'Completed' && !a.isTicked)
+                        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
+
+                    setUpcomingAppointment(next);
+                }
+            } catch (err) {
+                console.error('Error fetching dashboard status:', err);
+            }
+        };
+        fetchUserData();
+    }, [session]);
 
     return (
         <div className="space-y-32 overflow-x-hidden">
@@ -132,6 +166,28 @@ export default function Home() {
                     <ClinicCarousel />
                 </div>
             </section>
+
+            {/* Floating Appointment Notification for Logged-in Users */}
+            {session?.user && upcomingAppointment && (
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-5 duration-500">
+                    <Link
+                        href="/profile"
+                        className="group relative flex items-center gap-3 bg-white hover:bg-emerald-50 px-6 py-4 rounded-full shadow-2xl border-2 border-emerald-100 transition-all active:scale-95 whitespace-nowrap overflow-hidden"
+                    >
+                        {/* Ping Animation Background */}
+                        <div className="absolute inset-0 bg-emerald-400/20 animate-ping-glow rounded-full"></div>
+
+                        <div className="relative w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shadow-inner">
+                            <FaCalendarAlt className="animate-bounce" />
+                        </div>
+                        <div className="relative text-left pr-4">
+                            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">Status: Active</p>
+                            <p className="text-sm font-black text-gray-900">Appointment Fixed • View Details</p>
+                        </div>
+                        <FaArrowRight className="relative text-emerald-400 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </div>
+            )}
 
             {/* Elite CTA Strip */}
             <section className="pb-12 sm:pb-20 overflow-hidden relative">
