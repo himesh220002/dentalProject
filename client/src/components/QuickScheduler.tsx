@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaCalendarAlt, FaClock, FaUser, FaNotesMedical, FaTimes, FaCheck, FaSearch, FaMoneyBillWave, FaPlusCircle, FaEnvelope } from 'react-icons/fa';
+import { useClinic } from '../context/ClinicContext';
 
 interface Patient {
     _id: string;
@@ -37,6 +38,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
     const [loading, setLoading] = useState(false);
     const [fetchingData, setFetchingData] = useState(true);
     const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const { clinicData } = useClinic();
 
     const getTodayDate = () => {
         const today = new Date();
@@ -237,11 +239,16 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             const selectedPatient = patients.find(p => p._id === formData.patientId);
             if (selectedPatient) {
                 const patientPhone = selectedPatient.contact;
-                const clinicName = "Dr. Tooth Dental Clinic";
+                const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
+                const clinicAddress = clinicData?.address;
+                const fullAddress = clinicAddress
+                    ? `${clinicAddress.street}, ${clinicAddress.city}, ${clinicAddress.state} - ${clinicAddress.zip}`
+                    : "Katihar, Bihar";
+
                 const date = formData.date;
                 const time = formData.time;
 
-                const message = `*Appointment Confirmed!* ✅\n\nDear ${selectedPatient.name},\nYour appointment at *${clinicName}* has been scheduled.\n\n📅 *Date:* ${date}\n⏰ *Time:* ${time}\n📍 *Location:* Katihar, Bihar\n\nSee you soon!`;
+                const message = `*Appointment Confirmed!* ✅\n\nDear ${selectedPatient.name},\nYour appointment at *${clinicName}* has been scheduled successfully.\n\n📅 *Date:* ${date}\n⏰ *Time:* ${time}\n📍 *Location:* ${fullAddress}\n\n*Note:* Please try to arrive 5-10 minutes before your scheduled time.\n\nSee you soon!`;
 
                 const whatsappUrl = `https://wa.me/91${patientPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');

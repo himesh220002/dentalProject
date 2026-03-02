@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FaClock, FaNotesMedical, FaUser, FaCalendarPlus, FaTrash, FaChevronDown, FaChevronUp, FaWhatsapp } from 'react-icons/fa';
+import { useClinic } from '@/context/ClinicContext';
 
 interface MobileAppointmentCardProps {
     apt: any; // Using any for now to match parent usage, or import Appointment interface
@@ -14,6 +15,7 @@ interface MobileAppointmentCardProps {
 const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleReschedule, deleteAppointment, isHighlighted }: MobileAppointmentCardProps) => {
     const [isOpen, setIsOpen] = useState(isHighlighted || false);
     const [isBlinking, setIsBlinking] = useState(false);
+    const { clinicData } = useClinic();
 
     const expired = isPastTime(apt.date, apt.time);
     const isReadyForPayment = (apt.status === 'Completed' || apt.isTicked) && apt.paymentStatus !== 'Paid';
@@ -247,11 +249,15 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
                         {/* WhatsApp Reminder Button */}
                         <button
                             onClick={() => {
-                                const msg = `Reminder: You have an appointment today at ${apt.time}. See you at the clinic!`;
+                                const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
+                                const msg = `*Appointment Reminder* 🦷\n\nDear Patient, this is a friendly reminder for your appointment today at *${clinicName}*.\n\n⏰ *Time:* ${apt.time}\n📍 *Location:* ${clinicData?.address?.city || 'Katihar'}, ${clinicData?.address?.state || 'Bihar'}\n\nSee you soon!`;
                                 const phone = apt.patientId?.contact || '';
                                 window.open(`https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
                             }}
-                            className="py-2 px-4 bg-green-50 text-green-600 rounded-xl text-xs font-black flex items-center justify-center gap-2"
+                            className={`py-2 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 ${new Date(apt.date).toDateString() === new Date().toDateString() && apt.status === 'Scheduled'
+                                    ? 'bg-green-600 text-white animate-blink-green shadow-lg'
+                                    : 'bg-green-50 text-green-600'
+                                }`}
                             title="Send WhatsApp Reminder"
                         >
                             <FaWhatsapp />

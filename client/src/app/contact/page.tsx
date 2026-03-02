@@ -140,9 +140,10 @@ function ContactContent() {
 
             // Construct the WhatsApp Message
             const clinicPhone = phone.replace(/\D/g, ''); // Cleans the number
+            const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
             const messageText = language === 'hi'
-                ? `नमस्ते डॉक्टर, मेरा नाम ${formData.name} है।\nफोन: ${formData.phone}\nविवरण: ${formData.message}`
-                : `Hello Doctor, my name is ${formData.name}.\nPhone: ${formData.phone}\nMessage: ${formData.message}`;
+                ? `नमस्ते डॉक्टर, मैं ${formData.name} हूँ।\nमैं आपसे इस विषय में परामर्श करना चाहता/चाहती हूँ:- \n${formData.message}\nमेरा फोन: ${formData.phone}`
+                : `Hello Doctor, I'm ${formData.name}.\nI'd like to consult regarding:- \n${formData.message}.\nMy contact: ${formData.phone}`;
 
             const encodedMessage = encodeURIComponent(messageText);
             const finalWhatsappLink = `https://wa.me/${clinicPhone}?text=${encodedMessage}`;

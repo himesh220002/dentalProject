@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { FaCalendarPlus, FaClock, FaUser, FaCheckCircle, FaTrash, FaNotesMedical, FaChevronDown, FaWhatsapp } from 'react-icons/fa';
+import { useClinic } from '@/context/ClinicContext';
 import Link from 'next/link';
 import QuickScheduler from '@/components/QuickScheduler';
 import MobileAppointmentCard from '@/components/dashboard/MobileAppointmentCard';
@@ -30,6 +31,7 @@ function DashboardSchedulesContent() {
     const searchParams = useSearchParams();
     const highlightId = searchParams?.get('highlight');
     const highlightedRef = useRef<HTMLTableRowElement | HTMLDivElement | null>(null);
+    const { clinicData } = useClinic();
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
     const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
@@ -269,11 +271,15 @@ function DashboardSchedulesContent() {
                                                 {/* WhatsApp Reminder Button */}
                                                 <button
                                                     onClick={() => {
-                                                        const msg = `Reminder: You have an appointment today at ${apt.time}. See you at the clinic!`;
+                                                        const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
+                                                        const msg = `*Appointment Reminder* 🦷\n\nDear Patient, this is a friendly reminder for your appointment today at *${clinicName}*.\n\n⏰ *Time:* ${apt.time}\n📍 *Location:* ${clinicData?.address?.city || 'Katihar'}, ${clinicData?.address?.state || 'Bihar'}\n\nSee you soon!`;
                                                         const phone = apt.patientId?.contact || '';
                                                         window.open(`https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
                                                     }}
-                                                    className="p-2.5 bg-green-50 text-green-600 rounded-xl hover:bg-green-100 transition active:scale-95"
+                                                    className={`p-2.5 rounded-xl transition active:scale-95 ${new Date(apt.date).toDateString() === new Date().toDateString() && apt.status === 'Scheduled'
+                                                            ? 'bg-green-600 text-white shadow-lg shadow-green-200 animate-blink-green'
+                                                            : 'bg-green-50 text-green-600 hover:bg-green-100'
+                                                        }`}
                                                     title="Send WhatsApp Reminder"
                                                 >
                                                     <FaWhatsapp />
