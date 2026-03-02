@@ -16,10 +16,10 @@ export default function Footer() {
     const email = clinicData?.email || 'care@drToothdental.in';
 
     const socialPlatforms = [
-        { icon: <FaFacebookF />, href: ensureAbsoluteUrl(clinicData?.socialLinks.facebook), color: 'hover:bg-[#1877F2]' },
-        { icon: <FaTwitter />, href: ensureAbsoluteUrl(clinicData?.socialLinks.twitter), color: 'hover:bg-[#1DA1F2]' },
-        { icon: <FaLinkedinIn />, href: ensureAbsoluteUrl(clinicData?.socialLinks.linkedin), color: 'hover:bg-[#0A66C2]' },
-        { icon: <FaInstagram />, href: ensureAbsoluteUrl(clinicData?.socialLinks.instagram), color: 'hover:bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]' }
+        { icon: <FaFacebookF />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.facebook || 'https://www.facebook.com/'), color: 'hover:bg-[#1877F2]' },
+        { icon: <FaTwitter />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.twitter || 'https://x.com/tweeter?lang=en'), color: 'hover:bg-[#1DA1F2]' },
+        { icon: <FaLinkedinIn />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.linkedin || 'https://www.linkedin.com/'), color: 'hover:bg-[#0A66C2]' },
+        { icon: <FaInstagram />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.instagram || 'https://www.instagram.com/'), color: 'hover:bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]' }
     ];
 
     return (

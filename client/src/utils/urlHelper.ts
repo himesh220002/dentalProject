@@ -3,26 +3,27 @@
  * it prepends 'https://'.
  */
 export const ensureAbsoluteUrl = (url: string | undefined): string => {
-    if (!url || url === '#' || url === '') return '#';
+    if (!url || url === '#' || url === '' || url === 'https://') return '#';
 
-    const trimmedUrl = url.trim();
+    const trimmedUrl = url.trim().replace(/^https?:\/\//i, '');
 
-    if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
-        return trimmedUrl;
+    // Re-add https:// for all valid social/web links
+    if (trimmedUrl.includes('.') || trimmedUrl.includes('/')) {
+        return `https://${trimmedUrl}`;
     }
 
     if (trimmedUrl.startsWith('www.')) {
         return `https://${trimmedUrl}`;
     }
 
-    // If it's a social handle (e.g., 'drtooth'), we might need more logic, 
-    // but for now let's assume if it doesn't have a slash or dot it's just a handle
-    // Actually, usually users enter 'facebook.com/profile'
+    // If it's just a handle (no dot or slash), we skip it as it's not a full URL
+    // But if it has a dot (facebook.com) or a slash (facebook.com/profile), we prepend https://
     if (trimmedUrl.includes('.') || trimmedUrl.includes('/')) {
         return `https://${trimmedUrl}`;
     }
 
-    return trimmedUrl; // fallback for fragments or internal links if needed, but mostly for social
+    // If it's just a fragment or already handled
+    return trimmedUrl.startsWith('/') ? trimmedUrl : '#';
 };
 
 /**
