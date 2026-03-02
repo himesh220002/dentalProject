@@ -39,7 +39,7 @@ export default function About() {
     const consultantExpLabel = language === 'hi' ? 'का अनुभव' : 'Experience';
 
     return (
-        <div className=" space-y-12 sm:pt-4 lg:pt-0 lg:-mt-20">
+        <div className=" max-w-[1600px] mx-auto  space-y-12 sm:pt-4 lg:pt-0 lg:-mt-20">
             {/* Hero Section - Refined */}
             <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">
@@ -156,7 +156,7 @@ export default function About() {
             </div>
 
             {/* Our Values / Mission Refined */}
-            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-6 mb-10 xl:mb-20 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative mx-4">
+            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-6 mb-10 xl:mb-20 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative mx-2 sm:mx-4">
                 <div className="max-w-5xl mx-auto space-y-5 sm:space-y-20">
                     <div className="text-center space-y-4 sm:space-y-6">
                         <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-white leading-tight">{t.aboutValues.title}</h2>
@@ -164,7 +164,7 @@ export default function About() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-12 text-white">
-                        <div className="space-y-6 group">
+                        <div className="text-center sm:text-left flex flex-col items-center sm:items-start space-y-6 group">
                             <div className="w-20 h-20 bg-blue-600/20 border border-blue-500/30 rounded-3xl flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
                                 <FaUserMd size={32} />
                             </div>
@@ -175,7 +175,7 @@ export default function About() {
                                     : `${doctorName} stays updated with the latest in dental science to provide the best possible treatments tailored to your needs.`}
                             </p>
                         </div>
-                        <div className="space-y-6 group">
+                        <div className="text-center sm:text-left flex flex-col items-center sm:items-start space-y-6 group">
                             <div className="w-20 h-20 bg-teal-600/20 border border-teal-500/30 rounded-3xl flex items-center justify-center text-teal-500 group-hover:bg-teal-600 group-hover:text-white transition-all duration-500">
                                 <FaSmile size={32} />
                             </div>
@@ -186,7 +186,7 @@ export default function About() {
                                     : 'We use cutting-edge modern techniques to ensure your visit is as comfortable, fast, and pain-free as possible.'}
                             </p>
                         </div>
-                        <div className="space-y-6 group">
+                        <div className="text-center sm:text-left flex flex-col items-center sm:items-start space-y-6 group">
                             <div className="w-20 h-20 bg-purple-600/20 border border-purple-500/30 rounded-3xl flex items-center justify-center text-purple-500 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
                                 <FaAward size={32} />
                             </div>

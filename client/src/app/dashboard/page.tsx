@@ -120,7 +120,7 @@ export default function DashboardOverview() {
                     <div className="space-y-4">
                         {recentActivity.length > 0 ? (
                             recentActivity.map((act, i) => (
-                                <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition border border-transparent hover:border-gray-100">
+                                <div key={i} className="flex flex-wrap items-center gap-4 p-4 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition border border-transparent hover:border-gray-100">
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${act.type === 'appointment' ? 'bg-blue-100 text-blue-600' : 'bg-rose-100 text-rose-600'}`}>
                                         {act.type === 'appointment' ? <FaCalendarAlt /> : <FaEnvelope />}
                                     </div>
@@ -155,7 +155,7 @@ export default function DashboardOverview() {
                     <div className="space-y-4">
                         {queue.length > 0 ? (
                             queue.map((q, i) => (
-                                <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-emerald-50/30 border border-emerald-100 hover:bg-emerald-50 transition">
+                                <div key={i} className="flex flex-wrap items-center gap-4 p-4 rounded-2xl bg-emerald-50/30 border border-emerald-100 hover:bg-emerald-50 transition">
                                     <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex flex-col items-center justify-center border border-emerald-100">
                                         <span className="text-[9px] font-black text-emerald-600 uppercase">#{i + 1}</span>
                                         <span className="text-xs font-black text-emerald-700">{q.time}</span>

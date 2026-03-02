@@ -17,7 +17,7 @@ export default function TempClinicForm() {
         doctorName: 'Dr. Tooth',
         tagline: "Your Smile's Guardian",
         email: 'care@drToothdental.in',
-        phone: '+91 98765 43210',
+        phone: '+91 90000 00000',
         establishedYear: '2014',
         clinicExperience: '10+',
         expertise: 'Restorative Dentistry, Oral Surgery, Orthodontics, Cosmetic Dentistry',
@@ -28,13 +28,15 @@ export default function TempClinicForm() {
             street: 'Dental Clinic Road, Near Market',
             city: 'Katihar',
             state: 'Bihar',
-            zip: '854105'
+            zip: '854105',
+            latitude: '25.555613',
+            longitude: '87.556440'
         },
         socialLinks: {
-            facebook: '',
-            twitter: '',
-            linkedin: '',
-            instagram: ''
+            facebook: 'https://www.facebook.com/',
+            twitter: 'https://x.com/tweeter?lang=en',
+            linkedin: 'https://www.linkedin.com/',
+            instagram: 'https://www.instagram.com/'
         },
         timings: {
             monday: '09:00 AM - 08:00 PM',
@@ -81,15 +83,8 @@ export default function TempClinicForm() {
     const [history, setHistory] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [saveStatus, setSaveStatus] = useState('');
-    const [isAuthorized, setIsAuthorized] = useState(() => {
-        if (typeof window !== 'undefined') {
-            const auth = localStorage.getItem('handover_authorized');
-            const expiry = localStorage.getItem('handover_expiry');
-            const now = Date.now();
-            return auth === 'true' && expiry && now < Number(expiry);
-        }
-        return false;
-    });
+    const [isAuthorized, setIsAuthorized] = useState(false);
+    const [hasMounted, setHasMounted] = useState(false);
     const [password, setPassword] = useState('');
 
     useEffect(() => {
@@ -106,6 +101,7 @@ export default function TempClinicForm() {
                 setIsAuthorized(true);
             }
         };
+        setHasMounted(true);
         checkHandoverAuth();
         // Set up interval to check expiry periodically
         const interval = setInterval(checkHandoverAuth, 60000); // Check every minute
@@ -165,7 +161,27 @@ export default function TempClinicForm() {
     };
 
     const loadFromHistory = (item: any) => {
-        setFormData(item.jsondata);
+        const loadedData = item.jsondata;
+        setFormData(prev => ({
+            ...prev,
+            ...loadedData,
+            address: {
+                ...prev.address,
+                ...(loadedData.address || {})
+            },
+            socialLinks: {
+                ...prev.socialLinks,
+                ...(loadedData.socialLinks || {})
+            },
+            timings: {
+                ...prev.timings,
+                ...(loadedData.timings || {})
+            },
+            seo: {
+                ...prev.seo,
+                ...(loadedData.seo || {})
+            }
+        }));
         setHandoverId(item.handoverformId);
         setJsonOutput(JSON.stringify(item.jsondata, null, 4));
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -302,6 +318,14 @@ export default function TempClinicForm() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
+
+    if (!hasMounted) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
 
     if (!isAuthorized) {
         return (
@@ -574,6 +598,16 @@ export default function TempClinicForm() {
                                         <input type="text" name="address.city" placeholder="City" value={formData.address.city} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
                                         <input type="text" name="address.state" placeholder="State" value={formData.address.state} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
                                         <input type="text" name="address.zip" placeholder="ZIP" value={formData.address.zip} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 sm:col-span-2">
+                                        <div className="space-y-1">
+                                            <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Latitude</label>
+                                            <input type="text" name="address.latitude" placeholder="e.g. 25.5556" value={formData.address.latitude} onChange={handleChange} className="w-full px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold text-sm" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Longitude</label>
+                                            <input type="text" name="address.longitude" placeholder="e.g. 87.5564" value={formData.address.longitude} onChange={handleChange} className="w-full px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold text-sm" />
+                                        </div>
                                     </div>
                                     <div className="sm:col-span-2">
                                         <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Clinic Policy / Note</label>

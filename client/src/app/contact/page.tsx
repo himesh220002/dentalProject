@@ -22,6 +22,8 @@ function ContactContent() {
         ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}`
         : 'Dental Clinic Road, Katihar, Bihar - 854105';
     const whatsappLink = `https://wa.me/${phone.replace(/\D/g, '')}`;
+    const latitude = clinicData?.address.latitude || '25.555613';
+    const longitude = clinicData?.address.longitude || '87.556440';
 
     const [formData, setFormData] = useState({
         name: '',
@@ -318,7 +320,7 @@ function ContactContent() {
                     {/* Google Map Integration */}
                     <div className="bg-white p-3 rounded-3xl shadow-xl overflow-hidden h-[400px] w-full border-4 border-white transform hover:shadow-2xl transition duration-500">
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3611!2d87.556440!3d25.555613!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDMzJzIwLjIiTiA4N8KwMzMnMjMuNCJF!5e0!3m2!1sen!2sin!4v1713511111111!5m2!1sen!2sin"
+                            src={`https://maps.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`}
                             width="100%"
                             height="100%"
                             style={{ border: 0 }}

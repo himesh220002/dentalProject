@@ -47,7 +47,7 @@ export default function DoctorAdvice() {
     const tips = tipsData[language as keyof typeof tipsData] || tipsData.en;
 
     return (
-        <section className="py-20 sm:py-32 space-y-20 sm:space-y-32 px-4 sm:px-0  relative overflow-hidden">
+        <section className="py-20 sm:py-32 space-y-20 sm:space-y-32 px-4 sm:px-0 rounded-4xl  relative overflow-hidden">
             {/* Background Accent */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/50 rounded-full blur-3xl -z-10 -mr-64 -mt-64"></div>
 

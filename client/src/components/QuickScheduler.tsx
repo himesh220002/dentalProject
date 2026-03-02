@@ -291,10 +291,10 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
 
             <div className="relative bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">
                 <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white relative">
-                    <button onClick={onClose} className="absolute top-6 right-6 p-2 hover:bg-white/20 rounded-full transition">
+                    <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-red-500/20 hover:bg-white/20 rounded-full transition">
                         <FaTimes />
                     </button>
-                    <h2 className="text-3xl font-black flex items-center gap-3">
+                    <h2 className="text-xl sm:text-3xl font-black flex items-center gap-3">
                         <FaCalendarAlt className="text-blue-200" />
                         {appointmentId ? 'Reschedule Appointment' : 'Quick Scheduler'}
                     </h2>
@@ -319,7 +319,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-2 max-h-[80vh] sm:max-h-[750px] overflow-y-auto custom-scrollbar">
+                <form onSubmit={handleSubmit} className="p-8 space-y-2 max-h-[70vh] sm:max-h-[750px] overflow-y-auto custom-scrollbar">
                     {/* Search & Select Patient */}
                     <div className="space-y-2">
                         <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">

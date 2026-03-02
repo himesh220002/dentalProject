@@ -34,7 +34,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
+            <body className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50/20 via-white to-purple-800/30 text-gray-900">
                 <Providers>
                     <Navbar />
                     <main className="flex-grow mx-auto w-full px-2 sm:px-6 lg:px-0 pt-6 sm:pt-8 lg:pt-12">

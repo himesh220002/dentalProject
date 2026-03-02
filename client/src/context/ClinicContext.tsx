@@ -20,6 +20,8 @@ interface ClinicData {
         city: string;
         state: string;
         zip: string;
+        latitude?: string;
+        longitude?: string;
     };
     socialLinks: {
         facebook: string;
