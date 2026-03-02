@@ -267,7 +267,7 @@ export default function Navbar() {
 
                 {/* Mobile Menu */}
                 {isOpen && (
-                    <div className="lg:hidden h-screen bg-white border-t border-gray-100 p-4 space-y-4 animate-in slide-in-from-top duration-300">
+                    <div className="lg:hidden h-screen bg-gradient-to-b from-gray-300/90 to-blue-300/90 border-t border-gray-100 p-4 pt-20 space-y-4 animate-in slide-in-from-top duration-300">
                         {/* Mobile Language Switcher - Inside Menu */}
                         <div className="px-2 pb-2 border-b border-gray-50">
                             <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
@@ -378,7 +378,7 @@ export default function Navbar() {
                                         >
                                             <div className="absolute inset-0 bg-blue-400/30 animate-ping-glow rounded-2xl"></div>
                                             <FaCalendarAlt className="text-lg animate-bounce relative z-10" />
-                                            <span className="text-[8px] font-black uppercase tracking-tighter relative z-10">Fixed</span>
+                                            <span className="text-[12px] font-black uppercase tracking-tighter relative z-10">Fixed</span>
                                         </Link>
                                     )}
                                 </div>

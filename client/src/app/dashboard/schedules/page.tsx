@@ -119,8 +119,8 @@ function DashboardSchedulesContent() {
     );
 
     return (
-        <div className="space-y-8">
-            <div className="flex justify-between items-center">
+        <div className="space-y-2 sm:space-y-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
                 <h1 className="text-xl sm:text-3xl font-black text-gray-900">Appointment Schedules</h1>
                 <button
                     onClick={() => setIsSchedulerOpen(true)}

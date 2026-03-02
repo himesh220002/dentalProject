@@ -1,39 +1,74 @@
+'use client';
 import { FaQuoteLeft, FaStar } from 'react-icons/fa';
+import { useClinic } from '@/context/ClinicContext';
+import { translations } from '@/constants/translations';
 
-const reviews = [
-    {
-        name: 'Monika J.',
-        text: 'Dr. Tooth is incredibly gentle. I used to be terrified of the dentist, but now I look forward to my checkups!',
-        rating: 5,
-        treatment: 'Dental Cleaning'
-    },
-    {
-        name: 'Monty R.',
-        text: 'The best clinic in town. Modern equipment, friendly staff, and the treatments are actually painless.',
-        rating: 5,
-        treatment: 'Root Canal'
-    },
-    {
-        name: 'Priya S.',
-        text: "I got my braces done here. The transformation is amazing! Dr. Tooth explained everything clearly at every step.",
-        rating: 5,
-        treatment: 'Orthodontics'
-    },
-    {
-        name: 'Rahul D.',
-        text: "Excellent service and very hygienic. Highly recommended for anyone looking for quality dental care.",
-        rating: 5,
-        treatment: 'Teeth Whitening'
-    }
-];
+const reviewsData = {
+    en: [
+        {
+            name: 'Monika J.',
+            text: 'Dr. Tooth is incredibly gentle. I used to be terrified of the dentist, but now I look forward to my checkups!',
+            rating: 5,
+            treatment: 'Dental Cleaning'
+        },
+        {
+            name: 'Monty R.',
+            text: 'The best clinic in town. Modern equipment, friendly staff, and the treatments are actually painless.',
+            rating: 5,
+            treatment: 'Root Canal'
+        },
+        {
+            name: 'Priya S.',
+            text: "I got my braces done here. The transformation is amazing! Dr. Tooth explained everything clearly at every step.",
+            rating: 5,
+            treatment: 'Orthodontics'
+        },
+        {
+            name: 'Rahul D.',
+            text: "Excellent service and very hygienic. Highly recommended for anyone looking for quality dental care.",
+            rating: 5,
+            treatment: 'Teeth Whitening'
+        }
+    ],
+    hi: [
+        {
+            name: 'मोनिका जे.',
+            text: 'डॉ. टूथ अविश्वसनीय रूप से कोमल हैं। मैं पहले दंत चिकित्सक से बहुत डरती थी, लेकिन अब मैं अपने चेकअप का इंतजार करती हूं!',
+            rating: 5,
+            treatment: 'दांतों की सफाई'
+        },
+        {
+            name: 'मोंटी आर.',
+            text: 'शहर का सबसे अच्छा क्लिनिक। आधुनिक उपकरण, मित्रवत कर्मचारी, और उपचार वास्तव में दर्द रहित हैं।',
+            rating: 5,
+            treatment: 'रूट कैनाल'
+        },
+        {
+            name: 'प्रिया एस.',
+            text: "मैंने अपने ब्रेसिज़ यहाँ लगवाए हैं। बदलाव अद्भुत है! डॉ. टूथ ने हर कदम पर सब कुछ स्पष्ट रूप से समझाया।",
+            rating: 5,
+            treatment: 'ऑर्थोडॉन्टिक्स'
+        },
+        {
+            name: 'राहुल डी.',
+            text: "बेहतरीन सेवा और बहुत स्वच्छ। गुणवत्तापूर्ण दंत चिकित्सा देखभाल की तलाश करने वाले किसी भी व्यक्ति के लिए अत्यधिक अनुशंसित।",
+            rating: 5,
+            treatment: 'दांत चमकाना'
+        }
+    ]
+};
 
 export default function PatientReviews() {
+    const { language } = useClinic();
+    const t = translations[language as keyof typeof translations];
+    const reviews = reviewsData[language as keyof typeof reviewsData] || reviewsData.en;
+
     return (
         <section className="py-12 sm:py-20 bg-blue-50/50 -mx-2 sm:-mx-6 lg:mx-8 px-4 sm:px-6 lg:px-8 rounded-[2rem] sm:rounded-[3rem]">
             <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16 space-y-3 sm:space-y-4">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight">What Our Patients Say</h2>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight">{t.aboutReviews.title}</h2>
                 <div className="h-1 sm:h-1.5 w-16 sm:w-24 bg-blue-500 mx-auto rounded-full"></div>
-                <p className="text-gray-600 text-base sm:text-lg">Trust is earned through thousands of successful treatments and happy smiles.</p>
+                <p className="text-gray-600 text-base sm:text-lg">{t.aboutReviews.subtitle}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
@@ -74,7 +109,7 @@ export default function PatientReviews() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-blue-600 font-black hover:gap-4 transition-all text-sm sm:text-base"
                 >
-                    SEE MORE ON GOOGLE <span className="text-lg sm:text-xl">→</span>
+                    {t.aboutReviews.seeMore} <span className="text-lg sm:text-xl">→</span>
                 </a>
             </div>
         </section>

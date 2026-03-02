@@ -50,7 +50,7 @@ export default function DashboardLayout({
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-gray-100 flex flex-col lg:flex-row rounded-xl">
+            <div className="min-h-screen lg:-mt-12 bg-gray-100 flex flex-col lg:flex-row rounded-xl">
                 {/* Mobile Top Bar */}
                 <div className="lg:hidden sticky bg-cyan-900 top-0 z-0 rounded-t-xl">
                     <button
@@ -71,10 +71,10 @@ export default function DashboardLayout({
 
                 {/* Sidebar */}
                 <aside className={`
-                    fixed inset-y-0 left-0 w-64 max-h-screen lg:max-h-[90vh] mb-10 bg-gray-900 text-white flex flex-col shadow-xl z-[50] lg:sticky lg:top-0 lg:h-screen transition-transform duration-300 transform rounded-r-lg lg:rounded-r-none lg:rounded-l-xl overflow-hidden
+                    fixed inset-y-0 pt-20 lg:pt-3  left-0 w-64 max-h-screen bg-gray-900 text-white flex flex-col shadow-xl z-[50] lg:sticky lg:top-0 lg:h-screen transition-transform duration-300 transform rounded-r-lg lg:rounded-r-none  overflow-hidden
                     ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                 `}>
-                    <div className="p-6 hidden lg:block shrink-0">
+                    <div className="p-6  shrink-0">
                         <h2 className="text-2xl font-bold text-blue-400">Clinic Admin</h2>
                     </div>
 

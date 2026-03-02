@@ -6,9 +6,12 @@ import PatientReviews from '@/components/about/PatientReviews';
 import DoctorAdvice from '@/components/about/DoctorAdvice';
 import { useClinic } from '@/context/ClinicContext';
 import { formatExperience } from '@/utils/urlHelper';
+import { translations } from '@/constants/translations';
 
 export default function About() {
-    const { clinicData } = useClinic();
+    const { clinicData, language } = useClinic();
+    const t = translations[language as keyof typeof translations];
+
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
     const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental';
     const clinicExperience = formatExperience(clinicData?.clinicExperience || '10');
@@ -16,34 +19,49 @@ export default function About() {
     const doctorExperience = chiefConsultant?.experience || '12 Years';
     const year = clinicData?.establishedYear || '2014';
 
-    // Calculate clinic operation years
-    const currentYear = new Date().getFullYear();
-    const clinicYears = Math.max(0, currentYear - parseInt(year));
+    // Description text (localized)
+    const doctorDesc = language === 'hi'
+        ? `दंत चिकित्सा में ${doctorExperience} की समर्पित सेवा के साथ, ${doctorName} शीर्ष स्तर की दंत चिकित्सा देखभाल प्रदान करने के लिए प्रतिबद्ध हैं। उनका दर्शन सरल है: रोगियों के साथ करुणा, सहानुभूति और उच्चतम चिकित्सा मानकों के साथ व्यवहार करना।`
+        : `With ${doctorExperience} of dedicated service in dentistry, ${doctorName} is committed to providing top-tier dental care. His philosophy is simple: treating patients with compassion, empathy, and the highest medical standards.`;
+
+    const consultantRole = (role: string) => {
+        if (language !== 'hi') return role;
+        if (role.toLowerCase().includes('chief')) return 'मुख्य दंत चिकित्सक';
+        if (role.toLowerCase().includes('orthodontist')) return 'ऑर्थोडॉन्टिस्ट';
+        if (role.toLowerCase().includes('endodontist')) return 'एंडोडॉन्टिस्ट';
+        if (role.toLowerCase().includes('pedodontist')) return 'पेडोडॉन्टिस्ट';
+        if (role.toLowerCase().includes('periodontist')) return 'पीरियोडॉन्टिस्ट';
+        if (role.toLowerCase().includes('prosthodontist')) return 'प्रोस्थोडॉन्टिस्ट';
+        if (role.toLowerCase().includes('surgeon')) return 'सर्जन';
+        return role;
+    };
+
+    const consultantExpLabel = language === 'hi' ? 'का अनुभव' : 'Experience';
 
     return (
-        <div className="space-y-12 sm:pt-4 lg:pt-0 lg:-mt-20">
+        <div className=" space-y-12 sm:pt-4 lg:pt-0 lg:-mt-20">
             {/* Hero Section - Refined */}
             <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">
                     <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-5 py-2 rounded-2xl text-xs font-black tracking-widest uppercase">
                         <FaCertificate className="text-blue-500 animate-pulse" />
-                        Dedicated Excellence
+                        {t.aboutHero.excellence}
                     </div>
                     <h1 className="text-4xl sm:text-5xl xl:text-7xl font-black text-gray-900 leading-[1.05] tracking-tight">
-                        Meet <span className="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">{doctorName}</span>, Your Smile's Guardian
+                        {t.aboutHero.meet} <span className="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">{doctorName}</span>, {t.aboutHero.guardian}
                     </h1>
                     <p className="text-lg sm:text-xl text-gray-600 leading-relaxed font-medium max-w-xl">
-                        With {doctorExperience} of dedicated service in dentistry, {doctorName} is committed to providing top-tier dental care. His philosophy is simple: treating patients with compassion, empathy, and the highest medical standards.
+                        {doctorDesc}
                     </p>
                     <div className="relative p-8 bg-gray-900 text-white rounded-[2.5rem] overflow-hidden group shadow-2xl">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full -mr-16 -mt-16 blur-xl group-hover:bg-blue-600/40 transition-colors"></div>
                         <FaQuoteLeft className="text-4xl text-blue-500/30 mb-4" />
                         <p className="text-lg font-bold leading-relaxed italic relative z-10">
-                            "My goal is not just to treat teeth but to ensure every patient leaves with a confident smile and a positive experience."
+                            {t.aboutHero.quote}
                         </p>
                         <div className="mt-6 flex items-center gap-3">
                             <div className="w-10 h-1 bg-blue-500 rounded-full"></div>
-                            <span className="font-black uppercase tracking-widest text-[10px]">{doctorName} • Chief Surgeon</span>
+                            <span className="font-black uppercase tracking-widest text-[10px]">{doctorName} • {t.aboutHero.surgeon}</span>
                         </div>
                     </div>
                 </div>
@@ -58,8 +76,8 @@ export default function About() {
                             <FaAward size={18} className="sm:size-[24px]" />
                         </div>
                         <div>
-                            <p className="text-[8px] sm:text-[11px] font-black uppercase text-blue-500 tracking-[0.2em] leading-none mb-1 sm:mb-2 text-center lg:text-left">Top Rated</p>
-                            <p className="font-black text-gray-900 text-xs sm:text-xl">Elite Dentist</p>
+                            <p className="text-[8px] sm:text-[11px] font-black uppercase text-blue-500 tracking-[0.2em] leading-none mb-1 sm:mb-2 text-center lg:text-left">{t.aboutHero.topRated}</p>
+                            <p className="font-black text-gray-900 text-xs sm:text-xl">{t.aboutHero.eliteDentist}</p>
                         </div>
                     </div>
 
@@ -79,7 +97,7 @@ export default function About() {
                         </div>
                         <div>
                             <p className="text-xl sm:text-4xl font-black text-gray-900 leading-none mb-0.5 sm:mb-1">{doctorExperience}</p>
-                            <p className="text-[8px] sm:text-xs text-gray-400 uppercase font-black tracking-widest">Experience</p>
+                            <p className="text-[8px] sm:text-xs text-gray-400 uppercase font-black tracking-widest">{t.aboutHero.experience}</p>
                         </div>
                     </div>
                 </div>
@@ -98,8 +116,8 @@ export default function About() {
                 </div>
 
                 <div className="text-start space-y-4 mb-16">
-                    <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">Our Experts</h2>
-                    <h3 className="text-3xl xl:text-5xl font-black text-gray-900">The Dream Team Behind <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent ">{clinicName}</span></h3>
+                    <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">{t.aboutExperts.title}</h2>
+                    <h3 className="text-3xl xl:text-5xl font-black text-gray-900">{t.aboutExperts.subtitle} <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent ">{clinicName}</span></h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {clinicData?.consultants.map((consultant, idx) => (
@@ -108,10 +126,10 @@ export default function About() {
                                 <FaUserMd size={40} className="text-blue-600" />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
-                            <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultant.role}</p>
+                            <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultantRole(consultant.role)}</p>
                             <div className="space-y-2">
-                                <p className="text-gray-500 text-sm font-medium">{consultant.info}</p>
-                                <p className="text-gray-900 text-sm font-black italic">{consultant.experience} Experience</p>
+                                <p className="text-gray-500 text-sm font-medium">{language === 'hi' ? 'विशेषज्ञ दंत चिकित्सा सेवाएं प्रदान करना' : consultant.info}</p>
+                                <p className="text-gray-900 text-sm font-black italic">{consultant.experience} {consultantExpLabel}</p>
                             </div>
                         </div>
                     ))}
@@ -121,8 +139,8 @@ export default function About() {
             {/* Achievements Grid Section */}
             <div className="pt-12 sm:pt-20 px-6 sm:px-16">
                 <div className="space-y-4 mb-12">
-                    <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">Our Milestones</h2>
-                    <p className="text-3xl xl:text-5xl font-black text-gray-900">Proven Results, <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">Proven Smiles.</span></p>
+                    <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">{t.aboutMilestones.title}</h2>
+                    <p className="text-3xl xl:text-5xl font-black text-gray-900">{t.aboutMilestones.subtitle} <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">{t.aboutMilestones.provenSmiles}</span></p>
                 </div>
                 <AchievementsGrid />
             </div>
@@ -141,8 +159,8 @@ export default function About() {
             <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-6 mb-10 xl:mb-20 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative mx-4">
                 <div className="max-w-5xl mx-auto space-y-5 sm:space-y-20">
                     <div className="text-center space-y-4 sm:space-y-6">
-                        <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-white leading-tight">Why We Are Different</h2>
-                        <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">We combine state-of-the-art dental technology with a deep human touch to ensure your journey is seamless.</p>
+                        <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-white leading-tight">{t.aboutValues.title}</h2>
+                        <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">{t.aboutValues.subtitle}</p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-12 text-white">
@@ -150,34 +168,40 @@ export default function About() {
                             <div className="w-20 h-20 bg-blue-600/20 border border-blue-500/30 rounded-3xl flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
                                 <FaUserMd size={32} />
                             </div>
-                            <h3 className="text-2xl font-black">Expert Care</h3>
+                            <h3 className="text-2xl font-black">{t.aboutValues.expertCare}</h3>
                             <p className="text-gray-400 leading-relaxed font-medium">
-                                {doctorName} stays updated with the latest in dental science to provide the best possible treatments tailored to your needs.
+                                {language === 'hi'
+                                    ? `${doctorName} आपको आपकी आवश्यकताओं के अनुसार सर्वोत्तम संभव उपचार प्रदान करने के लिए दंत विज्ञान में नवीनतम के साथ अपडेट रहते हैं।`
+                                    : `${doctorName} stays updated with the latest in dental science to provide the best possible treatments tailored to your needs.`}
                             </p>
                         </div>
                         <div className="space-y-6 group">
                             <div className="w-20 h-20 bg-teal-600/20 border border-teal-500/30 rounded-3xl flex items-center justify-center text-teal-500 group-hover:bg-teal-600 group-hover:text-white transition-all duration-500">
                                 <FaSmile size={32} />
                             </div>
-                            <h3 className="text-2xl font-black">Painless Path</h3>
+                            <h3 className="text-2xl font-black">{t.aboutValues.painlessPath}</h3>
                             <p className="text-gray-400 leading-relaxed font-medium">
-                                We use cutting-edge modern techniques to ensure your visit is as comfortable, fast, and pain-free as possible.
+                                {language === 'hi'
+                                    ? 'हम यह सुनिश्चित करने के लिए अत्याधुनिक आधुनिक तकनीकों का उपयोग करते हैं कि आपकी यात्रा यथासंभव आरामदायक, तेज और दर्द रहित हो।'
+                                    : 'We use cutting-edge modern techniques to ensure your visit is as comfortable, fast, and pain-free as possible.'}
                             </p>
                         </div>
                         <div className="space-y-6 group">
                             <div className="w-20 h-20 bg-purple-600/20 border border-purple-500/30 rounded-3xl flex items-center justify-center text-purple-500 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
                                 <FaAward size={32} />
                             </div>
-                            <h3 className="text-2xl font-black">Gold Standard</h3>
+                            <h3 className="text-2xl font-black">{t.aboutValues.goldStandard}</h3>
                             <p className="text-gray-400 leading-relaxed font-medium">
-                                Absolute hygiene is our priority. We follow ultra-strict international sterilization protocols for your complete safety.
+                                {language === 'hi'
+                                    ? 'पूर्ण स्वच्छता हमारी प्राथमिकता है। हम आपकी पूर्ण सुरक्षा के लिए अति-कठिन अंतरराष्ट्रीय नसबंदी प्रोटोकॉल का पालन करते हैं।'
+                                    : 'Absolute hygiene is our priority. We follow ultra-strict international sterilization protocols for your complete safety.'}
                             </p>
                         </div>
                     </div>
 
                     <div className="pt-12 border-t border-white/10 text-center">
-                        <p className="text-blue-500 font-black uppercase tracking-[0.2em] text-xl mb-2">{clinicExperience} Years Excellence</p>
-                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">A decade of dedicated service to patients.</p>
+                        <p className="text-blue-500 font-black uppercase tracking-[0.2em] text-xl mb-2">{clinicExperience} {t.aboutValues.excellence}</p>
+                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">{t.aboutValues.decade}</p>
                     </div>
                 </div>
             </section>

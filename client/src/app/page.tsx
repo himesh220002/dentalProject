@@ -60,7 +60,7 @@ export default function Home() {
     }, [session]);
 
     return (
-        <div className="space-y-32 overflow-x-hidden">
+        <div className="max-w-[1600px] mx-auto space-y-20 md:space-y-32 overflow-x-hidden">
             {/* Hero Section - Elite Landing */}
             <HomeHero />
 
@@ -174,7 +174,7 @@ export default function Home() {
                     <Link
                         href="/profile"
                         onClick={() => setIsAptDismissed(true)}
-                        className="group relative flex items-center gap-3 bg-white hover:bg-emerald-50 p-1 rounded-full shadow-2xl border-2 border-emerald-100 transition-all active:scale-95 whitespace-nowrap overflow-hidden"
+                        className="group relative flex items-center gap-3 bg-white hover:bg-emerald-50 p-1 pr-4 mt-2 rounded-full shadow-2xl border-2 border-emerald-100 transition-all active:scale-95 whitespace-nowrap overflow-hidden"
                     >
                         {/* Ping Animation Background */}
                         <div className="absolute inset-0 bg-emerald-400/20 animate-ping-glow rounded-full"></div>
