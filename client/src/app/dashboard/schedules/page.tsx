@@ -272,13 +272,17 @@ function DashboardSchedulesContent() {
                                                 <button
                                                     onClick={() => {
                                                         const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
-                                                        const msg = `*Appointment Reminder* 🦷\n\nDear Patient, this is a friendly reminder for your appointment today at *${clinicName}*.\n\n⏰ *Time:* ${apt.time}\n📍 *Location:* ${clinicData?.address?.city || 'Katihar'}, ${clinicData?.address?.state || 'Bihar'}\n\nSee you soon!`;
+                                                        const mapsLink = (clinicData?.address?.latitude && clinicData?.address?.longitude)
+                                                            ? `https://www.google.com/maps/search/?api=1&query=${clinicData.address.latitude},${clinicData.address.longitude}`
+                                                            : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicName + " " + (clinicData?.address?.city || ""))}`;
+
+                                                        const msg = `*Appointment Reminder* 🦷\n\nDear Patient, this is a friendly reminder for your appointment today at *${clinicName}*.\n\n⏰ *Time:* ${apt.time}\n📍 *Location:* ${clinicData?.address?.city || 'Katihar'}, ${clinicData?.address?.state || 'Bihar'}\n🗺️ *Google Maps Link:* ${mapsLink}\n\nSee you soon!`;
                                                         const phone = apt.patientId?.contact || '';
                                                         window.open(`https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
                                                     }}
                                                     className={`p-2.5 rounded-xl transition active:scale-95 ${new Date(apt.date).toDateString() === new Date().toDateString() && apt.status === 'Scheduled'
-                                                            ? 'bg-green-600 text-white shadow-lg shadow-green-200 animate-blink-green'
-                                                            : 'bg-green-50 text-green-600 hover:bg-green-100'
+                                                        ? 'bg-green-600 text-white shadow-lg shadow-green-200 animate-blink-green'
+                                                        : 'bg-green-50 text-green-600 hover:bg-green-100'
                                                         }`}
                                                     title="Send WhatsApp Reminder"
                                                 >
