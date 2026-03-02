@@ -129,10 +129,37 @@ function ContactContent() {
                 // @ts-ignore
                 userId: session?.user?.id
             });
-            setStatus({ type: 'success', message: language === 'hi' ? 'संदेश सफलतापूर्वक भेजा गया! हम जल्द ही आपसे संपर्क करेंगे।' : 'Message sent successfully! We will contact you soon.' });
-            setFormData({ name: '', phone: '', email: '', message: '' });
+
+            // Success Feedback
+            setStatus({
+                type: 'success',
+                message: language === 'hi'
+                    ? 'विवरण सुरक्षित हो गया! अब आपको व्हाट्सएप पर भेजा जा रहा है...'
+                    : 'Details saved! Redirecting you to WhatsApp...'
+            });
+
+            // Construct the WhatsApp Message
+            const clinicPhone = phone.replace(/\D/g, ''); // Cleans the number
+            const messageText = language === 'hi'
+                ? `नमस्ते डॉक्टर, मेरा नाम ${formData.name} है।\nफोन: ${formData.phone}\nविवरण: ${formData.message}`
+                : `Hello Doctor, my name is ${formData.name}.\nPhone: ${formData.phone}\nMessage: ${formData.message}`;
+
+            const encodedMessage = encodeURIComponent(messageText);
+            const finalWhatsappLink = `https://wa.me/${clinicPhone}?text=${encodedMessage}`;
+
+            // Redirect after a short delay (so they see the success message)
+            setTimeout(() => {
+                window.open(finalWhatsappLink, '_blank');
+                setFormData({ name: '', phone: '', email: '', message: '' });
+            }, 1500);
+
         } catch (error) {
-            setStatus({ type: 'error', message: language === 'hi' ? 'संदेश भेजने में विफल। कृपया पुन: प्रयास करें या हमें कॉल करें।' : 'Failed to send message. Please try again or call us.' });
+            setStatus({
+                type: 'error',
+                message: language === 'hi'
+                    ? 'विफल। कृपया पुन: प्रयास करें।'
+                    : 'Failed. Please try again.'
+            });
         } finally {
             setSubmitting(false);
         }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaClock, FaNotesMedical, FaUser, FaCalendarPlus, FaTrash, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaClock, FaNotesMedical, FaUser, FaCalendarPlus, FaTrash, FaChevronDown, FaChevronUp, FaWhatsapp } from 'react-icons/fa';
 
 interface MobileAppointmentCardProps {
     apt: any; // Using any for now to match parent usage, or import Appointment interface
@@ -244,6 +244,19 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
                     </div>
 
                     <div className="flex gap-2 w-full pt-2 border-t border-gray-200">
+                        {/* WhatsApp Reminder Button */}
+                        <button
+                            onClick={() => {
+                                const msg = `Reminder: You have an appointment today at ${apt.time}. See you at the clinic!`;
+                                const phone = apt.patientId?.contact || '';
+                                window.open(`https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                            }}
+                            className="py-2 px-4 bg-green-50 text-green-600 rounded-xl text-xs font-black flex items-center justify-center gap-2"
+                            title="Send WhatsApp Reminder"
+                        >
+                            <FaWhatsapp />
+                        </button>
+
                         <button
                             onClick={() => handleReschedule(apt._id)}
                             className="flex-1 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2"

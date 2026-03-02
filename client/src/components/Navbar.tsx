@@ -9,6 +9,7 @@ import axios from 'axios';
 import AdminLockModal from './AdminLockModal';
 import { useClinic } from '../context/ClinicContext';
 import { translations } from '../constants/translations';
+import { parseDateTime } from '../utils/dateUtils';
 
 export default function Navbar() {
     const { clinicData, language, toggleLanguage } = useClinic();
@@ -35,18 +36,24 @@ export default function Navbar() {
     useEffect(() => {
         const checkUpcomingAppointments = async () => {
             // @ts-ignore
-            if (status !== 'authenticated' || !session?.user?.patientId) return;
+            if (status !== 'authenticated' || !session?.user?.patientId) {
+                setHasUpcomingAppointment(false);
+                return;
+            }
             try {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
                 // @ts-ignore
                 const res = await axios.get(`${backendUrl}/api/appointments/patient/${session.user.patientId}`);
                 const appointments = res.data;
-                const startOfToday = new Date();
-                startOfToday.setHours(0, 0, 0, 0);
+                const now = new Date();
 
                 const upcoming = appointments.some((apt: any) => {
-                    const aptDate = new Date(apt.date);
-                    return aptDate >= startOfToday && apt.status !== 'Completed' && !apt.isTicked;
+                    const aptMoment = parseDateTime(apt.date, apt.time);
+                    // Show if it's in the future AND not operating/completed/ticked
+                    return aptMoment > now &&
+                        apt.status !== 'Completed' &&
+                        apt.status !== 'Operating' &&
+                        !apt.isTicked;
                 });
                 setHasUpcomingAppointment(upcoming);
             } catch (error) {
@@ -54,11 +61,9 @@ export default function Navbar() {
             }
         };
 
-        if (status === 'authenticated') {
-            checkUpcomingAppointments();
-        } else {
-            setHasUpcomingAppointment(false);
-        }
+        checkUpcomingAppointments();
+        const interval = setInterval(checkUpcomingAppointments, 30000); // Polling every 30s
+        return () => clearInterval(interval);
     }, [session, status]);
 
     const pathname = usePathname();

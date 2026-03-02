@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { FaCalendarPlus, FaClock, FaUser, FaCheckCircle, FaTrash, FaNotesMedical, FaChevronDown } from 'react-icons/fa';
+import { FaCalendarPlus, FaClock, FaUser, FaCheckCircle, FaTrash, FaNotesMedical, FaChevronDown, FaWhatsapp } from 'react-icons/fa';
 import Link from 'next/link';
 import QuickScheduler from '@/components/QuickScheduler';
 import MobileAppointmentCard from '@/components/dashboard/MobileAppointmentCard';
@@ -14,6 +14,7 @@ interface Appointment {
     patientId: {
         _id: string;
         name: string;
+        contact?: string;
     };
     date: string;
     time: string;
@@ -265,6 +266,19 @@ function DashboardSchedulesContent() {
                                         </td>
                                         <td className="px-8 py-6 whitespace-nowrap">
                                             <div className="flex gap-2">
+                                                {/* WhatsApp Reminder Button */}
+                                                <button
+                                                    onClick={() => {
+                                                        const msg = `Reminder: You have an appointment today at ${apt.time}. See you at the clinic!`;
+                                                        const phone = apt.patientId?.contact || '';
+                                                        window.open(`https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                                                    }}
+                                                    className="p-2.5 bg-green-50 text-green-600 rounded-xl hover:bg-green-100 transition active:scale-95"
+                                                    title="Send WhatsApp Reminder"
+                                                >
+                                                    <FaWhatsapp />
+                                                </button>
+
                                                 <button
                                                     onClick={() => handleReschedule(apt._id)}
                                                     className="p-2.5 bg-blue-50 text-blue-500 rounded-xl hover:bg-blue-100 transition active:scale-95"

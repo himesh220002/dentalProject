@@ -231,15 +231,28 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     type: 'success',
                     text: `Success! Confirmation sent to ${res.data.emailSentTo}`
                 });
-                setTimeout(() => {
-                    onSuccess();
-                    onClose();
-                    setStatusMessage(null);
-                }, 3000);
-            } else {
+            }
+
+            // WhatsApp Redirect Logic
+            const selectedPatient = patients.find(p => p._id === formData.patientId);
+            if (selectedPatient) {
+                const patientPhone = selectedPatient.contact;
+                const clinicName = "Dr. Tooth Dental Clinic";
+                const date = formData.date;
+                const time = formData.time;
+
+                const message = `*Appointment Confirmed!* ✅\n\nDear ${selectedPatient.name},\nYour appointment at *${clinicName}* has been scheduled.\n\n📅 *Date:* ${date}\n⏰ *Time:* ${time}\n📍 *Location:* Katihar, Bihar\n\nSee you soon!`;
+
+                const whatsappUrl = `https://wa.me/91${patientPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+            }
+
+            setTimeout(() => {
                 onSuccess();
                 onClose();
-            }
+                setStatusMessage(null);
+            }, res.data.emailSentTo ? 3000 : 500);
+
             setFormData({
                 patientId: '',
                 date: getTodayDate(),
