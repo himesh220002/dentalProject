@@ -2,6 +2,7 @@ const Appointment = require('../models/Appointment');
 const Patient = require('../models/Patient');
 const Contact = require('../models/Contact');
 const TreatmentRecord = require('../models/TreatmentRecord');
+const Config = require('../models/Config');
 const { sendAppointmentEmail } = require('../utils/mailer');
 
 // Get all appointments
@@ -313,5 +314,47 @@ exports.resendConfirmationEmail = async (req, res) => {
             });
         }
         res.status(500).json({ message: 'Failed to resend email', error: error.message });
+    }
+};
+
+// Get appointment density (slots per day)
+exports.getAppointmentDensity = async (req, res) => {
+    try {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+
+        const limit = parseInt(req.query.days) || 30;
+        const end = new Date(start);
+        end.setDate(start.getDate() + limit);
+
+        const [appointments, config] = await Promise.all([
+            Appointment.find({
+                date: { $gte: start, $lt: end },
+                status: { $ne: 'Cancelled' }
+            }, 'date time'),
+            Config.findOne({ key: 'clinic_closures' })
+        ]);
+
+        const closures = config ? JSON.parse(config.value) : [];
+        const density = {};
+
+        // Initialize density with closures
+        closures.forEach((dateStr) => {
+            const date = new Date(dateStr).toISOString().split('T')[0];
+            density[date] = { count: 0, slots: [], closed: true };
+        });
+
+        appointments.forEach(app => {
+            const dateStr = new Date(app.date).toISOString().split('T')[0];
+            if (!density[dateStr]) {
+                density[dateStr] = { count: 0, slots: [] };
+            }
+            density[dateStr].count += 1;
+            density[dateStr].slots.push(app.time);
+        });
+
+        res.status(200).json(density);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

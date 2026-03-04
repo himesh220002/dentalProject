@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCalendarAlt, FaClock, FaUser, FaNotesMedical, FaTimes, FaCheck, FaSearch, FaMoneyBillWave, FaPlusCircle, FaEnvelope } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaUser, FaNotesMedical, FaTimes, FaCheck, FaSearch, FaMoneyBillWave, FaPlusCircle, FaEnvelope, FaLock, FaUnlock } from 'react-icons/fa';
 import { useClinic } from '../context/ClinicContext';
 
 interface Patient {
@@ -28,9 +28,10 @@ interface QuickSchedulerProps {
     messageId?: string;
     appointmentId?: string;
     inquiryMessage?: string;
+    initialPatientId?: string;
 }
 
-export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate, initialSearch, initialName, initialEmail, messageId, appointmentId, inquiryMessage }: QuickSchedulerProps) {
+export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate, initialSearch, initialName, initialEmail, messageId, appointmentId, inquiryMessage, initialPatientId }: QuickSchedulerProps) {
     const [patients, setPatients] = useState<Patient[]>([]);
     const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
     const [treatments, setTreatments] = useState<Treatment[]>([]);
@@ -38,7 +39,37 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
     const [loading, setLoading] = useState(false);
     const [fetchingData, setFetchingData] = useState(true);
     const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [density, setDensity] = useState<any>({});
     const { clinicData } = useClinic();
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, date: e.target.value });
+    };
+
+    const toggleClosure = async () => {
+        if (!formData.date) return;
+        try {
+            const currentClosuresRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/config/closures`);
+            let closures = currentClosuresRes.data;
+
+            if (closures.includes(formData.date)) {
+                closures = closures.filter((d: string) => d !== formData.date);
+            } else {
+                closures.push(formData.date);
+            }
+
+            await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/config/closures`, { closures });
+
+            // Refresh density
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/density?days=60`);
+            setDensity(res.data);
+
+            setStatusMessage({ type: 'success', text: 'Clinic status updated for this date.' });
+        } catch (err) {
+            console.error('Error toggling closure:', err);
+            setStatusMessage({ type: 'error', text: 'Failed to update clinic status.' });
+        }
+    };
 
     const getTodayDate = () => {
         const today = new Date();
@@ -61,7 +92,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
     };
 
     const [formData, setFormData] = useState({
-        patientId: '',
+        patientId: initialPatientId || '',
         date: initialDate ? initialDate.toISOString().split('T')[0] : getTodayDate(),
         time: '',
         selectedTreatments: [] as { name: string, price: number }[],
@@ -154,16 +185,45 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                 setFetchingData(false);
             }
         };
-        if (isOpen) fetchData();
+
+        const fetchDensity = async () => {
+            try {
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/density?days=60`);
+                setDensity(res.data);
+            } catch (err) {
+                console.error('Error fetching density:', err);
+            }
+        };
+
+        if (isOpen) {
+            fetchData();
+            fetchDensity();
+        }
     }, [isOpen, appointmentId]);
 
+    // Handle initial props and auto-selection
     useEffect(() => {
-        if (isOpen && initialSearch && !appointmentId && !inquiryMessage) {
-            setSearchTerm(initialSearch);
+        if (isOpen) {
+            if (initialPatientId) {
+                setFormData(prev => ({ ...prev, patientId: initialPatientId }));
+                const patient = patients.find(p => p._id === initialPatientId);
+                if (patient) {
+                    setSearchTerm(patient.name);
+                    setFilteredPatients([patient]);
+                } else if (initialName) {
+                    setSearchTerm(initialName);
+                }
+            } else if (initialSearch && !appointmentId && !inquiryMessage) {
+                setSearchTerm(initialSearch);
+            }
         }
-    }, [isOpen, initialSearch, appointmentId, inquiryMessage]);
+    }, [isOpen, initialPatientId, initialSearch, initialName, patients, appointmentId, inquiryMessage]);
 
     useEffect(() => {
+        if (!searchTerm) {
+            setFilteredPatients(patients);
+            return;
+        }
         const cleanSearch = searchTerm.replace(/\D/g, '');
         const filtered = patients.filter(p => {
             const matchesName = p.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -409,7 +469,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                             </label>
                             <input
                                 type="date" required value={formData.date}
-                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                onChange={handleDateChange}
                                 className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 font-bold text-gray-800 outline-none focus:border-blue-500 transition"
                             />
                         </div>
@@ -424,6 +484,82 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                             />
                         </div>
                     </div>
+
+                    {/* Heat Map Visualization */}
+                    {formData.date && (
+                        <div className="bg-white p-5 rounded-3xl border-2 border-gray-50 shadow-sm space-y-3">
+                            <div className="flex justify-between items-center mb-1">
+                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                    Live Schedule Heat Map: {formData.date}
+                                </h3>
+                                {density[formData.date]?.closed ? (
+                                    <span className="text-[8px] font-black bg-rose-600 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter">Doctor on Leave / Clinic Closed</span>
+                                ) : (density[formData.date]?.count || 0) > 7 && (
+                                    <span className="text-[8px] font-black bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full uppercase">Busy Day</span>
+                                )}
+                            </div>
+
+                            {density[formData.date]?.closed ? (
+                                <div className="h-24 flex flex-col items-center justify-center bg-rose-50 rounded-2xl border-2 border-dashed border-rose-200 text-rose-600">
+                                    <FaLock className="mb-2" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest">No Appointments Possible</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5">
+                                    {[9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(hour => {
+                                        const bookedSlots = density[formData.date]?.slots || [];
+                                        const isBooked = bookedSlots.some((s: string) => parseInt(s.split(':')[0]) === hour);
+                                        const isNextToBooked = bookedSlots.some((s: string) => parseInt(s.split(':')[0]) === hour - 1);
+                                        const totalCount = density[formData.date]?.count || 0;
+
+                                        let bgColor = 'bg-emerald-50 border-emerald-100';
+                                        let textColor = 'text-emerald-300';
+
+                                        if (isBooked) {
+                                            bgColor = totalCount >= 8 ? 'bg-rose-500 border-rose-600 text-white' :
+                                                totalCount >= 4 ? 'bg-amber-400 border-amber-500 text-amber-900' :
+                                                    'bg-emerald-500 border-emerald-600 text-white';
+                                            textColor = 'text-white';
+                                        } else if (isNextToBooked) {
+                                            bgColor = 'bg-blue-100 border-blue-200';
+                                            textColor = 'text-blue-500';
+                                        } else if (hour === 13) { // Break Time
+                                            bgColor = 'bg-gray-100 border-gray-200';
+                                            textColor = 'text-gray-400';
+                                        }
+
+                                        return (
+                                            <div
+                                                key={hour}
+                                                className={`h-12 flex flex-col items-center justify-center rounded-xl border transition-all ${bgColor} ${hour === 13 ? 'opacity-50' : ''}`}
+                                                title={`${hour}:00 ${isBooked ? '(Booked)' : ''}`}
+                                            >
+                                                <span className={`text-[9px] font-black ${textColor}`}>{hour > 12 ? hour - 12 : hour}</span>
+                                                <span className={`text-[7px] font-bold uppercase ${textColor}`}>{hour >= 12 ? 'pm' : 'am'}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {!density[formData.date]?.closed && (
+                                <div className="flex flex-wrap gap-4 pt-1">
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-amber-400"></div><span className="text-[8px] font-black text-gray-400 uppercase">Booked</span></div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-blue-100"></div><span className="text-[8px] font-black text-gray-400 uppercase">Buffer</span></div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-rose-500"></div><span className="text-[8px] font-black text-gray-400 uppercase">Tight Marking</span></div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-gray-100"></div><span className="text-[8px] font-black text-gray-400 uppercase">Break</span></div>
+                                </div>
+                            )}
+                            <button
+                                type="button"
+                                onClick={toggleClosure}
+                                className={`w-full py-3 rounded-2xl font-bold text-sm transition flex items-center justify-center gap-2 ${density[formData.date]?.closed ? 'bg-emerald-50 border-2 border-emerald-200 text-emerald-600 hover:bg-emerald-100' : 'bg-rose-50 border-2 border-rose-200 text-rose-600 hover:bg-rose-100'}`}
+                            >
+                                {density[formData.date]?.closed ? <><FaUnlock /> Mark Day as Open</> : <><FaLock /> Mark Day as Closed</>}
+                            </button>
+                        </div>
+                    )}
 
                     {/* Treatment Selection */}
                     <div className="space-y-3">

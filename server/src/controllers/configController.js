@@ -109,3 +109,32 @@ exports.getEmailHistory = async (req, res) => {
         res.status(500).json({ message: 'Error fetching history', error: error.message });
     }
 };
+
+exports.getClinicClosures = async (req, res) => {
+    try {
+        const config = await Config.findOne({ key: 'clinic_closures' });
+        const closures = config ? JSON.parse(config.value) : [];
+        res.status(200).json(closures);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching closures', error: error.message });
+    }
+};
+
+exports.updateClinicClosures = async (req, res) => {
+    try {
+        const { closures } = req.body;
+        if (!Array.isArray(closures)) {
+            return res.status(400).json({ message: 'Closures must be an array of date strings' });
+        }
+
+        const config = await Config.findOneAndUpdate(
+            { key: 'clinic_closures' },
+            { value: JSON.stringify(closures), updatedAt: Date.now() },
+            { new: true, upsert: true }
+        );
+
+        res.status(200).json({ message: 'Closures updated successfully', closures });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating closures', error: error.message });
+    }
+};

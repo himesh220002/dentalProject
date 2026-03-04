@@ -7,5 +7,7 @@ router.get('/admin-password', configController.getAdminPassword); // Still usefu
 router.put('/update-password', configController.updateAdminPassword);
 router.get('/mailer-check', configController.checkMailer);
 router.get('/email-history', configController.getEmailHistory);
+router.get('/closures', configController.getClinicClosures);
+router.put('/closures', configController.updateClinicClosures);
 
 module.exports = router;

@@ -34,6 +34,8 @@ function ContactContent() {
     const [treatments, setTreatments] = useState<any[]>([]);
     const [status, setStatus] = useState({ type: '', message: '' });
     const [submitting, setSubmitting] = useState(false);
+    const [density, setDensity] = useState<any>({});
+    const [suggestedDates, setSuggestedDates] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchTreatments = async () => {
@@ -44,8 +46,66 @@ function ContactContent() {
                 console.error('Error fetching treatments for contact suggestions:', err);
             }
         };
+        const fetchDensity = async () => {
+            try {
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/density`);
+                setDensity(res.data);
+
+                // Generate next 14 days suggestions (skipping Sundays)
+                const allNextDays = [];
+                for (let i = 0; i <= 14; i++) { // Include today (0)
+                    const d = new Date();
+                    d.setDate(d.getDate() + i);
+                    if (d.getDay() === 0) continue; // Skip Sunday
+
+                    const dateStr = d.toISOString().split('T')[0];
+                    const count = res.data[dateStr]?.count || 0;
+                    const closed = res.data[dateStr]?.closed || false;
+
+                    allNextDays.push({
+                        date: d,
+                        dateStr,
+                        count,
+                        closed,
+                        daysFromToday: i,
+                        display: i === 0 ? (language === 'hi' ? 'आज' : 'Today') :
+                            i === 1 ? (language === 'hi' ? 'कल' : 'Tomorrow') :
+                                d.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { weekday: 'short', day: 'numeric', month: 'short' })
+                    });
+                }
+
+                // Sorting Logic:
+                // 1. Skip Closed Days
+                // 2. "Immediate Empty Days": Today/Tomorrow/Day-after if they have < 3 appointments (Fill these up first)
+                // 3. "Balanced Week": Rest of the days sorted by least-appointments first
+                const openDays = allNextDays.filter(d => !d.closed);
+                const immediate = openDays.filter(d => d.daysFromToday <= 2 && d.count < 3);
+                const others = openDays.filter(d => !(d.daysFromToday <= 2 && d.count < 3));
+
+                const sortedSuggestions = [
+                    ...immediate, // Prioritize filling today/tom/next to 3
+                    ...others.sort((a, b) => a.count - b.count) // Then balance the rest
+                ].slice(0, 5);
+
+                setSuggestedDates(sortedSuggestions);
+
+                // Alert if any of next 3 days are closed
+                const next3Closed = allNextDays.find(d => d.daysFromToday <= 2 && d.closed);
+                if (next3Closed) {
+                    setStatus({
+                        type: 'info',
+                        message: language === 'hi'
+                            ? `नोट: ${next3Closed.display} को डॉक्टर छुट्टी पर हैं। कृपया अन्य उपलब्ध दिन चुनें।`
+                            : `Note: Doctor is on leave on ${next3Closed.display}. Please pick other available days.`
+                    });
+                }
+            } catch (err) {
+                console.error('Error fetching density:', err);
+            }
+        };
         fetchTreatments();
-    }, []);
+        fetchDensity();
+    }, [language]);
 
     useEffect(() => {
         const fetchPatientProfile = async () => {
@@ -108,6 +168,29 @@ function ContactContent() {
         const textToAppend = formData.message
             ? `\n${language === 'hi' ? 'मैं चर्चा करना चाहता हूं' : 'I would like to discuss'}: ${label}`
             : `${language === 'hi' ? 'मैं चर्चा करना चाहता हूं' : 'I would like to discuss'}: ${label}`;
+        setFormData(prev => ({
+            ...prev,
+            message: prev.message + textToAppend
+        }));
+    };
+
+    const handleDateSuggestion = (item: any) => {
+        // Logic for Half 1 (9-1) / Half 2 (2-8)
+        const daySlots = density[item.dateStr]?.slots || [];
+        const h1Count = daySlots.filter((s: string) => {
+            const hour = parseInt(s.split(':')[0]);
+            return hour >= 9 && hour < 13;
+        }).length;
+        const h2Count = daySlots.filter((s: string) => {
+            const hour = parseInt(s.split(':')[0]);
+            return hour >= 14 && hour < 20;
+        }).length;
+
+        const bestHalf = h1Count <= h2Count ? 'Morning (9am-1pm)' : 'Afternoon (2pm-8pm)';
+        const bestHalfHi = h1Count <= h2Count ? 'सुबह (9am-1pm)' : 'दोपहर (2pm-8pm)';
+
+        const textToAppend = `\n${language === 'hi' ? 'सुझाया गया समय' : 'Suggested Appointment'}: ${item.display} @ ${language === 'hi' ? bestHalfHi : bestHalf}`;
+
         setFormData(prev => ({
             ...prev,
             message: prev.message + textToAppend
@@ -320,6 +403,35 @@ function ContactContent() {
                                                 + {s.label}
                                             </button>
                                         ))}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest pl-1 mb-1">
+                                            {language === 'hi' ? 'सुझाए गए खाली दिन' : 'Smart Date Suggestions (Low Appts)'}
+                                        </p>
+                                        <div className="flex flex-wrap gap-2 mb-4">
+                                            {suggestedDates.map((item) => (
+                                                <button
+                                                    key={item.dateStr}
+                                                    type="button"
+                                                    onClick={() => handleDateSuggestion(item)}
+                                                    className={`px-3 py-2 rounded-2xl flex flex-col items-center border shadow-sm transition-all transform active:scale-95 ${item.count < 4 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
+                                                        item.count < 8 ? 'bg-amber-50 border-amber-200 text-amber-700' :
+                                                            'bg-rose-50 border-rose-200 text-rose-700'
+                                                        }`}
+                                                >
+                                                    <span className="text-[10px] font-black uppercase tracking-tighter leading-none mb-1">{item.display}</span>
+                                                    <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${item.count < 4 ? 'bg-emerald-100' :
+                                                        item.count < 8 ? 'bg-amber-100' :
+                                                            'bg-rose-100'
+                                                        }`}>
+                                                        {item.count < 4 ? (language === 'hi' ? 'उपलब्ध' : 'Open') :
+                                                            item.count < 8 ? (language === 'hi' ? 'सामान्य' : 'Steady') :
+                                                                (language === 'hi' ? 'व्यस्त' : 'Busy')}
+                                                    </span>
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
 
                                     <textarea

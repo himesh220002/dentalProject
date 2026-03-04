@@ -5,7 +5,8 @@ import axios from 'axios';
 import Link from 'next/link';
 import AddPatientForm from '../../components/AddPatientForm';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { FaSearch, FaUserPlus, FaChevronRight, FaPhoneAlt, FaMapMarkerAlt, FaCalendarCheck, FaHistory, FaSortAmountDown } from 'react-icons/fa';
+import { FaSearch, FaUserPlus, FaChevronRight, FaPhoneAlt, FaMapMarkerAlt, FaCalendarCheck, FaHistory, FaSortAmountDown, FaCalendarPlus } from 'react-icons/fa';
+import QuickScheduler from '@/components/QuickScheduler';
 
 interface TreatmentRecord {
     _id: string;
@@ -37,6 +38,13 @@ export default function PatientsPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('newest'); // 'newest', 'name_asc', 'name_desc'
     const [loading, setLoading] = useState(true);
+    const [schedulerOpen, setSchedulerOpen] = useState(false);
+    const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+
+    const openScheduler = (patient: Patient) => {
+        setSelectedPatient(patient);
+        setSchedulerOpen(true);
+    };
 
     const fetchPatients = async () => {
         try {
@@ -196,13 +204,22 @@ export default function PatientsPage() {
                                                         </div>
                                                     </div>
 
-                                                    <Link
-                                                        href={`/patients/${patient._id}`}
-                                                        className="flex items-center justify-center gap-2 w-full bg-blue-600 text-white py-4 rounded-2xl text-sm font-black shadow-lg shadow-blue-200 hover:bg-blue-700 transition active:scale-95"
-                                                    >
-                                                        VIEW FULL PROFILE
-                                                        <FaChevronRight className="text-[10px]" />
-                                                    </Link>
+                                                    <div className="grid grid-cols-2 gap-3 mt-4">
+                                                        <button
+                                                            onClick={() => openScheduler(patient)}
+                                                            className="flex items-center justify-center gap-2 bg-emerald-100 text-emerald-700 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-200 transition active:scale-95"
+                                                        >
+                                                            <FaCalendarPlus size={12} />
+                                                            Book Appt
+                                                        </button>
+                                                        <Link
+                                                            href={`/patients/${patient._id}`}
+                                                            className="flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:bg-blue-700 transition active:scale-95"
+                                                        >
+                                                            Full Profile
+                                                            <FaChevronRight className="text-[10px]" />
+                                                        </Link>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
@@ -275,9 +292,13 @@ export default function PatientsPage() {
                                                         </td>
                                                         <td className="px-8 py-6 whitespace-nowrap">
                                                             <div className="flex items-center gap-3">
-                                                                <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase tracking-wider">
-                                                                    Active
-                                                                </span>
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); openScheduler(patient); }}
+                                                                    className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase tracking-wider border border-emerald-100 hover:bg-emerald-100 transition-colors cursor-pointer"
+                                                                >
+                                                                    <FaCalendarPlus size={10} />
+                                                                    Book Appointment
+                                                                </button>
                                                                 <div className={`px-3 py-1.5 rounded-xl border border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:border-blue-200 group-hover:text-blue-600 transition-all`}>
                                                                     {isExpanded ? 'Hide Details' : 'View Details'}
                                                                 </div>
@@ -383,6 +404,18 @@ export default function PatientsPage() {
                     )}
                 </div>
             </div>
+
+            {/* Quick Scheduler Modal */}
+            {selectedPatient && (
+                <QuickScheduler
+                    isOpen={schedulerOpen}
+                    onClose={() => { setSchedulerOpen(false); setSelectedPatient(null); }}
+                    onSuccess={() => { setSchedulerOpen(false); setSelectedPatient(null); fetchPatients(); }}
+                    initialName={selectedPatient.name}
+                    initialSearch={selectedPatient.contact}
+                    initialPatientId={selectedPatient._id}
+                />
+            )}
         </ProtectedRoute>
     );
 }
