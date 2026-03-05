@@ -175,22 +175,7 @@ function ContactContent() {
     };
 
     const handleDateSuggestion = (item: any) => {
-        // Logic for Half 1 (9-1) / Half 2 (2-8)
-        const daySlots = density[item.dateStr]?.slots || [];
-        const h1Count = daySlots.filter((s: string) => {
-            const hour = parseInt(s.split(':')[0]);
-            return hour >= 9 && hour < 13;
-        }).length;
-        const h2Count = daySlots.filter((s: string) => {
-            const hour = parseInt(s.split(':')[0]);
-            return hour >= 14 && hour < 20;
-        }).length;
-
-        const bestHalf = h1Count <= h2Count ? 'Morning (9am-1pm)' : 'Afternoon (2pm-8pm)';
-        const bestHalfHi = h1Count <= h2Count ? 'सुबह (9am-1pm)' : 'दोपहर (2pm-8pm)';
-
-        const textToAppend = `\n${language === 'hi' ? 'सुझाया गया समय' : 'Suggested Appointment'}: ${item.display} @ ${language === 'hi' ? bestHalfHi : bestHalf}`;
-
+        const textToAppend = `\n${language === 'hi' ? 'सुझाया गया समय' : 'Suggested Appointment'}: ${item.display}`;
         setFormData(prev => ({
             ...prev,
             message: prev.message + textToAppend
@@ -407,7 +392,7 @@ function ContactContent() {
 
                                     <div className="space-y-2">
                                         <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest pl-1 mb-1">
-                                            {language === 'hi' ? 'सुझाए गए खाली दिन' : 'Smart Date Suggestions (Low Appts)'}
+                                            {language === 'hi' ? 'सुझाए गए खाली दिन' : 'Smart Date Suggestions'}
                                         </p>
                                         <div className="flex flex-wrap gap-2 mb-4">
                                             {suggestedDates.map((item) => (

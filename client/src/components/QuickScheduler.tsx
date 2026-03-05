@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCalendarAlt, FaClock, FaUser, FaNotesMedical, FaTimes, FaCheck, FaSearch, FaMoneyBillWave, FaPlusCircle, FaEnvelope, FaLock, FaUnlock } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaUser, FaNotesMedical, FaTimes, FaCheck, FaSearch, FaMoneyBillWave, FaPlusCircle, FaEnvelope, FaLock, FaUnlock, FaTrash } from 'react-icons/fa';
 import { useClinic } from '../context/ClinicContext';
 
 interface Patient {
@@ -46,16 +46,58 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
         setFormData({ ...formData, date: e.target.value });
     };
 
-    const toggleClosure = async () => {
+    const [closureForm, setClosureForm] = useState<{ isOpen: boolean, type: 'full' | 'partial', startTime: string, endTime: string }>({
+        isOpen: false,
+        type: 'full',
+        startTime: '10:00',
+        endTime: '20:00'
+    });
+
+    const toggleClosure = async (type: 'full' | 'partial', startTime?: string, endTime?: string) => {
         if (!formData.date) return;
+        setLoading(true);
         try {
             const currentClosuresRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/config/closures`);
             let closures = currentClosuresRes.data;
 
-            if (closures.includes(formData.date)) {
-                closures = closures.filter((d: string) => d !== formData.date);
-            } else {
-                closures.push(formData.date);
+            const newClosure = { date: formData.date, type, startTime, endTime };
+            closures.push(newClosure);
+
+            await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/config/closures`, { closures });
+
+            // Refresh density
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/density?days=60`);
+            setDensity(res.data);
+            setClosureForm({ ...closureForm, isOpen: false });
+            setStatusMessage({ type: 'success', text: 'Clinic closure added for this date.' });
+        } catch (err) {
+            console.error('Error adding closure:', err);
+            setStatusMessage({ type: 'error', text: 'Failed to add clinic closure.' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const removeClosure = async (index: number) => {
+        if (!formData.date) return;
+        setLoading(true);
+        try {
+            const currentClosuresRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/config/closures`);
+            let closures = currentClosuresRes.data;
+
+            // Find global index of the closure to remove
+            const dateClosures = closures.filter((c: any) => c.date === formData.date);
+            const targetClosure = dateClosures[index];
+
+            const globalIndex = closures.findIndex((c: any) =>
+                c.date === targetClosure.date &&
+                c.type === targetClosure.type &&
+                c.startTime === targetClosure.startTime &&
+                c.endTime === targetClosure.endTime
+            );
+
+            if (globalIndex !== -1) {
+                closures.splice(globalIndex, 1);
             }
 
             await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/config/closures`, { closures });
@@ -63,11 +105,12 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             // Refresh density
             const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/density?days=60`);
             setDensity(res.data);
-
-            setStatusMessage({ type: 'success', text: 'Clinic status updated for this date.' });
+            setStatusMessage({ type: 'success', text: 'Clinic closure removed.' });
         } catch (err) {
-            console.error('Error toggling closure:', err);
-            setStatusMessage({ type: 'error', text: 'Failed to update clinic status.' });
+            console.error('Error removing closure:', err);
+            setStatusMessage({ type: 'error', text: 'Failed to remove clinic closure.' });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -198,6 +241,9 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
         if (isOpen) {
             fetchData();
             fetchDensity();
+            setClosureForm(prev => ({ ...prev, isOpen: false }));
+        } else {
+            setClosureForm(prev => ({ ...prev, isOpen: false }));
         }
     }, [isOpen, appointmentId]);
 
@@ -373,7 +419,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
 
-            <div className="relative bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">
+            <div className="relative bg-white w-full max-w-3xl rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">
                 <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white relative">
                     <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-red-500/20 hover:bg-white/20 rounded-full transition">
                         <FaTimes />
@@ -509,17 +555,40 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                 <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5">
                                     {[9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(hour => {
                                         const bookedSlots = density[formData.date]?.slots || [];
+                                        const dayClosures = density[formData.date]?.closures || [];
+
+                                        const now = new Date();
+                                        const currentHour = now.getHours();
+                                        const isToday = formData.date === getTodayDate();
+                                        const isPast = isToday && hour < currentHour;
+
                                         const isBooked = bookedSlots.some((s: string) => parseInt(s.split(':')[0]) === hour);
                                         const isNextToBooked = bookedSlots.some((s: string) => parseInt(s.split(':')[0]) === hour - 1);
+                                        const isClosed = dayClosures.some((c: any) => {
+                                            if (c.type === 'full') return true;
+                                            if (c.type === 'partial' && c.startTime && c.endTime) {
+                                                const start = parseInt(c.startTime.split(':')[0]);
+                                                const end = parseInt(c.endTime.split(':')[0]);
+                                                return hour >= start && hour < end;
+                                            }
+                                            return false;
+                                        });
+
                                         const totalCount = density[formData.date]?.count || 0;
 
                                         let bgColor = 'bg-emerald-50 border-emerald-100';
-                                        let textColor = 'text-emerald-300';
+                                        let textColor = 'text-emerald-700';
 
-                                        if (isBooked) {
+                                        if (isPast) {
+                                            bgColor = 'bg-gray-100 border-gray-200 opacity-50 cursor-not-allowed';
+                                            textColor = 'text-gray-400/20';
+                                        } else if (isClosed) {
+                                            bgColor = 'bg-rose-100 border-rose-200 opacity-50 cursor-not-allowed';
+                                            textColor = 'text-rose-600';
+                                        } else if (isBooked) {
                                             bgColor = totalCount >= 8 ? 'bg-rose-500 border-rose-600 text-white' :
                                                 totalCount >= 4 ? 'bg-amber-400 border-amber-500 text-amber-900' :
-                                                    'bg-emerald-500 border-emerald-600 text-white';
+                                                    'bg-gray-500 border-emerald-600 text-white';
                                             textColor = 'text-white';
                                         } else if (isNextToBooked) {
                                             bgColor = 'bg-blue-100 border-blue-200';
@@ -532,9 +601,14 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                         return (
                                             <div
                                                 key={hour}
-                                                className={`h-12 flex flex-col items-center justify-center rounded-xl border transition-all ${bgColor} ${hour === 13 ? 'opacity-50' : ''}`}
-                                                title={`${hour}:00 ${isBooked ? '(Booked)' : ''}`}
+                                                className={`h-12 flex flex-col items-center justify-center rounded-xl border transition-all relative ${bgColor} ${(hour === 13 && !isClosed && !isPast) ? 'opacity-50' : ''}`}
+                                                title={`${hour}:00 ${isBooked ? '(Booked)' : ''} ${isClosed ? '(Closed)' : ''} ${isPast ? '(Past)' : ''}`}
                                             >
+                                                {isPast && (
+                                                    <div className="absolute inset-0 flex items-center justify-center text-gray-400 opacity-30">
+                                                        <FaTimes size={30} />
+                                                    </div>
+                                                )}
                                                 <span className={`text-[9px] font-black ${textColor}`}>{hour > 12 ? hour - 12 : hour}</span>
                                                 <span className={`text-[7px] font-bold uppercase ${textColor}`}>{hour >= 12 ? 'pm' : 'am'}</span>
                                             </div>
@@ -545,19 +619,103 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
 
                             {!density[formData.date]?.closed && (
                                 <div className="flex flex-wrap gap-4 pt-1">
-                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-amber-400"></div><span className="text-[8px] font-black text-gray-400 uppercase">Booked</span></div>
-                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-blue-100"></div><span className="text-[8px] font-black text-gray-400 uppercase">Buffer</span></div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-gray-400"></div><span className="text-[8px] font-black text-gray-400 uppercase">Booked</span></div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-blue-300"></div><span className="text-[8px] font-black text-gray-400 uppercase">Buffer</span></div>
                                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-rose-500"></div><span className="text-[8px] font-black text-gray-400 uppercase">Tight Marking</span></div>
                                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-gray-100"></div><span className="text-[8px] font-black text-gray-400 uppercase">Break</span></div>
                                 </div>
                             )}
-                            <button
-                                type="button"
-                                onClick={toggleClosure}
-                                className={`w-full py-3 rounded-2xl font-bold text-sm transition flex items-center justify-center gap-2 ${density[formData.date]?.closed ? 'bg-emerald-50 border-2 border-emerald-200 text-emerald-600 hover:bg-emerald-100' : 'bg-rose-50 border-2 border-rose-200 text-rose-600 hover:bg-rose-100'}`}
-                            >
-                                {density[formData.date]?.closed ? <><FaUnlock /> Mark Day as Open</> : <><FaLock /> Mark Day as Closed</>}
-                            </button>
+                            <div className="space-y-2">
+                                {density[formData.date]?.closures?.map((c: any, idx: number) => (
+                                    <div key={idx} className="flex items-center justify-between bg-rose-50 p-3 rounded-xl border border-rose-100">
+                                        <div className="flex items-center gap-3">
+                                            <FaLock className="text-rose-600" />
+                                            <div>
+                                                <p className="text-xs font-black text-rose-900 uppercase tracking-widest">
+                                                    {c.type === 'full' ? 'Full Day Closed' : `Closed: ${c.startTime} - ${c.endTime}`}
+                                                </p>
+                                                {c.notes && <p className="text-[10px] text-rose-700 font-bold">{c.notes}</p>}
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeClosure(idx)}
+                                            className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-100 rounded-lg transition"
+                                        >
+                                            <FaTrash size={12} />
+                                        </button>
+                                    </div>
+                                ))}
+
+                                {closureForm.isOpen ? (
+                                    <div className="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100 space-y-4 animate-in slide-in-from-top-2 duration-300">
+                                        <div className="flex gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setClosureForm({ ...closureForm, type: 'full' })}
+                                                className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition ${closureForm.type === 'full' ? 'bg-cyan-600 border-blue-600 text-white' : 'bg-white border-blue-200 text-blue-600'}`}
+                                            >
+                                                Full Day
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setClosureForm({ ...closureForm, type: 'partial' })}
+                                                className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition ${closureForm.type === 'partial' ? 'bg-cyan-600 border-blue-600 text-white' : 'bg-white border-blue-200 text-blue-600'}`}
+                                            >
+                                                Partial
+                                            </button>
+                                        </div>
+
+                                        {closureForm.type === 'partial' && (
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="space-y-1">
+                                                    <label className="text-[8px] font-black text-blue-600 uppercase tracking-[0.2em] pl-1">From</label>
+                                                    <input
+                                                        type="time"
+                                                        value={closureForm.startTime}
+                                                        onChange={(e) => setClosureForm({ ...closureForm, startTime: e.target.value })}
+                                                        className="w-full bg-white border border-blue-200 rounded-xl px-3 py-2 text-xs font-bold"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[8px] font-black text-blue-600 uppercase tracking-[0.2em] pl-1">To</label>
+                                                    <input
+                                                        type="time"
+                                                        value={closureForm.endTime}
+                                                        onChange={(e) => setClosureForm({ ...closureForm, endTime: e.target.value })}
+                                                        className="w-full bg-white border border-blue-200 rounded-xl px-3 py-2 text-xs font-bold"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setClosureForm({ ...closureForm, isOpen: false })}
+                                                className="flex-1 py-2 rounded-xl text-[10px] font-black uppercase text-gray-500 hover:bg-gray-100 transition"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => toggleClosure(closureForm.type, closureForm.startTime, closureForm.endTime)}
+                                                className="flex-1 py-2 rounded-xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95 transition"
+                                            >
+                                                Save Closure
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => setClosureForm({ ...closureForm, isOpen: true })}
+                                        className="w-full py-3 rounded-2xl bg-rose-50 border-2 border-rose-200 text-rose-600 font-bold text-sm hover:bg-rose-100 transition flex items-center justify-center gap-2"
+                                    >
+                                        <FaLock /> Mark Day as Closed / Leave
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     )}
 

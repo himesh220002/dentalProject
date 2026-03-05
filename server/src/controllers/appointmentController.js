@@ -339,9 +339,16 @@ exports.getAppointmentDensity = async (req, res) => {
         const density = {};
 
         // Initialize density with closures
-        closures.forEach((dateStr) => {
-            const date = new Date(dateStr).toISOString().split('T')[0];
-            density[date] = { count: 0, slots: [], closed: true };
+        closures.forEach((c) => {
+            const closureObj = typeof c === 'string' ? { date: c, type: 'full' } : c;
+            const date = new Date(closureObj.date).toISOString().split('T')[0];
+            if (!density[date]) {
+                density[date] = { count: 0, slots: [], closures: [] };
+            }
+            density[date].closures.push(closureObj);
+            if (closureObj.type === 'full') {
+                density[date].closed = true;
+            }
         });
 
         appointments.forEach(app => {

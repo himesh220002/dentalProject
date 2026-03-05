@@ -113,8 +113,23 @@ exports.getEmailHistory = async (req, res) => {
 exports.getClinicClosures = async (req, res) => {
     try {
         const config = await Config.findOne({ key: 'clinic_closures' });
-        const closures = config ? JSON.parse(config.value) : [];
-        res.status(200).json(closures);
+        let closures = [];
+        if (config) {
+            try {
+                closures = JSON.parse(config.value);
+            } catch (e) {
+                // Handle legacy format if not valid JSON
+                closures = config.value.split(',').filter(Boolean);
+            }
+        }
+
+        // Normalize: if it's a legacy string array, convert to objects
+        const normalized = closures.map(c => {
+            if (typeof c === 'string') return { date: c, type: 'full' };
+            return c;
+        });
+
+        res.status(200).json(normalized);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching closures', error: error.message });
     }
@@ -124,16 +139,25 @@ exports.updateClinicClosures = async (req, res) => {
     try {
         const { closures } = req.body;
         if (!Array.isArray(closures)) {
-            return res.status(400).json({ message: 'Closures must be an array of date strings' });
+            return res.status(400).json({ message: 'Closures must be an array' });
         }
+
+        // Validate closure objects
+        const validatedClosures = closures.map(c => {
+            if (typeof c === 'string') return { date: c, type: 'full' };
+            if (!c.date || !c.type) {
+                throw new Error('Invalid closure object: date and type are required');
+            }
+            return c;
+        });
 
         const config = await Config.findOneAndUpdate(
             { key: 'clinic_closures' },
-            { value: JSON.stringify(closures), updatedAt: Date.now() },
+            { value: JSON.stringify(validatedClosures), updatedAt: Date.now() },
             { new: true, upsert: true }
         );
 
-        res.status(200).json({ message: 'Closures updated successfully', closures });
+        res.status(200).json({ message: 'Closures updated successfully', closures: validatedClosures });
     } catch (error) {
         res.status(500).json({ message: 'Error updating closures', error: error.message });
     }
