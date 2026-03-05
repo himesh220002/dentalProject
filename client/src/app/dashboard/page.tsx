@@ -81,10 +81,10 @@ export default function DashboardOverview() {
     );
 
     return (
-        <div className="space-y-10">
-            <h1 className="text-3xl font-black text-gray-900">Clinic Overview</h1>
+        <div className="space-y-4 sm:space-y-10">
+            <h1 className="text-2xl sm:text-3xl text-center sm:text-left font-black text-gray-900">Clinic Overview</h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-6">
                 {statCards.map((stat, idx) => {
                     const Icon = stat.icon;
                     let href = '#';
@@ -94,7 +94,7 @@ export default function DashboardOverview() {
 
                     return (
                         <Link href={href} key={idx} className="block group cursor-pointer">
-                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                            <div className="bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition`}>
                                         <Icon className="text-2xl" />

@@ -166,8 +166,8 @@ function ContactContent() {
 
     const handleSuggestionClick = (label: string) => {
         const textToAppend = formData.message
-            ? `\n${language === 'hi' ? 'मैं चर्चा करना चाहता हूं' : 'I would like to discuss'}: ${label}`
-            : `${language === 'hi' ? 'मैं चर्चा करना चाहता हूं' : 'I would like to discuss'}: ${label}`;
+            ? `\n${language === 'hi' ? 'मैं चर्चा करना चाहता हूं' : 'I would like to discuss'}: ${label}, `
+            : `${language === 'hi' ? 'मैं चर्चा करना चाहता हूं' : 'I would like to discuss'}: ${label}, `;
         setFormData(prev => ({
             ...prev,
             message: prev.message + textToAppend
@@ -175,7 +175,7 @@ function ContactContent() {
     };
 
     const handleDateSuggestion = (item: any) => {
-        const textToAppend = `\n${language === 'hi' ? 'सुझाया गया समय' : 'Suggested Appointment'}: ${item.display}`;
+        const textToAppend = `\n${language === 'hi' ? 'सुझाया गया समय' : 'Suggested Appointment'}: ${item.display}, `;
         setFormData(prev => ({
             ...prev,
             message: prev.message + textToAppend

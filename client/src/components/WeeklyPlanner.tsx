@@ -148,10 +148,10 @@ export default function WeeklyPlanner() {
     );
 
     return (
-        <div className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+        <div className="bg-white p-4 sm:p-6 md:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-gray-100">
             {/* Header with Collections */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
-                <div className="flex justify-between items-center w-full lg:w-auto">
+            <div className="flex flex-col xl:flex-row justify-between items-start lg:items-center mb-8 gap-6">
+                <div className="flex justify-center items-center w-full lg:w-auto">
                     <div>
                         <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-3">
                             <FaCalendarDay className="text-blue-600" />
@@ -161,7 +161,7 @@ export default function WeeklyPlanner() {
                     </div>
                 </div>
 
-                <div className="flex flex-col xl:flex-row items-center gap-4 w-full lg:w-auto">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full xl:w-auto">
                     {/* Collection Stats */}
                     <div className="flex bg-emerald-50 border border-emerald-100 rounded-2xl overflow-hidden shadow-sm w-full sm:w-auto">
                         <Link

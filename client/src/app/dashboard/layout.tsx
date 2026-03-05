@@ -50,7 +50,7 @@ export default function DashboardLayout({
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen lg:-mt-12 bg-gray-100 flex flex-col lg:flex-row rounded-xl">
+            <div className="min-h-screen lg:-mt-12 bg-gradient-to-b from-blue-100/50 to-purple-100/50 flex flex-col lg:flex-row rounded-xl">
                 {/* Mobile Top Bar */}
                 <div className="lg:hidden sticky bg-cyan-900 top-0 z-0 rounded-t-xl">
                     <button
