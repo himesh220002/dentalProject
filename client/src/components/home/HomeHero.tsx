@@ -42,16 +42,16 @@ export default function HomeHero() {
                     <div className="space-y-4 sm:space-y-6">
                         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-black tracking-[0.1em] sm:tracking-[0.2em] uppercase transition-all hover:bg-white/20">
                             <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-400 rounded-full animate-ping"></span>
-                            {clinicYears}+ Years of Success in {city}
+                            {clinicYears}+ {language === 'hi' ? `${city} में वर्षों की सफलता` : `Years of Success in ${city}`}
                         </div>
 
                         <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] sm:leading-[0.95] tracking-tighter">
-                            Your Smile, <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">Our Passion.</span>
+                            {language === 'hi' ? 'आपकी मुस्कान,' : 'Your Smile,'} <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">{language === 'hi' ? 'हमारा जुनून।' : 'Our Passion.'}</span>
                         </h1>
 
                         <p className="text-base sm:text-xl lg:text-2xl opacity-80 font-medium max-w-2xl leading-relaxed">
-                            {tagline} We combine {formatExperience(clinicData?.clinicExperience)} years of expertise with high-end technology for your comfort.
+                            {tagline} {language === 'hi' ? 'हम आपके आराम के लिए आधुनिक तकनीक के साथ' : 'We combine'} {formatExperience(clinicData?.clinicExperience)} {language === 'hi' ? 'वर्षों की विशेषज्ञता जोड़ते हैं।' : 'years of expertise with high-end technology for your comfort.'}
                         </p>
                     </div>
 
@@ -76,13 +76,13 @@ export default function HomeHero() {
                     {/* Trust Indicators */}
                     <div className="pt-6 sm:pt-10 flex flex-wrap gap-4 sm:gap-8 opacity-60">
                         <div className="flex items-center gap-2 sm:gap-3 font-black text-[10px] sm:text-sm uppercase tracking-widest">
-                            <FaCheck className="text-blue-400" /> {language === 'hi' ? 'पेशेवर' : 'Professional'}
+                            <FaCheck className="text-blue-400" /> {t.homeHero.professional}
                         </div>
                         <div className="flex items-center gap-2 sm:gap-3 font-black text-[10px] sm:text-sm uppercase tracking-widest">
-                            <FaCheck className="text-blue-400" /> {language === 'hi' ? 'आईएसओ प्रमाणित' : 'ISO Certified'}
+                            <FaCheck className="text-blue-400" /> {t.homeHero.isoCertified}
                         </div>
                         <div className="flex items-center gap-2 sm:gap-3 font-black text-[10px] sm:text-sm uppercase tracking-widest">
-                            <FaCheck className="text-blue-400" /> {language === 'hi' ? 'सुरक्षित और स्टेरिल' : 'Safe & sterile'}
+                            <FaCheck className="text-blue-400" /> {t.homeHero.safeSterile}
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@ export default function HomeHero() {
                             <FaPlus className="text-white text-xs xl:text-base" />
                         </div>
                     </div>
-                    <p className="text-[12px] xl:text-sm font-bold text-blue-100 italic">Join 15,000+ happy patients who trust our expertise.</p>
+                    <p className="text-[12px] xl:text-sm font-bold text-blue-100 italic">{t.homeHero.happyPatients}</p>
                 </div>
             </div>
         </section>

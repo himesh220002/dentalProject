@@ -1,8 +1,10 @@
 import { FaUserMd, FaTooth, FaSmile, FaCertificate } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
+import { translations } from '../../constants/translations';
 
 export default function TrustSection() {
-    const { clinicData } = useClinic();
+    const { clinicData, language } = useClinic();
+    const t = translations[language];
 
     // Default features if no data
     const defaultFeatures = [
@@ -52,8 +54,8 @@ export default function TrustSection() {
                                 <FaCertificate size={24} className="sm:size-[32px]" />
                             </div>
                             <div>
-                                <p className="text-xl sm:text-2xl lg:text-3xl font-black leading-none mb-1">100%</p>
-                                <p className="text-[8px] sm:text-[10px] text-gray-400 font-black uppercase tracking-widest">Safe & Sterile</p>
+                                <p className="text-xl sm:text-2xl lg:text-3xl font-black leading-none mb-1">{t.homeTrust.badgeSubtitle}</p>
+                                <p className="text-[8px] sm:text-[10px] text-gray-400 font-black uppercase tracking-widest">{t.homeTrust.badgeTitle}</p>
                             </div>
                         </div>
                     </div>
@@ -63,13 +65,15 @@ export default function TrustSection() {
                 <div className="flex-1 space-y-8 sm:space-y-10 order-1 lg:order-2 text-center lg:text-left">
                     <div className="space-y-4">
                         <div className="inline-block bg-blue-50 text-blue-600 px-4 py-1 rounded-full text-[10px] sm:text-xs font-black tracking-widest uppercase">
-                            Why Patients Trust Us
+                            {t.homeTrust.tag}
                         </div>
                         <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-tight">
-                            Excellence in <br /> Modern Dentistry
+                            {t.homeTrust.title.split('<br />').map((text: string, i: number) => (
+                                <span key={i}>{text}{i === 0 && <br />}</span>
+                            )) || t.homeTrust.title}
                         </h2>
                         <p className="text-gray-500 text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
-                            We believe in treating the person, not just the tooth. Our clinic combines the latest medical advancements with a warm, compassionate approach.
+                            {t.homeTrust.description}
                         </p>
                     </div>
 

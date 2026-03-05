@@ -88,6 +88,42 @@ export const translations = {
             goldStandard: 'Gold Standard',
             excellence: 'Years Excellence',
             decade: 'A decade of dedicated service to patients.'
+        },
+
+        // Home Page Specific
+        homeHero: {
+            professional: 'Professional',
+            isoCertified: 'ISO Certified',
+            safeSterile: 'Safe & Sterile',
+            happyPatients: 'Join 15,000+ happy patients who trust our expertise.'
+        },
+        homeTrust: {
+            badgeTitle: 'Safe & Sterile',
+            badgeSubtitle: '100%',
+            tag: 'Why Patients Trust Us',
+            title: 'Excellence in Modern Dentistry',
+            description: 'We believe in treating the person, not just the tooth. Our clinic combines the latest medical advancements with a warm, compassionate approach.'
+        },
+        homeSpecialists: {
+            title: 'Meet Our Specialists',
+            subtitle: 'Our team of experienced dental professionals is dedicated to your oral health and comfort.',
+            experience: 'Experience'
+        },
+        homeReviews: {
+            title: 'Voices of Success',
+            subtitle: 'Real stories from real patients who trusted us with their smiles.',
+            readAll: 'Read All Reviews'
+        },
+        homeVirtualTour: {
+            title: 'Virtual Clinic Tour',
+            subtitle: 'Take a glimpse inside our state-of-the-art facility'
+        },
+        homeCTA: {
+            title1: 'Transforming Smiles,',
+            title2: 'One Patient at a Time.',
+            subtitle: 'Join hundreds of happy patients who trust our preventative care approach. Book your initial consultation today.',
+            getStarted: 'Get Started Now',
+            viewTreatments: 'View Treatments'
         }
     },
     hi: {
@@ -179,6 +215,42 @@ export const translations = {
             goldStandard: 'गोल्ड स्टैंडर्ड',
             excellence: 'वर्षों की उत्कृष्टता',
             decade: 'मरीजों के लिए एक दशक की समर्पित सेवा।'
+        },
+
+        // Home Page Specific
+        homeHero: {
+            professional: 'पेशेवर',
+            isoCertified: 'आईएसओ प्रमाणित',
+            safeSterile: 'सुरक्षित और स्टेरिल',
+            happyPatients: '15,000+ खुश मरीजों में शामिल हों जो हमारी विशेषज्ञता पर भरोसा करते हैं।'
+        },
+        homeTrust: {
+            badgeTitle: 'सुरक्षित और स्टेरिल',
+            badgeSubtitle: '100%',
+            tag: 'मरीज हम पर क्यों भरोसा करते हैं',
+            title: 'आधुनिक दंत चिकित्सा में उत्कृष्टता',
+            description: 'हम केवल दांतों का नहीं, बल्कि व्यक्ति का इलाज करने में विश्वास रखते हैं। हमारा क्लिनिक आपकी सुविधा के लिए नवीनतम चिकित्सा प्रगति को गहरे मानवीय स्पर्श के साथ जोड़ता है।'
+        },
+        homeSpecialists: {
+            title: 'हमारे विशेषज्ञों से मिलें',
+            subtitle: 'अनुभवी दंत पेशेवरों की हमारी टीम आपके मौखिक स्वास्थ्य और आराम के लिए समर्पित है।',
+            experience: 'अनुभव'
+        },
+        homeReviews: {
+            title: 'सफलता की आवाजें',
+            subtitle: 'उन वास्तविक मरीजों की वास्तविक कहानियाँ जिन्होंने अपनी मुस्कान के साथ हम पर भरोसा किया।',
+            readAll: 'सभी समीक्षाएं पढ़ें'
+        },
+        homeVirtualTour: {
+            title: 'क्लिनिक का वर्चुअल दौरा',
+            subtitle: 'हमारी अत्याधुनिक सुविधा के अंदर की एक झलक देखें'
+        },
+        homeCTA: {
+            title1: 'मुस्कान बदलना,',
+            title2: 'एक समय में एक मरीज।',
+            subtitle: 'उन सैकड़ों खुश मरीजों में शामिल हों जो हमारी निवारक देखभाल दृष्टिकोण पर भरोसा करते हैं। आज ही अपना प्रारंभिक परामर्श बुक करें।',
+            getStarted: 'अभी शुरू करें',
+            viewTreatments: 'उपचार देखें'
         }
     }
 };

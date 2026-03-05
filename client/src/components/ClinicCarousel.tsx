@@ -2,58 +2,59 @@
 
 import { useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useClinic } from '@/context/ClinicContext';
 
-const images = [
-    // {
-    //     url: '/carousel/Tooth-exterior.png',
-    //     title: 'Tooth Dental Clinic',
-    //     desc: 'Advanced dental care in a premium, welcoming environment.'
-    // },
-    // {
-    //     url: '/carousel/Tooth-reception.png',
-    //     title: 'Modern Facilities',
-    //     desc: 'State-of-the-art infrastructure for peaceful dental treatments.'
-    // },
-
-    {
-        url: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=2070&auto=format&fit=crop',
-        title: 'Advanced Equipment',
-        desc: 'Latest technology for precise dental care.'
-    },
-    // {
-    //     url: 'https://images.unsplash.com/photo-1606811841689-23dfddceefef?q=80&w=2074&auto=format&fit=crop',
-    //     title: 'Professional Care',
-    //     desc: 'Expert doctors dedicated to your smile.'
-    // },
-    // {
-    //     url: 'https://images.unsplash.com/photo-1588776814222-2699b951ecbb?q=80&w=2070&auto=format&fit=crop',
-    //     title: 'Sterile Environment',
-    //     desc: 'Highest standards of hygiene and safety.'
-    // },
-    {
-        url: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?q=80&w=2070&auto=format&fit=crop',
-        title: 'Gentle Dentistry',
-        desc: 'Experience-led treatments for all ages.'
-    },
-    {
-        url: '/carousel/kids-corner.png',
-        title: 'Kids Friendly Corner',
-        desc: 'Special care and environment for our little patients.'
-    },
-];
+const carouselData = {
+    en: [
+        {
+            url: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=2070&auto=format&fit=crop',
+            title: 'Advanced Equipment',
+            desc: 'Latest technology for precise dental care.'
+        },
+        {
+            url: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?q=80&w=2070&auto=format&fit=crop',
+            title: 'Gentle Dentistry',
+            desc: 'Experience-led treatments for all ages.'
+        },
+        {
+            url: '/carousel/kids-corner.png',
+            title: 'Kids Friendly Corner',
+            desc: 'Special care and environment for our little patients.'
+        },
+    ],
+    hi: [
+        {
+            url: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=2070&auto=format&fit=crop',
+            title: 'उन्नत उपकरण',
+            desc: 'सटीक दंत चिकित्सा के लिए नवीनतम तकनीक।'
+        },
+        {
+            url: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?q=80&w=2070&auto=format&fit=crop',
+            title: 'कोमल दंत चिकित्सा',
+            desc: 'सभी उम्र के लोगों के लिए अनुभव-आधारित उपचार।'
+        },
+        {
+            url: '/carousel/kids-corner.png',
+            title: 'बच्चों के लिए विशेष कोना',
+            desc: 'हमारे नन्हे मरीजों के लिए विशेष देखभाल और वातावरण।'
+        },
+    ]
+};
 
 export default function ClinicCarousel() {
+    const { language } = useClinic();
+    const images = carouselData[language as keyof typeof carouselData] || carouselData.en;
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % images.length);
+            setCurrentIndex((prev: number) => (prev + 1) % images.length);
         }, 5000);
         return () => clearInterval(interval);
     }, []);
 
     const prevSlide = () => {
-        setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+        setCurrentIndex((prev: number) => (prev - 1 + images.length) % images.length);
     };
 
     const nextSlide = () => {

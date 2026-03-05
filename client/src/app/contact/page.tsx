@@ -68,9 +68,7 @@ function ContactContent() {
                         count,
                         closed,
                         daysFromToday: i,
-                        display: i === 0 ? (language === 'hi' ? 'आज' : 'Today') :
-                            i === 1 ? (language === 'hi' ? 'कल' : 'Tomorrow') :
-                                d.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { weekday: 'short', day: 'numeric', month: 'short' })
+                        display: d.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { weekday: 'short', day: 'numeric', month: 'short' })
                     });
                 }
 

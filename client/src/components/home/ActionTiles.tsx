@@ -6,11 +6,11 @@ export default function ActionTiles() {
     const { clinicData, language } = useClinic();
     const t = translations[language];
 
-    const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}` : 'Market Road, Near Dental Square';
-    const subAddress = clinicData ? `${clinicData.address.state} - ${clinicData.address.zip}` : 'Katihar, Bihar - 854105';
+    const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}` : (language === 'hi' ? 'मार्केट रोड, डेंटल स्क्वायर के पास' : 'Market Road, Near Dental Square');
+    const subAddress = clinicData ? `${clinicData.address.state} - ${clinicData.address.zip}` : (language === 'hi' ? 'कटिहार, बिहार - 854105' : 'Katihar, Bihar - 854105');
     const phone = clinicData?.phone || '+91 98765 43210';
-    const hours = clinicData ? `${language === 'hi' ? 'सोम - शनि' : 'Mon - Sat'}: ${clinicData.timings.monday}` : 'Mon - Sat: 10:00 AM - 08:00 PM';
-    const subHours = clinicData ? `${language === 'hi' ? 'रविवार' : 'Sunday'}: ${clinicData.timings.sunday}` : 'Sunday: Emergency Only';
+    const hours = clinicData ? `${language === 'hi' ? 'सोम - शनि' : 'Mon - Sat'}: ${clinicData.timings.monday}` : (language === 'hi' ? 'सोम - शनि: सुबह 10:00 - रात 08:00' : 'Mon - Sat: 10:00 AM - 08:00 PM');
+    const subHours = clinicData ? `${language === 'hi' ? 'रविवार' : 'Sunday'}: ${clinicData.timings.sunday}` : (language === 'hi' ? 'रविवार: केवल आपातकालीन' : 'Sunday: Emergency Only');
 
     const tiles = [
         {

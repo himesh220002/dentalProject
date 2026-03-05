@@ -11,12 +11,13 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaUserMd, FaArrowRight, FaCalendarAlt } from 'react-icons/fa';
 import { useClinic } from '../context/ClinicContext';
+import { translations } from '../constants/translations';
 
 export default function Home() {
     const { data: session } = useSession();
     const [upcomingAppointment, setUpcomingAppointment] = useState<any>(null);
     const [isAptDismissed, setIsAptDismissed] = useState(false);
-    const { clinicData } = useClinic();
+    const { clinicData, language } = useClinic();
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
     const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
     const doctorRole = chiefConsultant?.role || 'Chief Dental Surgeon';
@@ -76,11 +77,17 @@ export default function Home() {
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
                         <div className="space-y-6">
                             <h2 className="text-2xl sm:text-3xl md:text-4xl xl:text-6xl font-black leading-tight">
-                                A healthy smile is the <br />
-                                <span className="text-blue-500">gateway</span> to a healthy life.
+                                {language === 'hi' ? (
+                                    <>एक स्वस्थ मुस्कान स्वस्थ जीवन का <br /> <span className="text-blue-500">द्वार</span> है।</>
+                                ) : (
+                                    <>A healthy smile is the <br /> <span className="text-blue-500">gateway</span> to a healthy life.</>
+                                )}
                             </h2>
                             <p className="text-gray-400 text-xl font-medium max-w-2xl leading-relaxed">
-                                "At our clinic, we don't just fix teeth; we build confidence. We've designed our practice to be a safe, welcoming space where you can feel at ease."
+                                {language === 'hi'
+                                    ? '"हमारे क्लिनिक में, हम केवल दांत नहीं ठीक करते; हम आत्मविश्वास जगाते हैं। हमने अपने क्लिनिक को एक सुरक्षित, स्वागत योग्य स्थान के रूप में तैयार किया है जहां आप सहज महसूस कर सकें।"'
+                                    : '"At our clinic, we don\'t just fix teeth; we build confidence. We\'ve designed our practice to be a safe, welcoming space where you can feel at ease."'
+                                }
                             </p>
                         </div>
                         <div className="shrink-0 flex items-center gap-6">
@@ -89,7 +96,9 @@ export default function Home() {
                             </div>
                             <div>
                                 <h4 className="text-xl font-black">{doctorName}</h4>
-                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs">{doctorRole}</p>
+                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs">
+                                    {language === 'hi' ? 'मुख्य दंत शल्य चिकित्सक' : doctorRole}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -119,9 +128,11 @@ export default function Home() {
 
                 <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-16">
                     <div className="space-y-4 text-center sm:text-start">
-                        <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">Meet Our Specialists</h2>
+                        <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">
+                            {translations[language].homeSpecialists.title}
+                        </h2>
                         <p className="text-black text-sm md:text-base lg:text-xl font-medium leading-relaxed max-w-xl">
-                            Our team of experienced dental professionals is dedicated to your oral health and comfort.
+                            {translations[language].homeSpecialists.subtitle}
                         </p>
                     </div>
                 </div>
@@ -135,7 +146,7 @@ export default function Home() {
                             <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultant.role}</p>
                             <div className="space-y-2">
                                 <p className="text-gray-500 text-sm font-medium">{consultant.info}</p>
-                                <p className="text-gray-900 text-sm font-black italic">{consultant.experience} Experience</p>
+                                <p className="text-gray-900 text-sm font-black italic">{consultant.experience} {translations[language].homeSpecialists.experience}</p>
                             </div>
                         </div>
                     ))}
@@ -146,11 +157,15 @@ export default function Home() {
             <div className="overflow-hidden">
                 <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-12">
                     <div className="space-y-4 text-center sm:text-start">
-                        <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">Voices of Success</h2>
-                        <p className="text-gray-500 text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-xl">Real stories from real patients who trusted us with their smiles.</p>
+                        <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">
+                            {translations[language].homeReviews.title}
+                        </h2>
+                        <p className="text-gray-500 text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-xl">
+                            {translations[language].homeReviews.subtitle}
+                        </p>
                     </div>
                     <Link href="/about" className="group flex items-center gap-3 font-black text-blue-600 uppercase tracking-widest text-xs sm:text-sm hover:gap-6 transition-all">
-                        Read All Reviews <FaArrowRight />
+                        {translations[language].homeReviews.readAll} <FaArrowRight />
                     </Link>
                 </div>
                 <PatientReviews />
@@ -159,9 +174,13 @@ export default function Home() {
             {/* Virtual Clinic Tour - Refined */}
             <section className="space-y-12 sm:space-y-16">
                 <div className="text-center space-y-3 sm:space-y-4">
-                    <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-blue-900 uppercase">Virtual Clinic Tour</h2>
+                    <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-blue-900 uppercase">
+                        {translations[language].homeVirtualTour.title}
+                    </h2>
                     <div className="h-1.5 sm:h-2 w-16 sm:w-24 bg-blue-500 mx-auto rounded-full"></div>
-                    <p className="text-gray-400 font-bold tracking-widest text-xs sm:text-sm uppercase">Take a glimpse inside our state-of-the-art facility</p>
+                    <p className="text-gray-400 font-bold tracking-widest text-xs sm:text-sm uppercase">
+                        {translations[language].homeVirtualTour.subtitle}
+                    </p>
                 </div>
                 <div className="bg-white p-4 sm:p-8 mx-2 sm:mx-6 lg:mx-8 rounded-[2rem] sm:rounded-[4rem] shadow-2xl border border-gray-100 overflow-hidden">
                     <ClinicCarousel />
@@ -184,8 +203,12 @@ export default function Home() {
                         </div>
 
                         <div className="relative text-left pr-4">
-                            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">Status: Active</p>
-                            <p className="text-sm font-black text-gray-900">Appointment Fixed • View Details</p>
+                            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">
+                                {language === 'hi' ? 'स्थिति: सक्रिय' : 'Status: Active'}
+                            </p>
+                            <p className="text-sm font-black text-gray-900">
+                                {language === 'hi' ? 'अपॉइंटमेंट तय • विवरण देखें' : 'Appointment Fixed • View Details'}
+                            </p>
                         </div>
                         <FaArrowRight className="relative text-emerald-400 group-hover:translate-x-1 transition-transform" />
                     </Link>
@@ -201,23 +224,26 @@ export default function Home() {
 
                     <div className="relative z-10 space-y-6 sm:space-y-8">
                         <h2 className="text-3xl sm:text-5xl md:text-6xl font-black leading-tight max-w-4xl mx-auto tracking-tight">
-                            Transforming Smiles, <br /> <span className="bg-gradient-to-r from-blue-300 to-teal-300 bg-clip-text text-transparent">One Patient at a Time.</span>
+                            {translations[language].homeCTA.title1} <br />
+                            <span className="bg-gradient-to-r from-blue-300 to-teal-300 bg-clip-text text-transparent">
+                                {translations[language].homeCTA.title2}
+                            </span>
                         </h2>
                         <p className="text-blue-100 text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto font-medium opacity-90">
-                            Join hundreds of happy patients who trust our preventative care approach. Book your initial consultation today.
+                            {translations[language].homeCTA.subtitle}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center pt-6 sm:pt-8">
                             <Link
                                 href="/contact"
                                 className="w-full sm:w-auto bg-white text-blue-600 px-10 sm:px-16 py-4 sm:py-6 rounded-2xl sm:rounded-[2.5rem] font-black shadow-2xl hover:bg-gray-100 transition transform hover:-translate-y-2 active:scale-95 text-lg sm:text-xl"
                             >
-                                Get Started Now
+                                {translations[language].homeCTA.getStarted}
                             </Link>
                             <Link
                                 href="/treatments"
                                 className="w-full sm:w-auto text-white border-2 border-white/30 px-8 sm:px-12 py-4 sm:py-5 rounded-2xl sm:rounded-[2.5rem] font-bold hover:bg-white/10 transition backdrop-blur-sm text-base"
                             >
-                                View Treatments
+                                {translations[language].homeCTA.viewTreatments}
                             </Link>
                         </div>
                     </div>
