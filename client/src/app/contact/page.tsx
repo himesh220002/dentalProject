@@ -199,8 +199,8 @@ function ContactContent() {
             const clinicPhone = phone.replace(/\D/g, ''); // Cleans the number
             const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
             const messageText = language === 'hi'
-                ? `नमस्ते डॉक्टर, मैं ${formData.name} हूँ।\nमैं आपसे इस विषय में परामर्श करना चाहता/चाहती हूँ:- \n${formData.message}\nमेरा फोन: ${formData.phone}`
-                : `Hello Doctor, I'm ${formData.name}.\nI'd like to consult regarding:- \n${formData.message}.\nMy contact: ${formData.phone}`;
+                ? `नमस्ते डॉक्टर, मैं *${formData.name}* हूँ।\nमैं आपसे इस विषय में परामर्श करना चाहता/चाहती हूँ:- \n\n${formData.message}\n\n*मेरा फोन:* ${formData.phone}`
+                : `Hello Doctor, I'm *${formData.name}*.\nI'd like to consult regarding:- \n\n${formData.message}.\n\n*My contact:* ${formData.phone}`;
 
             const encodedMessage = encodeURIComponent(messageText);
             const finalWhatsappLink = `https://wa.me/${clinicPhone}?text=${encodedMessage}`;

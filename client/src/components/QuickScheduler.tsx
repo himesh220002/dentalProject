@@ -365,7 +365,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     ? `https://www.google.com/maps/search/?api=1&query=${clinicData.address.latitude},${clinicData.address.longitude}`
                     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicName + " " + (clinicAddress?.city || ""))}`;
 
-                const message = `*Appointment Confirmed!* ✅\n\nDear ${selectedPatient.name},\nYour appointment at *${clinicName}* has been scheduled successfully.\n\n📅 *Date:* ${date}\n⏰ *Time:* ${time}\n📍 *Location:* ${fullAddress}\n🗺️ *Google Maps Link:* ${mapsLink}\n\n*Note:* Please try to arrive 5-10 minutes before your scheduled time.\n\nSee you soon!`;
+                const message = `*Appointment Confirmed!* ✔️\n\nDear ${selectedPatient.name},\nYour appointment at *${clinicName}* has been scheduled successfully.\n\n*Date:* ${date}\n*Time:* ${time}\n*Location:* ${fullAddress}\n*Google Maps:* ${mapsLink}\n\n*Note:* Please try to arrive 5-10 minutes before your scheduled time.\n\nSee you soon!`;
 
                 const whatsappUrl = `https://wa.me/91${patientPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
