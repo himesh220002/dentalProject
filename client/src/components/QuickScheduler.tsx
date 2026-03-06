@@ -587,7 +587,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                             textColor = 'text-rose-600';
                                         } else if (isBooked) {
                                             bgColor = totalCount >= 8 ? 'bg-rose-500 border-rose-600 text-white' :
-                                                totalCount >= 4 ? 'bg-amber-400 border-amber-500 text-amber-900' :
+                                                totalCount >= 6 ? 'bg-amber-400 border-amber-500 text-amber-900' :
                                                     'bg-gray-500 border-emerald-600 text-white';
                                             textColor = 'text-white';
                                         } else if (isNextToBooked) {

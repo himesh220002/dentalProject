@@ -72,18 +72,9 @@ function ContactContent() {
                     });
                 }
 
-                // Sorting Logic:
-                // 1. Skip Closed Days
-                // 2. "Immediate Empty Days": Today/Tomorrow/Day-after if they have < 3 appointments (Fill these up first)
-                // 3. "Balanced Week": Rest of the days sorted by least-appointments first
-                const openDays = allNextDays.filter(d => !d.closed);
-                const immediate = openDays.filter(d => d.daysFromToday <= 2 && d.count < 3);
-                const others = openDays.filter(d => !(d.daysFromToday <= 2 && d.count < 3));
-
-                const sortedSuggestions = [
-                    ...immediate, // Prioritize filling today/tom/next to 3
-                    ...others.sort((a, b) => a.count - b.count) // Then balance the rest
-                ].slice(0, 5);
+                const sortedSuggestions = allNextDays
+                    .filter(d => !d.closed)
+                    .slice(0, 5);
 
                 setSuggestedDates(sortedSuggestions);
 
@@ -398,17 +389,17 @@ function ContactContent() {
                                                     key={item.dateStr}
                                                     type="button"
                                                     onClick={() => handleDateSuggestion(item)}
-                                                    className={`px-3 py-2 rounded-2xl flex flex-col items-center border shadow-sm transition-all transform active:scale-95 ${item.count < 4 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
+                                                    className={`px-3 py-2 rounded-2xl flex flex-col items-center border shadow-sm transition-all transform active:scale-95 ${item.count < 6 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
                                                         item.count < 8 ? 'bg-amber-50 border-amber-200 text-amber-700' :
                                                             'bg-rose-50 border-rose-200 text-rose-700'
                                                         }`}
                                                 >
                                                     <span className="text-[10px] font-black uppercase tracking-tighter leading-none mb-1">{item.display}</span>
-                                                    <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${item.count < 4 ? 'bg-emerald-100' :
+                                                    <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${item.count < 6 ? 'bg-emerald-100' :
                                                         item.count < 8 ? 'bg-amber-100' :
                                                             'bg-rose-100'
                                                         }`}>
-                                                        {item.count < 4 ? (language === 'hi' ? 'उपलब्ध' : 'Flexible') :
+                                                        {item.count < 6 ? (language === 'hi' ? 'उपलब्ध' : 'Flexible') :
                                                             item.count < 8 ? (language === 'hi' ? 'सामान्य' : 'Steady') :
                                                                 (language === 'hi' ? 'व्यस्त' : 'Busy')}
                                                     </span>
