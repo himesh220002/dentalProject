@@ -352,11 +352,61 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
                                     Load Template
                                 </button>
                             </div>
+
+                            {/* Clinical Quick Pickers */}
+                            <div className="space-y-4 mb-4">
+                                {/* Complaint Selection */}
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-black text-blue-400 uppercase tracking-wider italic">1. Select Complaint</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {['Checkup', 'Severe Pain', 'Swelling', 'Sensitive Teeth', 'Bleeding Gums', 'Broken Tooth', 'Alignment Issue'].map((label) => (
+                                            <button
+                                                key={label}
+                                                type="button"
+                                                onClick={() => setNotes(prev => prev.includes('COMPLAINT:') ? prev.replace('COMPLAINT:', `COMPLAINT: ${label}`) : `${prev}\nCOMPLAINT: ${label}`.trim())}
+                                                className="px-2 py-1 rounded-lg bg-blue-50 border border-blue-100 text-[9px] text-blue-600 hover:bg-blue-600 hover:text-white transition-all active:scale-95 cursor-pointer uppercase"
+                                            >
+                                                {label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Finding -> Procedure Dependency Pickers */}
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-black text-emerald-400 uppercase tracking-wider italic">2. Findings & Procedures</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {[
+                                            { label: 'Nerve Damaged', finding: 'Nerve damage detected in molar.', procedure: 'Nerve canal cleaning and gum treatment.' },
+                                            { label: 'Accident Damage', finding: 'Physical trauma/fracture due to accident.', procedure: 'Structural layering and protective crown.' },
+                                            { label: 'Alignment Issue', finding: 'Teeth not aligned properly (Malocclusion).', procedure: 'Alignment via operation and braces.' },
+                                            { label: 'Deep Decay', finding: 'Deep cavity reaching the pulp.', procedure: 'Root Canal Treatment (RCT) and filling.' },
+                                            { label: 'Calculus Build-up', finding: 'Significant tartar and plaque.', procedure: 'Full mouth scaling and polishing.' }
+                                        ].map((item, idx) => (
+                                            <button
+                                                key={idx}
+                                                type="button"
+                                                onClick={() => {
+                                                    setNotes(prev => {
+                                                        const newEntry = `\nFINDINGS: ${item.finding}\nPROCEDURE: ${item.procedure}`;
+                                                        if (prev.includes(item.finding) && prev.includes(item.procedure)) return prev;
+                                                        return (prev + newEntry).trim();
+                                                    });
+                                                }}
+                                                className="px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-100 text-[9px] text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all active:scale-95 cursor-pointer uppercase"
+                                            >
+                                                + {item.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
                             <textarea
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 placeholder="Detail the clinical journey... (e.g., Procedure completed with proper measures. Routine follow-up advised.)"
-                                className="w-full bg-gray-50/70 border-2 border-gray-100 rounded-[2rem] px-8 py-6 text-sm font-bold text-gray-700 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all min-h-[150px] resize-none shadow-sm"
+                                className="w-full bg-gray-50/70 border-2 border-gray-100 rounded-[2rem] px-8 py-6 text-sm font-medium text-gray-700 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all min-h-[150px] resize-none shadow-sm"
                             />
                         </div>
 
@@ -466,12 +516,64 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-3">
+                                            <div className="space-y-4">
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-black text-blue-400 uppercase tracking-wider italic">1. Select Complaint</label>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {['Checkup', 'Severe Pain', 'Swelling', 'Sensitive Teeth', 'Bleeding Gums', 'Broken Tooth', 'Alignment Issue'].map((label) => (
+                                                            <button
+                                                                key={label}
+                                                                type="button"
+                                                                onClick={() => setEditForm(prev => {
+                                                                    if (!prev) return null;
+                                                                    let updated = prev.notes;
+                                                                    if (updated.includes('COMPLAINT:')) {
+                                                                        updated = updated.replace(/COMPLAINT: .*/, `COMPLAINT: ${label}`);
+                                                                    } else {
+                                                                        updated += `\nCOMPLAINT: ${label}`;
+                                                                    }
+                                                                    return { ...prev, notes: updated.trim() };
+                                                                })}
+                                                                className="px-2 py-1 rounded-lg bg-blue-50 border border-blue-100 text-[9px] text-blue-600 hover:bg-blue-600 hover:text-white transition-all active:scale-95 cursor-pointer uppercase"
+                                                            >
+                                                                {label}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <label className="text-[10px] font-black text-emerald-400 uppercase tracking-widest px-1 italic">2. Findings & Procedures</label>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {[
+                                                        { label: 'Nerve Damaged', finding: 'Nerve damage detected in molar.', procedure: 'Nerve canal cleaning and gum treatment.' },
+                                                        { label: 'Accident Damage', finding: 'Physical trauma/fracture due to accident.', procedure: 'Structural layering and protective crown.' },
+                                                        { label: 'Alignment Issue', finding: 'Teeth not aligned properly (Malocclusion).', procedure: 'Alignment via operation and braces.' },
+                                                        { label: 'Deep Decay', finding: 'Deep cavity reaching the pulp.', procedure: 'Root Canal Treatment (RCT) and filling.' },
+                                                        { label: 'Calculus Build-up', finding: 'Significant tartar and plaque.', procedure: 'Full mouth scaling and polishing.' }
+                                                    ].map((item, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setEditForm(prev => {
+                                                                    if (!prev) return null;
+                                                                    const newEntry = `\nFINDINGS: ${item.finding}\nPROCEDURE: ${item.procedure}`;
+                                                                    if (prev.notes.includes(item.finding) && prev.notes.includes(item.procedure)) return prev;
+                                                                    return { ...prev, notes: (prev.notes + newEntry).trim() };
+                                                                });
+                                                            }}
+                                                            className="px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-100 text-[9px] text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all active:scale-95 cursor-pointer uppercase"
+                                                        >
+                                                            + {item.label}
+                                                        </button>
+                                                    ))}
+                                                </div>
+
                                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Progress Notes</label>
                                                 <textarea
                                                     value={editForm?.notes}
                                                     onChange={(e) => setEditForm(prev => prev ? { ...prev, notes: e.target.value } : null)}
-                                                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-3xl px-6 py-5 text-sm font-bold text-gray-600 min-h-[100px] resize-none focus:outline-none focus:border-indigo-500 transition-all"
+                                                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-3xl px-6 py-5 text-sm font-medium text-gray-600 min-h-[120px] resize-none focus:outline-none focus:border-indigo-500 transition-all"
                                                 />
                                             </div>
 
@@ -578,7 +680,7 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
                                                                     Clinical Narrative
                                                                 </h4>
-                                                                <p className="text-sm font-bold text-gray-600 leading-relaxed whitespace-pre-wrap">
+                                                                <p className="text-sm font-medium text-gray-600 leading-relaxed whitespace-pre-wrap">
                                                                     {cleanNotes(record.notes) || 'No extensive clinical notes provided for this session.'}
                                                                 </p>
                                                             </div>

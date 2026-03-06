@@ -288,6 +288,13 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             newSelected[index] = { name: treatmentName, price };
         } else if (treatmentName === 'Other / General Consultation') {
             newSelected[index] = { name: treatmentName, price: 100 };
+            // Auto-load template for General Consultation
+            if (!formData.notes) {
+                setFormData(prev => ({
+                    ...prev,
+                    notes: "COMPLAINT: \nPROCEDURE: \nFINDINGS: \nThe procedure was completed with proper measures. No immediate complications were observed.\nFOLLOW-UP: Routine checkup advised in a week."
+                }));
+            }
         } else {
             newSelected[index] = { name: treatmentName, price: 0 };
         }
@@ -793,15 +800,65 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                             </div>
                         </div>
 
-                        <div className="space-y-1">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Additional Treatment Notes</label>
-                            <input
-                                type="text"
-                                placeholder="e.g. Procedure completed with proper measures. Normal follow-up."
-                                value={formData.notes}
-                                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                className="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 font-medium text-gray-800 outline-none focus:border-blue-500 text-sm"
-                            />
+                        <div className="space-y-3">
+                            {/* Complaint Selection */}
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black text-blue-400 uppercase tracking-wider italic">1. Select Complaint</label>
+                                <div className="flex flex-wrap gap-2">
+                                    {['Checkup', 'Severe Pain', 'Swelling', 'Sensitive Teeth', 'Bleeding Gums', 'Broken Tooth', 'Alignment Issue'].map((label) => (
+                                        <button
+                                            key={label}
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, notes: prev.notes.includes('COMPLAINT:') ? prev.notes.replace('COMPLAINT:', `COMPLAINT: ${label}`) : `${prev.notes}\nCOMPLAINT: ${label}`.trim() }))}
+                                            className="px-2 py-1 rounded-lg bg-blue-50 border border-blue-100 text-[9px] text-blue-600 hover:bg-blue-600 hover:text-white transition-all active:scale-95 cursor-pointer uppercase"
+                                        >
+                                            {label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Finding -> Procedure Dependency Pickers */}
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black text-emerald-400 uppercase tracking-wider italic">2. Findings & Procedures</label>
+                                <div className="flex flex-wrap gap-2">
+                                    {[
+                                        { label: 'Nerve Damaged', finding: 'Nerve damage detected in molar.', procedure: 'Nerve canal cleaning and gum treatment.' },
+                                        { label: 'Accident Damage', finding: 'Physical trauma/fracture due to accident.', procedure: 'Structural layering and protective crown.' },
+                                        { label: 'Alignment Issue', finding: 'Teeth not aligned properly (Malocclusion).', procedure: 'Alignment via operation and braces.' },
+                                        { label: 'Deep Decay', finding: 'Deep cavity reaching the pulp.', procedure: 'Root Canal Treatment (RCT) and filling.' },
+                                        { label: 'Calculus Build-up', finding: 'Significant tartar and plaque.', procedure: 'Full mouth scaling and polishing.' }
+                                    ].map((item, idx) => (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            onClick={() => {
+                                                setFormData(prev => {
+                                                    const newEntry = `\nFINDINGS: ${item.finding}\nPROCEDURE: ${item.procedure}`;
+                                                    // Append if not already present in the exact same combination to avoid double clicks
+                                                    if (prev.notes.includes(item.finding) && prev.notes.includes(item.procedure)) {
+                                                        return prev;
+                                                    }
+                                                    return { ...prev, notes: (prev.notes + newEntry).trim() };
+                                                });
+                                            }}
+                                            className="px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-100 text-[9px] text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all active:scale-95 cursor-pointer uppercase"
+                                        >
+                                            + {item.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Additional Treatment Notes</label>
+                                <textarea
+                                    placeholder="e.g. Procedure completed with proper measures. Normal follow-up."
+                                    value={formData.notes}
+                                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                    className="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 font-medium text-gray-800 outline-none focus:border-blue-500 text-sm min-h-[100px] resize-none"
+                                />
+                            </div>
                         </div>
                     </div>
 

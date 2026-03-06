@@ -224,7 +224,7 @@ function ContactContent() {
     };
 
     return (
-        <div className="relative px-2 py-5 sm:py-20 sm:px-20 max-w-7xl -my-4 mx-auto  space-y-16 px-4">
+        <div className="relative px-2 py-5 sm:py-20 sm:px-20 max-w-[1400px] -my-4 mx-auto  space-y-16 px-4">
 
 
             {/* Header */}

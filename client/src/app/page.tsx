@@ -71,45 +71,32 @@ export default function Home() {
             {/* Trust & Expertise Section */}
             <TrustSection />
 
-            {/* Why Patients Trust - Preview Section with refined layout */}
-            <section className="bg-gray-900 mx-auto px-8 sm:px-16 lg:px-24 py-20 sm:py-32 rounded-[1.5rem] sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
-                <div className="max-w-7xl mx-auto space-y-20">
-                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-                        <div className="space-y-6">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl xl:text-6xl font-black leading-tight">
-                                {language === 'hi' ? (
-                                    <>एक स्वस्थ मुस्कान स्वस्थ जीवन का <br /> <span className="text-blue-500">द्वार</span> है।</>
-                                ) : (
-                                    <>A healthy smile is the <br /> <span className="text-blue-500">gateway</span> to a healthy life.</>
-                                )}
-                            </h2>
-                            <p className="text-gray-400 text-xl font-medium max-w-2xl leading-relaxed">
-                                {language === 'hi'
-                                    ? '"हमारे क्लिनिक में, हम केवल दांत नहीं ठीक करते; हम आत्मविश्वास जगाते हैं। हमने अपने क्लिनिक को एक सुरक्षित, स्वागत योग्य स्थान के रूप में तैयार किया है जहां आप सहज महसूस कर सकें।"'
-                                    : '"At our clinic, we don\'t just fix teeth; we build confidence. We\'ve designed our practice to be a safe, welcoming space where you can feel at ease."'
-                                }
-                            </p>
+            {/* Featured Clinical Excellence Video - Immersive Preview */}
+            <section className="px-4 sm:px-10 lg:px-16">
+                <div className="max-w-[1000px] mx-auto overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] sm:rounded-[4rem] shadow-2xl border-4 border-white bg-gray-900 group relative aspect-video">
+                    {/* <iframe
+                        className="w-full h-full pointer-events-none scale-105 group-hover:scale-110 transition-transform duration-[5s]"
+                        src="https://www.youtube.com/embed/G9nqB8BwGHU?autoplay=1&mute=1&loop=1&controls=0&start=604&end=710&playlist=G9nqB8BwGHU&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0"
+                        title="Clinical Excellence Preview"
+                        allow="autoplay; encrypted-media"
+                    ></iframe> */}
+                    <video
+                        className="w-full h-full object-cover pointer-events-none scale-105 group-hover:scale-110 transition-transform duration-[5s]"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                    >
+                        <source src="/video/dentist video1.mp4#t=604,710" type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                    {/* Immersive Glass Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent pointer-events-none"></div>
+                    <div className="absolute bottom-10 left-10 hidden md:block">
+                        <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-3xl">
+                            <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Featured Showcase</p>
+                            <h3 className="text-white text-lg font-black uppercase tracking-tight">Clinical Excellence in Action</h3>
                         </div>
-                        <div className="shrink-0 flex items-center gap-6">
-                            <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/20">
-                                <FaUserMd size={40} className="text-white" />
-                            </div>
-                            <div>
-                                <h4 className="text-xl font-black">{doctorName}</h4>
-                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs">
-                                    {language === 'hi' ? 'मुख्य दंत शल्य चिकित्सक' : doctorRole}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6 sm:gap-12 pt-6 sm:pt-12 border-t border-white/10">
-                        {highlights.map((highlight, idx) => (
-                            <div key={idx} className="space-y-4">
-                                <h3 className="text-2xl font-black">{highlight.title}</h3>
-                                <p className="text-gray-500 leading-relaxed font-medium">{highlight.description}</p>
-                            </div>
-                        ))}
                     </div>
                 </div>
             </section>
@@ -153,11 +140,54 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* Why Patients Trust - Preview Section with refined layout */}
+            <section className="bg-gray-900 mx-auto md:mx-10 px-8 sm:px-16 lg:px-24 py-20 sm:py-32 rounded-[1.5rem] sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
+                <div className="max-w-7xl mx-auto space-y-20">
+                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+                        <div className="space-y-6">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl xl:text-6xl font-black leading-tight">
+                                {language === 'hi' ? (
+                                    <>एक स्वस्थ मुस्कान स्वस्थ जीवन का <br /> <span className="text-blue-500">द्वार</span> है।</>
+                                ) : (
+                                    <>A healthy smile is the <br /> <span className="text-blue-500">gateway</span> to a healthy life.</>
+                                )}
+                            </h2>
+                            <p className="text-gray-400 text-xl font-medium max-w-2xl leading-relaxed">
+                                {language === 'hi'
+                                    ? '"हमारे क्लिनिक में, हम केवल दांत नहीं ठीक करते; हम आत्मविश्वास जगाते हैं। हमने अपने क्लिनिक को एक सुरक्षित, स्वागत योग्य स्थान के रूप में तैयार किया है जहां आप सहज महसूस कर सकें।"'
+                                    : '"At our clinic, we don\'t just fix teeth; we build confidence. We\'ve designed our practice to be a safe, welcoming space where you can feel at ease."'
+                                }
+                            </p>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-6">
+                            <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/20">
+                                <FaUserMd size={40} className="text-white" />
+                            </div>
+                            <div>
+                                <h4 className="text-xl font-black">{doctorName}</h4>
+                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs">
+                                    {language === 'hi' ? 'मुख्य दंत शल्य चिकित्सक' : doctorRole}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6 sm:gap-12 pt-6 sm:pt-12 border-t border-white/10">
+                        {highlights.map((highlight, idx) => (
+                            <div key={idx} className="space-y-4">
+                                <h3 className="text-2xl font-black">{highlight.title}</h3>
+                                <p className="text-gray-500 leading-relaxed font-medium">{highlight.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* Patient Testimony Preview */}
             <div className="overflow-hidden">
-                <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-12">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 mx-4 md:mx-16 mb-12">
                     <div className="space-y-4 text-center sm:text-start">
-                        <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">
+                        <h2 className="text-3xl sm:text-4xl xl:text-5xl text-center md:text-start font-black text-gray-900 leading-tight tracking-tight">
                             {translations[language].homeReviews.title}
                         </h2>
                         <p className="text-gray-500 text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-xl">
