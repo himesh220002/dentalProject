@@ -1,67 +1,72 @@
 'use client';
+import { useMemo } from 'react';
 import { FaQuoteLeft, FaStar } from 'react-icons/fa';
 import { useClinic } from '@/context/ClinicContext';
 import { translations } from '@/constants/translations';
 
-const reviewsData = {
-    en: [
-        {
-            name: 'Monika J.',
-            text: 'Dr. Tooth is incredibly gentle. I used to be terrified of the dentist, but now I look forward to my checkups!',
-            rating: 5,
-            treatment: 'Dental Cleaning'
-        },
-        {
-            name: 'Monty R.',
-            text: 'The best clinic in town. Modern equipment, friendly staff, and the treatments are actually painless.',
-            rating: 5,
-            treatment: 'Root Canal'
-        },
-        {
-            name: 'Priya S.',
-            text: "I got my braces done here. The transformation is amazing! Dr. Tooth explained everything clearly at every step.",
-            rating: 5,
-            treatment: 'Orthodontics'
-        },
-        {
-            name: 'Rahul D.',
-            text: "Excellent service and very hygienic. Highly recommended for anyone looking for quality dental care.",
-            rating: 5,
-            treatment: 'Teeth Whitening'
-        }
-    ],
-    hi: [
-        {
-            name: 'मोनिका जे.',
-            text: 'डॉ. टूथ अविश्वसनीय रूप से कोमल हैं। मैं पहले दंत चिकित्सक से बहुत डरती थी, लेकिन अब मैं अपने चेकअप का इंतजार करती हूं!',
-            rating: 5,
-            treatment: 'दांतों की सफाई'
-        },
-        {
-            name: 'मोंटी आर.',
-            text: 'शहर का सबसे अच्छा क्लिनिक। आधुनिक उपकरण, मित्रवत कर्मचारी, और उपचार वास्तव में दर्द रहित हैं।',
-            rating: 5,
-            treatment: 'रूट कैनाल'
-        },
-        {
-            name: 'प्रिया एस.',
-            text: "मैंने अपने ब्रेसिज़ यहाँ लगवाए हैं। बदलाव अद्भुत है! डॉ. टूथ ने हर कदम पर सब कुछ स्पष्ट रूप से समझाया।",
-            rating: 5,
-            treatment: 'ऑर्थोडॉन्टिक्स'
-        },
-        {
-            name: 'राहुल डी.',
-            text: "बेहतरीन सेवा और बहुत स्वच्छ। गुणवत्तापूर्ण दंत चिकित्सा देखभाल की तलाश करने वाले किसी भी व्यक्ति के लिए अत्यधिक अनुशंसित।",
-            rating: 5,
-            treatment: 'दांत चमकाना'
-        }
-    ]
-};
 
 export default function PatientReviews() {
-    const { language } = useClinic();
+    const { language, clinicData } = useClinic();
     const t = translations[language as keyof typeof translations];
-    const reviews = reviewsData[language as keyof typeof reviewsData] || reviewsData.en;
+
+    const reviews = useMemo(() => {
+        const clinicName = clinicData?.clinicName || 'Dr. Tooth';
+        const data = {
+            en: [
+                {
+                    name: 'Monika J.',
+                    text: `${clinicName} is incredibly gentle. I used to be terrified of the dentist, but now I look forward to my checkups!`,
+                    rating: 5,
+                    treatment: 'Dental Cleaning'
+                },
+                {
+                    name: 'Monty R.',
+                    text: 'The best clinic in town. Modern equipment, friendly staff, and the treatments are actually painless.',
+                    rating: 5,
+                    treatment: 'Root Canal'
+                },
+                {
+                    name: 'Priya S.',
+                    text: `I got my braces done here. The transformation is amazing! ${clinicName} explained everything clearly at every step.`,
+                    rating: 5,
+                    treatment: 'Orthodontics'
+                },
+                {
+                    name: 'Rahul D.',
+                    text: "Excellent service and very hygienic. Highly recommended for anyone looking for quality dental care.",
+                    rating: 5,
+                    treatment: 'Teeth Whitening'
+                }
+            ],
+            hi: [
+                {
+                    name: 'मोनिका जे.',
+                    text: `${clinicName} अविश्वसनीय रूप से कोमल हैं। मैं पहले दंत चिकित्सक से बहुत डरती थी, लेकिन अब मैं अपने चेकअप का इंतजार करती हूं!`,
+                    rating: 5,
+                    treatment: 'दांतों की सफाई'
+                },
+                {
+                    name: 'मोंटी आर.',
+                    text: 'शहर का सबसे अच्छा क्लिनिक। आधुनिक उपकरण, मित्रवत कर्मचारी, और उपचार वास्तव में दर्द रहित हैं।',
+                    rating: 5,
+                    treatment: 'रूट कैनाल'
+                },
+                {
+                    name: 'प्रिया एस.',
+                    text: `मैंने अपने ब्रेसिज़ यहाँ लगवाए हैं। बदलाव अद्भुत है! ${clinicName} ने हर कदम पर सब कुछ स्पष्ट रूप से समझाया।`,
+                    rating: 5,
+                    treatment: 'ऑर्थोडॉन्टिक्स'
+                },
+                {
+                    name: 'राहुल डी.',
+                    text: "बेहतरीन सेवा और बहुत स्वच्छ। गुणवत्तापूर्ण दंत चिकित्सा देखभाल की तलाश करने वाले किसी भी व्यक्ति के लिए अत्यधिक अनुशंसित।",
+                    rating: 5,
+                    treatment: 'दांत चमकाना'
+                }
+            ]
+        };
+        return data[language as keyof typeof data] || data.en;
+    }, [language, clinicData]);
 
     return (
         <section className="py-12 sm:py-20 bg-blue-50/50 -mx-2 sm:-mx-6 lg:mx-8 px-4 sm:px-6 lg:px-8 rounded-[2rem] sm:rounded-[3rem]">
