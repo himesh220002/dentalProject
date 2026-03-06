@@ -797,7 +797,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Additional Treatment Notes</label>
                             <input
                                 type="text"
-                                placeholder="e.g. Extra medicine, complicated extraction..."
+                                placeholder="e.g. Procedure completed with proper measures. Normal follow-up."
                                 value={formData.notes}
                                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                                 className="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 font-medium text-gray-800 outline-none focus:border-blue-500 text-sm"

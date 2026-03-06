@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FaClock, FaNotesMedical, FaUser, FaCalendarPlus, FaTrash, FaChevronDown, FaChevronUp, FaWhatsapp } from 'react-icons/fa';
 import { useClinic } from '@/context/ClinicContext';
+import { parseAppointmentReason } from '@/utils/appointmentUtils';
 
 interface MobileAppointmentCardProps {
     apt: any; // Using any for now to match parent usage, or import Appointment interface
@@ -168,8 +169,15 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
                     </div>
 
                     <div className="bg-white p-3 rounded-xl text-sm text-gray-600 border border-gray-100">
-                        {apt.reason}
-                        {apt.amount && <div className="text-xs font-black text-blue-600 mt-1">₹{apt.amount}</div>}
+                        <div className="font-bold text-gray-900 border-b border-gray-50 pb-1 mb-1">
+                            {parseAppointmentReason(apt.reason).treatmentName}
+                        </div>
+                        {parseAppointmentReason(apt.reason).notes && (
+                            <div className="text-xs text-gray-500 italic mt-1 leading-relaxed">
+                                {parseAppointmentReason(apt.reason).notes}
+                            </div>
+                        )}
+                        {apt.amount && <div className="text-xs font-black text-blue-600 mt-2">₹{apt.amount}</div>}
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-2 justify-between items-center pt-2">

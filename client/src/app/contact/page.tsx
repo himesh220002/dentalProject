@@ -408,7 +408,7 @@ function ContactContent() {
                                                         item.count < 8 ? 'bg-amber-100' :
                                                             'bg-rose-100'
                                                         }`}>
-                                                        {item.count < 4 ? (language === 'hi' ? 'उपलब्ध' : 'Open') :
+                                                        {item.count < 4 ? (language === 'hi' ? 'उपलब्ध' : 'Flexible') :
                                                             item.count < 8 ? (language === 'hi' ? 'सामान्य' : 'Steady') :
                                                                 (language === 'hi' ? 'व्यस्त' : 'Busy')}
                                                     </span>

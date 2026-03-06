@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaClipboardList, FaFileMedical, FaRupeeSign, FaCalendarAlt, FaNotesMedical, FaPlus, FaTimes, FaStethoscope, FaHistory } from 'react-icons/fa';
+import { parseAppointmentReason, cleanNotes } from '@/utils/appointmentUtils';
 
 interface TreatmentRecord {
     _id: string;
@@ -227,7 +228,7 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
             {/* Header with Add Button */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pb-4 border-b border-gray-100">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter flex items-center gap-4">
+                    <h2 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tighter flex items-center gap-4">
                         <div className="p-3 bg-blue-50 rounded-2xl text-blue-600 shadow-sm border border-blue-100">
                             <FaHistory />
                         </div>
@@ -345,7 +346,7 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
                                 </label>
                                 <button
                                     type="button"
-                                    onClick={() => setNotes("COMPLAINT: \nPROCEDURE: \nFINDINGS: \nFOLLOW-UP: ")}
+                                    onClick={() => setNotes("COMPLAINT: \nPROCEDURE: \nFINDINGS: \nThe procedure was completed with proper measures. No immediate complications were observed.\nFOLLOW-UP: Routine checkup advised in a week.")}
                                     className="text-[9px] font-black text-blue-600 bg-blue-50 px-4 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all active:scale-95 border border-blue-100 uppercase tracking-widest"
                                 >
                                     Load Template
@@ -354,7 +355,7 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
                             <textarea
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
-                                placeholder="Detail the clinical journey, observations, and complications..."
+                                placeholder="Detail the clinical journey... (e.g., Procedure completed with proper measures. Routine follow-up advised.)"
                                 className="w-full bg-gray-50/70 border-2 border-gray-100 rounded-[2rem] px-8 py-6 text-sm font-bold text-gray-700 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all min-h-[150px] resize-none shadow-sm"
                             />
                         </div>
@@ -564,7 +565,7 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
                                                     className="cursor-pointer group/title"
                                                 >
                                                     <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-gray-900 mb-4 uppercase tracking-tighter leading-tight flex items-center gap-4 transition-colors group-hover/title:text-blue-600">
-                                                        {record.treatmentName}
+                                                        {parseAppointmentReason(record.treatmentName).treatmentName}
                                                         <div className={`p-2 bg-gray-50 rounded-xl transition-all duration-500 ${expandedRecords[record._id] ? 'rotate-180 bg-blue-50 text-blue-600' : ''}`}>
                                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
                                                         </div>
@@ -572,16 +573,16 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
 
                                                     <div className={`transition-all duration-500 overflow-hidden ${expandedRecords[record._id] ? 'max-h-[2000px] opacity-100 mt-8' : 'max-h-0 opacity-0'}`}>
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                                                            <div className="bg-gray-50/50 p-8 rounded-[2.5rem] border border-gray-100 hover:border-blue-100 transition-colors">
+                                                            <div className="bg-gray-50/50 p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-gray-100 hover:border-blue-100 transition-colors">
                                                                 <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
                                                                     Clinical Narrative
                                                                 </h4>
                                                                 <p className="text-sm font-bold text-gray-600 leading-relaxed whitespace-pre-wrap">
-                                                                    {record.notes || 'No extensive clinical notes provided for this session.'}
+                                                                    {cleanNotes(record.notes) || 'No extensive clinical notes provided for this session.'}
                                                                 </p>
                                                             </div>
-                                                            <div className="bg-emerald-50/20 p-8 rounded-[2.5rem] border border-emerald-100/50 hover:border-emerald-200 transition-colors">
+                                                            <div className="bg-emerald-50/20 p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-emerald-100/50 hover:border-emerald-200 transition-colors">
                                                                 <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                                                                     Pharmaco-Therapy

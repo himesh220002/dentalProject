@@ -9,6 +9,7 @@ import Link from 'next/link';
 import QuickScheduler from '@/components/QuickScheduler';
 import MobileAppointmentCard from '@/components/dashboard/MobileAppointmentCard';
 import { parseDateTime } from '@/utils/dateUtils';
+import { parseAppointmentReason } from '@/utils/appointmentUtils';
 
 interface Appointment {
     _id: string;
@@ -192,7 +193,9 @@ function DashboardSchedulesContent() {
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <div className="text-sm font-medium text-gray-600 max-w-xs truncate">{apt.reason}</div>
+                                            <div className="text-sm font-medium text-gray-600 max-w-xs truncate">
+                                                {parseAppointmentReason(apt.reason).treatmentName}
+                                            </div>
                                             {apt.amount && <div className="text-[10px] font-black text-blue-600 mt-0.5">₹{apt.amount}</div>}
                                         </td>
                                         <td className="px-8 py-6 whitespace-nowrap">

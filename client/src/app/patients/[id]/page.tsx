@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { FaArrowLeft, FaUser, FaIdCard, FaBirthdayCake, FaVenusMars, FaPhoneAlt, FaMapMarkerAlt, FaHistory, FaClinicMedical, FaEdit, FaSave, FaTimes, FaPlus, FaEnvelope, FaNotesMedical } from 'react-icons/fa';
 import Navbar from '../../../components/Navbar';
 import PatientHistory from '../../../components/PatientHistory';
+import { parseAppointmentReason } from '@/utils/appointmentUtils';
 
 interface Patient {
     _id: string;
@@ -207,7 +208,7 @@ export default function PatientProfile() {
                                         <div className="bg-amber-400/20 backdrop-blur-md px-5 py-2 rounded-2xl text-amber-50 text-[10px] font-black uppercase tracking-widest border border-amber-400/30 flex items-center gap-2">
                                             <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping absolute"></div>
                                             <div className="w-2 h-2 rounded-full bg-amber-400 relative"></div>
-                                            Upcoming: {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                                            Upcoming: {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
                                         </div>
                                     )}
                                 </div>
@@ -386,7 +387,9 @@ export default function PatientProfile() {
                                                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                                                     Most Recent Treatment
                                                 </div>
-                                                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-emerald-900 mb-4 uppercase tracking-tighter leading-tight group-hover:translate-x-1 transition-transform">{lastVisit.treatmentName}</h3>
+                                                <h3 className="text-xs lg:text-sm font-black text-emerald-900 mb-4 tracking-tighter leading-tight group-hover:translate-x-1 transition-transform">
+                                                    {parseAppointmentReason(lastVisit.treatmentName).treatmentName}
+                                                </h3>
                                                 <div className="inline-block bg-emerald-600/10 px-5 py-2 rounded-2xl text-emerald-800 font-black text-xs border border-emerald-200/50">
                                                     {new Date(lastVisit.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                                                 </div>

@@ -177,15 +177,23 @@ exports.updateAppointmentStatus = async (req, res) => {
             const existingRecord = await TreatmentRecord.findOne({ appointmentId: updatedAppointment._id });
 
             if (!existingRecord) {
-                const autoNotes = `Patient visited for ${updatedAppointment.reason}. Procedure completed and fee of ₹${updatedAppointment.amount} was collected.`;
+                // Parse reason to extract treatment name and notes
+                let treatmentName = updatedAppointment.reason;
+                let notes = "The procedure has been completed with proper measures. No immediate complications were observed. Routine follow-up is advised."; // Default 
+
+                const lastParenMatch = updatedAppointment.reason.match(/([\s\S]*)\s?\(([\s\S]*)\)\s*$/);
+                if (lastParenMatch) {
+                    treatmentName = lastParenMatch[1].trim();
+                    notes = lastParenMatch[2].trim() || notes;
+                }
 
                 await TreatmentRecord.create({
                     patientId: updatedAppointment.patientId._id,
                     appointmentId: updatedAppointment._id,
-                    treatmentName: updatedAppointment.reason,
+                    treatmentName: treatmentName,
                     cost: updatedAppointment.amount || 0,
                     date: updatedAppointment.date,
-                    notes: autoNotes
+                    notes: notes
                 });
                 console.log('✔ Auto-Record: Created.');
             }

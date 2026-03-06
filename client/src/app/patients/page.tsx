@@ -7,6 +7,7 @@ import AddPatientForm from '../../components/AddPatientForm';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { FaSearch, FaUserPlus, FaChevronRight, FaPhoneAlt, FaMapMarkerAlt, FaCalendarCheck, FaHistory, FaSortAmountDown, FaCalendarPlus } from 'react-icons/fa';
 import QuickScheduler from '@/components/QuickScheduler';
+import { parseAppointmentReason } from '@/utils/appointmentUtils';
 
 interface TreatmentRecord {
     _id: string;
@@ -197,9 +198,9 @@ export default function PatientsPage() {
                                                                 <FaHistory size={12} />
                                                             </div>
                                                             {patient.nextAppointment ? (
-                                                                <span className="text-blue-600 font-bold">Upcoming: {new Date(patient.nextAppointment.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                                                                <span className="text-blue-600 font-bold">Upcoming: {parseAppointmentReason(patient.nextAppointment.reason).treatmentName} • {new Date(patient.nextAppointment.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                                                             ) : patient.lastTreatment ? (
-                                                                <span className="text-gray-500">Visit: {new Date(patient.lastTreatment.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                                                                <span className="text-gray-500">Visit: {parseAppointmentReason(patient.lastTreatment.treatmentName).treatmentName} • {new Date(patient.lastTreatment.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                                                             ) : 'No Records'}
                                                         </div>
                                                     </div>
@@ -260,7 +261,7 @@ export default function PatientsPage() {
                                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                                                             <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                                                         </span>
-                                                        Upcoming: {new Date(patient.nextAppointment!.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                                        Upcoming: {parseAppointmentReason(patient.nextAppointment!.reason).treatmentName} • {new Date(patient.nextAppointment!.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                                     </span>
                                                 );
                                             } else if (patient.lastTreatment) {
@@ -346,7 +347,7 @@ export default function PatientsPage() {
                                                                                     <FaCalendarCheck size={10} /> Next Scheduled
                                                                                 </div>
                                                                                 <div className="text-sm font-black text-gray-800">{new Date(patient.nextAppointment.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                                                                                <div className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tight">{patient.nextAppointment.time} • {patient.nextAppointment.reason}</div>
+                                                                                <div className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tight">{patient.nextAppointment.time} • {parseAppointmentReason(patient.nextAppointment.reason).treatmentName}</div>
                                                                             </div>
                                                                         ) : patient.lastTreatment ? (
                                                                             <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm opacity-80">
@@ -354,7 +355,7 @@ export default function PatientsPage() {
                                                                                     <FaHistory size={10} /> Recent Visit
                                                                                 </div>
                                                                                 <div className="text-sm font-bold text-gray-700">{new Date(patient.lastTreatment.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                                                                                <div className="text-[10px] text-blue-600 font-black mt-1 uppercase tracking-tight">{patient.lastTreatment.treatmentName}</div>
+                                                                                <div className="text-[10px] text-blue-600 font-black mt-1 uppercase tracking-tight">{parseAppointmentReason(patient.lastTreatment.treatmentName).treatmentName}</div>
                                                                             </div>
                                                                         ) : (
                                                                             <div className="h-full flex items-center bg-gray-50/50 rounded-3xl border border-dashed border-gray-200 p-4">

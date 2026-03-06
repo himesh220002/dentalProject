@@ -5,6 +5,7 @@ import axios from 'axios';
 import { FaUsers, FaEnvelope, FaCalendarAlt, FaTooth } from 'react-icons/fa';
 import Link from 'next/link';
 import WeeklyPlanner from '@/components/WeeklyPlanner';
+import { parseAppointmentReason } from '@/utils/appointmentUtils';
 
 export default function DashboardOverview() {
     const [stats, setStats] = useState({
@@ -135,7 +136,7 @@ export default function DashboardOverview() {
                                             )}
                                         </p>
                                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                                            {act.type === 'appointment' ? act.reason : 'New Inquire'} • {new Date(act.timeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {act.type === 'appointment' ? parseAppointmentReason(act.reason).treatmentName : 'New Inquire'} • {new Date(act.timeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </p>
                                     </div>
                                 </div>
@@ -167,7 +168,7 @@ export default function DashboardOverview() {
                                         >
                                             {q.patientId?.name || 'Unknown'}
                                         </Link>
-                                        <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">{q.reason}</p>
+                                        <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">{parseAppointmentReason(q.reason).treatmentName}</p>
                                     </div>
                                     <div className="ml-auto">
                                         <span className="px-3 py-1 bg-white rounded-full text-[9px] font-black text-emerald-600 shadow-sm border border-emerald-100 uppercase">Waiting</span>

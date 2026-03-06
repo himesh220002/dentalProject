@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import axios from 'axios';
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCalendarAlt, FaHistory, FaCheckCircle, FaExclamationCircle, FaLock } from 'react-icons/fa';
 import SessionGuard from '@/components/SessionGuard';
+import { parseAppointmentReason, cleanNotes } from '@/utils/appointmentUtils';
 
 const CLINIC_DRUGS = [
     { name: 'Lidocaine (LA)', instruction: 'Administered in-clinic for numbing' },
@@ -415,7 +416,7 @@ export default function ProfilePage() {
                                             Your Next Appointment
                                         </p>
                                         <p className="text-sm font-black text-amber-900">
-                                            {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
+                                            {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
                                         </p>
                                     </div>
                                 </div>
@@ -448,7 +449,7 @@ export default function ProfilePage() {
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path>
                                                 </svg>
                                             </div>
-                                            <h3 className="text-xs sm:text-lg font-black text-gray-900 uppercase tracking-tight">{record.treatmentName}</h3>
+                                            <h3 className="text-xs sm:text-lg font-black text-gray-900 uppercase tracking-tight">{parseAppointmentReason(record.treatmentName).treatmentName}</h3>
                                         </div>
                                         <div className="flex flex-col items-end gap-2">
                                             <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase ${record.paymentStatus === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
@@ -463,7 +464,7 @@ export default function ProfilePage() {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-2 pt-4 border-t border-gray-100">
                                                 <div className="bg-white p-4 rounded-xl">
                                                     <p className="text-gray-400 font-black uppercase text-[10px] mb-2 tracking-widest">Diagnosis/Notes</p>
-                                                    <p className="text-gray-700 font-medium leading-relaxed italic">{record.notes || 'General consultation'}</p>
+                                                    <p className="text-gray-700 font-medium leading-relaxed italic">{cleanNotes(record.notes) || 'General consultation'}</p>
                                                 </div>
                                                 <div className="bg-white p-4 rounded-xl">
                                                     <p className="text-gray-400 font-black uppercase text-[10px] mb-2 tracking-widest">Prescription & Medication</p>
@@ -598,7 +599,7 @@ export default function ProfilePage() {
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-sm font-black text-gray-900">{apt.reason || 'General Consultation'}</span>
+                                                    <span className="text-sm font-black text-gray-900">{parseAppointmentReason(apt.reason).treatmentName}</span>
                                                     {new Date(apt.date).getTime() >= new Date().setHours(0, 0, 0, 0) && apt.status !== 'Completed' && (
                                                         <span className="text-[8px] font-black bg-blue-600 text-white px-1.5 py-0.5 rounded-full animate-pulse uppercase">Upcoming</span>
                                                     )}
