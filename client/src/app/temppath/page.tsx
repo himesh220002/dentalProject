@@ -83,6 +83,7 @@ export default function TempClinicForm() {
     const [history, setHistory] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [saveStatus, setSaveStatus] = useState('');
+    const [showJson, setShowJson] = useState(false);
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [hasMounted, setHasMounted] = useState(false);
     const [password, setPassword] = useState('');
@@ -141,19 +142,44 @@ export default function TempClinicForm() {
         }
     };
 
-    const saveToDb = async () => {
+    const handleSave = async (publish = false) => {
         setIsLoading(true);
-        setSaveStatus('Saving...');
+        setSaveStatus(publish ? 'Publishing...' : 'Saving Draft...');
         try {
+            // First save to database
             await axios.post(`${API_BASE_URL}/handover/save`, {
                 handoverformId: handoverId,
                 jsondata: formData
             });
-            setSaveStatus('Handover saved successfully!');
-            fetchHistory();
-            setTimeout(() => setSaveStatus(''), 3000);
+
+            // Update JSON preview
+            setJsonOutput(JSON.stringify(formData, null, 4));
+
+            // If publish is true, activate this version
+            if (publish) {
+                await axios.post(`${API_BASE_URL}/handover/activate/${handoverId}`);
+                await refreshClinicData();
+                setSaveStatus(`Success! Published version: ${handoverId}`);
+            } else {
+                setSaveStatus('Draft saved successfully!');
+            }
+
+            // Refresh history
+            const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
+            const newHistory = historyRes.data;
+            setHistory(newHistory);
+
+            // If we just published, maybe auto-increment for next draft?
+            // User might want to keep editing the same ID though.
+            // Let's only auto-increment if it was a success and we want to prevent overwriting
+            if (publish) {
+                const nextVersion = newHistory.length + 1;
+                setHandoverId(`handover_v${nextVersion}`);
+            }
+
+            setTimeout(() => setSaveStatus(''), 5000);
         } catch (error) {
-            setSaveStatus('Error saving to DB');
+            setSaveStatus(`Error during ${publish ? 'publish' : 'save'}`);
             console.error('Save error:', error);
         } finally {
             setIsLoading(false);
@@ -279,45 +305,7 @@ export default function TempClinicForm() {
         }
     };
 
-    const finalizeHandover = async () => {
-        // First generate the JSON for the preview
-        setJsonOutput(JSON.stringify(formData, null, 4));
 
-        // Then trigger the DB save
-        setIsLoading(true);
-        setSaveStatus('Saving to Database...');
-        try {
-            await axios.post(`${API_BASE_URL}/handover/save`, {
-                handoverformId: handoverId,
-                jsondata: formData
-            });
-
-            const savedId = handoverId;
-            setSaveStatus(`Success! Saved with ID: ${savedId}`);
-
-            // Fetch updated history to get latest count
-            const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
-            const newHistory = historyRes.data;
-            setHistory(newHistory);
-
-            // Auto-increment version for next save
-            const nextVersion = newHistory.length + 1;
-            setHandoverId(`handover_v${nextVersion}`);
-
-            setTimeout(() => setSaveStatus(''), 5000);
-        } catch (error) {
-            setSaveStatus('Error saving to DB during finalization');
-            console.error('Finalize save error:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(jsonOutput || JSON.stringify(formData, null, 4));
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
 
     if (!hasMounted) {
         return (
@@ -377,401 +365,444 @@ export default function TempClinicForm() {
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative">
-                {/* Contextual Navigation Header for Dashboard */}
-                <div className="max-w-7xl mx-auto mb-8 flex justify-between items-center">
-                    <button
-                        onClick={handleLogout}
-                        className="px-6 py-3 rounded-2xl flex items-center gap-3 text-red-600 font-black text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all transform hover:-translate-x-1 active:scale-95 border border-red-50 bg-white/50 backdrop-blur-sm"
-                    >
-                        <FaShieldAlt size={16} />
-                        <span>Logout</span>
-                    </button>
-                    <Link
-                        href="/"
-                        className="px-6 py-3 rounded-2xl flex items-center gap-3 text-blue-600 font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-x-1 active:scale-95"
-                    >
-                        <FaHome size={16} />
-                        <span>Back to Website</span>
-                    </Link>
-                </div>
-
-                <div className="max-w-7xl mx-auto mt-8">
-                    <div className="text-center mb-12">
-                        <div className="inline-flex items-center justify-center p-3 bg-blue-600 rounded-2xl shadow-lg mb-4">
-                            <FaTooth className="text-white text-3xl" />
+            <div className="min-h-screen bg-[#f8fafc] py-8 px-0 sm:px-6 lg:px-8">
+                {/* Unified Header */}
+                <div className="max-w-[1600px] mx-auto mb-8 flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200">
+                            <FaTooth className="text-white text-2xl" />
                         </div>
-                        <h1 className="text-4xl font-black text-gray-900 tracking-tight">Clinic Delivery Dashboard</h1>
-                        <p className="mt-2 text-gray-600 font-medium tracking-tight">Finalize branding, team details, and service pricing for handover.</p>
+                        <div>
+                            <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-none">Handover Dashboard</h1>
+                            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-1.5">Full Site Configuration & Versioning</p>
+                        </div>
                     </div>
 
-                    <div className="max-w-7xl mx-auto space-y-8">
-                        {/* Form Sections */}
-                        <div className="space-y-8">
-                            {/* Branding */}
-                            <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-blue-600 rounded-full" />
-                                    Branding Essentials
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href="/"
+                            className="px-5 py-2.5 rounded-xl flex items-center gap-2 text-slate-600 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all border border-slate-100"
+                        >
+                            <FaHome size={14} />
+                            <span>Preview Site</span>
+                        </Link>
+                        <button
+                            onClick={handleLogout}
+                            className="px-5 py-2.5 rounded-xl flex items-center gap-2 text-rose-500 font-bold text-xs uppercase tracking-widest hover:bg-rose-50 transition-all border border-rose-100"
+                        >
+                            <FaShieldAlt size={14} />
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Main Content Area */}
+                <div className="max-w-[1600px] mx-auto space-y-12 pb-20">
+                    {/* Section 1: Version Control & Persistence */}
+                    <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden lg:min-w-[400px]">
+                            <div className="p-8 bg-slate-900 text-white">
+                                <h2 className="text-lg font-black uppercase tracking-widest flex items-center gap-3">
+                                    <FaCloudUploadAlt className="text-blue-400" /> Version Control
                                 </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="sm:col-span-1">
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Clinic Name</label>
-                                        <input type="text" name="clinicName" value={formData.clinicName} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
-                                    </div>
-                                    <div className="sm:col-span-1">
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Doctor Name</label>
-                                        <input type="text" name="doctorName" value={formData.doctorName} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
-                                    </div>
-                                    <div className="sm:col-span-2">
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Tagline/Hero Message</label>
-                                        <input type="text" name="tagline" value={formData.tagline} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
-                                    </div>
-                                </div>
+                                <p className="text-slate-400 text-[10px] font-bold mt-1 uppercase tracking-tighter">Manage your live site configuration</p>
                             </div>
 
-                            {/* Team Section */}
-                            <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                                <div className="flex justify-between items-center">
-                                    <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                        <span className="w-2 h-8 bg-indigo-500 rounded-full" />
-                                        Consultants & Teams
-                                    </h2>
-                                    <button onClick={() => addListItem('consultants')} className="flex items-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest hover:bg-indigo-50 px-4 py-2 rounded-xl transition-all">
-                                        <FaPlus /> Add Member
-                                    </button>
+                            <div className="p-8 space-y-6">
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Active Site Version</label>
+                                    <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                        <div className={`w-3 h-3 rounded-full ${history.find(h => h.isActive) ? 'bg-green-500 shadow-lg shadow-green-200 animate-pulse' : 'bg-slate-300'}`} />
+                                        <span className="font-black text-slate-700 truncate">
+                                            {history.find(h => h.isActive)?.handoverformId || 'Default (Hardcoded)'}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="space-y-4">
-                                    {formData.consultants.map((c, i) => (
-                                        <div key={i} className="p-6 bg-gray-50 rounded-2xl border border-gray-100 space-y-4 relative group">
-                                            <button onClick={() => removeListItem('consultants', i)} className="absolute top-4 right-4 p-2 text-rose-500 hover:bg-rose-100 rounded-lg transition-all"><FaTrash /></button>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Name</label>
-                                                    <input type="text" placeholder="Dr. Name" value={c.name} onChange={(e) => handleListChange('consultants', i, 'name', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Role</label>
-                                                    <input type="text" placeholder="e.g. Chief Surgeon" value={c.role} onChange={(e) => handleListChange('consultants', i, 'role', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Individual Experience</label>
-                                                    <input type="text" placeholder="e.g. 10 Years" value={c.experience} onChange={(e) => handleListChange('consultants', i, 'experience', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Credentials/MDS</label>
-                                                    <input type="text" placeholder="e.g. BDS, MDS" value={c.info} onChange={(e) => handleListChange('consultants', i, 'info', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
 
-                            {/* Treatments Section */}
-                            <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                                <div className="flex justify-between items-center">
-                                    <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                        <span className="w-2 h-8 bg-teal-500 rounded-full" />
-                                        Treatments & Pricing
-                                    </h2>
-                                    <button onClick={() => addListItem('treatments')} className="flex items-center gap-2 text-teal-600 font-black text-xs uppercase tracking-widest hover:bg-teal-50 px-4 py-2 rounded-xl transition-all">
-                                        <FaPlus /> Add Treatment
-                                    </button>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    {formData.treatments.map((t, i) => (
-                                        <div key={i} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4 relative group">
-                                            <button onClick={() => removeListItem('treatments', i)} className="absolute top-4 right-4 p-2 text-rose-500 hover:bg-rose-100 rounded-lg transition-all"><FaTrash size={14} /></button>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Treatment Name</label>
-                                                    <input type="text" placeholder="Treatment" value={t.name} onChange={(e) => handleListChange('treatments', i, 'name', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-sm" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Price</label>
-                                                    <div className="relative">
-                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
-                                                        <input type="text" placeholder="Price" value={t.price} onChange={(e) => handleListChange('treatments', i, 'price', e.target.value)} className="w-full pl-8 pr-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-sm text-teal-600" />
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Description</label>
-                                                    <textarea placeholder="Description" value={t.description} onChange={(e) => handleListChange('treatments', i, 'description', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" rows={2} />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Why Choose This?</label>
-                                                    <textarea placeholder="Why Choose This?" value={t.whyChooseThis} onChange={(e) => handleListChange('treatments', i, 'whyChooseThis', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" rows={2} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Metrics Section */}
-                            <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-purple-500 rounded-full" />
-                                    Clinic Experience & Metrics
-                                </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div className="space-y-4 pt-4 border-t border-slate-100">
                                     <div>
-                                        <label className="block text-xs font-black uppercase text-gray-400 mb-2">Years Since Est.</label>
-                                        <input type="text" name="clinicExperience" value={formData.clinicExperience} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-purple-500 font-bold" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-black uppercase text-gray-400 mb-2">Patient Count</label>
-                                        <input type="text" name="happyCustomers" value={formData.happyCustomers} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-purple-500 font-bold" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-black uppercase text-gray-400 mb-2">Success Rate</label>
-                                        <input type="text" name="successRate" value={formData.successRate} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-purple-500 font-bold" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Clinic Highlights */}
-                            <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                                <div className="flex justify-between items-center">
-                                    <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                        <span className="w-2 h-8 bg-yellow-500 rounded-full" />
-                                        Clinic Highlights & Tech
-                                    </h2>
-                                    <button onClick={() => addListItem('highlights')} className="flex items-center gap-2 text-yellow-600 font-black text-xs uppercase tracking-widest hover:bg-yellow-50 px-4 py-2 rounded-xl transition-all">
-                                        <FaPlus /> Add Highlight
-                                    </button>
-                                </div>
-                                <div className="space-y-4">
-                                    {formData.highlights.map((h, i) => (
-                                        <div key={i} className="flex flex-col sm:flex-row gap-3 bg-gray-50 p-4 rounded-2xl relative group border border-gray-100">
-                                            <button onClick={() => removeListItem('highlights', i)} className="absolute top-2 right-2 p-1 text-rose-400 hover:text-rose-600 transition-opacity"><FaTrash size={12} /></button>
-                                            <input type="text" placeholder="Title (e.g. Modern Lab)" value={h.title} onChange={(e) => handleListChange('highlights', i, 'title', e.target.value)} className="flex-1 px-4 py-2 rounded-xl bg-white border-none focus:ring-2 focus:ring-yellow-500 font-bold text-sm" />
-                                            <input type="text" placeholder="Description" value={h.description} onChange={(e) => handleListChange('highlights', i, 'description', e.target.value)} className="flex-[2] px-4 py-2 rounded-xl bg-white border-none focus:ring-2 focus:ring-yellow-500 text-sm" />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* SEO Section */}
-                            <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-green-600 rounded-full" />
-                                    Search & Discoverability (SEO)
-                                </h2>
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Meta Title</label>
-                                        <input type="text" name="seo.metaTitle" value={formData.seo.metaTitle} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-green-500 font-bold" placeholder="Optimal for Google results" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Keywords (Comma separated)</label>
-                                        <input type="text" name="seo.keywords" value={formData.seo.keywords} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-green-500 font-bold" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Meta Description</label>
-                                        <textarea name="seo.metaDescription" value={formData.seo.metaDescription} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-green-500 font-bold" rows={2} />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Contact & Address Section */}
-                            <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-rose-500 rounded-full" />
-                                    Address & Contact
-                                </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Phone</label>
-                                        <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Email</label>
-                                        <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                    </div>
-                                    <div className="sm:col-span-2">
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Street Address</label>
-                                        <input type="text" name="address.street" value={formData.address.street} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-2 sm:col-span-2">
-                                        <input type="text" name="address.city" placeholder="City" value={formData.address.city} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                        <input type="text" name="address.state" placeholder="State" value={formData.address.state} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                        <input type="text" name="address.zip" placeholder="ZIP" value={formData.address.zip} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2 sm:col-span-2">
-                                        <div className="space-y-1">
-                                            <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Latitude</label>
-                                            <input type="text" name="address.latitude" placeholder="e.g. 25.5556" value={formData.address.latitude} onChange={handleChange} className="w-full px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold text-sm" />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Longitude</label>
-                                            <input type="text" name="address.longitude" placeholder="e.g. 87.5564" value={formData.address.longitude} onChange={handleChange} className="w-full px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold text-sm" />
-                                        </div>
-                                    </div>
-                                    <div className="sm:col-span-2">
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Clinic Policy / Note</label>
-                                        <textarea name="visitPolicy" value={formData.visitPolicy} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" rows={2} placeholder="e.g. Appointment only" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Social Links */}
-                            <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-blue-400 rounded-full" />
-                                    Social Presence
-                                </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {Object.keys(formData.socialLinks).map((platform) => (
-                                        <div key={platform}>
-                                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{platform}</label>
-                                            <input type="text" name={`socialLinks.${platform}`} value={formData.socialLinks[platform as keyof typeof formData.socialLinks]} onChange={handleChange} className="w-full px-4 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-400 font-bold text-sm" />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={finalizeHandover}
-                                disabled={isLoading}
-                                className="w-full bg-gray-900 text-white py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-blue-600 transition-all transform active:scale-95 text-xl disabled:opacity-50"
-                            >
-                                {isLoading ? 'Processing...' : 'Finalize Handover Dashboard'}
-                            </button>
-                        </div>
-
-                        {/* Persistence & History (Now below Form) */}
-                        <div className="space-y-8 pt-8 border-t border-gray-200">
-
-                            {/* Database Control */}
-                            <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border-2 border-blue-500/20 space-y-6">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-blue-500 rounded-full" />
-                                    Database Persistence
-                                </h2>
-                                <div className="flex flex-col sm:flex-row gap-4">
-                                    <div className="flex-grow">
-                                        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Handover ID (Unique Version Name)</label>
+                                        <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Editing ID / Version Name</label>
                                         <input
                                             type="text"
                                             value={handoverId}
                                             onChange={(e) => setHandoverId(e.target.value)}
-                                            placeholder="e.g. initial_handover_final"
-                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                            className="w-full px-5 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-900"
+                                            placeholder="e.g. march_promo_v1"
                                         />
                                     </div>
-                                    <div className="flex items-end">
+
+                                    <div className="grid grid-cols-2 gap-3">
                                         <button
-                                            onClick={saveToDb}
+                                            onClick={() => handleSave(false)}
                                             disabled={isLoading}
-                                            className="sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 h-[52px]"
+                                            className="px-4 py-4 bg-white text-slate-900 border-2 border-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex flex-col items-center gap-1.5 disabled:opacity-50"
                                         >
-                                            <FaCloudUploadAlt size={20} />
-                                            {isLoading ? 'Saving...' : 'Save to DB'}
+                                            <FaSave size={16} />
+                                            <span>Save Draft</span>
+                                        </button>
+                                        <button
+                                            onClick={() => handleSave(true)}
+                                            disabled={isLoading}
+                                            className="px-4 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all flex flex-col items-center gap-1.5 disabled:opacity-50"
+                                        >
+                                            <FaGlobe size={16} />
+                                            <span>Go Live Now</span>
                                         </button>
                                     </div>
                                 </div>
-                                {saveStatus && (
-                                    <p className={`text-sm font-bold ${saveStatus.includes('Error') ? 'text-rose-500' : 'text-green-600'}`}>
-                                        {saveStatus}
-                                    </p>
-                                )}
                             </div>
+                        </div>
 
-                            {/* History Panel */}
-                            <div className="bg-white rounded-[3rem] shadow-xl p-8 border border-gray-100 flex flex-col max-h-[500px]">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
-                                    <FaHistory className="text-indigo-500" /> Version History
+                        {/* HISTORY CARD */}
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-col lg:min-w-[400px] min-h-[300px] max-h-[500px]">
+                            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                                <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-slate-900">
+                                    <FaHistory className="text-indigo-500" /> History
                                 </h2>
-                                <div className="flex-grow overflow-auto custom-scrollbar space-y-3 pr-2">
-                                    {history.length > 0 ? history.map((item) => (
-                                        <div key={item._id} className={`p-4 rounded-2xl border transition-all group relative ${item.isActive ? 'bg-blue-50 border-blue-200 ring-2 ring-blue-400/20' : 'bg-gray-50 border-transparent hover:bg-indigo-50 hover:border-indigo-100'}`}>
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`font-black text-xs truncate max-w-[150px] ${item.isActive ? 'text-blue-700' : 'text-indigo-600'}`}>{item.handoverformId}</span>
-                                                    {item.isActive && <span className="text-[7px] font-black uppercase bg-blue-600 text-white px-1.5 py-0.5 rounded-full tracking-widest">Active</span>}
-                                                </div>
-                                                <span className="text-[10px] text-gray-400 font-medium">Updated: {new Date(item.updatedAt).toLocaleString()}</span>
-                                            </div>
-                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-all">
-                                                {item.isActive ? (
-                                                    <button
-                                                        onClick={() => deactivateVersion()}
-                                                        className="p-1.5 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition-all ring-1 ring-blue-100 animate-pulse"
-                                                        title="Deactivate (Revert to Default)"
-                                                    >
-                                                        <FaGlobe size={12} />
-                                                    </button>
-                                                ) : (
-                                                    <button
-                                                        onClick={() => activateVersion(item.handoverformId)}
-                                                        className="p-1.5 bg-white text-blue-600 rounded-lg shadow-sm hover:bg-blue-600 hover:text-white transition-all ring-1 ring-blue-100"
-                                                        title="Go Live (Activate Site-wide)"
-                                                    >
-                                                        <FaGlobe size={12} />
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={() => loadFromHistory(item)}
-                                                    className="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white transition-all ring-1 ring-indigo-100"
-                                                    title="Load for Editing"
-                                                >
-                                                    <FaEdit size={12} />
-                                                </button>
-                                                <button
-                                                    onClick={() => deleteFromHistory(item.handoverformId)}
-                                                    className="p-1.5 bg-white text-rose-500 rounded-lg shadow-sm hover:bg-rose-500 hover:text-white transition-all ring-1 ring-rose-100"
-                                                    title="Delete Version"
-                                                >
-                                                    <FaTrash size={12} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )) : (
-                                        <p className="text-center text-gray-400 text-xs py-8 font-medium italic">No saved versions found</p>
-                                    )}
-                                </div>
+                                <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 rounded-full text-slate-500">{history.length} Saved</span>
                             </div>
 
-                            {/* JSON Output */}
-                            <div className="bg-gray-900 rounded-[3rem] shadow-2xl p-8 text-white min-h-[500px] flex flex-col border border-white/5">
-                                <div className="flex justify-between items-center mb-6 text-center">
-                                    <h2 className="text-xl font-bold flex items-center gap-2">
-                                        <FaFlask className="text-blue-500 animate-pulse" /> Site JSON
-                                    </h2>
-                                    <button onClick={copyToClipboard} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest">
-                                        {copied ? <FaCheck className="text-green-500" /> : <FaCopy className="text-blue-400" />}
-                                        {copied ? 'Copied' : 'Copy'}
-                                    </button>
-                                </div>
+                            <div className="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar">
+                                {history.length > 0 ? [...history].reverse().map((item) => (
+                                    <div key={item._id} className={`p-4 rounded-2xl border transition-all group relative ${item.isActive ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-slate-50 border-slate-100'}`}>
+                                        <div className="flex flex-col gap-0.5">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`font-black text-[10px] truncate max-w-[140px] ${item.isActive ? 'text-blue-700' : 'text-slate-600'}`}>
+                                                    {item.handoverformId}
+                                                </span>
+                                                {item.isActive && <span className="text-[7px] font-black uppercase bg-blue-600 text-white px-1.5 py-0.5 rounded-full tracking-tighter">Active</span>}
+                                            </div>
+                                            <span className="text-[8px] text-slate-400 font-bold uppercase">{new Date(item.updatedAt).toLocaleDateString()}</span>
+                                        </div>
 
-                                {jsonOutput ? (
-                                    <pre className="flex-grow bg-black/40 p-6 rounded-2xl font-mono text-[9px] text-blue-400 overflow-auto custom-scrollbar border border-white/10 select-all leading-relaxed">
-                                        {jsonOutput}
-                                    </pre>
-                                ) : (
-                                    <div className="flex-grow flex flex-col items-center justify-center text-center space-y-4 opacity-30">
-                                        <FaLightbulb size={48} className="text-yellow-500" />
-                                        <p className="font-bold text-xs tracking-[0.3em] uppercase">Ready for Final Delivery</p>
+                                        <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-100/50">
+                                            {!item.isActive && (
+                                                <button
+                                                    onClick={() => activateVersion(item.handoverformId)}
+                                                    className="p-1.5 h-8 bg-white text-blue-600 rounded-lg shadow-sm hover:bg-blue-600 hover:text-white transition-all border border-blue-100 flex-1 flex justify-center items-center"
+                                                    title="Go Live"
+                                                >
+                                                    <FaGlobe size={12} />
+                                                </button>
+                                            )}
+                                            {item.isActive && (
+                                                <button
+                                                    onClick={() => deactivateVersion()}
+                                                    className="p-1.5 h-8 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-slate-900 transition-all flex-1 flex justify-center items-center"
+                                                    title="Revert to Default"
+                                                >
+                                                    <FaGlobe size={12} />
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => loadFromHistory(item)}
+                                                className="p-1.5 h-8 bg-white text-indigo-600 rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white transition-all border border-indigo-100 flex-1 flex justify-center items-center"
+                                                title="Load Draft"
+                                            >
+                                                <FaEdit size={12} />
+                                            </button>
+                                            <button
+                                                onClick={() => deleteFromHistory(item.handoverformId)}
+                                                className="p-1.5 h-8 bg-white text-rose-500 rounded-lg shadow-sm hover:bg-rose-500 hover:text-white transition-all border border-rose-100 flex-1 flex justify-center items-center"
+                                                title="Delete"
+                                            >
+                                                <FaTrash size={12} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                )) : (
+                                    <div className="py-12 text-center">
+                                        <FaHistory className="mx-auto text-slate-200 text-3xl mb-3" />
+                                        <p className="text-slate-400 text-[10px] font-bold uppercase italic">No history found</p>
                                     </div>
                                 )}
-
-                                <div className="mt-8 pt-6 border-t border-white/5 flex items-center gap-3">
-                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-ping"></div>
-                                    <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Global Sync Ready</span>
-                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <style jsx>{`
+                    {/* Section 2: Clinic Content & Configuration */}
+                    <div className="space-y-12">
+                        {/* Status Alert */}
+                        {saveStatus && (
+                            <div className={`p-4 rounded-2xl font-bold text-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 ${saveStatus.includes('Error') ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-green-50 text-green-600 border border-green-100'
+                                }`}>
+                                <div className={`w-2 h-2 rounded-full ${saveStatus.includes('Error') ? 'bg-rose-500' : 'bg-green-500'} animate-pulse`} />
+                                {saveStatus}
+                            </div>
+                        )}
+
+                        {/* Branding */}
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-4 sm:p-8 border border-gray-100 space-y-6">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <span className="w-2 h-8 bg-blue-600 rounded-full" />
+                                Branding Essentials
+                            </h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="sm:col-span-1">
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Clinic Name</label>
+                                    <input type="text" name="clinicName" value={formData.clinicName} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
+                                </div>
+                                <div className="sm:col-span-1">
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Doctor Name</label>
+                                    <input type="text" name="doctorName" value={formData.doctorName} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
+                                </div>
+                                <div className="sm:col-span-2">
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Tagline/Hero Message</label>
+                                    <input type="text" name="tagline" value={formData.tagline} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Team Section */}
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-4 sm:p-8 border border-gray-100 space-y-6">
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                    <span className="w-2 h-8 bg-indigo-500 rounded-full" />
+                                    Consultants & Teams
+                                </h2>
+                                <button onClick={() => addListItem('consultants')} className="flex items-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest hover:bg-indigo-50 px-4 py-2 rounded-xl transition-all">
+                                    <FaPlus /> Add Member
+                                </button>
+                            </div>
+                            <div className="space-y-4">
+                                {formData.consultants.map((c, i) => (
+                                    <div key={i} className="p-6 bg-gray-50 rounded-2xl border border-gray-100 space-y-4 relative group">
+                                        <button onClick={() => removeListItem('consultants', i)} className="absolute top-4 right-4 p-2 text-rose-500 hover:bg-rose-100 rounded-lg transition-all"><FaTrash /></button>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Name</label>
+                                                <input type="text" placeholder="Dr. Name" value={c.name} onChange={(e) => handleListChange('consultants', i, 'name', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Role</label>
+                                                <input type="text" placeholder="e.g. Chief Surgeon" value={c.role} onChange={(e) => handleListChange('consultants', i, 'role', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Individual Experience</label>
+                                                <input type="text" placeholder="e.g. 10 Years" value={c.experience} onChange={(e) => handleListChange('consultants', i, 'experience', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Credentials/MDS</label>
+                                                <input type="text" placeholder="e.g. BDS, MDS" value={c.info} onChange={(e) => handleListChange('consultants', i, 'info', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Treatments Section */}
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-4 sm:p-8 border border-gray-100 space-y-6">
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                    <span className="w-2 h-8 bg-teal-500 rounded-full" />
+                                    Treatments & Pricing
+                                </h2>
+                                <button onClick={() => addListItem('treatments')} className="flex items-center gap-2 text-teal-600 font-black text-xs uppercase tracking-widest hover:bg-teal-50 px-4 py-2 rounded-xl transition-all">
+                                    <FaPlus /> Add Treatment
+                                </button>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                {formData.treatments.map((t, i) => (
+                                    <div key={i} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4 relative group">
+                                        <button onClick={() => removeListItem('treatments', i)} className="absolute top-4 right-4 p-2 text-rose-500 hover:bg-rose-100 rounded-lg transition-all"><FaTrash size={14} /></button>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Treatment Name</label>
+                                                <input type="text" placeholder="Treatment" value={t.name} onChange={(e) => handleListChange('treatments', i, 'name', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-sm" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Price</label>
+                                                <div className="relative">
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
+                                                    <input type="text" placeholder="Price" value={t.price} onChange={(e) => handleListChange('treatments', i, 'price', e.target.value)} className="w-full pl-8 pr-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-sm text-teal-600" />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Description</label>
+                                                <textarea placeholder="Description" value={t.description} onChange={(e) => handleListChange('treatments', i, 'description', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" rows={2} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Why Choose This?</label>
+                                                <textarea placeholder="Why Choose This?" value={t.whyChooseThis} onChange={(e) => handleListChange('treatments', i, 'whyChooseThis', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" rows={2} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Metrics Section */}
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-4 sm:p-8 border border-gray-100 space-y-6">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <span className="w-2 h-8 bg-purple-500 rounded-full" />
+                                Clinic Experience & Metrics
+                            </h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2">Years Since Est.</label>
+                                    <input type="text" name="clinicExperience" value={formData.clinicExperience} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-purple-500 font-bold" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2">Patient Count</label>
+                                    <input type="text" name="happyCustomers" value={formData.happyCustomers} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-purple-500 font-bold" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2">Success Rate</label>
+                                    <input type="text" name="successRate" value={formData.successRate} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-purple-500 font-bold" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Clinic Highlights */}
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-4 sm:p-8 border border-gray-100 space-y-6">
+                            <div className="flex flex-col sm:flex-row justify-between items-center">
+                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                    <span className="w-2 h-8 bg-yellow-500 rounded-full" />
+                                    Clinic Highlights & Tech
+                                </h2>
+                                <button onClick={() => addListItem('highlights')} className="flex items-center gap-2 text-yellow-600 font-black text-xs uppercase tracking-widest hover:bg-yellow-50 px-4 py-2 rounded-xl transition-all">
+                                    <FaPlus /> Add Highlight
+                                </button>
+                            </div>
+                            <div className="space-y-4">
+                                {formData.highlights.map((h, i) => (
+                                    <div key={i} className="flex flex-col sm:flex-row gap-3 bg-gray-50 p-4 rounded-2xl relative group border border-gray-100">
+                                        <button onClick={() => removeListItem('highlights', i)} className="absolute top-2 right-2 p-1 text-rose-400 hover:text-rose-600 transition-opacity"><FaTrash size={12} /></button>
+                                        <input type="text" placeholder="Title (e.g. Modern Lab)" value={h.title} onChange={(e) => handleListChange('highlights', i, 'title', e.target.value)} className="flex-1 px-4 py-2 rounded-xl bg-white border-none focus:ring-2 focus:ring-yellow-500 font-bold text-sm" />
+                                        <input type="text" placeholder="Description" value={h.description} onChange={(e) => handleListChange('highlights', i, 'description', e.target.value)} className="flex-[2] px-4 py-2 rounded-xl bg-white border-none focus:ring-2 focus:ring-yellow-500 text-sm" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* SEO Section */}
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <span className="w-2 h-8 bg-green-600 rounded-full" />
+                                Search & Discoverability (SEO)
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Meta Title</label>
+                                    <input type="text" name="seo.metaTitle" value={formData.seo.metaTitle} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-green-500 font-bold" placeholder="Optimal for Google results" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Keywords (Comma separated)</label>
+                                    <input type="text" name="seo.keywords" value={formData.seo.keywords} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-green-500 font-bold" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Meta Description</label>
+                                    <textarea name="seo.metaDescription" value={formData.seo.metaDescription} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-green-500 font-bold" rows={2} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Contact & Address Section */}
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <span className="w-2 h-8 bg-rose-500 rounded-full" />
+                                Address & Contact
+                            </h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Phone</label>
+                                    <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Email</label>
+                                    <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
+                                </div>
+                                <div className="sm:col-span-2">
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Street Address</label>
+                                    <input type="text" name="address.street" value={formData.address.street} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
+                                </div>
+                                <div className="grid grid-cols-3 gap-2 sm:col-span-2">
+                                    <input type="text" name="address.city" placeholder="City" value={formData.address.city} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
+                                    <input type="text" name="address.state" placeholder="State" value={formData.address.state} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
+                                    <input type="text" name="address.zip" placeholder="ZIP" value={formData.address.zip} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 sm:col-span-2">
+                                    <div className="space-y-1">
+                                        <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Latitude</label>
+                                        <input type="text" name="address.latitude" placeholder="e.g. 25.5556" value={formData.address.latitude} onChange={handleChange} className="w-full px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold text-sm" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Longitude</label>
+                                        <input type="text" name="address.longitude" placeholder="e.g. 87.5564" value={formData.address.longitude} onChange={handleChange} className="w-full px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold text-sm" />
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-2">
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Clinic Policy / Note</label>
+                                    <textarea name="visitPolicy" value={formData.visitPolicy} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" rows={2} placeholder="e.g. Appointment only" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Social Links */}
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <span className="w-2 h-8 bg-blue-400 rounded-full" />
+                                Social Presence
+                            </h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {Object.keys(formData.socialLinks).map((platform) => (
+                                    <div key={platform}>
+                                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{platform}</label>
+                                        <input type="text" name={`socialLinks.${platform}`} value={formData.socialLinks[platform as keyof typeof formData.socialLinks]} onChange={handleChange} className="w-full px-4 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-400 font-bold text-sm" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {/* Section 3: Technical Output & Documentation */}
+                    <div className="pt-12 border-t border-slate-200">
+                        {/* JSON PREVIEW TOGGLE */}
+                        <div className="bg-slate-900 rounded-[2rem] shadow-xl overflow-hidden mt-5">
+                            <button
+                                onClick={() => setShowJson(!showJson)}
+                                className="w-full p-6 flex justify-between items-center hover:bg-slate-800 transition-colors"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <FaFlask className="text-blue-400" />
+                                    <span className="text-white text-xs font-black uppercase tracking-widest">JSON Source</span>
+                                </div>
+                                <div className={`text-slate-400 transition-transform duration-300 ${showJson ? 'rotate-180' : ''}`}>
+                                    <FaPlus size={12} />
+                                </div>
+                            </button>
+
+                            {showJson && (
+                                <div className="p-6 pt-0 animate-in slide-in-from-top-4 duration-300">
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(jsonOutput || JSON.stringify(formData, null, 4));
+                                                setCopied(true);
+                                                setTimeout(() => setCopied(false), 2000);
+                                            }}
+                                            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all"
+                                        >
+                                            {copied ? <FaCheck className="text-green-400" /> : <FaCopy className="text-blue-300" />}
+                                        </button>
+                                        <pre className="p-4 bg-black/50 rounded-xl font-mono text-[8px] text-blue-300 overflow-auto max-h-[400px] custom-scrollbar border border-white/5 select-all">
+                                            {jsonOutput || JSON.stringify(formData, null, 4)}
+                                        </pre>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style jsx>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.1); border-radius: 10px; }
             `}</style>
-            </div>
         </ProtectedRoute>
     );
 }
