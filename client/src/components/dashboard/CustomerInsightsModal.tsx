@@ -47,6 +47,7 @@ interface RadialOrb {
     intensity: 'high' | 'medium' | 'low';
     val: number;
     isActive: boolean;
+    isUpcoming: boolean;
 }
 
 export default function CustomerInsightsModal({ isOpen, onClose, patients, appointments, messages, treatments }: InsightsModalProps) {
@@ -90,6 +91,18 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                 .filter(Boolean)
         );
 
+        const upcomingPatientIds = new Set(
+            appointments
+                .filter(a => {
+                    if (!a.date) return false;
+                    const d = new Date(a.date);
+                    d.setHours(0, 0, 0, 0);
+                    return d.getTime() > todayTime && a.status !== 'Cancelled';
+                })
+                .map(a => (a.patientId?._id || a.patientId)?.toString())
+                .filter(Boolean)
+        );
+
         patients.forEach((p, idx) => {
             // Skip patients without a valid address
             if (!p.address || p.address === '-__-' || p.address.trim() === '') return;
@@ -121,7 +134,8 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                 y: 50 + radius * Math.sin(angle),
                 intensity: ringIndex === 0 ? 'high' : ringIndex === 1 ? 'medium' : 'low',
                 val: 1,
-                isActive: activePatientIds.has(p._id)
+                isActive: activePatientIds.has(p._id),
+                isUpcoming: upcomingPatientIds.has(p._id)
             });
         });
 
@@ -148,7 +162,27 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
         ];
     }, [patients, appointments, messages]);
 
-    // 4. Monthly Flux Pulse
+    // 4. Daily Appointment Activity (Current Month)
+    const dailyActivity = useMemo(() => {
+        const now = new Date();
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const dailyCounts = Array(daysInMonth).fill(0);
+
+        appointments.forEach(a => {
+            const d = new Date(a.date);
+            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+                const dayIndex = d.getDate() - 1;
+                if (dayIndex >= 0 && dayIndex < daysInMonth) {
+                    dailyCounts[dayIndex]++;
+                }
+            }
+        });
+        return dailyCounts;
+    }, [appointments]);
+
+    const maxDaily = useMemo(() => Math.max(...dailyActivity, 1), [dailyActivity]);
+
+    // 5. Monthly Flux Pulse (Historical)
     const fluxPulse = useMemo(() => {
         const months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
         const currentYear = new Date().getFullYear();
@@ -182,7 +216,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                 </Transition.Child>
 
                 <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4">
+                    <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
                         <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-300"
@@ -192,22 +226,22 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-[3rem] bg-slate-900 p-8 shadow-2xl transition-all border border-slate-800 text-slate-100">
-                                <div className="flex justify-between items-center mb-10">
-                                    <div className="flex items-center gap-5">
-                                        <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-2xl shadow-blue-500/20">
-                                            <FaChartLine size={32} />
+                            <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-[2rem] sm:rounded-[3rem] bg-slate-900 p-4 sm:p-8 shadow-2xl transition-all border border-slate-800 text-slate-100">
+                                <div className="flex justify-between items-center mb-6 sm:mb-10">
+                                    <div className="flex items-center gap-3 sm:gap-5">
+                                        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-[1.5rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-2xl shadow-blue-500/20">
+                                            <FaChartLine size={24} className="sm:text-[32px]" />
                                         </div>
                                         <div>
-                                            <Dialog.Title className="text-3xl font-black tracking-tight text-white">Customer Intelligence</Dialog.Title>
-                                            <div className="flex items-center gap-3 mt-1">
-                                                <span className="text-xs bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full font-bold uppercase tracking-widest border border-blue-500/20">Live Analysis</span>
-                                                <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">Orbital Mapping • Geospatial Sync</span>
+                                            <Dialog.Title className="text-xl sm:text-3xl font-black tracking-tight text-white leading-tight">Customer Intelligence</Dialog.Title>
+                                            <div className="flex items-center gap-2 sm:gap-3 mt-0.5 sm:mt-1">
+                                                <span className="text-[10px] sm:text-xs bg-blue-500/10 text-blue-400 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-bold uppercase tracking-widest border border-blue-500/20">Live</span>
+                                                <span className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase tracking-widest hidden xs:inline">Orbital Mapping • Geospatial Sync</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <button onClick={onClose} className="w-12 h-12 flex items-center justify-center hover:bg-slate-800 rounded-2xl transition text-slate-400 group border border-slate-800">
-                                        <FaTimes size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+                                    <button onClick={onClose} className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-slate-800 rounded-xl sm:rounded-2xl transition text-slate-400 group border border-slate-800">
+                                        <FaTimes size={18} className="group-hover:rotate-90 transition-transform duration-300" />
                                     </button>
                                 </div>
 
@@ -266,7 +300,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                                             {radialOrbs.map((orb: RadialOrb, i: number) => (
                                                 <div
                                                     key={i}
-                                                    className={`absolute transition-all duration-1000 group/orb ${orb.isActive ? 'w-4 h-4 z-40' : 'w-1.5 h-1.5 z-30'
+                                                    className={`absolute transition-all duration-1000 group/orb ${orb.isActive ? 'w-4 h-4 z-40' : orb.isUpcoming ? 'w-3 h-3 z-35' : 'w-1.5 h-1.5 z-30'
                                                         }`}
                                                     style={{
                                                         left: `${orb.x}%`,
@@ -277,28 +311,36 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                                                     {/* Base Blip */}
                                                     <div className={`w-full h-full rounded-full transition-all duration-500 ${orb.isActive ?
                                                         'bg-blue-400 shadow-[0_0_15px_rgba(96,165,250,0.8)] animate-pulse' :
-                                                        'bg-white opacity-40 group-hover/orb:opacity-100'
+                                                        orb.isUpcoming ?
+                                                            'bg-white shadow-[0_0_12px_rgba(255,255,255,0.6)] ring-1 ring-white/30' :
+                                                            'bg-white opacity-20 group-hover/orb:opacity-100'
                                                         }`}></div>
 
                                                     {/* Active Pulse Halo */}
                                                     {orb.isActive && (
                                                         <div className="absolute inset-[-6px] border border-blue-400/50 rounded-full animate-ping opacity-60"></div>
                                                     )}
+                                                    {orb.isUpcoming && (
+                                                        <div className="absolute inset-[-4px] border border-white/20 rounded-full animate-pulse opacity-40"></div>
+                                                    )}
                                                     <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-950 text-white text-[8px] font-black rounded opacity-0 group-hover/orb:opacity-100 transition whitespace-nowrap z-50 border border-slate-800 shadow-xl">
-                                                        {orb.area} {orb.isActive ? '• ACTIVE VISIT' : 'ZONE'}
+                                                        {orb.area} {orb.isActive ? '• ACTIVE VISIT' : orb.isUpcoming ? '• UPCOMING' : 'ZONE'}
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
 
-                                        {/* Radial Legend */}
-                                        <div className="mb-6 flex items-center justify-between px-2">
-                                            <div className="flex items-center gap-4">
+                                        <div className="mb-6 flex flex-wrap items-center justify-between gap-y-3 px-2">
+                                            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                                                 <div className="flex items-center gap-1.5">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-white opacity-40"></div>
-                                                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-tighter">Patients</span>
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-white opacity-20"></div>
+                                                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-tighter">Quiet</span>
                                                 </div>
-                                                <div className="flex items-center gap-1.5 ml-2 border-l border-slate-700 pl-4">
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_8px_white/30]"></div>
+                                                    <span className="text-[8px] font-black text-slate-300 uppercase tracking-tighter">Upcoming</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 sm:ml-2 border-l border-slate-700 pl-3 sm:pl-4">
                                                     <div className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse"></div>
                                                     <span className="text-[8px] font-black text-blue-400 uppercase tracking-tighter">Active Visit</span>
                                                 </div>
@@ -385,43 +427,57 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                                     {/* Right Column: Pulse & Metrics */}
                                     <div className="lg:col-span-3 flex flex-col gap-6">
 
-                                        {/* Interaction Pulse */}
-                                        <div className="bg-blue-600 p-8 rounded-[2.5rem] shadow-xl shadow-blue-500/20 text-white flex flex-col justify-between h-64 group cursor-default overflow-hidden relative">
-                                            <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-150 transition-transform duration-700">
-                                                <FaLink size={80} />
+                                        {/* Daily Appointment Activity Viewer */}
+                                        <div className="bg-slate-800/40 p-5 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-700/50 flex flex-col justify-between h-[18rem] sm:h-64 group cursor-default overflow-hidden relative">
+                                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-150 transition-transform duration-700">
+                                                <FaChartLine size={80} />
                                             </div>
-                                            <div>
-                                                <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-80 mb-2">Engagement Pulse</h3>
-                                                <span className="text-5xl font-black">{(fluxPulse.reduce((a, b) => a + b, 0) / 12).toFixed(1)}</span>
-                                                <p className="text-[10px] font-bold opacity-60 uppercase mt-2 tracking-widest">Avg Activity / Month</p>
+                                            <div className="relative z-10">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-80 mb-2">Daily Activity</h3>
+                                                        <span className="text-3xl sm:text-5xl font-black text-white">
+                                                            {dailyActivity.filter(v => v > 0).length}
+                                                        </span>
+                                                        <p className="text-[10px] font-bold opacity-60 uppercase mt-2 tracking-widest">Active Days / Month</p>
+                                                    </div>
+                                                    <div className="bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-700/50">
+                                                        <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Current Month</span>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            <div className="flex items-end gap-1 h-20">
-                                                {fluxPulse.map((val, i) => (
+                                            <div className="flex items-end gap-0.5 sm:gap-1 h-24 sm:h-20 relative z-10 mt-4">
+                                                {dailyActivity.map((val, i) => (
                                                     <div
                                                         key={i}
-                                                        className="flex-1 bg-white/30 rounded-t-sm transition-all duration-300 hover:bg-white"
-                                                        style={{ height: `${(val / maxFlux) * 100}%` }}
-                                                    ></div>
+                                                        className="flex-1 group/bar relative"
+                                                        style={{ height: `${(val / maxDaily) * 100}%` }}
+                                                    >
+                                                        <div className={`w-full h-full rounded-t-[1px] sm:rounded-t-sm transition-all duration-300 ${val > 0 ? 'bg-blue-500/80 hover:bg-blue-400' : 'bg-slate-700/30'}`}></div>
+                                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-950 text-white text-[8px] px-1.5 py-0.5 rounded opacity-0 group-hover/bar:opacity-100 transition whitespace-nowrap z-20 border border-slate-800">
+                                                            Day {i + 1}: {val}
+                                                        </div>
+                                                    </div>
                                                 ))}
                                             </div>
                                         </div>
 
                                         {/* Micro Metrics */}
-                                        <div className="bg-slate-800/40 p-6 rounded-[2.5rem] border border-slate-700/50 flex-grow grid gap-4">
-                                            <div className="p-4 bg-slate-900/50 rounded-3xl border border-slate-700/30">
-                                                <div className="flex items-center gap-3 mb-1">
+                                        <div className="bg-slate-800/40 p-4 sm:p-6 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-700/50 flex-grow grid grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4">
+                                            <div className="p-3 sm:p-4 bg-slate-900/50 rounded-2xl sm:rounded-3xl border border-slate-700/30">
+                                                <div className="flex items-center gap-2 sm:gap-3 mb-1">
                                                     <FaCircleNotch className="text-amber-500 animate-spin-slow" />
-                                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Growth Index</span>
+                                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Growth</span>
                                                 </div>
-                                                <span className="text-xl font-black text-white">+12.4%</span>
+                                                <span className="text-lg sm:text-xl font-black text-white">+12.4%</span>
                                             </div>
-                                            <div className="p-4 bg-slate-900/50 rounded-3xl border border-slate-700/30">
-                                                <div className="flex items-center gap-3 mb-1">
+                                            <div className="p-3 sm:p-4 bg-slate-900/50 rounded-2xl sm:rounded-3xl border border-slate-700/30">
+                                                <div className="flex items-center gap-2 sm:gap-3 mb-1">
                                                     <FaUsers className="text-purple-500" />
-                                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Community Pulse</span>
+                                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Pulse</span>
                                                 </div>
-                                                <span className="text-xl font-black text-white">Strong</span>
+                                                <span className="text-lg sm:text-xl font-black text-white">Strong</span>
                                             </div>
                                         </div>
 
