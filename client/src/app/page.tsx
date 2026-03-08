@@ -102,7 +102,7 @@ export default function Home() {
             </section>
 
             {/* Meet Our Team - New Dynamic Section with High-tech Pattern */}
-            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[3rem] sm:rounded-[4rem] group mx-2 sm:mx-5">
+            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] sm:rounded-[4rem] group mx-2 sm:mx-5">
                 {/* Immersive Lab Background */}
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
                     <img
@@ -113,7 +113,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-50/60 via-transparent to-indigo-50/60"></div>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-16">
+                <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-10">
                     <div className="space-y-4 text-center sm:text-start">
                         <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">
                             {translations[language].homeSpecialists.title}
@@ -141,11 +141,11 @@ export default function Home() {
             </section>
 
             {/* Why Patients Trust - Preview Section with refined layout */}
-            <section className="bg-gray-900 mx-auto md:mx-10 px-8 sm:px-16 lg:px-24 py-20 sm:py-32 rounded-[1.5rem] sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
-                <div className="max-w-7xl mx-auto space-y-20">
-                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+            <section className="bg-gray-900 mx-auto md:mx-10 px-6 sm:px-12 lg:px-16 py-10 sm:py-20  sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
+                <div className="max-w-7xl mx-auto space-y-10">
+                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                         <div className="space-y-6">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl xl:text-6xl font-black leading-tight">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl xl:text-5xl font-black leading-tight">
                                 {language === 'hi' ? (
                                     <>एक स्वस्थ मुस्कान स्वस्थ जीवन का <br /> <span className="text-blue-500">द्वार</span> है।</>
                                 ) : (
@@ -173,10 +173,10 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6 sm:gap-12 pt-6 sm:pt-12 border-t border-white/10">
-                        {highlights.map((highlight, idx) => (
+                        {defaultHighlights.map((defaultHighlights, idx) => (
                             <div key={idx} className="space-y-4">
-                                <h3 className="text-2xl font-black">{highlight.title}</h3>
-                                <p className="text-gray-500 leading-relaxed font-medium">{highlight.description}</p>
+                                <h3 className="text-lg md:text-xl font-black">{defaultHighlights.title}</h3>
+                                <p className="text-gray-500 leading-relaxed font-medium text-sm md:text-base">{defaultHighlights.description}</p>
                             </div>
                         ))}
                     </div>
@@ -184,7 +184,7 @@ export default function Home() {
             </section>
 
             {/* Patient Testimony Preview */}
-            <div className="overflow-hidden">
+            {/* <div className="overflow-hidden">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 mx-4 md:mx-16 mb-12">
                     <div className="space-y-4 text-center sm:text-start">
                         <h2 className="text-3xl sm:text-4xl xl:text-5xl text-center md:text-start font-black text-gray-900 leading-tight tracking-tight">
@@ -199,7 +199,7 @@ export default function Home() {
                     </Link>
                 </div>
                 <PatientReviews />
-            </div>
+            </div> */}
 
             {/* Virtual Clinic Tour - Refined */}
             <section className="space-y-12 sm:space-y-16">

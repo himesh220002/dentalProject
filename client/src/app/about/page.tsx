@@ -39,7 +39,7 @@ export default function About() {
     const consultantExpLabel = language === 'hi' ? 'का अनुभव' : 'Experience';
 
     return (
-        <div className=" max-w-[1600px] mx-auto  space-y-12 sm:pt-4 lg:pt-0 lg:-mt-20">
+        <div className=" max-w-[1600px] mx-auto space-y-12 sm:pt-4 lg:pt-0">
             {/* Hero Section - Refined */}
             <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">

@@ -37,7 +37,7 @@ export default function ActionTiles() {
     ];
 
     return (
-        <section className="-mt-10 sm:-mt-12 lg:-mt-16 relative z-20 px-4 sm:px-6">
+        <section className=" relative z-20 px-4 sm:px-6">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {tiles.map((tile, index) => (
                     <div
