@@ -447,19 +447,35 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-end gap-0.5 sm:gap-1 h-24 sm:h-20 relative z-10 mt-4">
-                                                {dailyActivity.map((val, i) => (
-                                                    <div
-                                                        key={i}
-                                                        className="flex-1 group/bar relative"
-                                                        style={{ height: `${(val / maxDaily) * 100}%` }}
-                                                    >
-                                                        <div className={`w-full h-full rounded-t-[1px] sm:rounded-t-sm transition-all duration-300 ${val > 0 ? 'bg-blue-500/80 hover:bg-blue-400' : 'bg-slate-700/30'}`}></div>
-                                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-950 text-white text-[8px] px-1.5 py-0.5 rounded opacity-0 group-hover/bar:opacity-100 transition whitespace-nowrap z-20 border border-slate-800">
-                                                            Day {i + 1}: {val}
-                                                        </div>
+                                            <div className="flex gap-2 h-24 sm:h-20 mt-4 relative z-10">
+                                                {/* Y-Axis Labels */}
+                                                <div className="flex flex-col justify-between text-[8px] font-black text-slate-600 h-full pb-0.5">
+                                                    <span>{maxDaily}</span>
+                                                    <span>{Math.round(maxDaily / 2)}</span>
+                                                    <span>0</span>
+                                                </div>
+
+                                                <div className="flex-grow flex items-end gap-0.5 sm:gap-1 h-full relative">
+                                                    {/* Horizontal Grid Lines */}
+                                                    <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                                                        <div className="border-t border-slate-700/30 w-full"></div>
+                                                        <div className="border-t border-slate-700/30 w-full"></div>
+                                                        <div className="border-t border-slate-700/30 w-full"></div>
                                                     </div>
-                                                ))}
+
+                                                    {dailyActivity.map((val, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className="flex-1 group/bar relative"
+                                                            style={{ height: `${(val / maxDaily) * 100}%` }}
+                                                        >
+                                                            <div className={`w-full h-full rounded-t-[1px] sm:rounded-t-sm transition-all duration-300 ${val > 0 ? 'bg-blue-500/80 hover:bg-blue-400' : 'bg-slate-700/10'}`}></div>
+                                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-950 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover/bar:opacity-100 transition whitespace-nowrap z-20 border border-slate-800 shadow-xl">
+                                                                Day {i + 1}: {val}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
 
