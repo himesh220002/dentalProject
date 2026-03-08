@@ -2,27 +2,51 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaUsers, FaEnvelope, FaCalendarAlt, FaTooth } from 'react-icons/fa';
+import { FaUsers, FaEnvelope, FaCalendarAlt, FaTooth, FaChartLine } from 'react-icons/fa';
 import Link from 'next/link';
 import WeeklyPlanner from '@/components/WeeklyPlanner';
 import { parseAppointmentReason } from '@/utils/appointmentUtils';
+import CustomerInsightsModal from '@/components/dashboard/CustomerInsightsModal';
 
 export default function DashboardOverview() {
     const [stats, setStats] = useState({
         patients: 0,
         messages: 0,
         todayApts: 0,
+        tomorrowApts: 0,
+        upcomingApts: 0,
         treatments: 0,
         todayCollection: 0
     });
     const [recentActivity, setRecentActivity] = useState<any[]>([]);
     const [queue, setQueue] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isInsightsOpen, setIsInsightsOpen] = useState(false);
+
+    // Raw data for insights
+    const [rawData, setRawData] = useState<{
+        patients: any[];
+        appointments: any[];
+        messages: any[];
+        treatments: any[];
+    }>({
+        patients: [],
+        appointments: [],
+        messages: [],
+        treatments: []
+    });
 
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const today = new Date().toISOString().split('T')[0];
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const todayTime = now.getTime();
+
+                const tomorrow = new Date(now);
+                tomorrow.setDate(now.getDate() + 1);
+                const tomorrowTime = tomorrow.getTime();
+
                 const [patientsRes, messagesRes, appointmentsRes, treatmentsRes, financialRes] = await Promise.all([
                     axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/patients`),
                     axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`),
@@ -31,24 +55,53 @@ export default function DashboardOverview() {
                     axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/stats`)
                 ]);
 
-                const todayAppointments = appointmentsRes.data.filter((a: any) => a.date.split('T')[0] === today);
+                const allAppts = appointmentsRes.data;
+                const allPatients = patientsRes.data;
+                const allMessages = messagesRes.data;
+
+                setRawData({
+                    patients: allPatients,
+                    appointments: allAppts,
+                    messages: allMessages,
+                    treatments: treatmentsRes.data
+                });
+
+                const todayAppointments = allAppts.filter((a: any) => {
+                    const d = new Date(a.date);
+                    d.setHours(0, 0, 0, 0);
+                    return d.getTime() === todayTime;
+                });
+
+                const tomorrowAppointments = allAppts.filter((a: any) => {
+                    const d = new Date(a.date);
+                    d.setHours(0, 0, 0, 0);
+                    return d.getTime() === tomorrowTime;
+                });
+
+                const upcomingAppointments = allAppts.filter((a: any) => {
+                    const d = new Date(a.date);
+                    d.setHours(0, 0, 0, 0);
+                    return d.getTime() > tomorrowTime;
+                });
 
                 setStats({
-                    patients: patientsRes.data.length,
-                    messages: messagesRes.data.filter((m: any) => m.status === 'Unread').length,
+                    patients: allPatients.length,
+                    messages: allMessages.filter((m: any) => m.status === 'Unread').length,
                     todayApts: todayAppointments.length,
+                    tomorrowApts: tomorrowAppointments.length,
+                    upcomingApts: upcomingAppointments.length,
                     treatments: treatmentsRes.data.length,
                     todayCollection: financialRes.data.todayCollection
                 });
 
                 // Calculate Recent Activity (merge appointments and messages)
                 const combinedActivity = [
-                    ...appointmentsRes.data.map((a: any) => ({
+                    ...allAppts.map((a: any) => ({
                         ...a,
                         type: 'appointment',
                         timeStamp: (a.status === 'Completed' && a.completedAt) ? new Date(a.completedAt) : new Date(a.createdAt)
                     })),
-                    ...messagesRes.data.map((m: any) => ({ ...m, type: 'message', timeStamp: new Date(m.createdAt) }))
+                    ...allMessages.map((m: any) => ({ ...m, type: 'message', timeStamp: new Date(m.createdAt) }))
                 ].sort((a, b) => b.timeStamp - a.timeStamp).slice(0, 5);
                 setRecentActivity(combinedActivity);
 
@@ -71,8 +124,22 @@ export default function DashboardOverview() {
     const statCards = [
         { label: 'Total Patients', value: stats.patients, icon: FaUsers, color: 'text-blue-600', bg: 'bg-blue-100' },
         { label: 'New Messages', value: stats.messages, icon: FaEnvelope, color: 'text-rose-600', bg: 'bg-rose-100' },
-        { label: "Today's Appts", value: stats.todayApts, icon: FaCalendarAlt, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-        { label: "Today's Collection", value: `₹${stats.todayCollection}`, icon: FaTooth, color: 'text-amber-600', bg: 'bg-amber-100' },
+        {
+            label: "Appointments",
+            value: stats.todayApts,
+            icon: FaCalendarAlt,
+            color: 'text-emerald-600',
+            bg: 'bg-emerald-100',
+            isAptCard: true
+        },
+        {
+            label: "Customer Insights",
+            value: "Insights",
+            icon: FaChartLine,
+            color: 'text-purple-600',
+            bg: 'bg-purple-100',
+            isInsightsCard: true
+        },
     ];
 
     if (loading) return (
@@ -91,16 +158,47 @@ export default function DashboardOverview() {
                     let href = '#';
                     if (stat.label === 'Total Patients') href = '/patients';
                     else if (stat.label === 'New Messages') href = '/dashboard/messages';
-                    else if (stat.label === "Today's Appts" || stat.label === "Today's Collection") href = '/dashboard/schedules';
+                    else if (stat.isAptCard) href = '/dashboard/schedules';
+
+                    const handleClick = (e: React.MouseEvent) => {
+                        if (stat.isInsightsCard) {
+                            e.preventDefault();
+                            setIsInsightsOpen(true);
+                        }
+                    };
 
                     return (
-                        <Link href={href} key={idx} className="block group cursor-pointer">
-                            <div className="bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                        <Link
+                            href={href}
+                            key={idx}
+                            className="block group cursor-pointer"
+                            onClick={handleClick}
+                        >
+                            <div className="bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition h-full">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition`}>
                                         <Icon className="text-2xl" />
                                     </div>
-                                    <span className="text-3xl font-black text-gray-900">{stat.value}</span>
+                                    {stat.isAptCard ? (
+                                        <div className="flex flex-col items-end">
+                                            <div className="flex gap-4">
+                                                <div className="text-center">
+                                                    <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Today</p>
+                                                    <p className="text-xl font-black text-gray-900 leading-none">{stats.todayApts}</p>
+                                                </div>
+                                                <div className="text-center border-x border-gray-100 px-3">
+                                                    <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Tmrw</p>
+                                                    <p className="text-xl font-black text-gray-900 leading-none">{stats.tomorrowApts}</p>
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Next</p>
+                                                    <p className="text-xl font-black text-gray-900 leading-none">{stats.upcomingApts}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <span className="text-3xl font-black text-gray-900">{stat.value}</span>
+                                    )}
                                 </div>
                                 <h3 className="text-gray-500 font-bold uppercase tracking-wider text-[10px]">{stat.label}</h3>
                             </div>
@@ -108,6 +206,15 @@ export default function DashboardOverview() {
                     );
                 })}
             </div>
+
+            <CustomerInsightsModal
+                isOpen={isInsightsOpen}
+                onClose={() => setIsInsightsOpen(false)}
+                patients={rawData.patients}
+                appointments={rawData.appointments}
+                messages={rawData.messages}
+                treatments={rawData.treatments}
+            />
 
             <WeeklyPlanner />
 
