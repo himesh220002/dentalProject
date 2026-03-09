@@ -6,11 +6,13 @@ const {
     getBlogBySlug,
     createBlog,
     updateBlog,
-    deleteBlog
+    deleteBlog,
+    seedBlogs
 } = require('../controllers/blogController');
 
 // Public routes
 router.get('/', getAllBlogs);
+router.post('/seed', seedBlogs);
 router.get('/:slug', getBlogBySlug);
 
 // Admin routes (In a real app, these would have admin middleware)

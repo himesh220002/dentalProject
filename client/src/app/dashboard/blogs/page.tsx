@@ -180,8 +180,8 @@ export default function AdminBlogsPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${blog.status === 'published'
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-yellow-100 text-yellow-700'
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-yellow-100 text-yellow-700'
                                                 }`}>
                                                 {blog.status}
                                             </span>
@@ -221,8 +221,25 @@ export default function AdminBlogsPage() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-20 text-center text-gray-400 font-bold">
-                                        No blogs found. Start by creating your first article!
+                                    <td colSpan={4} className="px-6 py-20 text-center">
+                                        <div className="flex flex-col items-center gap-4">
+                                            <p className="text-gray-400 font-bold">No blogs found. Start by creating your first article!</p>
+                                            <button
+                                                onClick={async () => {
+                                                    try {
+                                                        setLoading(true);
+                                                        await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blogs/seed`);
+                                                        fetchBlogs();
+                                                    } catch (error) {
+                                                        console.error('Error seeding blogs:', error);
+                                                        setLoading(false);
+                                                    }
+                                                }}
+                                                className="bg-blue-50 text-blue-600 px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                                            >
+                                                Seed Sample Blogs
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             )}
@@ -235,7 +252,7 @@ export default function AdminBlogsPage() {
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-md" onClick={() => setIsModalOpen(false)}></div>
-                    <div className="bg-white rounded-[40px] w-full max-w-4xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-in zoom-in-95 duration-300">
+                    <div className="bg-white rounded-[40px] w-full max-w-4xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-in zoom-in-95 duration-300 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         <div className="sticky top-0 bg-white/80 backdrop-blur-md p-8 border-b border-gray-50 flex items-center justify-between z-20">
                             <div>
                                 <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">
