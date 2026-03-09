@@ -46,6 +46,7 @@ export default function HomeHero() {
                         </div>
 
                         <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] sm:leading-[0.95] tracking-tighter">
+                            <span className="sr-only">{clinicName} - Best Dentist in {city}, Bihar</span>
                             {language === 'hi' ? 'आपकी मुस्कान,' : 'Your Smile,'} <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">{language === 'hi' ? 'हमारा जुनून।' : 'Our Passion.'}</span>
                         </h1>

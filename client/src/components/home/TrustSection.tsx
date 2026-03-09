@@ -45,7 +45,7 @@ export default function TrustSection() {
                     <div className="relative bg-white p-3 sm:p-4 rounded-[2rem] sm:rounded-[3rem] shadow-2xl">
                         <img
                             src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=2070&auto=format&fit=crop"
-                            alt="Precision Care"
+                            alt="Precision Dental Care and Advanced Equipment at Dr. Tooth Dental Clinic Katihar"
                             className="rounded-[1.5rem] sm:rounded-[2.5rem] w-full h-[300px] sm:h-[400px] lg:h-[450px] object-cover"
                         />
                         {/* Floating Experience Badge */}
