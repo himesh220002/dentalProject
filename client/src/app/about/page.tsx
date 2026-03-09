@@ -7,6 +7,8 @@ import DoctorAdvice from '@/components/about/DoctorAdvice';
 import { useClinic } from '@/context/ClinicContext';
 import { formatExperience } from '@/utils/urlHelper';
 import { translations } from '@/constants/translations';
+import { ConsultantCardSkeleton } from '@/components/ui/Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 
 export default function About() {
     const { clinicData, language } = useClinic();
@@ -48,7 +50,7 @@ export default function About() {
                         {t.aboutHero.excellence}
                     </div>
                     <h1 className="text-4xl sm:text-5xl xl:text-7xl font-black text-gray-900 leading-[1.05] tracking-tight">
-                        {t.aboutHero.meet} <span className="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">{doctorName}</span>, {t.aboutHero.guardian}
+                        {t.aboutHero.meet} {useClinic().isLoading ? <Skeleton variant="text" className="inline-block w-48 h-12" /> : <span className="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">{doctorName}</span>}, {t.aboutHero.guardian}
                     </h1>
                     <p className="text-lg sm:text-xl text-gray-600 leading-relaxed font-medium max-w-xl">
                         {doctorDesc}
@@ -120,19 +122,23 @@ export default function About() {
                     <h3 className="text-3xl xl:text-5xl font-black text-gray-900">{t.aboutExperts.subtitle} <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent ">{clinicName}</span></h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {clinicData?.consultants.map((consultant, idx) => (
-                        <div key={idx} className="bg-white/80 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-xl border border-2 border-gray-50 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
-                            <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-12 transition-transform">
-                                <FaUserMd size={40} className="text-blue-600" />
+                    {useClinic().isLoading ? (
+                        [...Array(4)].map((_, i) => <ConsultantCardSkeleton key={i} />)
+                    ) : (
+                        clinicData?.consultants.map((consultant, idx) => (
+                            <div key={idx} className="bg-white/80 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-xl border border-2 border-gray-50 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
+                                <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-12 transition-transform">
+                                    <FaUserMd size={40} className="text-blue-600" />
+                                </div>
+                                <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
+                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultantRole(consultant.role)}</p>
+                                <div className="space-y-2">
+                                    <p className="text-gray-500 text-sm font-medium">{language === 'hi' ? 'विशेषज्ञ दंत चिकित्सा सेवाएं प्रदान करना' : consultant.info}</p>
+                                    <p className="text-gray-900 text-sm font-black italic">{consultant.experience} {consultantExpLabel}</p>
+                                </div>
                             </div>
-                            <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
-                            <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultantRole(consultant.role)}</p>
-                            <div className="space-y-2">
-                                <p className="text-gray-500 text-sm font-medium">{language === 'hi' ? 'विशेषज्ञ दंत चिकित्सा सेवाएं प्रदान करना' : consultant.info}</p>
-                                <p className="text-gray-900 text-sm font-black italic">{consultant.experience} {consultantExpLabel}</p>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
             </section>
 

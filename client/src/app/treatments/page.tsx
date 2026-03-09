@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FaTooth, FaMagic, FaUserMd, FaNotesMedical, FaRegSmileBeam, FaMedkit } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
 import { translations } from '../../constants/translations';
+import { TreatmentCardSkeleton } from '@/components/ui/Skeleton';
 
 // Map icon strings from backend to React Icons components
 const iconMap: { [key: string]: any } = {
@@ -135,8 +136,14 @@ export default function Treatments() {
     }, [clinicData]);
 
     if (loading || contextLoading) return (
-        <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="space-y-16 py-5 sm:py-12 px-0 sm:px-4 md:px-8">
+            <div className="text-center space-y-6 max-w-4xl mx-auto">
+                <div className="h-16 w-3/4 bg-gray-100 animate-pulse mx-auto rounded-2xl" />
+                <div className="h-8 w-1/2 bg-gray-100 animate-pulse mx-auto rounded-xl" />
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-10 max-w-7xl mx-auto">
+                {[...Array(6)].map((_, i) => <TreatmentCardSkeleton key={i} />)}
+            </div>
         </div>
     );
 

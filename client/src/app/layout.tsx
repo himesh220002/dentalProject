@@ -49,6 +49,11 @@ export async function generateMetadata() {
             alternates: {
                 canonical: baseUrl,
             },
+            icons: {
+                icon: '/favicon.png',
+                shortcut: '/favicon.png',
+                apple: '/favicon.png',
+            },
             robots: {
                 index: true,
                 follow: true,

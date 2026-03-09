@@ -1,6 +1,7 @@
 import { FaUserMd, FaTooth, FaSmile, FaCertificate } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
 import { translations } from '../../constants/translations';
+import Skeleton from '../ui/Skeleton';
 
 export default function TrustSection() {
     const { clinicData, language } = useClinic();
@@ -43,21 +44,27 @@ export default function TrustSection() {
                 <div className="flex-1 relative order-2 lg:order-1 w-full max-w-[500px] lg:max-w-none mx-auto lg:mx-0 mt-8 lg:mt-0">
                     <div className="absolute -inset-4 sm:-inset-6 bg-blue-100 rounded-[2rem] sm:rounded-[3rem] -rotate-3 -z-10"></div>
                     <div className="relative bg-white p-3 sm:p-4 rounded-[2rem] sm:rounded-[3rem] shadow-2xl">
-                        <img
-                            src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=2070&auto=format&fit=crop"
-                            alt="Precision Dental Care and Advanced Equipment at Dr. Tooth Dental Clinic Katihar"
-                            className="rounded-[1.5rem] sm:rounded-[2.5rem] w-full h-[300px] sm:h-[400px] lg:h-[450px] object-cover"
-                        />
+                        {useClinic().isLoading ? (
+                            <Skeleton variant="rect" className="rounded-[1.5rem] sm:rounded-[2.5rem] w-full h-[300px] sm:h-[400px] lg:h-[450px]" />
+                        ) : (
+                            <img
+                                src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=2070&auto=format&fit=crop"
+                                alt="Precision Dental Care and Advanced Equipment at Dr. Tooth Dental Clinic Katihar"
+                                className="rounded-[1.5rem] sm:rounded-[2.5rem] w-full h-[300px] sm:h-[400px] lg:h-[450px] object-cover"
+                            />
+                        )}
                         {/* Floating Experience Badge */}
-                        <div className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 lg:-bottom-10 lg:-right-10 bg-gray-900 text-white p-4 sm:p-6 lg:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl border-4 border-white flex items-center gap-4 sm:gap-6 animate-float">
-                            <div className="bg-blue-600 p-3 sm:p-4 rounded-2xl sm:rounded-3xl text-white">
-                                <FaCertificate size={24} className="sm:size-[32px]" />
+                        {!useClinic().isLoading && (
+                            <div className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 lg:-bottom-10 lg:-right-10 bg-gray-900 text-white p-4 sm:p-6 lg:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl border-4 border-white flex items-center gap-4 sm:gap-6 animate-float">
+                                <div className="bg-blue-600 p-3 sm:p-4 rounded-2xl sm:rounded-3xl text-white">
+                                    <FaCertificate size={24} className="sm:size-[32px]" />
+                                </div>
+                                <div>
+                                    <p className="text-xl sm:text-2xl lg:text-3xl font-black leading-none mb-1">{t.homeTrust.badgeSubtitle}</p>
+                                    <p className="text-[8px] sm:text-[10px] text-gray-400 font-black uppercase tracking-widest">{t.homeTrust.badgeTitle}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-xl sm:text-2xl lg:text-3xl font-black leading-none mb-1">{t.homeTrust.badgeSubtitle}</p>
-                                <p className="text-[8px] sm:text-[10px] text-gray-400 font-black uppercase tracking-widest">{t.homeTrust.badgeTitle}</p>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
 
@@ -68,33 +75,47 @@ export default function TrustSection() {
                             {t.homeTrust.tag}
                         </div>
                         <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-tight">
-                            {t.homeTrust.title.split('<br />').map((text: string, i: number) => (
-                                <span key={i}>{text}{i === 0 && <br />}</span>
-                            )) || t.homeTrust.title}
+                            {useClinic().isLoading ? <Skeleton variant="text" className="h-16 w-3/4 mx-auto lg:mx-0" /> : (
+                                t.homeTrust.title.split('<br />').map((text: string, i: number) => (
+                                    <span key={i}>{text}{i === 0 && <br />}</span>
+                                )) || t.homeTrust.title
+                            )}
                         </h2>
                         <p className="text-gray-500 text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
-                            {t.homeTrust.description}
+                            {useClinic().isLoading ? <Skeleton variant="text" className="h-20" /> : t.homeTrust.description}
                         </p>
                     </div>
 
                     <div className="space-y-6 sm:space-y-8 max-w-xl mx-auto lg:mx-0">
-                        {features.map((feature, index) => (
-                            <div key={index} className="flex gap-4 sm:gap-6 group text-left">
-                                <div className={`w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110
-                                    ${feature.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                        feature.color === 'teal' ? 'bg-teal-100 text-teal-600' :
-                                            'bg-indigo-100 text-indigo-600'}`}
-                                >
-                                    <div className="scale-90 sm:scale-100">
-                                        {feature.icon}
+                        {useClinic().isLoading ? (
+                            [...Array(3)].map((_, i) => (
+                                <div key={i} className="flex gap-4 sm:gap-6">
+                                    <Skeleton variant="circle" className="w-14 h-14 !rounded-2xl" />
+                                    <div className="flex-1 space-y-2">
+                                        <Skeleton variant="text" className="h-6 w-1/3" />
+                                        <Skeleton variant="text" className="h-4 w-full" />
                                     </div>
                                 </div>
-                                <div className="space-y-0.5 sm:space-y-1">
-                                    <h3 className="text-lg sm:text-xl font-black text-gray-900 group-hover:text-blue-600 transition-colors tracking-tight">{feature.title}</h3>
-                                    <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">{feature.description}</p>
+                            ))
+                        ) : (
+                            features.map((feature, index) => (
+                                <div key={index} className="flex gap-4 sm:gap-6 group text-left">
+                                    <div className={`w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110
+                                        ${feature.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                                            feature.color === 'teal' ? 'bg-teal-100 text-teal-600' :
+                                                'bg-indigo-100 text-indigo-600'}`}
+                                    >
+                                        <div className="scale-90 sm:scale-100">
+                                            {feature.icon}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-0.5 sm:space-y-1">
+                                        <h3 className="text-lg sm:text-xl font-black text-gray-900 group-hover:text-blue-600 transition-colors tracking-tight">{feature.title}</h3>
+                                        <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">{feature.description}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
             </div>

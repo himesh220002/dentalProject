@@ -1,7 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import ClinicCarousel from '@/components/ClinicCarousel';
+import NextImage from 'next/image';
+import dynamic from 'next/dynamic';
+const ClinicCarousel = dynamic(() => import('@/components/ClinicCarousel'), {
+    ssr: false,
+    loading: () => <div className="h-[400px] md:h-[600px] bg-gray-100 animate-pulse rounded-[3rem]" />
+});
 import HomeHero from '@/components/home/HomeHero';
 import ActionTiles from '@/components/home/ActionTiles';
 import TrustSection from '@/components/home/TrustSection';
@@ -12,6 +17,7 @@ import axios from 'axios';
 import { FaUserMd, FaArrowRight, FaCalendarAlt } from 'react-icons/fa';
 import { useClinic } from '../context/ClinicContext';
 import { translations } from '../constants/translations';
+import { ConsultantCardSkeleton } from '@/components/ui/Skeleton';
 
 export default function Home() {
     const { data: session } = useSession();
@@ -86,6 +92,8 @@ export default function Home() {
                         muted
                         loop
                         playsInline
+                        preload="metadata"
+                        poster="/images/video-poster.png"
                     >
                         <source src="/video/dentist video1.mp4#t=604,710" type="video/mp4" />
                         Your browser does not support the video tag.
@@ -105,10 +113,12 @@ export default function Home() {
             <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] sm:rounded-[4rem] group mx-2 sm:mx-5">
                 {/* Immersive Lab Background */}
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
-                    <img
+                    <NextImage
                         src="/images/2307.i105.031.S.m005.c13.isometric biotechnology.jpg"
-                        className="w-full h-full object-cover opacity-[0.8]"
-                        alt="science-bg"
+                        fill
+                        className="object-cover opacity-[0.8]"
+                        alt="Dr. Tooth Dental Clinic - Advanced Biotechnology Background"
+                        priority
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-50/60 via-transparent to-indigo-50/60"></div>
                 </div>
@@ -124,19 +134,23 @@ export default function Home() {
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {clinicData?.consultants.map((consultant, idx) => (
-                        <div key={idx} className="bg-white/70 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl border border-gray-100/50 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
-                            <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-12 transition-transform">
-                                <FaUserMd size={40} className="text-blue-600" />
+                    {useClinic().isLoading ? (
+                        [...Array(4)].map((_, i) => <ConsultantCardSkeleton key={i} />)
+                    ) : (
+                        clinicData?.consultants.map((consultant, idx) => (
+                            <div key={idx} className="bg-white/70 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl border border-gray-100/50 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
+                                <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-12 transition-transform">
+                                    <FaUserMd size={40} className="text-blue-600" />
+                                </div>
+                                <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
+                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultant.role}</p>
+                                <div className="space-y-2">
+                                    <p className="text-gray-500 text-sm font-medium">{consultant.info}</p>
+                                    <p className="text-gray-900 text-sm font-black italic">{consultant.experience} {translations[language].homeSpecialists.experience}</p>
+                                </div>
                             </div>
-                            <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
-                            <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultant.role}</p>
-                            <div className="space-y-2">
-                                <p className="text-gray-500 text-sm font-medium">{consultant.info}</p>
-                                <p className="text-gray-900 text-sm font-black italic">{consultant.experience} {translations[language].homeSpecialists.experience}</p>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
             </section>
 
