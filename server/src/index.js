@@ -69,6 +69,7 @@ const contactRoutes = require('./routes/contactRoutes');
 const authRoutes = require('./routes/authRoutes');
 const configRoutes = require('./routes/configRoutes');
 const handoverRoutes = require('./routes/handoverRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 
 app.use('/api/treatments', treatmentRoutes);
 app.use('/api/patients', patientRoutes);
@@ -78,6 +79,7 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/config', configRoutes);
 app.use('/api/handover', handoverRoutes);
+app.use('/api/blogs', blogRoutes);
 
 app.get('/', (req, res) => {
     res.send('Dr. Tooth Dental Clinic Server is Running [Build: 2026-02-28 18:15]');

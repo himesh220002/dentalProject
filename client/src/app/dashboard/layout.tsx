@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaUsers, FaEnvelope, FaCalendarAlt, FaChartLine, FaSignOutAlt, FaHome, FaBars, FaTimes, FaCog } from 'react-icons/fa';
+import { FaUsers, FaEnvelope, FaCalendarAlt, FaChartLine, FaSignOutAlt, FaHome, FaBars, FaTimes, FaCog, FaNewspaper } from 'react-icons/fa';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function DashboardLayout({
@@ -45,6 +45,7 @@ export default function DashboardLayout({
         { name: 'Patients', path: '/dashboard/patients', icon: FaUsers },
         { name: 'Messages', path: '/dashboard/messages', icon: FaEnvelope, badge: unreadCount },
         { name: 'Schedules', path: '/dashboard/schedules', icon: FaCalendarAlt },
+        { name: 'Blogs', path: '/dashboard/blogs', icon: FaNewspaper },
         { name: 'Settings', path: '/dashboard/settings', icon: FaCog },
     ];
 
