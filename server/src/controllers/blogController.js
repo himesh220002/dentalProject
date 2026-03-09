@@ -127,7 +127,7 @@ const seedBlogs = async (req, res) => {
             }
         ];
 
-        await Blog.insertMany(sampleBlogs);
+        await Blog.create(sampleBlogs);
         res.json({ message: 'Blogs seeded successfully', count: sampleBlogs.length });
     } catch (error) {
         res.status(500).json({ message: 'Seeding Failed', error: error.message });

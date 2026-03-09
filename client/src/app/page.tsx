@@ -23,6 +23,7 @@ export default function Home() {
     const { data: session } = useSession();
     const [upcomingAppointment, setUpcomingAppointment] = useState<any>(null);
     const [isAptDismissed, setIsAptDismissed] = useState(false);
+    const [isVideoLoaded, setIsVideoLoaded] = useState(false);
     const { clinicData, language } = useClinic();
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
     const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
@@ -86,14 +87,23 @@ export default function Home() {
                         title="Clinical Excellence Preview"
                         allow="autoplay; encrypted-media"
                     ></iframe> */}
+                    {!isVideoLoaded && (
+                        <div className="absolute inset-0 bg-gray-800 animate-pulse flex items-center justify-center">
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+                                <p className="text-blue-400 font-black text-[10px] uppercase tracking-widest">Optimizing Clinical Showcase...</p>
+                            </div>
+                        </div>
+                    )}
                     <video
-                        className="w-full h-full object-cover pointer-events-none scale-105 group-hover:scale-110 transition-transform duration-[5s]"
+                        className={`w-full h-full object-cover pointer-events-none scale-105 group-hover:scale-110 transition-all duration-[5s] ${isVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
                         autoPlay
                         muted
                         loop
                         playsInline
-                        preload="metadata"
+                        preload="auto"
                         poster="/images/video-poster.png"
+                        onCanPlayThrough={() => setIsVideoLoaded(true)}
                     >
                         <source src="/video/dentist video1.mp4#t=604,710" type="video/mp4" />
                         Your browser does not support the video tag.
