@@ -127,7 +127,10 @@ const seedBlogs = async (req, res) => {
             }
         ];
 
-        await Blog.create(sampleBlogs);
+        // Create blogs one by one to ensure middleware triggers correctly
+        for (const blogData of sampleBlogs) {
+            await Blog.create(blogData);
+        }
         res.json({ message: 'Blogs seeded successfully', count: sampleBlogs.length });
     } catch (error) {
         res.status(500).json({ message: 'Seeding Failed', error: error.message });

@@ -332,7 +332,7 @@ export default function AdminBlogsPage() {
                                 </h2>
                                 <p className="text-gray-400 font-bold text-xs">Fill in the details to publish your insight</p>
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition">
+                            <button onClick={() => setIsModalOpen(false)} className="p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 hover:rotate-180 transition cursor-pointer">
                                 <FaTimes />
                             </button>
                         </div>

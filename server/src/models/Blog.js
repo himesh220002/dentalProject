@@ -31,11 +31,10 @@ const blogSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Pre-save middleware to generate slug
-blogSchema.pre('save', function (next) {
+blogSchema.pre('save', async function () {
     if (this.isModified('title')) {
         this.slug = slugify(this.title, { lower: true, strict: true });
     }
-    next();
 });
 
 module.exports = mongoose.model('Blog', blogSchema);
