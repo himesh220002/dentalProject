@@ -93,6 +93,7 @@ export default function AdminBlogsPage() {
 
         return result.length > 0 ? result : [
             { id: Math.random().toString(), type: 'h2', content: '' },
+            { id: Math.random().toString(), type: 'p', content: '' },
             { id: Math.random().toString(), type: 'h3', content: '' },
             { id: Math.random().toString(), type: 'p', content: '' },
             { id: Math.random().toString(), type: 'ul', content: '' }
@@ -121,6 +122,7 @@ export default function AdminBlogsPage() {
             });
             setBlocks([
                 { id: Math.random().toString(), type: 'h2', content: '' },
+                { id: Math.random().toString(), type: 'p', content: '' },
                 { id: Math.random().toString(), type: 'h3', content: '' },
                 { id: Math.random().toString(), type: 'p', content: '' },
                 { id: Math.random().toString(), type: 'ul', content: '' }

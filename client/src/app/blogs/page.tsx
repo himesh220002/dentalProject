@@ -132,9 +132,10 @@ export default function BlogListPage() {
                                             {blog.title}
                                         </h2>
 
-                                        <p className="text-gray-500 line-clamp-3 mb-6 font-medium text-sm leading-relaxed">
-                                            {stripHtml(blog.content)}
-                                        </p>
+                                        <div
+                                            className="blog-card-preview text-gray-500 mb-6 font-medium text-sm leading-relaxed"
+                                            dangerouslySetInnerHTML={{ __html: blog.content }}
+                                        />
 
                                         <div className="mt-auto flex items-center text-blue-600 font-black text-xs uppercase tracking-tighter group-hover:gap-4 gap-2 transition-all">
                                             <span>Read Article</span>
