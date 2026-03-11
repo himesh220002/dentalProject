@@ -130,7 +130,7 @@ export default function Navbar() {
     return (
         <>
             <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 lg:z-51 shadow-sm border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-20 items-center">
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-2 group">
