@@ -237,56 +237,59 @@ export default function ProfilePage() {
             <div className="max-w-7xl mx-auto sm:px-4 py-10">
                 <div className="bg-white rounded-[1rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 px-4 sm:px-12 py-12 text-white relative overflow-hidden">
+                    <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 px-6 sm:px-12 py-10 sm:py-16 text-white relative overflow-hidden">
                         {/* Decorative Background Element */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
 
-                        <div className="flex flex-col md:flex-row md:items-center gap-8 relative z-10">
-                            <div className="relative group">
-                                {session?.user?.image ? (
-                                    <img src={session.user.image} alt="" className="w-28 h-28 rounded-[2rem] border-4 border-white/20 shadow-2xl transition-transform group-hover:scale-105 duration-500" />
-                                ) : (
-                                    <div className="w-28 h-28 rounded-[2rem] bg-white/10 flex items-center justify-center border-4 border-white/20 shadow-2xl transition-transform group-hover:scale-105 duration-500">
-                                        <FaUser size={48} className="text-blue-100" />
-                                    </div>
-                                )}
-                                <div className="absolute -bottom-2 -right-2 bg-emerald-500 w-8 h-8 rounded-xl border-4 border-[#1e293b] flex items-center justify-center shadow-lg" title="Profile Active">
-                                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        <div className="flex flex-col lg:flex-row lg:items-center gap-6 sm:gap-10 relative z-10">
+                            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-6 sm:gap-8 flex-grow">
+                                <div className="relative group shrink-0">
+                                    {session?.user?.image ? (
+                                        <img src={session.user.image} alt="" className="w-20 h-20 sm:w-28 sm:h-28 rounded-[1.5rem] sm:rounded-[2.5rem] border-4 border-white/20 shadow-2xl transition-transform group-hover:scale-105 duration-500" />
+                                    ) : (
+                                        <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-[1.5rem] sm:rounded-[2.5rem] bg-white/10 flex items-center justify-center border-4 border-white/20 shadow-2xl transition-transform group-hover:scale-105 duration-500">
+                                            <FaUser size={32} className="text-blue-100 sm:hidden" />
+                                            <FaUser size={48} className="text-blue-100 hidden sm:block" />
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
 
-                            <div className="space-y-2">
-                                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                                    <h1 className="text-4xl font-black tracking-tightest drop-shadow-sm">
-                                        {formData.name || session?.user?.name}
-                                    </h1>
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-lg border border-white/10 text-[10px] font-black uppercase tracking-widest text-blue-100">
-                                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_8px_rgba(96,165,250,0.8)]"></div>
-                                        Verified Patient
+                                <div className="space-y-3 text-center sm:text-left">
+                                    <div className="flex flex-col sm:flex-row flex-wrap items-center sm:items-baseline gap-x-4 gap-y-2">
+                                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tightest drop-shadow-sm">
+                                            {formData.name || session?.user?.name}
+                                        </h1>
+                                        <div className="flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-lg border border-white/10 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-blue-100">
+                                            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_8px_rgba(96,165,250,0.8)]"></div>
+                                            Verified Patient
+                                        </div>
                                     </div>
+                                    <p className="text-blue-200/80 font-bold tracking-wide flex flex-wrap justify-center sm:justify-start items-center gap-2 text-xs sm:text-base">
+                                        <span className="bg-blue-900/40 px-2 py-0.5 rounded-md border border-white/5">Patient Portal</span>
+                                        <span className="hidden sm:inline opacity-40">•</span>
+                                        <span className="flex items-center gap-1.5">
+                                            Member since {patient?.createdAt ? new Date(patient.createdAt).getFullYear() : new Date().getFullYear()}
+                                        </span>
+                                    </p>
                                 </div>
-                                <p className="text-blue-200/80 font-bold tracking-wide flex items-center gap-2 text-sm sm:text-base">
-                                    <span className="bg-blue-900/40 px-2 py-0.5 rounded-md border border-white/5">Patient Portal</span>
-                                    <span className="opacity-40">•</span>
-                                    <span className="flex items-center gap-1.5">
-                                        Member since {patient?.createdAt ? new Date(patient.createdAt).getFullYear() : new Date().getFullYear()}
-                                    </span>
-                                </p>
                             </div>
 
                             {/* Fixed Appointment Mini-Card in Header */}
                             {upcomingAppointment && (
-                                <div className="ml-auto flex items-center gap-4 bg-[#fffbeb] p-2 pr-6 rounded-2xl shadow-xl border-2 border-[#fef3c7] animate-in slide-in-from-right-10 duration-700">
-                                    <div className="w-10 h-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center shadow-inner">
+                                <div className="w-full lg:w-auto lg:ml-auto flex items-center gap-4 bg-[#fffbeb] p-3 sm:p-4 pr-6 sm:pr-8 rounded-[1.5rem] sm:rounded-2xl shadow-xl border-2 border-[#fef3c7] animate-in slide-in-from-bottom-5 lg:slide-in-from-right-10 duration-700">
+                                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 text-amber-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner shrink-0">
                                         <FaCalendarAlt className="animate-bounce" size={16} />
                                     </div>
-                                    <div className="text-left">
-                                        <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none flex items-center gap-1 mb-1">
+                                    <div className="text-left min-w-0">
+                                        <p className="text-[9px] sm:text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none flex items-center gap-1 mb-1">
                                             <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
                                             Your Fixed Appointment
                                         </p>
-                                        <p className="text-xs font-black text-amber-900">
-                                            {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
+                                        <p className="text-xs sm:text-sm font-black text-amber-900 truncate">
+                                            {parseAppointmentReason(upcomingAppointment.reason).treatmentName}
+                                        </p>
+                                        <p className="text-[10px] sm:text-xs font-bold text-amber-700/70">
+                                            {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
                                         </p>
                                     </div>
                                 </div>
