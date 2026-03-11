@@ -1,23 +1,45 @@
 'use client';
 
-import { useEffect } from 'react';
-import mermaid from 'mermaid';
 import NextImage from 'next/image';
 import { FaWhatsapp } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { PresentationSkeleton } from '@/components/ui/Skeleton';
 
 export default function DemoPresent() {
+    const [isMounted, setIsMounted] = useState(false);
+    const [isDiagramsReady, setIsDiagramsReady] = useState(false);
+
     useEffect(() => {
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'dark',
-            securityLevel: 'loose',
-            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
-        });
-        mermaid.contentLoaded();
+        setIsMounted(true);
     }, []);
 
+    useEffect(() => {
+        if (!isMounted) return;
+
+        const renderDiagrams = async () => {
+            try {
+                const mermaid = (await import('mermaid')).default;
+                mermaid.initialize({
+                    startOnLoad: false,
+                    theme: 'dark',
+                    securityLevel: 'loose',
+                    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+                });
+                await mermaid.run();
+                setIsDiagramsReady(true);
+            } catch (err) {
+                console.error('Mermaid render error:', err);
+                setIsDiagramsReady(true); // Show anyway so page isn't stuck
+            }
+        };
+
+        renderDiagrams();
+    }, [isMounted]);
+
+    if (!isMounted) return <PresentationSkeleton />;
+
     return (
-        <div className="bg-[#0f172a] text-[#f8fafc] font-['Outfit',_sans-serif] leading-relaxed overflow-x-hidden min-h-screen">
+        <div className={`bg-[#0f172a] text-[#f8fafc] font-['Outfit',_sans-serif] leading-relaxed overflow-x-hidden min-h-screen ${isDiagramsReady ? 'diagrams-ready' : ''}`}>
             <style jsx global>{`
                 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono&display=swap');
                 
@@ -55,7 +77,15 @@ export default function DemoPresent() {
                 .card-icon { width: 3rem; height: 3rem; background: rgba(37, 99, 235, 0.1); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: var(--primary-light); font-size: 1.5rem; margin-bottom: 2rem; }
                 .tech-stack { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--primary-light); margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--glass-border); }
                 .tech-stats { margin-top: 1rem; }
-
+                
+                .mermaid { 
+                    opacity: 0; 
+                    transition: opacity 0.5s ease-in; 
+                }
+                .mermaid[data-processed="true"], .diagrams-ready .mermaid { 
+                    opacity: 1; 
+                }
+ 
                 /* Diagrams */
                 .diagram-container { background: rgba(0, 0, 0, 0.3); border-radius: 3rem; padding: 2rem; margin-top: 3rem; max-width: 1600px; border: 1px solid var(--glass-border); }
                 .section-title { text-align: center; margin-top: 4rem; margin-bottom: 4rem; }

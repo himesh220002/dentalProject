@@ -91,3 +91,26 @@ export function TreatmentCardSkeleton() {
         </div>
     );
 }
+export function PresentationSkeleton() {
+    return (
+        <div className="bg-[#0f172a] min-h-screen p-8 space-y-12">
+            {/* Hero Section */}
+            <div className="flex flex-col items-center justify-center h-[80vh] space-y-8">
+                <Skeleton variant="rect" className="w-48 h-8 !rounded-full bg-blue-500/10" />
+                <Skeleton variant="text" className="h-16 w-3/4 !bg-gray-800" />
+                <Skeleton variant="text" className="h-6 w-1/2 !bg-gray-800" />
+            </div>
+
+            {/* Content Sections */}
+            {[1, 2].map((i) => (
+                <div key={i} className="max-w-4xl mx-auto space-y-8">
+                    <div className="flex flex-col items-center space-y-4">
+                        <Skeleton variant="text" className="h-10 w-1/3 !bg-gray-800" />
+                        <Skeleton variant="text" className="h-4 w-1/2 !bg-gray-800" />
+                    </div>
+                    <Skeleton variant="rect" className="h-[400px] !rounded-[3rem] !bg-gray-800/50" />
+                </div>
+            ))}
+        </div>
+    );
+}
