@@ -6,6 +6,7 @@ import axios from 'axios';
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCalendarAlt, FaHistory, FaCheckCircle, FaExclamationCircle, FaLock } from 'react-icons/fa';
 import SessionGuard from '@/components/SessionGuard';
 import { parseAppointmentReason, cleanNotes } from '@/utils/appointmentUtils';
+import { io } from 'socket.io-client';
 
 const CLINIC_DRUGS = [
     { name: 'Lidocaine (LA)', instruction: 'Administered in-clinic for numbing' },
@@ -163,7 +164,28 @@ export default function ProfilePage() {
                 console.error('Error fetching patient data:', err);
             }
         };
+
         fetchRecordsAndAppointments();
+
+        // Real-time Update Listener
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+        const socket = io(backendUrl);
+
+        socket.on('newAppointment', (data) => {
+            if (data.patientId === patient?._id) {
+                fetchRecordsAndAppointments();
+            }
+        });
+
+        socket.on('updateAppointment', (data) => {
+            if (data.patientId === patient?._id) {
+                fetchRecordsAndAppointments();
+            }
+        });
+
+        return () => {
+            socket.disconnect();
+        };
     }, [patient]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -215,23 +237,60 @@ export default function ProfilePage() {
             <div className="max-w-7xl mx-auto sm:px-4 py-10">
                 <div className="bg-white rounded-[1rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-2 sm:px-8 py-10 text-white">
-                        <div className="flex items-center gap-6">
-                            <div className="relative">
+                    <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 px-4 sm:px-12 py-12 text-white relative overflow-hidden">
+                        {/* Decorative Background Element */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+
+                        <div className="flex flex-col md:flex-row md:items-center gap-8 relative z-10">
+                            <div className="relative group">
                                 {session?.user?.image ? (
-                                    <img src={session.user.image} alt="" className="w-24 h-24 rounded-3xl border-4 border-white/20 shadow-xl" />
+                                    <img src={session.user.image} alt="" className="w-28 h-28 rounded-[2rem] border-4 border-white/20 shadow-2xl transition-transform group-hover:scale-105 duration-500" />
                                 ) : (
-                                    <div className="w-24 h-24 rounded-3xl bg-white/10 flex items-center justify-center border-4 border-white/20 shadow-xl">
-                                        <FaUser size={40} />
+                                    <div className="w-28 h-28 rounded-[2rem] bg-white/10 flex items-center justify-center border-4 border-white/20 shadow-2xl transition-transform group-hover:scale-105 duration-500">
+                                        <FaUser size={48} className="text-blue-100" />
                                     </div>
                                 )}
+                                <div className="absolute -bottom-2 -right-2 bg-emerald-500 w-8 h-8 rounded-xl border-4 border-[#1e293b] flex items-center justify-center shadow-lg" title="Profile Active">
+                                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                                </div>
                             </div>
-                            <div>
-                                <h1 className="text-3xl font-black tracking-tight">{formData.name}</h1>
-                                <p className="text-blue-100 font-medium tracking-wide">
-                                    Patient Portal • Member since {patient?.createdAt ? new Date(patient.createdAt).getFullYear() : new Date().getFullYear()}
+
+                            <div className="space-y-2">
+                                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                                    <h1 className="text-4xl font-black tracking-tightest drop-shadow-sm">
+                                        {formData.name || session?.user?.name}
+                                    </h1>
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-lg border border-white/10 text-[10px] font-black uppercase tracking-widest text-blue-100">
+                                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_8px_rgba(96,165,250,0.8)]"></div>
+                                        Verified Patient
+                                    </div>
+                                </div>
+                                <p className="text-blue-200/80 font-bold tracking-wide flex items-center gap-2 text-sm sm:text-base">
+                                    <span className="bg-blue-900/40 px-2 py-0.5 rounded-md border border-white/5">Patient Portal</span>
+                                    <span className="opacity-40">•</span>
+                                    <span className="flex items-center gap-1.5">
+                                        Member since {patient?.createdAt ? new Date(patient.createdAt).getFullYear() : new Date().getFullYear()}
+                                    </span>
                                 </p>
                             </div>
+
+                            {/* Fixed Appointment Mini-Card in Header */}
+                            {upcomingAppointment && (
+                                <div className="ml-auto flex items-center gap-4 bg-[#fffbeb] p-2 pr-6 rounded-2xl shadow-xl border-2 border-[#fef3c7] animate-in slide-in-from-right-10 duration-700">
+                                    <div className="w-10 h-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center shadow-inner">
+                                        <FaCalendarAlt className="animate-bounce" size={16} />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none flex items-center gap-1 mb-1">
+                                            <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
+                                            Your Fixed Appointment
+                                        </p>
+                                        <p className="text-xs font-black text-amber-900">
+                                            {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -413,7 +472,7 @@ export default function ProfilePage() {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none flex items-center gap-1">
-                                            Your Next Appointment
+                                            Your Fixed Appointment
                                         </p>
                                         <p className="text-sm font-black text-amber-900">
                                             {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}

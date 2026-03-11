@@ -19,6 +19,7 @@ import { useClinic } from '../context/ClinicContext';
 import { translations } from '../constants/translations';
 import { ConsultantCardSkeleton } from '@/components/ui/Skeleton';
 import { io } from 'socket.io-client';
+import { parseAppointmentReason } from '@/utils/appointmentUtils';
 
 export default function Home() {
     const { data: session } = useSession();
@@ -334,28 +335,31 @@ export default function Home() {
 
             {/* Floating Appointment Notification for Logged-in Users */}
             {session?.user && upcomingAppointment && !isAptDismissed && (
-                <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-5 duration-500">
+                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-5 duration-700">
                     <Link
                         href="/profile"
                         onClick={() => setIsAptDismissed(true)}
-                        className="group relative flex items-center gap-3 bg-white hover:bg-emerald-50 p-1 pr-4 mt-2 rounded-full shadow-2xl border-2 border-emerald-100 transition-all active:scale-95 whitespace-nowrap overflow-hidden"
+                        className="group relative flex items-center gap-4 bg-[#fffbeb] hover:bg-[#fff9db] p-1.5 pr-6 rounded-[2rem] shadow-[0_20px_50px_rgba(251,191,36,0.2)] border-2 border-[#fef3c7] transition-all active:scale-95 whitespace-nowrap overflow-hidden"
                     >
-                        {/* Ping Animation Background */}
-                        <div className="absolute inset-0 bg-emerald-400/20 animate-ping-glow rounded-full"></div>
+                        {/* Glow Effect */}
+                        <div className="absolute inset-0 bg-amber-400/10 animate-pulse"></div>
 
-                        <div className="relative w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shadow-inner">
+                        <div className="relative w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center shadow-inner ring-4 ring-white">
                             <FaCalendarAlt className="animate-bounce" />
                         </div>
 
-                        <div className="relative text-left pr-4">
-                            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">
-                                {language === 'hi' ? 'स्थिति: सक्रिय' : 'Status: Active'}
+                        <div className="relative text-left">
+                            <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none flex items-center gap-1 mb-1">
+                                <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
+                                {language === 'hi' ? 'आपका तय अपॉइंटमेंट' : 'Your Fixed Appointment'}
                             </p>
-                            <p className="text-sm font-black text-gray-900">
-                                {language === 'hi' ? 'अपॉइंटमेंट तय • विवरण देखें' : 'Appointment Fixed • View Details'}
+                            <p className="text-sm font-black text-amber-900">
+                                {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
                             </p>
                         </div>
-                        <FaArrowRight className="relative text-emerald-400 group-hover:translate-x-1 transition-transform" />
+                        <div className="ml-2 w-8 h-8 rounded-full bg-white/50 flex items-center justify-center group-hover:bg-white transition-colors">
+                            <FaArrowRight className="text-amber-500 group-hover:translate-x-1 transition-transform" />
+                        </div>
                     </Link>
                 </div>
             )}

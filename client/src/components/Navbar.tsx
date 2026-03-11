@@ -10,6 +10,7 @@ import AdminLockModal from './AdminLockModal';
 import { useClinic } from '../context/ClinicContext';
 import { translations } from '../constants/translations';
 import { parseDateTime } from '../utils/dateUtils';
+import { parseAppointmentReason } from '../utils/appointmentUtils';
 
 export default function Navbar() {
     const { clinicData, language, toggleLanguage } = useClinic();
@@ -21,8 +22,7 @@ export default function Navbar() {
     const [pendingHref, setPendingHref] = useState('');
     const [timeLeft, setTimeLeft] = useState<string | null>(null);
     const [isMobileUserMenuOpen, setIsMobileUserMenuOpen] = useState(false);
-    // @ts-ignore
-    const [hasUpcomingAppointment, setHasUpcomingAppointment] = useState(session?.user?.hasUpcomingAppointment || false);
+    const [upcomingAppointment, setUpcomingAppointment] = useState<any | null>(null);
 
     const navLinks = [
         { name: t.home, href: '/' },
@@ -38,7 +38,7 @@ export default function Navbar() {
         const checkUpcomingAppointments = async () => {
             // @ts-ignore
             if (status !== 'authenticated' || !session?.user?.patientId) {
-                setHasUpcomingAppointment(false);
+                setUpcomingAppointment(null);
                 return;
             }
             try {
@@ -47,16 +47,18 @@ export default function Navbar() {
                 const res = await axios.get(`${backendUrl}/api/appointments/patient/${session.user.patientId}`);
                 const appointments = res.data;
                 const now = new Date();
+                now.setHours(0, 0, 0, 0);
 
-                const upcoming = appointments.some((apt: any) => {
-                    const aptMoment = parseDateTime(apt.date, apt.time);
-                    // Show if it's in the future AND not operating/completed/ticked
-                    return aptMoment > now &&
-                        apt.status !== 'Completed' &&
-                        apt.status !== 'Operating' &&
-                        !apt.isTicked;
-                });
-                setHasUpcomingAppointment(upcoming);
+                const sorted = appointments
+                    .filter((apt: any) => {
+                        const aptDate = new Date(apt.date);
+                        return aptDate >= now &&
+                            apt.status !== 'Completed' &&
+                            !apt.isTicked;
+                    })
+                    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+                setUpcomingAppointment(sorted[0] || null);
             } catch (error) {
                 console.error('Error checking appointments:', error);
             }
@@ -189,14 +191,19 @@ export default function Navbar() {
                             <div className="ml-2 xl:ml-4 pl-2 xl:pl-4 border-l border-gray-100 flex items-center gap-2 xl:gap-3">
                                 {session ? (
                                     <div className="flex items-center gap-2 xl:gap-3">
-                                        {hasUpcomingAppointment && (
+                                        {upcomingAppointment && (
                                             <Link
                                                 href="/profile"
-                                                className="group relative flex items-center gap-2 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full border border-blue-200 transition-all active:scale-95 overflow-hidden animate-in fade-in slide-in-from-right-2 duration-500"
+                                                className="group relative flex items-center gap-2 bg-[#fffbeb] hover:bg-[#fff9db] px-4 py-2 rounded-xl border border-[#fef3c7] transition-all active:scale-95 shadow-sm overflow-hidden animate-in fade-in slide-in-from-right-4 duration-500"
                                             >
-                                                <div className="absolute inset-0 bg-blue-400/20 animate-ping-glow rounded-full"></div>
-                                                <FaCalendarAlt className="text-blue-600 text-[10px] animate-bounce relative z-10" />
-                                                <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest whitespace-nowrap relative z-10">Fixed Appt</span>
+                                                <div className="absolute inset-0 bg-amber-400/10 animate-pulse rounded-xl"></div>
+                                                <FaCalendarAlt className="text-amber-600 text-[10px] animate-bounce relative z-10" />
+                                                <div className="flex flex-col items-start relative z-10">
+                                                    <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider leading-none">Fixed Appt</span>
+                                                    <span className="text-[10px] font-bold text-amber-900 leading-tight">
+                                                        {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                                                    </span>
+                                                </div>
                                             </Link>
                                         )}
                                         <div className="flex items-center gap-2 xl:gap-3">
@@ -208,8 +215,8 @@ export default function Navbar() {
                                                 {session.user?.image ? (
                                                     <div className="relative">
                                                         <img src={session.user.image} alt="" className="w-8 h-8 xl:w-10 xl:h-10 rounded-lg xl:rounded-xl border-2 border-white shadow-md ring-2 ring-gray-50" />
-                                                        {hasUpcomingAppointment && (
-                                                            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 xl:w-4 xl:h-4 bg-blue-600 border-2 border-white rounded-full animate-bounce shadow-sm flex items-center justify-center">
+                                                        {upcomingAppointment && (
+                                                            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 xl:w-4 xl:h-4 bg-amber-500 border-2 border-white rounded-full animate-bounce shadow-sm flex items-center justify-center">
                                                                 <div className="w-1 h-1 xl:w-1.5 xl:h-1.5 bg-white rounded-full" />
                                                             </span>
                                                         )}
@@ -217,7 +224,7 @@ export default function Navbar() {
                                                 ) : (
                                                     <div className="relative">
                                                         <FaUserCircle className="text-2xl xl:text-3xl text-gray-300" />
-                                                        {hasUpcomingAppointment && <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 border-2 border-white rounded-full animate-pulse" />}
+                                                        {upcomingAppointment && <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 border-2 border-white rounded-full animate-pulse" />}
                                                     </div>
                                                 )}
                                                 <div className="absolute top-full right-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover/user:opacity-100 group-hover/user:translate-y-0 group-hover/user:pointer-events-auto transition-all duration-200 z-50">
@@ -233,7 +240,7 @@ export default function Navbar() {
                                                             <FaUserCircle size={14} />
                                                             <div className="flex flex-col items-start">
                                                                 <span>{t.profile}</span>
-                                                                {hasUpcomingAppointment && <span className="text-[8px] font-black uppercase text-blue-500 animate-pulse">Appointment Scheduled</span>}
+                                                                {upcomingAppointment && <span className="text-[8px] font-black uppercase text-amber-500 animate-pulse">Appointment Scheduled</span>}
                                                             </div>
                                                         </Link>
                                                         <button
@@ -352,8 +359,8 @@ export default function Navbar() {
                                             {session.user?.image ? (
                                                 <div className="relative">
                                                     <img src={session.user.image} alt="" className="w-9 h-9 rounded-xl shadow-sm border-2 border-white" />
-                                                    {hasUpcomingAppointment && (
-                                                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-blue-600 border-2 border-white rounded-full animate-bounce shadow-sm flex items-center justify-center">
+                                                    {upcomingAppointment && (
+                                                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-500 border-2 border-white rounded-full animate-bounce shadow-sm flex items-center justify-center">
                                                             <div className="w-1 h-1 bg-white rounded-full" />
                                                         </span>
                                                     )}
@@ -361,7 +368,7 @@ export default function Navbar() {
                                             ) : (
                                                 <div className="relative">
                                                     <FaUserCircle className="text-3xl text-gray-300" />
-                                                    {hasUpcomingAppointment && <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 border-2 border-white rounded-full animate-pulse" />}
+                                                    {upcomingAppointment && <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 border-2 border-white rounded-full animate-pulse" />}
                                                 </div>
                                             )}
                                             <div className="flex flex-col items-start translate-y-[1px] text-left">
@@ -376,13 +383,13 @@ export default function Navbar() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path>
                                         </svg>
                                     </button>
-                                    {hasUpcomingAppointment && (
+                                    {upcomingAppointment && (
                                         <Link
                                             href="/profile"
                                             onClick={() => setIsOpen(false)}
-                                            className="relative flex flex-col items-center justify-center bg-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-200 active:scale-95 transition-all"
+                                            className="relative flex flex-col items-center justify-center bg-amber-500 text-white p-3 rounded-2xl shadow-lg shadow-amber-200 active:scale-95 transition-all"
                                         >
-                                            <div className="absolute inset-0 bg-blue-400/30 animate-ping-glow rounded-2xl"></div>
+                                            <div className="absolute inset-0 bg-amber-400/30 animate-ping-glow rounded-2xl"></div>
                                             <FaCalendarAlt className="text-lg animate-bounce relative z-10" />
                                             <span className="text-[12px] font-black uppercase tracking-tighter relative z-10">Fixed</span>
                                         </Link>
@@ -403,7 +410,7 @@ export default function Navbar() {
                                                 <FaUserCircle size={16} />
                                                 <span>{t.profile}</span>
                                             </div>
-                                            {hasUpcomingAppointment && <span className="text-[8px] font-black bg-blue-600 text-white px-1.5 py-0.5 rounded-full animate-pulse">APPT</span>}
+                                            {upcomingAppointment && <span className="text-[8px] font-black bg-amber-500 text-white px-1.5 py-0.5 rounded-full animate-pulse">APPT</span>}
                                         </Link>
                                         <button
                                             onClick={() => {
