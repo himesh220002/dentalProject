@@ -29,9 +29,10 @@ interface QuickSchedulerProps {
     appointmentId?: string;
     inquiryMessage?: string;
     initialPatientId?: string;
+    skipWhatsApp?: boolean;
 }
 
-export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate, initialSearch, initialName, initialEmail, messageId, appointmentId, inquiryMessage, initialPatientId }: QuickSchedulerProps) {
+export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate, initialSearch, initialName, initialEmail, messageId, appointmentId, inquiryMessage, initialPatientId, skipWhatsApp }: QuickSchedulerProps) {
     const [patients, setPatients] = useState<Patient[]>([]);
     const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
     const [treatments, setTreatments] = useState<Treatment[]>([]);
@@ -350,7 +351,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
 
             // WhatsApp Redirect Logic
             const selectedPatient = patients.find(p => p._id === formData.patientId);
-            if (selectedPatient) {
+            if (selectedPatient && !skipWhatsApp) {
                 const patientPhone = selectedPatient.contact;
                 const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
                 const clinicAddress = clinicData?.address;

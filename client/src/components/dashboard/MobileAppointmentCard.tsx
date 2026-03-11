@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaClock, FaNotesMedical, FaUser, FaCalendarPlus, FaTrash, FaChevronDown, FaChevronUp, FaWhatsapp } from 'react-icons/fa';
+import { FaClock, FaNotesMedical, FaUser, FaCalendarPlus, FaTrash, FaChevronDown, FaChevronUp, FaWhatsapp, FaEdit } from 'react-icons/fa';
 import { useClinic } from '@/context/ClinicContext';
 import { parseAppointmentReason } from '@/utils/appointmentUtils';
 
@@ -9,11 +9,12 @@ interface MobileAppointmentCardProps {
     isPastTime: (date: string, time: string) => boolean;
     updateAppointment: (id: string, updates: any) => void;
     handleReschedule: (id: string) => void;
+    onEdit: (id: string) => void;
     deleteAppointment: (id: string) => void;
     isHighlighted?: boolean;
 }
 
-const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleReschedule, deleteAppointment, isHighlighted }: MobileAppointmentCardProps) => {
+const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleReschedule, onEdit, deleteAppointment, isHighlighted }: MobileAppointmentCardProps) => {
     const [isOpen, setIsOpen] = useState(isHighlighted || false);
     const [isBlinking, setIsBlinking] = useState(false);
     const { clinicData } = useClinic();
@@ -275,6 +276,12 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
                             <FaWhatsapp />
                         </button>
 
+                        <button
+                            onClick={() => onEdit(apt._id)}
+                            className="flex-1 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2"
+                        >
+                            <FaEdit /> Edit
+                        </button>
                         <button
                             onClick={() => handleReschedule(apt._id)}
                             className="flex-1 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2"

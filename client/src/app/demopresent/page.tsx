@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 import mermaid from 'mermaid';
+import NextImage from 'next/image';
+import { FaWhatsapp } from 'react-icons/fa';
 
 export default function DemoPresent() {
     useEffect(() => {
@@ -55,7 +57,7 @@ export default function DemoPresent() {
                 .tech-stats { margin-top: 1rem; }
 
                 /* Diagrams */
-                .diagram-container { background: rgba(0, 0, 0, 0.3); border-radius: 3rem; padding: 4rem; margin-top: 3rem; border: 1px solid var(--glass-border); }
+                .diagram-container { background: rgba(0, 0, 0, 0.3); border-radius: 3rem; padding: 2rem; margin-top: 3rem; max-width: 1600px; border: 1px solid var(--glass-border); }
                 .section-title { text-align: center; margin-top: 4rem; margin-bottom: 4rem; }
                 .section-title h2 { font-size: 3rem; font-weight: 900; margin-bottom: 1rem; }
                 .section-title p { color: var(--text-dim); font-size: 1.2rem; max-width: 600px; margin: 0 auto; }
@@ -94,32 +96,36 @@ export default function DemoPresent() {
                     <h2>System Architecture Flow</h2>
                     <p>End-to-end data lifecycle from landing page to real-time notification.</p>
                 </div>
+                <NextImage src="/images/serverarchitecture.png" alt="Architecture" width={500} height={500} className="mx-auto rounded-2xl object-contain shadow-lg" />
                 <div className="diagram-container">
-                    <div className="mermaid">
+                    <div className="mermaid w-full max-w-[1000px] mx-auto">
                         {`graph TD
-                        %% User/Patient Path
-                        User((Patient)) -->|Lands on| Hero[Next.js Homepage]
-                        Hero -->|Browses| Blogs[Blog System/Insights]
-                        Hero -->|Authenticates| GoogleAuth[NextAuth Google Login]
-                        GoogleAuth -->|Creates/Updates| DB[(MongoDB)]
+                        subgraph Patient_Entry ["Patient Interaction"]
+                            User((Patient)) -->|Lands on| Hero[Next.js Homepage]
+                            Hero -->|Browses| Blogs[Health Insights]
+                            Hero -->|Logins| GoogleAuth[NextAuth Google]
+                        end
 
-                        %% Booking Flow
-                        User -->|Clicks| Book[Booking Form]
-                        Book -->|POST /api/appointments| API[Express API]
-                        API -->|Saves| DB
-                        API -->|Emits 'newAppointment'| Socket[Socket.io Server]
-                        Socket -->|Real-time Notify| Admin[Admin Dashboard]
+                        subgraph Data_Layer ["Core Processing"]
+                            GoogleAuth -->|Sync| DB[(MongoDB)]
+                            User -->|Books| Book[Booking Form]
+                            Book -->|POST| API[Express API]
+                            API -->|Saves| DB
+                            API -->|Emits| Socket[Socket.io Server]
+                        end
 
-                        %% Admin Flow
-                        Admin -->|Views/Updates Status| Manage[Admin Schedule Manager]
-                        Manage -->|PUT /api/appointments/:id| API
-                        API -->|Updates| DB
-                        API -->|Trigger Notification| NotifyService[Notification Service]
+                        subgraph Admin_Realtime ["Admin & Alerts"]
+                            Socket -->|Notify| Admin[Admin Dashboard]
+                            Admin -->|Updates| Manage[Schedule Manager]
+                            Manage -->|PUT| API
+                        end
 
-                        %% Notification Loop
-                        NotifyService -->|WhatsApp Link| WhatsApp[WhatsApp Messenger]
-                        NotifyService -->|Email Confirmation| Mailgun[Mailgun Service]
-                        NotifyService -->|Socket 'statusUpdate'| UserHome[User Profile]
+                        subgraph Communication ["Outbound Services"]
+                            API -->|Trigger| Notify[Notification Service]
+                            Notify -->|Link| WhatsApp[WhatsApp]
+                            Notify -->|Confirm| Mailgun[Email Service]
+                            Notify -->|Socket| Profile[User Profile]
+                        end
 
                         style Hero fill:#1e293b,stroke:#2563eb,stroke-width:2px,color:#fff
                         style Admin fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff
@@ -134,29 +140,44 @@ export default function DemoPresent() {
                     <h2>Clinic Operational Workflow</h2>
                     <p>Managing the patient experience from arrival to financial settlement.</p>
                 </div>
+                <NextImage src="/images/clientsidepic.png" alt="Clinic Operational Workflow" width={500} height={500} className="mx-auto rounded-2xl object-contain shadow-lg" />
                 <div className="diagram-container">
-                    <div className="mermaid">
+                    <div className="mermaid w-full max-w-[1000px] mx-auto">
                         {`graph TD
-                        Dashboard[Admin Dashboard] -->|Real-time Alert| NewApt[New Appointment Notification]
-                        NewApt -->|Socket.io| DashTable[Clinic Schedule Table]
+                        subgraph Arrival ["Reception & Arrivals"]
+                            Dashboard[Admin Dashboard] -->|Alert| NewApt[New Appointment]
+                            NewApt -->|Socket| DashTable[Schedule Table]
+                        end
 
-                        DashTable -->|Click Patient| Profile[Patient Digital Profile]
-                        Profile -->|View| History[Medical History & Past Treatments]
-                        Profile -->|Update| HealthData[Clinical Notes & Update Vitals]
+                        subgraph Booking_Logic ["Scheduling Logic"]
+                            DashTable -->|Add| QuickSched[Quick Scheduler]
+                            QuickSched -->|Logic| HeatMap{Heat Map}
+                            HeatMap -->|Flexible| Flexible[Flexible Status]
+                            HeatMap -->|Busy| Busy[Busy Status]
+                            Flexible -->|Save| DashTable
+                            Busy -->|Save| DashTable
+                        end
 
-                        HealthData -->|Start Session| Record[Treatment Record Entry]
-                        Record -->|Select Treatment| Procedure[Procedure Details & Pricing]
-                        Procedure -->|Save| Ledger[Patient Financial Ledger]
+                        subgraph Clinical ["Doctor's Workflow"]
+                            DashTable -->|Select| Profile[Patient Profile]
+                            Profile -->|View| History[Medical History]
+                            Profile -->|Update| Vital[Update Vitals]
+                            Vital -->|Start| Record[Treatment Entry]
+                        end
 
-                        Ledger -->|Generate| WhatsAppMsg[WhatsApp Care Instructions]
-                        WhatsAppMsg -->|Link| PatientPhone[Patient WhatsApp]
-
-                        Ledger -->|Sync| Stats[Clinic Analytics: Revenue & Traffic]
+                        subgraph Billing ["Financials & Outbound"]
+                            Record -->|Select| Procedure[Procedure & Price]
+                            Procedure -->|Save| Ledger[Patient Ledger]
+                            Ledger -->|Generate| WhatsApp[WhatsApp Instructions]
+                            Ledger -->|Sync| Stats[Clinic Analytics]
+                        end
 
                         style Dashboard fill:#1e3a8a,color:#fff
-                        style Profile fill:#1e293b,stroke:#2563eb
+                        style Profile fill:#1e3a8a,stroke:#2563eb
                         style Ledger fill:#1e293b,stroke:#f59e0b
-                        style WhatsAppMsg fill:#064e3b,stroke:#10b981`}
+                        style WhatsApp fill:#064e3b,stroke:#10b981
+                        style QuickSched fill:#1e293b,stroke:#10b981
+                        style HeatMap fill:#1e293b,stroke:#f59e0b`}
                     </div>
                 </div>
             </section>
@@ -277,6 +298,25 @@ export default function DemoPresent() {
                         </div>
                         <div className="tech-stack">Advancement: Binary Payload Optimization</div>
                     </div>
+                </div>
+                <div className="link-section my-10 flex flex-col items-center gap-2">
+                    <h2>Ready to Transform Your Dental Practice?</h2>
+                    <p>Experience the future of dental care with our cutting-edge platform. Schedule a demo today and take the first step towards excellence.</p>
+                    <NextImage src="/images/qr_Frontend_vercel.png" alt="qr_Frontend_vercel" width={200} height={200} />
+                    <p>URL- https://dental-project-zeta.vercel.app/</p>
+                    <button
+                        onClick={() => {
+                            const ProjectName = "Dental Clinic";
+                            const contact = "8105542318";
+                            const msg = `Hello 👋, I’d like to schedule a demo of your solution at the earliest convenience. Along with the demo, I’d appreciate receiving regular updates on features and improvements. Based on what I’ve seen so far, I’m very interested in moving forward and would like to discuss the next steps toward finalizing our collaboration. Looking forward to your response and to exploring how we can make this partnership a success. \nProject Name: ${ProjectName}`;
+                            const phone = contact || 8105542318;
+                            window.open(`https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                        }}
+                        className={`flex items-center gap-2 p-2.5 rounded-xl transition active:scale-95 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-600 cursor-pointer`}
+                        title="Send WhatsApp Demo Request"
+                    >
+                        Schedule a Demo <FaWhatsapp />
+                    </button>
                 </div>
             </section>
 

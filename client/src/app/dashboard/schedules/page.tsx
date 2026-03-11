@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { FaCalendarPlus, FaClock, FaUser, FaCheckCircle, FaTrash, FaNotesMedical, FaChevronDown, FaWhatsapp } from 'react-icons/fa';
+import { FaCalendarPlus, FaClock, FaUser, FaCheckCircle, FaTrash, FaNotesMedical, FaChevronDown, FaWhatsapp, FaEdit } from 'react-icons/fa';
 import { useClinic } from '@/context/ClinicContext';
 import Link from 'next/link';
 import QuickScheduler from '@/components/QuickScheduler';
@@ -37,6 +37,7 @@ function DashboardSchedulesContent() {
     const [loading, setLoading] = useState(true);
     const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
     const [editingAppointmentId, setEditingAppointmentId] = useState<string | undefined>(undefined);
+    const [shouldSkipWhatsApp, setShouldSkipWhatsApp] = useState(false);
 
     const fetchAppointments = async () => {
         try {
@@ -103,6 +104,13 @@ function DashboardSchedulesContent() {
     };
 
     const handleReschedule = (id: string) => {
+        setShouldSkipWhatsApp(false);
+        setEditingAppointmentId(id);
+        setIsSchedulerOpen(true);
+    };
+
+    const handleEdit = (id: string) => {
+        setShouldSkipWhatsApp(true);
         setEditingAppointmentId(id);
         setIsSchedulerOpen(true);
     };
@@ -127,7 +135,10 @@ function DashboardSchedulesContent() {
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
                 <h1 className="text-xl sm:text-3xl font-black text-gray-900">Appointment Schedules</h1>
                 <button
-                    onClick={() => setIsSchedulerOpen(true)}
+                    onClick={() => {
+                        setShouldSkipWhatsApp(false);
+                        setIsSchedulerOpen(true);
+                    }}
                     className="bg-blue-600 hover:bg-blue-700 text-xs text-white px-4 sm:px-8 py-2 sm:py-3 rounded-2xl font-black shadow-lg transition active:scale-95 flex items-center gap-2"
                 >
                     <FaCalendarPlus /> Add Appointment
@@ -293,6 +304,14 @@ function DashboardSchedulesContent() {
                                                 </button>
 
                                                 <button
+                                                    onClick={() => handleEdit(apt._id)}
+                                                    className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition active:scale-95"
+                                                    title="Edit (No WhatsApp)"
+                                                >
+                                                    <FaEdit />
+                                                </button>
+
+                                                <button
                                                     onClick={() => handleReschedule(apt._id)}
                                                     className="p-2.5 bg-blue-50 text-blue-500 rounded-xl hover:bg-blue-100 transition active:scale-95"
                                                     title="Reschedule"
@@ -324,6 +343,7 @@ function DashboardSchedulesContent() {
                             isPastTime={isPastTime}
                             updateAppointment={updateAppointment}
                             handleReschedule={handleReschedule}
+                            onEdit={handleEdit}
                             deleteAppointment={deleteAppointment}
                             isHighlighted={apt._id === highlightId}
                         />
@@ -342,6 +362,7 @@ function DashboardSchedulesContent() {
                 onClose={handleCloseScheduler}
                 onSuccess={fetchAppointments}
                 appointmentId={editingAppointmentId}
+                skipWhatsApp={shouldSkipWhatsApp}
             />
         </div>
     );
