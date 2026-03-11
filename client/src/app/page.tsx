@@ -24,6 +24,9 @@ export default function Home() {
     const [upcomingAppointment, setUpcomingAppointment] = useState<any>(null);
     const [isAptDismissed, setIsAptDismissed] = useState(false);
     const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+    const [videoBlobUrl, setVideoBlobUrl] = useState<string | null>(null);
+    const [videoProgress, setVideoProgress] = useState(0);
+
     const { clinicData, language } = useClinic();
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
     const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
@@ -67,6 +70,67 @@ export default function Home() {
         fetchUserData();
     }, [session]);
 
+    useEffect(() => {
+        const videoUrl = '/video/dentist video1.mp4';
+        const cacheName = 'video-cache-v1';
+
+        const loadVideo = async () => {
+            try {
+                const cache = await caches.open(cacheName);
+                const cachedResponse = await cache.match(videoUrl);
+
+                if (cachedResponse) {
+                    const blob = await cachedResponse.blob();
+                    setVideoBlobUrl(URL.createObjectURL(blob));
+                    setIsVideoLoaded(true);
+                    setVideoProgress(100);
+                    return;
+                }
+
+                const response = await fetch(videoUrl);
+                if (!response.body) return;
+
+                const contentLength = +(response.headers.get('Content-Length') || 0);
+                const reader = response.body.getReader();
+                let receivedLength = 0;
+                const chunks = [];
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    chunks.push(value);
+                    receivedLength += value.length;
+
+                    const progress = (receivedLength / contentLength) * 100;
+                    setVideoProgress(progress);
+
+                    // Show video after 20% download
+                    if (progress >= 20 && !isVideoLoaded) {
+                        setIsVideoLoaded(true);
+                    }
+                }
+
+                const fullBlob = new Blob(chunks, { type: 'video/mp4' });
+                const blobUrl = URL.createObjectURL(fullBlob);
+                setVideoBlobUrl(blobUrl);
+
+                // Cache the full video for next time
+                await cache.put(videoUrl, new Response(fullBlob));
+            } catch (error) {
+                console.error('Video loading failed:', error);
+                // Fallback to standard loading if fetch/cache fails
+                setIsVideoLoaded(true);
+            }
+        };
+
+        loadVideo();
+
+        return () => {
+            if (videoBlobUrl) URL.revokeObjectURL(videoBlobUrl);
+        };
+    }, []);
+
     return (
         <div className="max-w-[1600px] mx-auto space-y-20 md:space-y-32 overflow-x-hidden">
             {/* Hero Section - Elite Landing */}
@@ -81,21 +145,21 @@ export default function Home() {
             {/* Featured Clinical Excellence Video - Immersive Preview */}
             <section className="px-4 sm:px-10 lg:px-16">
                 <div className="max-w-[1000px] mx-auto overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] sm:rounded-[4rem] shadow-2xl border-4 border-white bg-gray-900 group relative aspect-video">
-                    {/* <iframe
-                        className="w-full h-full pointer-events-none scale-105 group-hover:scale-110 transition-transform duration-[5s]"
-                        src="https://www.youtube.com/embed/G9nqB8BwGHU?autoplay=1&mute=1&loop=1&controls=0&start=604&end=710&playlist=G9nqB8BwGHU&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0"
-                        title="Clinical Excellence Preview"
-                        allow="autoplay; encrypted-media"
-                    ></iframe> */}
                     {!isVideoLoaded && (
                         <div className="absolute inset-0 bg-gray-800 animate-pulse flex items-center justify-center">
                             <div className="flex flex-col items-center gap-4">
                                 <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
-                                <p className="text-blue-400 font-black text-[10px] uppercase tracking-widest">Optimizing Clinical Showcase...</p>
+                                <div className="text-center">
+                                    <p className="text-blue-400 font-black text-[10px] uppercase tracking-widest">Optimizing Clinical Showcase...</p>
+                                    <p className="text-blue-300/50 text-[8px] font-bold mt-1 uppercase tracking-tighter">
+                                        Loading: {Math.round(videoProgress)}%
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     )}
                     <video
+                        key={videoBlobUrl || 'placeholder'}
                         className={`w-full h-full object-cover pointer-events-none scale-105 group-hover:scale-110 transition-all duration-[5s] ${isVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
                         autoPlay
                         muted
@@ -103,9 +167,12 @@ export default function Home() {
                         playsInline
                         preload="auto"
                         poster="/images/video-poster.png"
-                        onCanPlayThrough={() => setIsVideoLoaded(true)}
                     >
-                        <source src="/video/dentist video1.mp4#t=604,710" type="video/mp4" />
+                        {videoBlobUrl ? (
+                            <source src={videoBlobUrl} type="video/mp4" />
+                        ) : (
+                            <source src="/video/dentist video1.mp4#t=604,710" type="video/mp4" />
+                        )}
                         Your browser does not support the video tag.
                     </video>
                     {/* Immersive Glass Overlay */}
