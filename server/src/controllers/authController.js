@@ -31,6 +31,56 @@ const mergePatients = async (primaryId, orphanId) => {
     console.log(`✔ Deleted orphan patient record ${orphanId}`);
 };
 
+/**
+ * Shared Helper: Find and Merge Orphans
+ * Checks for patients with no userId that match the provided email/contact.
+ * Merges them into the user's primary patient record.
+ */
+const findAndMergeOrphans = async (user, primaryPatient, inputContact = null) => {
+    const normalizedEmail = user.email.toLowerCase();
+    const cleanSearchContact = inputContact ? inputContact.replace(/\D/g, '').slice(-10) : (user.contact ? user.contact.replace(/\D/g, '').slice(-10) : '');
+
+    const orphans = await Patient.find({
+        _id: { $ne: primaryPatient?._id },
+        userId: { $exists: false },
+        $or: [
+            { email: normalizedEmail },
+            ...(cleanSearchContact ? [{ contact: new RegExp(cleanSearchContact + '$') }] : []),
+            { name: new RegExp(`^${user.name}$`, 'i') }
+        ]
+    });
+
+    if (orphans.length > 0) {
+        console.log(`[SYNC] Found ${orphans.length} orphan matching record(s) for ${user.email}. Merging...`);
+
+        let targetPatient = primaryPatient;
+
+        // If no primary patient yet, pick the first orphan as primary
+        if (!targetPatient) {
+            targetPatient = orphans[0];
+            targetPatient.userId = user._id;
+            targetPatient.email = targetPatient.email || normalizedEmail;
+            await targetPatient.save();
+
+            user.patientId = targetPatient._id;
+            user.contact = targetPatient.contact !== '-__-' ? targetPatient.contact : user.contact;
+            await user.save();
+
+            // Start merging from index 1
+            for (let i = 1; i < orphans.length; i++) {
+                await mergePatients(targetPatient._id, orphans[i]._id);
+            }
+        } else {
+            // Merge ALL orphans into existing primary
+            for (const orphan of orphans) {
+                await mergePatients(targetPatient._id, orphan._id);
+            }
+        }
+        return targetPatient;
+    }
+    return primaryPatient;
+};
+
 exports.syncUser = async (req, res) => {
     const { googleId, email, name, image } = req.body;
 
@@ -48,64 +98,15 @@ exports.syncUser = async (req, res) => {
             await user.save();
         }
 
-        const normalizedEmail = email.toLowerCase();
-        const normalizedUserName = name.toLowerCase().replace(/\s+/g, '');
-
-        // 1. Find the Best Patient Match (Priority 1: Email, Priority 2: Name)
+        // Proactive Sync on Login
         let primaryPatient = user.patientId ? await Patient.findById(user.patientId) : null;
-
-        // Find ALL orphans (no userId) that match email or name
-        const orphans = await Patient.find({
-            userId: { $exists: false },
-            $or: [
-                { email: normalizedEmail },
-                { name: new RegExp(`^${name}$`, 'i') }
-            ]
-        });
-
-        if (orphans.length > 0) {
-            console.log(`Found ${orphans.length} potential orphan match(es) for ${email}`);
-
-            // If user has no patient or current is a placeholder, pick the first orphan as primary
-            if (!primaryPatient || !primaryPatient.addedByAdmin) {
-                const bestOrphan = orphans[0];
-
-                // If existing primary is different and not admin-added, move its data later
-                const oldPatientId = primaryPatient ? primaryPatient._id : null;
-
-                // Link user to the "best" orphan record
-                user.patientId = bestOrphan._id;
-                user.contact = bestOrphan.contact !== '-__-' ? bestOrphan.contact : user.contact;
-                await user.save();
-
-                bestOrphan.userId = user._id;
-                if (!bestOrphan.email) bestOrphan.email = normalizedEmail;
-                await bestOrphan.save();
-
-                primaryPatient = bestOrphan;
-
-                // If we had a previous non-admin placeholder, merge it into the new primary
-                if (oldPatientId && String(oldPatientId) !== String(bestOrphan._id)) {
-                    await mergePatients(bestOrphan._id, oldPatientId);
-                }
-
-                // Merge all OTHER matching orphans into this new primary
-                for (let i = 1; i < orphans.length; i++) {
-                    await mergePatients(bestOrphan._id, orphans[i]._id);
-                }
-            } else {
-                // User already has an Admin-added record, just merge all orphans into it
-                for (const orphan of orphans) {
-                    await mergePatients(primaryPatient._id, orphan._id);
-                }
-            }
-        }
+        primaryPatient = await findAndMergeOrphans(user, primaryPatient);
 
         // 2. Final Fallback: If still no patient linked, create a new one
         if (!user.patientId) {
             const newPatient = new Patient({
                 name: name,
-                email: normalizedEmail,
+                email: email.toLowerCase(),
                 age: 0,
                 contact: '-__-',
                 addedByAdmin: false,
@@ -159,30 +160,8 @@ exports.updateProfile = async (req, res) => {
 
         let patient = user.patientId;
 
-        // Robust Merging on Update: Check for orphans that match the NEW phone/email
-        if (!patient.addedByAdmin) {
-            const inputContact = contact ? contact.replace(/\D/g, '').slice(-10) : '';
-            const normalizedEmail = user.email.toLowerCase();
-
-            const candidates = await Patient.find({
-                _id: { $ne: patient._id },
-                userId: { $exists: false },
-                $or: [
-                    { email: normalizedEmail },
-                    { contact: new RegExp(inputContact + '$') }
-                ]
-            });
-
-            if (candidates.length > 0) {
-                console.log(`Profile update found ${candidates.length} matching record(s) to merge.`);
-
-                // Pick the first candidate as the record to merge INTO if it's "better" (e.g. has contact)
-                // Actually, it's safer to merge ALL orphans into the current USER profile record
-                for (const candidate of candidates) {
-                    await mergePatients(patient._id, candidate._id);
-                }
-            }
-        }
+        // Proactive Merging on Update: Check for orphans that match the NEW phone/email
+        patient = await findAndMergeOrphans(user, patient, contact);
 
         // Standard update
         patient.name = name || patient.name;
@@ -221,6 +200,10 @@ exports.getUserByGoogleId = async (req, res) => {
         let user = await User.findOne({ googleId }).populate('patientId');
         if (!user) return res.status(404).json({ message: 'User not found' });
 
+        // Proactive Sync on every fetch (Page Refresh)
+        let patient = user.patientId;
+        patient = await findAndMergeOrphans(user, patient);
+
         if (!user.patientId) {
             const newPatient = new Patient({
                 name: user.name,
@@ -238,7 +221,7 @@ exports.getUserByGoogleId = async (req, res) => {
         }
 
         const upcomingAppointment = await Appointment.findOne({
-            patientId: user.patientId._id,
+            patientId: user.patientId?._id || user.patientId,
             status: 'Scheduled',
             isTicked: false
         });
@@ -248,6 +231,7 @@ exports.getUserByGoogleId = async (req, res) => {
             hasUpcomingAppointment: !!upcomingAppointment
         });
     } catch (error) {
+        console.error('Error fetching user:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };

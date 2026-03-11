@@ -18,6 +18,7 @@ import { FaUserMd, FaArrowRight, FaCalendarAlt } from 'react-icons/fa';
 import { useClinic } from '../context/ClinicContext';
 import { translations } from '../constants/translations';
 import { ConsultantCardSkeleton } from '@/components/ui/Skeleton';
+import { io } from 'socket.io-client';
 
 export default function Home() {
     const { data: session } = useSession();
@@ -48,7 +49,7 @@ export default function Home() {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
                 // @ts-ignore
                 const userRes = await axios.get(`${backendUrl}/api/auth/google/${session.user.id}`);
-                const patientId = userRes.data?.patientId?._id;
+                const patientId = userRes.data?.patientId?._id || userRes.data?.patientId;
 
                 if (patientId) {
                     const aptRes = await axios.get(`${backendUrl}/api/appointments/patient/${patientId}`);
@@ -61,13 +62,36 @@ export default function Home() {
                         .filter((a: any) => new Date(a.date) >= now && a.status !== 'Completed' && !a.isTicked)
                         .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
-                    setUpcomingAppointment(next);
+                    setUpcomingAppointment(next || null);
                 }
             } catch (err) {
                 console.error('Error fetching dashboard status:', err);
             }
         };
+
         fetchUserData();
+
+        // Real-time Update Listener
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+        const socket = io(backendUrl);
+
+        socket.on('newAppointment', (data) => {
+            // @ts-ignore
+            if (data.patientId === session?.user?.patientId || data.patientId === upcomingAppointment?.patientId) {
+                fetchUserData();
+            } else {
+                // Fallback: fetch anyway to be safe since sync might have happened on backend
+                fetchUserData();
+            }
+        });
+
+        socket.on('updateAppointment', (data) => {
+            fetchUserData();
+        });
+
+        return () => {
+            socket.disconnect();
+        };
     }, [session]);
 
     useEffect(() => {

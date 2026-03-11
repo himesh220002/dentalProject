@@ -91,6 +91,13 @@ exports.createAppointment = async (req, res) => {
         }
 
         console.log('--- APPOINTMENT FLOW COMPLETE ---');
+
+        // Emit real-time event
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('newAppointment', { patientId: savedAppointment.patientId });
+        }
+
         res.status(201).json({ ...savedAppointment.toObject(), emailSentTo });
     } catch (error) {
         console.error('✖ CRITICAL ERROR (Step 1):', error.message);
@@ -203,6 +210,13 @@ exports.updateAppointmentStatus = async (req, res) => {
         }
 
         console.log('--- RESCHEDULE FLOW COMPLETE ---');
+
+        // Emit real-time event
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('updateAppointment', { patientId: updatedAppointment.patientId._id || updatedAppointment.patientId });
+        }
+
         res.status(200).json({ ...updatedAppointment.toObject(), emailSentTo });
     } catch (error) {
         console.error('✖ CRITICAL ERROR (Update Flow):', error.message);
