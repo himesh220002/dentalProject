@@ -18,6 +18,7 @@ export default function TempClinicForm() {
         tagline: "Your Smile's Guardian",
         email: 'care@drToothdental.in',
         phone: '+91 90000 00000',
+        staffPhone: '+91 8105542318',
         establishedYear: '2014',
         clinicExperience: '10+',
         expertise: 'Restorative Dentistry, Oral Surgery, Orthodontics, Cosmetic Dentistry',
@@ -706,8 +707,12 @@ export default function TempClinicForm() {
                             </h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Phone</label>
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Doctor's Phone (Official)</label>
                                     <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Staff/Front Desk Phone (WhatsApp Queries)</label>
+                                    <input type="text" name="staffPhone" value={formData.staffPhone} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Email</label>

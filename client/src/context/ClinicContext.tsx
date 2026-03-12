@@ -10,6 +10,7 @@ interface ClinicData {
     establishedYear: string;
     clinicExperience: string;
     phone: string;
+    staffPhone: string;
     email: string;
     expertise: string;
     visitPolicy: string;

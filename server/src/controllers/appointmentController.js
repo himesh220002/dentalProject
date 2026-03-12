@@ -98,6 +98,29 @@ exports.createAppointment = async (req, res) => {
             io.emit('newAppointment', { patientId: savedAppointment.patientId });
         }
 
+        // Auto-Record: Check if created as Completed
+        if (savedAppointment.status === 'Completed' || savedAppointment.paymentStatus === 'Paid') {
+            console.log('Auto-Record (Create): Initializing treatment log...');
+            let treatmentName = savedAppointment.reason;
+            let notes = "The procedure has been completed with proper measures. No immediate complications were observed. Routine follow-up is advised.";
+
+            const lastParenMatch = savedAppointment.reason.match(/([\s\S]*)\s?\(([\s\S]*)\)\s*$/);
+            if (lastParenMatch) {
+                treatmentName = lastParenMatch[1].trim();
+                notes = lastParenMatch[2].trim() || notes;
+            }
+
+            await TreatmentRecord.create({
+                patientId: savedAppointment.patientId,
+                appointmentId: savedAppointment._id,
+                treatmentName: treatmentName,
+                cost: savedAppointment.amount || 0,
+                date: savedAppointment.date,
+                notes: notes
+            });
+            console.log('✔ Auto-Record (Create): Generated.');
+        }
+
         res.status(201).json({ ...savedAppointment.toObject(), emailSentTo });
     } catch (error) {
         console.error('✖ CRITICAL ERROR (Step 1):', error.message);
@@ -177,9 +200,11 @@ exports.updateAppointmentStatus = async (req, res) => {
             }
         }
 
-        // Handle Treatment Record based on paymentStatus
-        if (req.body.paymentStatus === 'Paid') {
-            console.log('Auto-Record: Creating treatment log...');
+        // Handle Treatment Record based on status OR paymentStatus
+        const isEligibleForRecord = updatedAppointment.status === 'Completed' || updatedAppointment.paymentStatus === 'Paid';
+
+        if (isEligibleForRecord) {
+            console.log('Auto-Record: Checking/Creating treatment log...');
             // Check if record already exists for this appointment
             const existingRecord = await TreatmentRecord.findOne({ appointmentId: updatedAppointment._id });
 
@@ -195,7 +220,7 @@ exports.updateAppointmentStatus = async (req, res) => {
                 }
 
                 await TreatmentRecord.create({
-                    patientId: updatedAppointment.patientId._id,
+                    patientId: updatedAppointment.patientId._id || updatedAppointment.patientId,
                     appointmentId: updatedAppointment._id,
                     treatmentName: treatmentName,
                     cost: updatedAppointment.amount || 0,
@@ -204,9 +229,10 @@ exports.updateAppointmentStatus = async (req, res) => {
                 });
                 console.log('✔ Auto-Record: Created.');
             }
-        } else if (req.body.paymentStatus && req.body.paymentStatus !== 'Paid') {
+        } else {
+            // If neither Completed nor Paid, ensure no record exists
             await TreatmentRecord.findOneAndDelete({ appointmentId: updatedAppointment._id });
-            console.log('Auto-Record: Removed (Status reverted from Paid).');
+            console.log('Auto-Record: Removed (Neither Completed nor Paid).');
         }
 
         console.log('--- RESCHEDULE FLOW COMPLETE ---');

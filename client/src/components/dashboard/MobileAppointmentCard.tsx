@@ -159,7 +159,7 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
 
             {/* Collapsible Body */}
             {isOpen && (
-                <div className="px-5 pb-5 space-y-4 animate-fadeIn">
+                <div className="px-5 pb-5 space-y-4 animate-fadeIn bg-purple-100">
                     <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
                         <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-gray-400 border border-gray-200">
                             <FaUser size={10} />
@@ -278,13 +278,13 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
 
                         <button
                             onClick={() => onEdit(apt._id)}
-                            className="flex-1 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2"
+                            className="flex-1 py-2 px-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2"
                         >
-                            <FaEdit /> Edit
+                            <FaEdit /> EDIT
                         </button>
                         <button
                             onClick={() => handleReschedule(apt._id)}
-                            className="flex-1 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2"
+                            className="flex-1 py-2 px-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2"
                         >
                             <FaCalendarPlus /> Reschedule
                         </button>

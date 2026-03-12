@@ -140,7 +140,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
         date: initialDate ? initialDate.toISOString().split('T')[0] : getTodayDate(),
         time: '',
         selectedTreatments: [] as { name: string, price: number }[],
-        additionalCost: 0,
+        additionalItems: [] as { name: string, price: number }[],
         notes: ''
     });
 
@@ -184,7 +184,9 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                         date: new Date(apt.date).toISOString().split('T')[0],
                         time: formatTimeForInput(apt.time),
                         selectedTreatments: selected.length > 0 ? selected : [{ name: '', price: 0 }],
-                        additionalCost: apt.amount - selected.reduce((s: number, t: any) => s + t.price, 0) || 0,
+                        additionalItems: (apt.amount - selected.reduce((s: number, t: any) => s + t.price, 0) > 0)
+                            ? [{ name: 'Previous Adjustment', price: apt.amount - selected.reduce((s: number, t: any) => s + t.price, 0) }]
+                            : [],
                         notes: noteContent
                     });
                     setSearchTerm(apt.patientId?.name || '');
@@ -315,7 +317,8 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
     };
 
     const basePriceTotal = formData.selectedTreatments.reduce((sum, t) => sum + t.price, 0);
-    const totalAmount = basePriceTotal + (Number(formData.additionalCost) || 0);
+    const additionalItemsTotal = formData.additionalItems.reduce((sum, t) => sum + t.price, 0);
+    const totalAmount = basePriceTotal + additionalItemsTotal;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -383,7 +386,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                 date: getTodayDate(),
                 time: '',
                 selectedTreatments: [],
-                additionalCost: 0,
+                additionalItems: [],
                 notes: ''
             });
             setSearchTerm('');
@@ -790,14 +793,71 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                                    <FaPlusCircle className="text-blue-400" /> Additional
+                                    <FaPlusCircle className="text-blue-400" /> Quick Add Additional Costs
                                 </label>
-                                <input
-                                    type="number"
-                                    value={formData.additionalCost}
-                                    onChange={(e) => setFormData({ ...formData, additionalCost: parseInt(e.target.value) || 0 })}
-                                    className="w-full bg-white border border-blue-200 rounded-xl px-3 py-2 font-bold text-gray-800 outline-none focus:border-blue-500"
-                                />
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <select
+                                            onChange={(e) => {
+                                                const select = e.target as HTMLSelectElement;
+                                                const val = parseInt(select.value);
+                                                const name = select.options[select.selectedIndex].text.split(' (+')[0];
+                                                if (val > 0) {
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        additionalItems: [...prev.additionalItems, { name, price: val }]
+                                                    }));
+                                                }
+                                                select.value = "0"; // Reset select
+                                            }}
+                                            className="flex-grow bg-white border border-blue-200 rounded-xl px-3 py-2 text-[10px] font-black text-blue-600 outline-none focus:ring-1 focus:ring-blue-500 uppercase cursor-pointer"
+                                        >
+                                            <option value="0">Select Kit / Item...</option>
+                                            <option value="100">Hygiene Kit (+ ₹100)</option>
+                                            <option value="200">Surgery Kit (+ ₹200)</option>
+                                            <option value="300">X-Ray (+ ₹300)</option>
+                                            <option value="150">Anesthesia (+ ₹150)</option>
+                                        </select>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, additionalItems: [] }))}
+                                            className="px-3 py-2 rounded-xl bg-rose-50 border border-rose-100 text-[10px] font-black text-rose-600 hover:bg-rose-600 hover:text-white transition-all uppercase"
+                                        >
+                                            Clear All
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Breakdown List */}
+                        <div className="space-y-1 py-3 border-t border-blue-100">
+                            <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest italic">Breakdown :</span>
+                            <div className="space-y-1">
+                                {formData.selectedTreatments.map((t, i) => t.name && (
+                                    <div key={i} className="flex justify-between text-[11px] font-bold text-gray-500">
+                                        <span>• {t.name}</span>
+                                        <span>₹{t.price}</span>
+                                    </div>
+                                ))}
+                                {formData.additionalItems.map((item, i) => (
+                                    <div key={i} className="flex justify-between items-center text-[11px] font-bold text-blue-600 group">
+                                        <div className="flex items-center gap-2">
+                                            <span>• {item.name}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({
+                                                    ...prev,
+                                                    additionalItems: prev.additionalItems.filter((_, idx) => idx !== i)
+                                                }))}
+                                                className="text-rose-400 hover:text-rose-600 opacity-30 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <FaTimes size={10} />
+                                            </button>
+                                        </div>
+                                        <span>₹{item.price}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
@@ -870,7 +930,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

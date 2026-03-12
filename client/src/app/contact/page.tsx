@@ -17,11 +17,12 @@ function ContactContent() {
 
     // Fallbacks
     const phone = clinicData?.phone || '+91 98765 43210';
+    const staffPhone = clinicData?.staffPhone || phone;
     const email = clinicData?.email || 'care@drToothdental.in';
     const address = clinicData
         ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}`
         : 'Dental Clinic Road, Katihar, Bihar - 854105';
-    const whatsappLink = `https://wa.me/${phone.replace(/\D/g, '')}`;
+    const whatsappLink = `https://wa.me/${staffPhone.replace(/\D/g, '')}`;
     const latitude = clinicData?.address.latitude || '25.555613';
     const longitude = clinicData?.address.longitude || '87.556440';
 
@@ -196,7 +197,7 @@ function ContactContent() {
             });
 
             // Construct the WhatsApp Message
-            const clinicPhone = phone.replace(/\D/g, ''); // Cleans the number
+            const clinicPhone = staffPhone.replace(/\D/g, ''); // Cleans the number
             const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
             const messageText = language === 'hi'
                 ? `नमस्ते डॉक्टर, मैं *${formData.name}* हूँ।\nमैं आपसे इस विषय में परामर्श करना चाहता/चाहती हूँ:- \n\n${formData.message}\n\n*मेरा फोन:* ${formData.phone}`
@@ -259,8 +260,8 @@ function ContactContent() {
                             <h3 className="text-xl font-bold text-gray-800">{t.callNow}</h3>
                         </div>
                         <p className="text-gray-600 mb-2">{clinicData?.timings.monday || (language === 'hi' ? 'सोम-शनि सुबह 10 बजे से रात 8 बजे तक' : 'Mon-Sat from 10am to 8pm')}</p>
-                        <a href={`tel:${phone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block">
-                            {phone}
+                        <a href={`tel:${staffPhone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block">
+                            {staffPhone}
                         </a>
                     </div>
 
@@ -432,7 +433,7 @@ function ContactContent() {
                     </div>
 
                     {/* Google Map Integration */}
-                    <div className="bg-white p-3 rounded-3xl shadow-xl overflow-hidden h-[400px] w-full border-4 border-white transform hover:shadow-2xl transition duration-500">
+                    <div id="map" className="bg-white p-3 rounded-3xl shadow-xl overflow-hidden h-[400px] w-full border-4 border-white transform hover:shadow-2xl transition duration-500">
                         <iframe
                             src={`https://maps.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`}
                             width="100%"

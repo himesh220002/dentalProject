@@ -60,7 +60,7 @@ export default function Home() {
                     now.setHours(0, 0, 0, 0);
 
                     const next = appointments
-                        .filter((a: any) => new Date(a.date) >= now && a.status !== 'Completed' && !a.isTicked)
+                        .filter((a: any) => new Date(a.date) >= now && !['Completed', 'Operating'].includes(a.status) && !a.isTicked)
                         .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
                     setUpcomingAppointment(next || null);
@@ -339,7 +339,7 @@ export default function Home() {
                     <Link
                         href="/profile"
                         onClick={() => setIsAptDismissed(true)}
-                        className="group relative flex items-center gap-4 bg-[#fffbeb] hover:bg-[#fff9db] p-1.5 pr-6 rounded-[2rem] shadow-[0_20px_50px_rgba(251,191,36,0.2)] border-2 border-[#fef3c7] transition-all active:scale-95 whitespace-nowrap overflow-hidden"
+                        className="group relative flex items-center gap-2 bg-[#fffbeb] hover:bg-[#fff9db] p-1.5 pr-3 rounded-[2rem] shadow-[0_20px_50px_rgba(251,191,36,0.2)] border-2 border-[#fef3c7] transition-all active:scale-95 whitespace-nowrap overflow-hidden"
                     >
                         {/* Glow Effect */}
                         <div className="absolute inset-0 bg-amber-400/10 animate-pulse"></div>

@@ -157,7 +157,7 @@ export default function ProfilePage() {
 
                 const nextApt = sortedApts.find((apt: any) => {
                     const aptDate = new Date(apt.date);
-                    return aptDate >= startOfToday && apt.status !== 'Completed' && !apt.isTicked;
+                    return aptDate >= startOfToday && !['Completed', 'Operating'].includes(apt.status) && !apt.isTicked;
                 });
                 setUpcomingAppointment(nextApt);
             } catch (err) {

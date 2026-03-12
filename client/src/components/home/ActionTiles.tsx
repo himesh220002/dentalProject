@@ -2,14 +2,16 @@ import { FaClock, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
 import { translations } from '../../constants/translations';
 import { ActionTileSkeleton } from '../ui/Skeleton';
+import { useRouter } from 'next/navigation';
 
 export default function ActionTiles() {
     const { clinicData, language } = useClinic();
     const t = translations[language];
+    const router = useRouter();
 
     const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}` : (language === 'hi' ? 'मार्केट रोड, डेंटल स्क्वायर के पास' : 'Market Road, Near Dental Square');
     const subAddress = clinicData ? `${clinicData.address.state} - ${clinicData.address.zip}` : (language === 'hi' ? 'कटिहार, बिहार - 854105' : 'Katihar, Bihar - 854105');
-    const phone = clinicData?.phone || '+91 98765 43210';
+    const phone = clinicData?.staffPhone || clinicData?.phone || '+91 98765 43210';
     const hours = clinicData ? `${language === 'hi' ? 'सोम - शनि' : 'Mon - Sat'}: ${clinicData.timings.monday}` : (language === 'hi' ? 'सोम - शनि: सुबह 10:00 - रात 08:00' : 'Mon - Sat: 10:00 AM - 08:00 PM');
     const subHours = clinicData ? `${language === 'hi' ? 'रविवार' : 'Sunday'}: ${clinicData.timings.sunday}` : (language === 'hi' ? 'रविवार: केवल आपातकालीन' : 'Sunday: Emergency Only');
 
@@ -19,21 +21,24 @@ export default function ActionTiles() {
             title: t.workingHours,
             content: hours,
             subContent: subHours,
-            color: 'blue'
+            color: 'blue',
+            className: 'hidden lg:flex'
         },
         {
             icon: <FaMapMarkerAlt size={24} />,
             title: t.visitUs,
             content: address,
             subContent: subAddress,
-            color: 'teal'
+            color: 'teal',
+            link: '/contact#map'
         },
         {
             icon: <FaPhoneAlt size={24} />,
             title: t.quickContact,
             content: phone,
             subContent: t.urgentQueries,
-            color: 'indigo'
+            color: 'indigo',
+            link: `/contact`
         }
     ];
 
@@ -41,12 +46,17 @@ export default function ActionTiles() {
         <section className=" relative z-20 px-4 sm:px-6">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {useClinic().isLoading ? (
-                    [...Array(3)].map((_, i) => <ActionTileSkeleton key={i} />)
+                    [...Array(3)].map((_, i) => (
+                        <div key={i} className={i === 0 ? 'hidden lg:block' : ''}>
+                            <ActionTileSkeleton />
+                        </div>
+                    ))
                 ) : (
                     tiles.map((tile, index) => (
                         <div
                             key={index}
-                            className="bg-gradient-to-br from-purple-100 to-teal-50 p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-3 border-gray-50 flex flex-col gap-5 sm:gap-6 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 group transform hover:-translate-y-2 active:scale-95 cursor-pointer"
+                            onClick={() => tile.link && router.push(tile.link)}
+                            className={`bg-gradient-to-br from-purple-100 to-teal-50 p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-3 border-gray-50 flex flex-col gap-5 sm:gap-6 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 group transform hover:-translate-y-2 active:scale-95 cursor-pointer ${tile.className || ''}`}
                         >
                             <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-6
                             ${tile.color === 'blue' ? 'bg-purple-200 text-blue-600' :

@@ -77,8 +77,8 @@ function DashboardSchedulesContent() {
         if (apt.paymentStatus === 'Paid' && apt.markedPaidAt) {
             const paidTime = new Date(apt.markedPaidAt).getTime();
             const now = new Date().getTime();
-            const fiveMinutes = 5 * 60 * 1000;
-            return (now - paidTime) < fiveMinutes;
+            const fifteenMinutes = 15 * 60 * 1000;
+            return (now - paidTime) < fifteenMinutes;
         }
         return true;
     });
