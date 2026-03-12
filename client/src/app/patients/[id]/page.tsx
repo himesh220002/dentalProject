@@ -161,26 +161,26 @@ export default function PatientProfile() {
     return (
         <div className="min-h-screen bg-gray-50/50 pb-20">
 
-            <div className="container mx-auto px-0 sm:px-4 py-8 max-w-6xl">
+            <div className="container mx-auto px-0 sm:px-4 pt-0 md:pt-4 pb-8 max-w-6xl">
                 {/* Back Button */}
                 <button
                     onClick={() => window.history.back()}
-                    className="flex items-center gap-2 text-gray-400 hover:text-blue-600 font-black uppercase text-[10px] tracking-[0.2em] mb-8 transition group"
+                    className="z-10 absolute top-[100px] right-6 md:top-[120px] flex items-center justify-end gap-2 text-gray-400 hover:text-blue-600 font-black text-[10px] tracking-[0.2em] ml-2 mb-2 transition group"
                 >
                     <div className="p-2 bg-white rounded-xl shadow-sm border border-gray-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition">
                         <FaArrowLeft size={12} />
                     </div>
-                    Back to Dashboard
+                    Back
                 </button>
 
                 {/* Profile Header Card */}
-                <div className="bg-white rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-gray-100 mb-10">
-                    <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 px-6 sm:px-12 py-10 sm:py-16 relative overflow-hidden">
+                <div className="relative bg-white rounded-0 sm:rounded-[1.5rem] 2xl:rounded-[2.5rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-gray-100 mb-10">
+                    <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 px-6 sm:px-8 lg:px-12 py-10 sm:py-16 relative overflow-hidden">
                         {/* Decorative elements */}
                         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-400/5 rounded-full -ml-16 -mb-16 blur-2xl"></div>
 
-                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 sm:gap-10 text-center md:text-left">
+                        <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6 sm:gap-10 text-center md:text-left">
                             <div className="w-16 h-16 md:w-24 md:h-24 bg-white/10 backdrop-blur-xl rounded-[2.5rem] flex items-center justify-center border border-white/20 shadow-2xl group transition-transform duration-500 hover:scale-105">
                                 <FaUser className="text-white text-3xl md:text-4xl opacity-90 group-hover:opacity-100 transition-opacity" />
                             </div>

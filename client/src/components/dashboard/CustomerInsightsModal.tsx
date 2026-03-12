@@ -2,7 +2,7 @@
 
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useMemo, useState, useEffect } from 'react';
-import { FaTimes, FaChartLine, FaMapMarkedAlt, FaLink, FaUsers, FaTooth, FaCompass, FaCircleNotch } from 'react-icons/fa';
+import { FaTimes, FaChartLine, FaMapMarkedAlt, FaLink, FaUsers, FaTooth, FaCompass, FaCircleNotch, FaEnvelope, FaCalendarAlt, FaClock, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 
 interface Patient {
     _id: string;
@@ -147,20 +147,62 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
         return { radialOrbs: orbs, topAreas: sortedAreas };
     }, [patients, appointments]);
 
-    // 3. Connection Radar Stats
-    const radarStats = useMemo(() => {
-        const retention = Math.min((appointments.filter(a => a.status === 'Completed').length / (appointments.length || 1)) * 100, 100);
-        const loyalty = Math.min((appointments.length / (patients.length || 1)) * 20, 100);
-        const inquiry = Math.min((messages.length / (patients.length || 1)) * 50, 100);
-        const stability = 85; // Simulated baseline
+    // 3. Patient Flow & Conversion Funnel
+    const flowMetrics = useMemo(() => {
+        const completed = appointments.filter(a => a.status === 'Completed');
+        const cancelled = appointments.filter(a => a.status === 'Cancelled');
+        const scheduled = appointments.filter(a => a.status === 'Scheduled' || a.status === 'Operating');
 
-        return [
-            { label: 'Retention', value: retention, color: 'text-emerald-500' },
-            { label: 'Loyalty', value: loyalty, color: 'text-blue-500' },
-            { label: 'Inquiry', value: inquiry, color: 'text-amber-500' },
-            { label: 'Stability', value: stability, color: 'text-purple-500' }
-        ];
-    }, [patients, appointments, messages]);
+        // Punctuality: % of appointments that didn't stay "Delayed"
+        const punctuality = Math.min(((completed.length) / (appointments.filter(a => a.status !== 'Cancelled').length || 1)) * 100, 100);
+
+        // Retention: % of patients with more than 1 appointment
+        const patientApptCounts: { [key: string]: number } = {};
+        appointments.forEach(a => {
+            const pId = (a.patientId?._id || a.patientId)?.toString();
+            if (pId) patientApptCounts[pId] = (patientApptCounts[pId] || 0) + 1;
+        });
+        const retainedPatients = Object.values(patientApptCounts).filter(count => count > 1).length;
+        const retentionRate = (retainedPatients / (patients.length || 1)) * 100;
+
+        // Conversion Stages
+        const inquiries = messages.length;
+        const consultations = appointments.length;
+        const treatments = completed.length;
+        const followups = retainedPatients;
+
+        return {
+            punctuality,
+            retentionRate,
+            cancellationRate: (cancelled.length / (appointments.length || 1)) * 100,
+            funnel: [
+                { label: 'Inquiries', val: inquiries, icon: FaEnvelope, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+                { label: 'Consults', val: consultations, icon: FaCalendarAlt, color: 'text-amber-400', bg: 'bg-amber-400/10' },
+                { label: 'Treatments', val: treatments, icon: FaTooth, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+                { label: 'FollowUps', val: followups, icon: FaChartLine, color: 'text-purple-400', bg: 'bg-purple-400/10' }
+            ],
+            zones: {
+                ...Object.fromEntries(topAreas.map(area => [area, radialOrbs.filter(o => o.area === area).length])),
+                'CENTRAL': radialOrbs.filter(o => !topAreas.includes(o.area)).length
+            }
+        };
+    }, [patients, appointments, messages, radialOrbs, topAreas]);
+
+    // 4. Revenue per Segment (Theoretic)
+    const revenueSegments = useMemo(() => {
+        const segments: { [key: string]: number } = {};
+        appointments.forEach(a => {
+            if (a.status === 'Completed') {
+                const tName = a.reason.split('|')[0].trim() || 'General';
+                // Use a default weight for pricing if not present
+                const weight = tName.toLowerCase().includes('root canal') ? 5000 :
+                    tName.toLowerCase().includes('extraction') ? 1000 :
+                        tName.toLowerCase().includes('whitening') ? 3000 : 500;
+                segments[tName] = (segments[tName] || 0) + weight;
+            }
+        });
+        return Object.entries(segments).sort((a, b) => b[1] - a[1]).slice(0, 4);
+    }, [appointments]);
 
     // 4. Daily Appointment Activity (Current Month)
     const dailyActivity = useMemo(() => {
@@ -196,6 +238,34 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
     }, [appointments]);
 
     const maxFlux = useMemo(() => Math.max(...fluxPulse, 1), [fluxPulse]);
+
+    const yearlyPerformance = useMemo(() => {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const currentYear = new Date().getFullYear();
+
+        const data = months.map((month, i) => {
+            const monthlyCompleted = appointments.filter(a => {
+                const d = new Date(a.date);
+                return d.getMonth() === i && d.getFullYear() === currentYear && a.status === 'Completed';
+            });
+
+            const revenue = monthlyCompleted.reduce((sum, a) => {
+                const tName = a.reason.split('|')[0].trim() || 'General';
+                const weight = tName.toLowerCase().includes('root canal') ? 5000 :
+                    tName.toLowerCase().includes('extraction') ? 1000 :
+                        tName.toLowerCase().includes('whitening') ? 3000 : 500;
+                return sum + weight;
+            }, 0);
+
+            return { month, revenue };
+        });
+
+        const maxRevenue = Math.max(...data.map(d => d.revenue), 10000);
+        return data.map(d => ({
+            ...d,
+            percent: (d.revenue / maxRevenue) * 100
+        }));
+    }, [appointments]);
 
     if (!mounted) return null;
 
@@ -332,17 +402,15 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
 
                                         <div className="mb-6 flex flex-wrap items-center justify-between gap-y-3 px-2">
                                             <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                                                <div className="flex items-center gap-1.5">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-white opacity-20"></div>
-                                                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-tighter">Quiet</span>
-                                                </div>
-                                                <div className="flex items-center gap-1.5">
-                                                    <div className="w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_8px_white/30]"></div>
-                                                    <span className="text-[8px] font-black text-slate-300 uppercase tracking-tighter">Upcoming</span>
-                                                </div>
+                                                {topAreas.map((area, idx) => (
+                                                    <div key={area} className="flex items-center gap-1.5">
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${idx === 0 ? 'bg-blue-300' : idx === 1 ? 'bg-blue-500' : 'bg-blue-700'} opacity-70`}></div>
+                                                        <span className="text-[8px] font-black text-slate-500 uppercase tracking-tighter">{area}</span>
+                                                    </div>
+                                                ))}
                                                 <div className="flex items-center gap-1.5 sm:ml-2 border-l border-slate-700 pl-3 sm:pl-4">
                                                     <div className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse"></div>
-                                                    <span className="text-[8px] font-black text-blue-400 uppercase tracking-tighter">Active Visit</span>
+                                                    <span className="text-[8px] font-black text-blue-400 uppercase tracking-tighter">Station</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -365,56 +433,71 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                                         </div>
                                     </div>
 
-                                    {/* Center Column: Radar & Distribution */}
+                                    {/* Center Column: Flow & Revenue synergy */}
                                     <div className="lg:col-span-5 flex flex-col gap-6">
 
-                                        {/* Interaction Radar */}
-                                        <div className="bg-slate-800/40 p-8 rounded-[2.5rem] border border-slate-700/50 relative overflow-hidden h-64">
-                                            <div className="relative z-10 flex h-full items-center justify-between gap-8">
-                                                <div className="space-y-4 flex-grow">
-                                                    {radarStats.map((s, i) => (
-                                                        <div key={i} className="space-y-1">
-                                                            <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                                                <span>{s.label}</span>
-                                                                <span className={s.color}>{s.value.toFixed(0)}%</span>
-                                                            </div>
-                                                            <div className="h-1.5 bg-slate-900 rounded-full overflow-hidden">
-                                                                <div
-                                                                    className={`h-full transition-all duration-1000 delay-${i * 100} ${s.color.replace('text', 'bg')}`}
-                                                                    style={{ width: `${s.value}%` }}
-                                                                ></div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                        {/* Patient Flow Efficiency */}
+                                        <div className="bg-slate-800/40 p-8 rounded-[2.5rem] border border-slate-700/50 relative overflow-hidden flex flex-col">
+                                            <div className="absolute top-0 right-0 p-8 opacity-5">
+                                                <FaClock size={120} />
+                                            </div>
+                                            <h3 className="text-sm font-black text-slate-400 mb-6 flex items-center gap-2 uppercase tracking-[0.2em]">
+                                                <FaClock className="text-blue-500" />
+                                                Flow Efficiency
+                                            </h3>
+
+                                            <div className="grid grid-cols-2 gap-4 flex-grow">
+                                                <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/30 flex flex-col justify-center">
+                                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Punctuality</span>
+                                                    <div className="flex items-end gap-2">
+                                                        <span className="text-3xl font-black text-emerald-400">{flowMetrics.punctuality.toFixed(0)}%</span>
+                                                        <span className="text-[10px] font-bold text-slate-400 mb-1">On Time</span>
+                                                    </div>
                                                 </div>
-                                                <div className="relative w-32 h-32 flex items-center justify-center">
-                                                    <div className="absolute inset-0 border-4 border-slate-700 rounded-full border-dashed animate-[spin_10s_linear_infinite]"></div>
-                                                    <FaUsers className="text-slate-700 text-4xl" />
+                                                <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/30 flex flex-col justify-center">
+                                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Cancellations</span>
+                                                    <div className="flex items-end gap-2">
+                                                        <span className="text-3xl font-black text-rose-400">{flowMetrics.cancellationRate.toFixed(1)}%</span>
+                                                        <span className="text-[10px] font-bold text-slate-400 mb-1">Lost Flow</span>
+                                                    </div>
+                                                </div>
+                                                <div className="col-span-2 bg-slate-900/50 p-4 rounded-2xl border border-slate-700/30">
+                                                    <div className="flex justify-between items-center mb-3">
+                                                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Efficiency Benchmark</span>
+                                                        <span className="text-[10px] font-black text-blue-400 uppercase">Top 10%</span>
+                                                    </div>
+                                                    <div className="h-2 bg-slate-950 rounded-full overflow-hidden flex">
+                                                        <div className="h-full bg-emerald-500" style={{ width: `${flowMetrics.punctuality}%` }}></div>
+                                                        <div className="h-full bg-slate-800/50" style={{ width: `${100 - flowMetrics.punctuality}%` }}></div>
+                                                    </div>
+                                                    <p className="text-[9px] text-slate-500 font-bold mt-2 uppercase tracking-tight italic">
+                                                        {flowMetrics.punctuality > 80 ? 'Exceptional flow. Treatment zones are optimally synchronized.' : 'Potential bottleneck detected in zone transitions.'}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Treatment synergy */}
+                                        {/* Revenue synergy */}
                                         <div className="bg-slate-800/40 p-8 rounded-[2.5rem] border border-slate-700/50 flex-grow">
                                             <h3 className="text-sm font-black text-slate-400 mb-6 flex items-center gap-2 uppercase tracking-[0.2em]">
                                                 <FaTooth className="text-emerald-500" />
-                                                Treatment Synergy
+                                                Revenue Synergy
                                             </h3>
                                             <div className="space-y-4">
-                                                {treatmentSynergy.map(([name, count], i) => (
+                                                {revenueSegments.map(([name, val], i) => (
                                                     <div key={i} className="flex items-center gap-4">
                                                         <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-[10px] font-black text-emerald-500 border border-emerald-500/20">
                                                             P{i + 1}
                                                         </div>
                                                         <div className="flex-grow">
                                                             <div className="flex justify-between text-xs font-black mb-1">
-                                                                <span className="truncate max-w-[150px]">{name || 'General'}</span>
-                                                                <span className="text-slate-500">{count}</span>
+                                                                <span className="truncate max-w-[150px]">{name}</span>
+                                                                <span className="text-slate-500">₹{val.toLocaleString()}</span>
                                                             </div>
                                                             <div className="h-1 bg-slate-900 rounded-full overflow-hidden">
                                                                 <div
                                                                     className="h-full bg-emerald-500"
-                                                                    style={{ width: `${(count / appointments.length) * 100}%` }}
+                                                                    style={{ width: `${(val / (revenueSegments[0][1] || 1)) * 100}%` }}
                                                                 ></div>
                                                             </div>
                                                         </div>
@@ -427,83 +510,108 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                                     {/* Right Column: Pulse & Metrics */}
                                     <div className="lg:col-span-3 flex flex-col gap-6">
 
-                                        {/* Daily Appointment Activity Viewer */}
-                                        <div className="bg-slate-800/40 p-5 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-700/50 flex flex-col justify-between h-[18rem] sm:h-64 group cursor-default overflow-hidden relative">
-                                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-150 transition-transform duration-700">
-                                                <FaChartLine size={80} />
+                                        {/* Conversion Funnel */}
+                                        <div className="bg-slate-800/40 p-6 rounded-[2.5rem] border border-slate-700/50 flex flex-col group overflow-hidden relative">
+                                            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                                <FaCompass size={80} />
                                             </div>
-                                            <div className="relative z-10">
-                                                <div className="flex justify-between items-start">
-                                                    <div>
-                                                        <h3 className="text-xs font-black uppercase tracking-[0.2em] opacity-80 mb-2">Daily Activity</h3>
-                                                        <span className="text-3xl sm:text-5xl font-black text-white">
-                                                            {dailyActivity.filter(v => v > 0).length}
-                                                        </span>
-                                                        <p className="text-[10px] font-bold opacity-60 uppercase mt-2 tracking-widest">Active Days / Month</p>
-                                                    </div>
-                                                    <div className="bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-700/50">
-                                                        <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Current Month</span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <h3 className="text-[10px] font-black text-slate-400 mb-6 flex items-center gap-2 uppercase tracking-[0.2em]">
+                                                <FaChartLine className="text-blue-400" />
+                                                Conversion Funnel
+                                            </h3>
 
-                                            <div className="flex gap-2 h-24 sm:h-20 mt-4 relative z-10">
-                                                {/* Y-Axis Labels */}
-                                                <div className="flex flex-col justify-between text-[8px] font-black text-slate-600 h-full pb-0.5">
-                                                    <span>{maxDaily}</span>
-                                                    <span>{Math.round(maxDaily / 2)}</span>
-                                                    <span>0</span>
-                                                </div>
-
-                                                <div className="flex-grow flex items-end gap-0.5 sm:gap-1 h-full relative">
-                                                    {/* Horizontal Grid Lines */}
-                                                    <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-                                                        <div className="border-t border-slate-700/30 w-full"></div>
-                                                        <div className="border-t border-slate-700/30 w-full"></div>
-                                                        <div className="border-t border-slate-700/30 w-full"></div>
-                                                    </div>
-
-                                                    {dailyActivity.map((val, i) => (
-                                                        <div
-                                                            key={i}
-                                                            className="flex-1 group/bar relative"
-                                                            style={{ height: `${(val / maxDaily) * 100}%` }}
-                                                        >
-                                                            <div className={`w-full h-full rounded-t-[1px] sm:rounded-t-sm transition-all duration-300 ${val > 0 ? 'bg-blue-500/80 hover:bg-blue-400' : 'bg-slate-700/10'}`}></div>
-                                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-950 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover/bar:opacity-100 transition whitespace-nowrap z-20 border border-slate-800 shadow-xl">
-                                                                Day {i + 1}: {val}
+                                            <div className="space-y-4">
+                                                {flowMetrics.funnel.map((step, i) => (
+                                                    <div key={i} className="flex items-center gap-3">
+                                                        <div className={`w-10 h-10 rounded-xl ${step.bg} ${step.color} flex items-center justify-center border border-white/5`}>
+                                                            <step.icon size={16} />
+                                                        </div>
+                                                        <div className="flex-grow">
+                                                            <div className="flex justify-between items-end mb-1">
+                                                                <span className="text-[10px] font-black text-slate-200 uppercase tracking-widest">{step.label}</span>
+                                                                <span className="text-sm font-black text-white">{step.val}</span>
+                                                            </div>
+                                                            <div className="h-1.5 bg-slate-950 rounded-full overflow-hidden">
+                                                                <div
+                                                                    className={`h-full ${step.color.replace('text', 'bg')} transition-all duration-[1.5s] delay-${i * 100}`}
+                                                                    style={{ width: `${(step.val / (flowMetrics.funnel[0].val || 1)) * 100}%` }}
+                                                                ></div>
                                                             </div>
                                                         </div>
-                                                    ))}
-                                                </div>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
 
-                                        {/* Micro Metrics */}
-                                        <div className="bg-slate-800/40 p-4 sm:p-6 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-700/50 flex-grow grid grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4">
-                                            <div className="p-3 sm:p-4 bg-slate-900/50 rounded-2xl sm:rounded-3xl border border-slate-700/30">
-                                                <div className="flex items-center gap-2 sm:gap-3 mb-1">
-                                                    <FaCircleNotch className="text-amber-500 animate-spin-slow" />
-                                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Growth</span>
+                                        {/* Micro Metrics & Predictive Alerts */}
+                                        <div className="bg-slate-800/40 p-6 rounded-[2.5rem] border border-slate-700/50 grid grid-cols-2 lg:grid-cols-1 gap-4">
+                                            <div className="p-4 bg-slate-900/50 rounded-3xl border border-slate-700/30">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <div className={`w-2 h-2 rounded-full ${flowMetrics.punctuality > 80 ? 'bg-emerald-500' : flowMetrics.punctuality > 50 ? 'bg-amber-500' : 'bg-rose-500'}`}></div>
+                                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Efficiency</span>
                                                 </div>
-                                                <span className="text-lg sm:text-xl font-black text-white">+12.4%</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xl font-black text-white">{flowMetrics.punctuality.toFixed(0)}%</span>
+                                                    <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5">
+                                                        <FaChartLine className="text-[8px]" /> ↑
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <div className="p-3 sm:p-4 bg-slate-900/50 rounded-2xl sm:rounded-3xl border border-slate-700/30">
-                                                <div className="flex items-center gap-2 sm:gap-3 mb-1">
-                                                    <FaUsers className="text-purple-500" />
-                                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Pulse</span>
+                                            <div className="p-4 bg-blue-600/10 rounded-3xl border border-blue-500/20">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <FaCompass className="text-blue-400" />
+                                                    <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Growth Momentum</span>
                                                 </div>
-                                                <span className="text-lg sm:text-xl font-black text-white">Strong</span>
+                                                <p className="text-[10px] font-bold text-blue-200/80 leading-snug">
+                                                    {flowMetrics.retentionRate > 20 ? 'Strong patient loyalty detected. Focus on scalability.' : 'Retention lagging. Optimize follow-up engagement.'}
+                                                </p>
                                             </div>
                                         </div>
 
                                     </div>
                                 </div>
 
-                                <div className="mt-8 text-center">
-                                    <p className="text-[10px] text-slate-600 font-black uppercase tracking-[0.5em]">
-                                        Intelligent Dashboard Engine v2.0 • Real-time Data Mapping
-                                    </p>
+                                {/* Bottom Row: Yearly Target Performance */}
+                                <div className="mt-8 bg-slate-800/20 p-8 rounded-[3rem] border border-slate-700/30 overflow-hidden relative group">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+                                        <div>
+                                            <h3 className="text-sm font-black text-slate-400 flex items-center gap-2 uppercase tracking-[0.2em]">
+                                                <FaChartLine className="text-blue-500" />
+                                                Financial Revenue Pulse
+                                            </h3>
+                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Monthly collection analytics across fiscal year</p>
+                                        </div>
+                                        <div className="flex gap-4">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-blue-400">Revenue Stream</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-6 md:grid-cols-12 gap-2 sm:gap-4 h-32 items-end">
+                                        {yearlyPerformance.map((data, i) => (
+                                            <div key={i} className="group/bar flex flex-col items-center gap-2 h-full relative">
+                                                <div className="flex-grow w-full flex items-end gap-[1px]">
+                                                    <div
+                                                        className="flex-grow bg-blue-500/20 group-hover/bar:bg-blue-500 transition-all duration-500 rounded-t-sm"
+                                                        style={{ height: `${data.percent}%` }}
+                                                    ></div>
+                                                    <div
+                                                        className="w-[2px] bg-slate-800 h-full rounded-t-sm opacity-20"
+                                                    ></div>
+                                                </div>
+                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">{data.month}</span>
+
+                                                {/* Tooltip */}
+                                                <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-950 text-white p-2 rounded-lg border border-slate-700 opacity-0 group-hover/bar:opacity-100 transition-opacity z-50 pointer-events-none whitespace-nowrap shadow-2xl">
+                                                    <div className="text-[9px] font-black text-blue-400 uppercase mb-1">{data.month} Revenue</div>
+                                                    <div className="text-xs font-black">₹{data.revenue.toLocaleString()} <span className="text-[10px] text-slate-400 font-bold ml-1">COLLECTED</span></div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>

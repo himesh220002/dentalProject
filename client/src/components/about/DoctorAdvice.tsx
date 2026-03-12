@@ -103,7 +103,15 @@ export default function DoctorAdvice() {
                     </p>
                 </div>
 
-                <button className="relative z-10 bg-white text-gray-900 px-12 py-6 rounded-[2rem] font-black hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-2 active:scale-95 shadow-2xl flex items-center gap-4 text-xs sm:text-lg">
+                <button
+                    onClick={() => {
+                        const phone = clinicData?.staffPhone || clinicData?.phone || '91XXXXXXXXXX';
+                        const cleanPhone = phone.replace(/\D/g, '');
+                        const msg = encodeURIComponent("Regarding Dental - ");
+                        window.open(`https://wa.me/${cleanPhone}/?text=${msg}`, '_blank');
+                    }}
+                    className="relative z-10 bg-white text-gray-900 px-12 py-6 rounded-[2rem] font-black hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-2 active:scale-95 shadow-2xl flex items-center gap-4 text-xs sm:text-lg"
+                >
                     {t.aboutAdvice.send} <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-900 group-hover:bg-white group-hover:translate-x-2 transition-all"><FaLightbulb size={14} /></div>
                 </button>
             </div>

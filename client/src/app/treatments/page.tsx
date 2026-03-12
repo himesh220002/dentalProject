@@ -84,7 +84,7 @@ interface Treatment {
     _id: string;
     name: string;
     description: string;
-    whyNeed: string;
+    image: string;
     price: string;
     icon: string;
 }
@@ -108,7 +108,7 @@ export default function Treatments() {
                         _id: `context_${idx}`,
                         name: t.name,
                         description: t.description,
-                        whyNeed: t.whyChooseThis,
+                        image: t.image,
                         price: t.price.toString().startsWith('₹') ? t.price : `₹${t.price}`,
                         icon: 'FaTooth'
                     }));
@@ -148,7 +148,7 @@ export default function Treatments() {
     );
 
     return (
-        <div className="space-y-16 py-5 sm:py-12 px-0 sm:px-4 md:px-8">
+        <div className="space-y-16 py-5 sm:py-12 px-2 sm:px-4 md:px-8">
             <div className="text-center space-y-3 sm:space-y-6 max-w-4xl mx-auto">
                 <h1 className="text-3xl sm:text-5xl md:text-7xl font-black tracking-tight text-gray-900">
                     {language === 'hi' ? 'प्रीमियम' : 'Premium'} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">{language === 'hi' ? 'दंत चिकित्सा' : 'Dental Care'}</span>
@@ -193,9 +193,12 @@ export default function Treatments() {
                                         </div>
                                         <p className="text-gray-600 leading-relaxed font-medium">{item.description}</p>
                                     </div>
-                                    <div className={`${theme.bg} p-4 rounded-2xl border ${theme.border} text-left`}>
-                                        <h4 className={`text-xs font-black uppercase tracking-widest mb-2 ${theme.text}`}>{language === 'hi' ? 'इसे क्यों चुनें?' : 'Why Choose This?'}</h4>
-                                        <p className="text-gray-700 text-sm leading-relaxed">{item.whyNeed}</p>
+                                    <div className="overflow-hidden rounded-2xl border-2 border-gray-100/50 shadow-inner group-hover:border-blue-100 transition-all duration-500">
+                                        <img
+                                            src={item.image || '/images/dentalgeneralimage.jpeg'}
+                                            alt={item.name}
+                                            className="w-full h-[200px] object-cover group-hover:scale-105 transition-transform duration-700"
+                                        />
                                     </div>
                                 </div>
 

@@ -354,7 +354,7 @@ export default function Home() {
                                 {language === 'hi' ? 'आपका तय अपॉइंटमेंट' : 'Your Fixed Appointment'}
                             </p>
                             <p className="text-sm font-black text-amber-900">
-                                {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
+                                {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
                             </p>
                         </div>
                         <div className="ml-2 w-8 h-8 rounded-full bg-white/50 flex items-center justify-center group-hover:bg-white transition-colors">

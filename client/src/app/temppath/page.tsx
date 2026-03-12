@@ -54,17 +54,17 @@ export default function TempClinicForm() {
             { name: 'Dr. nefario', role: 'Orthodontist', info: 'Expert in Braces & Aligners', experience: '8 Years' }
         ],
         treatments: [
-            { name: 'General Consultation', price: '300', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
-            { name: 'Scaling & Cleaning', price: '800', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
-            { name: 'Dental Fillings', price: '1000', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
-            { name: 'Tooth Extraction', price: '500', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
-            { name: 'Root Canal Treatment', price: '3500', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
-            { name: 'Dental Implants', price: '25000', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
-            { name: 'Teeth Whitening', price: '5000', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
-            { name: 'Orthodontic Braces', price: '15000', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
-            { name: 'Crowns & Bridges', price: '3500', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
-            { name: "Kid's Dentistry", price: '500', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' },
-            { name: 'Full Mouth X-Ray', price: '500', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' }
+            { name: 'General Consultation', price: '300', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1758691461916-dc7894eb8f94?q=80&w=1632' },
+            { name: 'Scaling & Cleaning', price: '800', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1674775372064-8c75d3f8c757?q=80&w=687' },
+            { name: 'Dental Fillings', price: '1000', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1694345215004-837b089f620d?q=80&w=1929' },
+            { name: 'Tooth Extraction', price: '500', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1626736985932-c0df2ae07a2e?q=80&w=1631' },
+            { name: 'Root Canal Treatment', price: '3500', description: 'Treatment details provided by clinic.', image: 'https://www.smilecentre.in/assets/images/treatments/root-canal-procedure.jpg' },
+            { name: 'Dental Implants', price: '25000', description: 'Treatment details provided by clinic.', image: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Dental-implant-illustration.jpg' },
+            { name: 'Teeth Whitening', price: '5000', description: 'Treatment details provided by clinic.', image: 'https://www.smilecentre.in/assets/images/treatments/tooth-whitening.jpg' },
+            { name: 'Orthodontic Braces', price: '15000', description: 'Treatment details provided by clinic.', image: 'https://smilecreations.in/wp-content/uploads/2023/11/understanding-metal-braces.jpg' },
+            { name: 'Crowns & Bridges', price: '3500', description: 'Treatment details provided by clinic.', image: 'https://www.cyprusfamilydental.com/wp-content/uploads/2022/12/Depositphotos_274172422_L.jpg' },
+            { name: "Kid's Dentistry", price: '500', description: 'Treatment details provided by clinic.', image: 'https://www.dratuljajoo.com/wp-content/uploads/2018/09/kids-dentistry.jpg' },
+            { name: 'Full Mouth X-Ray', price: '500', description: 'Treatment details provided by clinic.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjXnsLV9glWBJ77_38thCOxDEeWWN0sqTD3A&s' }
         ],
         highlights: [
             { title: 'Advanced Technology', description: 'Intraoral scanners & 3D imaging for precise diagnosis.' },
@@ -239,7 +239,7 @@ export default function TempClinicForm() {
 
     const addListItem = (listName: 'treatments' | 'consultants' | 'highlights') => {
         let newItem;
-        if (listName === 'treatments') newItem = { name: '', price: '', description: 'Treatment details provided by clinic.', whyChooseThis: 'Essential dental care.' };
+        if (listName === 'treatments') newItem = { name: '', price: '', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1597764650032-135acc9e83f3?q=80&w=2070' };
         else if (listName === 'consultants') newItem = { name: '', role: '', info: '', experience: '' };
         else newItem = { title: '', description: '' };
 
@@ -624,8 +624,8 @@ export default function TempClinicForm() {
                                                 <textarea placeholder="Description" value={t.description} onChange={(e) => handleListChange('treatments', i, 'description', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" rows={2} />
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Why Choose This?</label>
-                                                <textarea placeholder="Why Choose This?" value={t.whyChooseThis} onChange={(e) => handleListChange('treatments', i, 'whyChooseThis', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" rows={2} />
+                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Treatment Image URL</label>
+                                                <input type="text" placeholder="https://unsplash.com/..." value={t.image} onChange={(e) => handleListChange('treatments', i, 'image', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" />
                                             </div>
                                         </div>
                                     </div>

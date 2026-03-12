@@ -232,18 +232,30 @@ export default function WeeklyPlanner() {
                                     dayAppointments.slice(0, 4).map((app) => {
                                         const expired = isPastTime(app.date, app.time);
                                         const done = app.isTicked || (app.status === 'Completed');
+                                        const operating = app.status === 'Operating';
                                         return (
                                             <div
                                                 key={app._id}
                                                 onClick={(e) => e.stopPropagation()}
-                                                className={`p-3 rounded-2xl shadow-sm border transition-all ${done ? 'bg-gray-100/50 grayscale opacity-60 border-transparent' : 'bg-white border-gray-100 hover:shadow-md hover:border-blue-200 border-l-4 border-l-blue-500'
+                                                className={`p-3 rounded-2xl shadow-sm border transition-all ${operating
+                                                    ? 'bg-blue-600 border-blue-400 shadow-blue-200/50 shadow-lg scale-[1.02] z-10'
+                                                    : done
+                                                        ? 'bg-gray-100/50 grayscale opacity-60 border-transparent'
+                                                        : 'bg-white border-gray-100 hover:shadow-md hover:border-blue-200 border-l-4 border-l-blue-500'
                                                     }`}
                                             >
                                                 <div className="flex flex-col gap-1">
                                                     <div className="flex items-center justify-between gap-2">
-                                                        <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-lg uppercase tracking-tight shrink-0">
-                                                            {app.time}
-                                                        </span>
+                                                        <div className="flex items-center gap-1.5 shrink-0">
+                                                            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-lg uppercase tracking-tight ${operating ? 'bg-white text-blue-600 shadow-sm' : 'bg-blue-50 text-blue-600'}`}>
+                                                                {app.time}
+                                                            </span>
+                                                            {operating && (
+                                                                <span className="text-[8px] font-black text-white bg-blue-400/30 border border-white/20 px-1.5 py-0.5 rounded-lg uppercase tracking-widest animate-pulse">
+                                                                    Operating
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                         <div className="flex items-center gap-1 shrink-0">
                                                             <button
                                                                 onClick={(e) => handleReschedule(e, app)}
@@ -262,14 +274,14 @@ export default function WeeklyPlanner() {
                                                     </div>
                                                     <Link
                                                         href={`/dashboard/schedules?highlight=${app._id}`}
-                                                        className={`text-xs font-black truncate hover:text-blue-600 hover:underline transition-all ${done ? 'text-gray-500' : 'text-gray-800'}`}
+                                                        className={`text-xs font-black truncate hover:underline transition-all ${operating ? 'text-white' : done ? 'text-gray-500' : 'text-gray-800 hover:text-blue-600'}`}
                                                     >
                                                         {app.patientId?.name || 'Unknown'}
                                                     </Link>
-                                                    <div className="text-[9px] text-gray-400 font-bold uppercase tracking-wider truncate">
+                                                    <div className={`text-[9px] font-bold uppercase tracking-wider truncate ${operating ? 'text-blue-100' : 'text-gray-400'}`}>
                                                         {app.reason}
                                                     </div>
-                                                    {expired && !app.isTicked && (
+                                                    {expired && !app.isTicked && app.status !== 'Operating' && (
                                                         <div className="text-[8px] font-black text-red-400 uppercase tracking-tighter mt-1 animate-pulse">
                                                             Time Passed
                                                         </div>

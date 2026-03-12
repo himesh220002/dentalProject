@@ -793,10 +793,10 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                                    <FaPlusCircle className="text-blue-400" /> Quick Add Additional Costs
+                                    <FaPlusCircle className="text-blue-400" /> Additional Costs
                                 </label>
                                 <div className="space-y-2">
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-col sm:flex-row items-center gap-2">
                                         <select
                                             onChange={(e) => {
                                                 const select = e.target as HTMLSelectElement;

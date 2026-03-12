@@ -182,8 +182,8 @@ export default function AdminBlogsPage() {
     );
 
     return (
-        <div className="space-y-8 overflow-y-auto">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-4 sm:space-y-8 overflow-y-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-black text-blue-900 uppercase tracking-tighter">Blog Management</h1>
                     <p className="text-gray-500 font-bold text-sm">Create, edit and manage clinic blog posts</p>

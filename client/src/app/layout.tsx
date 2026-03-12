@@ -18,7 +18,7 @@ export async function generateMetadata() {
         const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || 'https://drtoothdental.in';
         const clinicName = clinic.clinicName || 'Dr. Tooth Dental Clinic';
         const city = clinic.address?.city || 'Katihar';
-        const phone = clinic.phone || '+91 98765 43210';
+        const phone = clinic.phone || '+91 81055423118';
 
         return {
             title: seo.metaTitle || `${clinicName} | Best Dentist in ${city}, Bihar`,
