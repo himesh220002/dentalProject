@@ -58,9 +58,11 @@ io.on('connection', (socket) => {
 });
 
 // Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/dental-clinic')
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.log('MongoDB connection error:', err));
+if (process.env.NODE_ENV !== 'test') {
+    mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/dental-clinic')
+        .then(() => console.log('MongoDB connected'))
+        .catch(err => console.log('MongoDB connection error:', err));
+}
 
 // Routes
 const treatmentRoutes = require('./routes/treatmentRoutes');
@@ -89,15 +91,19 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+if (require.main === module) {
+    server.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
 
-    // Start keep-alive if RENDER_EXTERNAL_URL is available
-    const externalUrl = process.env.RENDER_EXTERNAL_URL;
-    if (externalUrl) {
-        keepAlive(externalUrl);
-        console.log(`Keep-alive started for: ${externalUrl}`);
-    } else {
-        console.log('Keep-alive not started: RENDER_EXTERNAL_URL not found (likely local environment).');
-    }
-});
+        // Start keep-alive if RENDER_EXTERNAL_URL is available
+        const externalUrl = process.env.RENDER_EXTERNAL_URL;
+        if (externalUrl) {
+            keepAlive(externalUrl);
+            console.log(`Keep-alive started for: ${externalUrl}`);
+        } else {
+            console.log('Keep-alive not started: RENDER_EXTERNAL_URL not found (likely local environment).');
+        }
+    });
+}
+
+module.exports = { app, server };
