@@ -741,6 +741,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                 <div className="relative flex-grow">
                                     <select
                                         required
+                                        aria-label="Select Treatment"
                                         value={treatment.name}
                                         onChange={(e) => handleTreatmentChange(index, e.target.value)}
                                         className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 font-bold text-gray-800 outline-none focus:border-blue-500 transition appearance-none text-sm"
@@ -801,6 +802,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                             onChange={(e) => {
                                                 const select = e.target as HTMLSelectElement;
                                                 const val = parseInt(select.value);
+                                                if (select.selectedIndex === -1) return;
                                                 const name = select.options[select.selectedIndex].text.split(' (+')[0];
                                                 if (val > 0) {
                                                     setFormData(prev => ({
