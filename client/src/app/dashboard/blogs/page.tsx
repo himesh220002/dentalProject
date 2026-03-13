@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch, FaTimes, FaCheck, FaImage } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch, FaTimes, FaCheck, FaImage, FaGripVertical } from 'react-icons/fa';
 import Link from 'next/link';
 
 interface Blog {
@@ -32,6 +32,8 @@ export default function AdminBlogsPage() {
     const [blocks, setBlocks] = useState<ContentBlock[]>([
         { id: Math.random().toString(), type: 'p', content: '' }
     ]);
+    const [draggedBlockId, setDraggedBlockId] = useState<string | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         author: 'Dr. Tooth Dental Clinic',
@@ -175,6 +177,21 @@ export default function AdminBlogsPage() {
         if (blocks.length > 1) {
             setBlocks(blocks.filter(b => b.id !== id));
         }
+    };
+
+    const handleDragStart = (e: React.DragEvent, index: number) => {
+        e.dataTransfer.setData('blockIndex', index.toString());
+    };
+
+    const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+        e.preventDefault();
+        const dragIndex = parseInt(e.dataTransfer.getData('blockIndex'));
+        if (dragIndex === dropIndex) return;
+
+        const newBlocks = [...blocks];
+        const [removed] = newBlocks.splice(dragIndex, 1);
+        newBlocks.splice(dropIndex, 0, removed);
+        setBlocks(newBlocks);
     };
 
     const filteredBlogs = blogs.filter(blog =>
@@ -417,9 +434,30 @@ export default function AdminBlogsPage() {
 
                                 <div className="space-y-6">
                                     {blocks.map((block, index) => (
-                                        <div key={block.id} className="relative group/block transition-all">
+                                        <div
+                                            key={block.id}
+                                            draggable={draggedBlockId === block.id}
+                                            onDragStart={(e) => {
+                                                setIsDragging(true);
+                                                handleDragStart(e, index);
+                                            }}
+                                            onDragEnd={() => {
+                                                setIsDragging(false);
+                                                setDraggedBlockId(null);
+                                            }}
+                                            onDragOver={(e) => e.preventDefault()}
+                                            onDrop={(e) => handleDrop(e, index)}
+                                            className={`relative group/block transition-all ${isDragging && draggedBlockId === block.id ? 'opacity-50' : ''}`}
+                                        >
                                             <div className="flex items-center justify-between mb-2 ml-2">
                                                 <div className="flex items-center gap-2">
+                                                    <div
+                                                        onMouseDown={() => setDraggedBlockId(block.id)}
+                                                        onMouseUp={() => !isDragging && setDraggedBlockId(null)}
+                                                        className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-blue-500 transition-colors p-1 translate-y-[-1px]"
+                                                    >
+                                                        <FaGripVertical size={12} />
+                                                    </div>
                                                     <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${block.type === 'h2' || block.type === 'h3' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
                                                         {block.type === 'h2' ? 'Main Heading' : block.type === 'h3' ? 'Secondary Heading' : block.type === 'p' ? 'Story / Paragraph' : 'Key Highlights (List)'}
                                                     </span>
@@ -464,13 +502,16 @@ export default function AdminBlogsPage() {
                                     <div className="h-px bg-gray-100 flex-grow"></div>
                                     <div className="flex gap-2">
                                         <button type="button" onClick={() => addBlock('h2')} className="p-2 bg-gray-50 rounded-xl hover:bg-blue-600 hover:text-white transition group/btn" title="Add another heading">
-                                            <span className="text-[10px] font-black uppercase px-1">Add H2</span>
+                                            <span className="text-[10px] font-black uppercase px-1 text-center min-w-[50px]">Add H2</span>
+                                        </button>
+                                        <button type="button" onClick={() => addBlock('h3')} className="p-2 bg-gray-50 rounded-xl hover:bg-blue-600 hover:text-white transition group/btn" title="Add another sub-heading">
+                                            <span className="text-[10px] font-black uppercase px-1 text-center min-w-[50px]">Add H3</span>
                                         </button>
                                         <button type="button" onClick={() => addBlock('p')} className="p-2 bg-gray-50 rounded-xl hover:bg-blue-600 hover:text-white transition group/btn" title="Add another paragraph">
-                                            <span className="text-[10px] font-black uppercase px-1">Add PARA</span>
+                                            <span className="text-[10px] font-black uppercase px-1 text-center min-w-[50px]">Add PARA</span>
                                         </button>
                                         <button type="button" onClick={() => addBlock('ul')} className="p-2 bg-gray-50 rounded-xl hover:bg-blue-600 hover:text-white transition group/btn" title="Add another list">
-                                            <span className="text-[10px] font-black uppercase px-1">Add LIST</span>
+                                            <span className="text-[10px] font-black uppercase px-1 text-center min-w-[50px]">Add LIST</span>
                                         </button>
                                     </div>
                                 </div>

@@ -17,6 +17,7 @@ interface MobileAppointmentCardProps {
 const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleReschedule, onEdit, deleteAppointment, isHighlighted }: MobileAppointmentCardProps) => {
     const [isOpen, setIsOpen] = useState(isHighlighted || false);
     const [isBlinking, setIsBlinking] = useState(false);
+    const [isWABlinking, setIsWABlinking] = useState(false);
     const { clinicData } = useClinic();
 
     const expired = isPastTime(apt.date, apt.time);
@@ -39,6 +40,34 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
             localStorage.setItem(`rx_clicked_${apt._id}`, 'true');
             setIsBlinking(false);
         }
+    };
+
+    // WA blinker logic
+    useEffect(() => {
+        const isToday = new Date(apt.date).toDateString() === new Date().toDateString();
+        const isScheduled = apt.status === 'Scheduled';
+        const hasClicked = localStorage.getItem(`wa_clicked_${apt._id}`);
+
+        if (isToday && isScheduled && !hasClicked) {
+            setIsWABlinking(true);
+        } else {
+            setIsWABlinking(false);
+        }
+    }, [apt.date, apt.status, apt._id]);
+
+    const handleWASendClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        localStorage.setItem(`wa_clicked_${apt._id}`, 'true');
+        setIsWABlinking(false);
+
+        const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
+        const mapsLink = (clinicData?.address?.latitude && clinicData?.address?.longitude)
+            ? `https://www.google.com/maps/search/?api=1&query=${clinicData.address.latitude},${clinicData.address.longitude}`
+            : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicName + " " + (clinicData?.address?.city || ""))}`;
+
+        const msg = `*Appointment Reminder* 🦷\n\nDear Patient, this is a friendly reminder for your appointment today at *${clinicName}*.\n\n*Time:* ${apt.time}\n*Location:* ${clinicData?.address?.city || 'Katihar'}, ${clinicData?.address?.state || 'Bihar'}\n*Google Maps:* ${mapsLink}\n\nSee you soon!`;
+        const phone = apt.patientId?.contact || '';
+        window.open(`https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
     };
 
     return (
@@ -257,17 +286,8 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
                     <div className="flex gap-2 w-full pt-2 border-t border-gray-200">
                         {/* WhatsApp Reminder Button */}
                         <button
-                            onClick={() => {
-                                const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
-                                const mapsLink = (clinicData?.address?.latitude && clinicData?.address?.longitude)
-                                    ? `https://www.google.com/maps/search/?api=1&query=${clinicData.address.latitude},${clinicData.address.longitude}`
-                                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicName + " " + (clinicData?.address?.city || ""))}`;
-
-                                const msg = `*Appointment Reminder* 🦷\n\nDear Patient, this is a friendly reminder for your appointment today at *${clinicName}*.\n\n*Time:* ${apt.time}\n*Location:* ${clinicData?.address?.city || 'Katihar'}, ${clinicData?.address?.state || 'Bihar'}\n*Google Maps:* ${mapsLink}\n\nSee you soon!`;
-                                const phone = apt.patientId?.contact || '';
-                                window.open(`https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
-                            }}
-                            className={`py-2 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 ${new Date(apt.date).toDateString() === new Date().toDateString() && apt.status === 'Scheduled'
+                            onClick={handleWASendClick}
+                            className={`py-2 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 ${isWABlinking
                                 ? 'bg-green-600 text-white animate-blink-green shadow-lg'
                                 : 'bg-green-50 text-green-600'
                                 }`}

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaCalendarAlt, FaUser, FaArrowLeft, FaShareAlt, FaLinkedin, FaFacebook, FaTwitter, FaWhatsapp } from 'react-icons/fa';
+import { FaCalendarAlt, FaUser, FaArrowLeft, FaShareAlt, FaLinkedin, FaFacebook, FaTwitter, FaWhatsapp, FaLink } from 'react-icons/fa';
 import { useClinic } from '@/context/ClinicContext';
 
 interface Blog {
@@ -23,6 +23,47 @@ export default function BlogDetailPage() {
     const router = useRouter();
     const [blog, setBlog] = useState<Blog | null>(null);
     const [loading, setLoading] = useState(true);
+    const [showShareMenu, setShowShareMenu] = useState(false);
+
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const shareTitle = blog?.title || 'Clinic Insights';
+
+    const handleShare = async (platform?: string) => {
+        if (!platform && navigator.share) {
+            try {
+                await navigator.share({
+                    title: shareTitle,
+                    url: shareUrl
+                });
+                return;
+            } catch (err) {
+                console.log('Share failed:', err);
+            }
+        }
+
+        let url = '';
+        switch (platform) {
+            case 'facebook':
+                url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+                break;
+            case 'twitter':
+                url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`;
+                break;
+            case 'linkedin':
+                url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+                break;
+            case 'whatsapp':
+                url = `https://wa.me/?text=${encodeURIComponent(shareTitle + ' ' + shareUrl)}`;
+                break;
+            case 'copy':
+                navigator.clipboard.writeText(shareUrl);
+                alert('Link copied to clipboard!');
+                return;
+        }
+
+        if (url) window.open(url, '_blank');
+        setShowShareMenu(false);
+    };
 
     useEffect(() => {
         const fetchBlog = async () => {
@@ -67,8 +108,45 @@ export default function BlogDetailPage() {
                         <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
                         <span>All Blogs</span>
                     </Link>
-                    <div className="flex gap-4">
-                        <FaShareAlt className="text-gray-400 cursor-pointer hover:text-blue-600 transition" />
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowShareMenu(!showShareMenu)}
+                            className="flex items-center gap-2 bg-gray-50 hover:bg-blue-50 text-gray-400 hover:text-blue-600 px-4 py-2 rounded-xl transition-all border border-gray-100 font-black uppercase text-[10px] tracking-widest"
+                        >
+                            <FaShareAlt />
+                            <span>Share</span>
+                        </button>
+
+                        {showShareMenu && (
+                            <>
+                                <div className="fixed inset-0 z-40" onClick={() => setShowShareMenu(false)}></div>
+                                <div className="absolute right-0 top-full mt-3 bg-white rounded-2xl shadow-2xl border border-gray-100 p-3 flex flex-col gap-1 min-w-[180px] z-50 animate-fadeIn scale-100 origin-top-right transition-transform">
+                                    <h4 className="px-3 py-2 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-50 mb-1">Share Insight</h4>
+                                    <button onClick={() => handleShare('whatsapp')} className="flex items-center gap-3 w-full p-2.5 text-xs font-bold text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-xl transition">
+                                        <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600"><FaWhatsapp /></div>
+                                        <span>WhatsApp</span>
+                                    </button>
+                                    <button onClick={() => handleShare('facebook')} className="flex items-center gap-3 w-full p-2.5 text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600"><FaFacebook /></div>
+                                        <span>Facebook</span>
+                                    </button>
+                                    <button onClick={() => handleShare('twitter')} className="flex items-center gap-3 w-full p-2.5 text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-400 rounded-xl transition">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-400"><FaTwitter /></div>
+                                        <span>Twitter/X</span>
+                                    </button>
+                                    <button onClick={() => handleShare('linkedin')} className="flex items-center gap-3 w-full p-2.5 text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl transition">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700"><FaLinkedin /></div>
+                                        <span>LinkedIn</span>
+                                    </button>
+                                    <div className="border-t border-gray-50 mt-1 pt-1">
+                                        <button onClick={() => handleShare('copy')} className="flex items-center gap-3 w-full p-2.5 text-xs font-bold text-gray-700 hover:bg-gray-100 rounded-xl transition">
+                                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500"><FaLink /></div>
+                                            <span>Copy Link</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
@@ -115,16 +193,28 @@ export default function BlogDetailPage() {
                 <div className="mt-20 pt-12 border-t border-gray-100">
                     <h3 className="text-center text-gray-400 font-black uppercase tracking-widest text-xs mb-8">Share this insight</h3>
                     <div className="flex justify-center gap-6">
-                        <button className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1">
+                        <button
+                            onClick={() => handleShare('linkedin')}
+                            className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1"
+                        >
                             <FaLinkedin />
                         </button>
-                        <button className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1">
+                        <button
+                            onClick={() => handleShare('facebook')}
+                            className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1"
+                        >
                             <FaFacebook />
                         </button>
-                        <button className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-blue-400 hover:bg-blue-400 hover:text-white transition-all transform hover:-translate-y-1">
+                        <button
+                            onClick={() => handleShare('twitter')}
+                            className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-blue-400 hover:bg-blue-400 hover:text-white transition-all transform hover:-translate-y-1"
+                        >
                             <FaTwitter />
                         </button>
-                        <button className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-green-500 hover:bg-green-500 hover:text-white transition-all transform hover:-translate-y-1">
+                        <button
+                            onClick={() => handleShare('whatsapp')}
+                            className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-green-500 hover:bg-green-500 hover:text-white transition-all transform hover:-translate-y-1"
+                        >
                             <FaWhatsapp />
                         </button>
                     </div>

@@ -38,6 +38,18 @@ function DashboardSchedulesContent() {
     const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
     const [editingAppointmentId, setEditingAppointmentId] = useState<string | undefined>(undefined);
     const [shouldSkipWhatsApp, setShouldSkipWhatsApp] = useState(false);
+    const [waClicked, setWaClicked] = useState<Record<string, boolean>>({});
+
+    useEffect(() => {
+        // Load clicked states from localStorage
+        const clicked: Record<string, boolean> = {};
+        appointments.forEach(apt => {
+            if (localStorage.getItem(`wa_clicked_${apt._id}`)) {
+                clicked[apt._id] = true;
+            }
+        });
+        setWaClicked(clicked);
+    }, [appointments]);
 
     const fetchAppointments = async () => {
         try {
@@ -292,9 +304,14 @@ function DashboardSchedulesContent() {
 
                                                         const msg = `*Appointment Reminder* 🦷\n\nDear Patient, this is a friendly reminder for your appointment today at *${clinicName}*.\n\n*Time:* ${apt.time}\n*Location:* ${clinicData?.address?.city || 'Katihar'}, ${clinicData?.address?.state || 'Bihar'}\n*Google Maps:* ${mapsLink}\n\nSee you soon!`;
                                                         const phone = apt.patientId?.contact || '';
+
+                                                        // Mark as clicked
+                                                        localStorage.setItem(`wa_clicked_${apt._id}`, 'true');
+                                                        setWaClicked(prev => ({ ...prev, [apt._id]: true }));
+
                                                         window.open(`https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
                                                     }}
-                                                    className={`p-2.5 rounded-xl transition active:scale-95 ${new Date(apt.date).toDateString() === new Date().toDateString() && apt.status === 'Scheduled'
+                                                    className={`p-2.5 rounded-xl transition active:scale-95 ${new Date(apt.date).toDateString() === new Date().toDateString() && apt.status === 'Scheduled' && !waClicked[apt._id]
                                                         ? 'bg-green-600 text-white shadow-lg shadow-green-200 animate-blink-green'
                                                         : 'bg-green-50 text-green-600 hover:bg-green-100'
                                                         }`}
