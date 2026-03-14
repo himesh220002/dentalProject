@@ -279,8 +279,8 @@ export default function ProfilePage() {
 
     return (
         <SessionGuard>
-            <div className="max-w-7xl mx-auto sm:px-4 py-10">
-                <div className="bg-white rounded-[1rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100">
+            <div className="max-w-7xl mx-auto sm:px-4 sm:py-10">
+                <div className="bg-white rounded-none sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 px-6 sm:px-12 py-10 sm:py-16 text-white relative overflow-hidden">
                         {/* Decorative Background Element */}
