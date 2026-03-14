@@ -28,14 +28,14 @@ export default function Timings() {
         };
     });
     return (
-        <div className="max-w-6xl mx-auto py-12 px- 2 sm:px-4 md:px-8 space-y-16">
+        <div className="max-w-6xl mx-auto py-12 px-2 sm:px-4 md:px-8 space-y-8 sm:space-y-16">
 
             {/* Header */}
             <div className="text-center space-y-4 max-w-3xl mx-auto">
-                <h1 className="text-4xl md:text-7xl font-black tracking-tight text-gray-900">
+                <h1 className="text-3xl md:text-7xl font-black tracking-tight text-gray-900">
                     Clinic <span className="text-blue-600">Hours</span>
                 </h1>
-                <p className="text-lg md:text-xl text-gray-500 font-medium leading-relaxed">
+                <p className="text-sm md:text-xl text-gray-500 font-medium leading-relaxed">
                     We are dedicated to being available when you need us. Check our weekly schedule below or contact us for emergency support.
                 </p>
                 <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full mt-6"></div>
@@ -44,7 +44,7 @@ export default function Timings() {
             <div className="grid lg:grid-cols-2 gap-12">
 
                 {/* Weekly Schedule Card */}
-                <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 transform hover:scale-[1.01] transition-transform duration-500">
+                <div className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 transform hover:scale-[1.01] transition-transform duration-500">
                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="bg-white/20 sm:p-4 p-3 rounded-2xl backdrop-blur-sm">

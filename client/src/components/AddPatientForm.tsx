@@ -63,15 +63,15 @@ const AddPatientForm = ({ onPatientAdded }: { onPatientAdded: () => void }) => {
                     Add New Patient
                 </button>
             ) : (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-110 flex items-center justify-center p-0 sm:p-4 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-300">
                     <form
                         onSubmit={handleSubmit}
-                        className="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-300"
+                        className="bg-white w-full max-w-4xl rounded-none sm:rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-300"
                     >
                         {/* Form Header */}
-                        <div className="bg-gray-50/50 p-8 border-b border-gray-100 flex justify-between items-center">
+                        <div className="bg-gray-50/50 p-8 border-b border-gray-100 flex justify-between items-center gap-2">
                             <div>
-                                <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                                <h2 className="text-lg sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white">
                                         <FaUserPlus size={18} />
                                     </div>
