@@ -73,9 +73,9 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
     return (
         <div
             id={`apt-${apt._id}`}
-            className={`rounded-2xl border transition-all duration-300 ${isHighlighted
+            className={`rounded-2xl border overflow-hidden transition-all duration-300 ${isHighlighted
                 ? 'bg-blue-50 border-blue-400 shadow-lg shadow-blue-500/20 ring-2 ring-blue-500'
-                : 'bg-gray-50 border-gray-100 overflow-hidden'
+                : 'bg-gray-50 border-gray-100'
                 }`}
         >
             {/* Header (Always Visible) */}
@@ -188,7 +188,7 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
 
             {/* Collapsible Body */}
             {isOpen && (
-                <div className="px-5 pb-5 space-y-4 animate-fadeIn bg-purple-100">
+                <div className="px-5 pb-5 space-y-4 animate-fadeIn bg-purple-100 rounded-b-2xl">
                     <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
                         <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-gray-400 border border-gray-200">
                             <FaUser size={10} />
