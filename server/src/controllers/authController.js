@@ -243,7 +243,22 @@ exports.linkByPatientId = async (req, res) => {
         const user = await User.findOne({ googleId: userId });
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        const targetPatient = await Patient.findById(patientRecordId);
+        let targetPatient;
+        if (patientRecordId.length === 8) {
+            // Find by Record ID suffix (last 8 characters of ObjectId)
+            // The frontend displays: patientId.slice(-8).toUpperCase()
+            targetPatient = await Patient.findOne({
+                $expr: {
+                    $eq: [
+                        { $toUpper: { $substr: [{ $toString: "$_id" }, 16, 8] } },
+                        patientRecordId.toUpperCase()
+                    ]
+                }
+            });
+        } else if (patientRecordId.length === 24) {
+            targetPatient = await Patient.findById(patientRecordId);
+        }
+
         if (!targetPatient) return res.status(404).json({ message: 'Clinical record not found. Please verify the Record ID.' });
 
         if (targetPatient.userId && String(targetPatient.userId) !== String(user._id)) {

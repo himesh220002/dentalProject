@@ -434,9 +434,22 @@ exports.publicCheckAppointment = async (req, res) => {
             return res.status(404).json({ message: 'No records found for this contact.' });
         }
 
-        // Filter by name if prefix provided
+        // Filter by name if prefix provided (Flexible matching)
         const targetPatients = namePrefix
-            ? patients.filter(p => p.name.toLowerCase().startsWith(namePrefix.toLowerCase()))
+            ? patients.filter(p => {
+                const searchName = namePrefix.toLowerCase();
+                const patientName = p.name.toLowerCase();
+
+                // If short search term, stick to strict prefix
+                if (searchName.length < 3) return patientName.startsWith(searchName);
+
+                // For terms >= 3 chars, any 3-char sequence match triggers a result
+                for (let i = 0; i <= searchName.length - 3; i++) {
+                    const sequence = searchName.substring(i, i + 3);
+                    if (patientName.includes(sequence)) return true;
+                }
+                return false;
+            })
             : patients;
 
         if (targetPatients.length === 0) {
