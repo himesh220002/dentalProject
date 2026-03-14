@@ -286,7 +286,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                 </Transition.Child>
 
                 <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-2 sm:p-4 mx-2 sm:mx-0">
+                    <div className="flex min-h-full items-center justify-center sm:p-4 ">
                         <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-300"
@@ -296,7 +296,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-[2rem] sm:rounded-[3rem] bg-slate-900 p-4 sm:p-8 shadow-2xl transition-all border border-slate-800 text-slate-100">
+                            <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-none sm:rounded-[2rem] sm:rounded-[3rem] bg-slate-900 p-4 sm:p-8 shadow-2xl transition-all border border-slate-800 text-slate-100">
                                 <div className="flex justify-between items-center mb-6 sm:mb-10">
                                     <div className="flex items-center gap-3 sm:gap-5">
                                         <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-[1.5rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-2xl shadow-blue-500/20">
