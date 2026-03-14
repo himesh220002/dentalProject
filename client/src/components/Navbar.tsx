@@ -151,7 +151,7 @@ export default function Navbar() {
                         </Link>
 
                         {/* Desktop Menu */}
-                        <div className="hidden lg:flex items-center space-x-1">
+                        <div className="hidden xl:flex items-center space-x-1">
                             {navLinks.map((link) => (
                                 <div key={link.name} className="relative group">
                                     <Link
@@ -267,7 +267,7 @@ export default function Navbar() {
                         </div>
 
                         {/* Mobile Button Area */}
-                        <div className="flex items-center gap-4 lg:hidden">
+                        <div className="flex items-center gap-4 xl:hidden">
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
                                 className="p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition"
@@ -280,7 +280,7 @@ export default function Navbar() {
 
                 {/* Mobile Menu */}
                 {isOpen && (
-                    <div className="lg:hidden max-h-[calc(100vh-80px)] overflow-y-auto bg-gradient-to-b from-gray-300/90 to-blue-300/90 border-t border-gray-100 p-4 pt-12 pb-32 space-y-4 animate-in slide-in-from-top duration-300">
+                    <div className="xl:hidden max-h-[calc(100vh-80px)] overflow-y-auto bg-gradient-to-b from-gray-300/90 to-blue-300/90 border-t border-gray-100 p-4 pt-12 pb-32 space-y-4 animate-in slide-in-from-top duration-300">
                         {/* Mobile Language Switcher - Inside Menu */}
                         <div className="px-2 pb-2 border-b border-gray-50">
                             <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-2xl border border-blue-100">

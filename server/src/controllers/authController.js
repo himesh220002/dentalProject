@@ -235,3 +235,48 @@ exports.getUserByGoogleId = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+exports.linkByPatientId = async (req, res) => {
+    const { userId, patientRecordId } = req.body;
+
+    try {
+        const user = await User.findOne({ googleId: userId });
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        const targetPatient = await Patient.findById(patientRecordId);
+        if (!targetPatient) return res.status(404).json({ message: 'Clinical record not found. Please verify the Record ID.' });
+
+        if (targetPatient.userId && String(targetPatient.userId) !== String(user._id)) {
+            return res.status(400).json({ message: 'This clinical record is already linked to another account.' });
+        }
+
+        const oldPatientId = user.patientId;
+
+        // Link them
+        targetPatient.userId = user._id;
+        targetPatient.email = targetPatient.email || user.email;
+        await targetPatient.save();
+
+        user.patientId = targetPatient._id;
+        user.contact = targetPatient.contact !== '-__-' ? targetPatient.contact : user.contact;
+        await user.save();
+
+        // If they had a placeholder patient record, merge it into the new "real" one
+        if (oldPatientId && String(oldPatientId) !== String(targetPatient._id)) {
+            await mergePatients(targetPatient._id, oldPatientId);
+        }
+
+        // Proactively merge any other matches found by Phone/Email/Name
+        await findAndMergeOrphans(user, targetPatient);
+
+        const updatedUser = await User.findById(user._id).populate('patientId');
+
+        res.status(200).json({
+            message: 'Clinical record connected successfully!',
+            patient: updatedUser.patientId
+        });
+    } catch (error) {
+        console.error('Error linking patient by ID:', error);
+        res.status(500).json({ message: 'Failed to link record. Please ensure the ID is correct.' });
+    }
+};

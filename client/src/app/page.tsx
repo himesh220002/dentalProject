@@ -20,6 +20,7 @@ import { translations } from '../constants/translations';
 import { ConsultantCardSkeleton } from '@/components/ui/Skeleton';
 import { io } from 'socket.io-client';
 import { parseAppointmentReason } from '@/utils/appointmentUtils';
+import AppointmentSearchInline from '@/components/home/AppointmentSearchInline';
 
 export default function Home() {
     const { data: session } = useSession();
@@ -333,32 +334,35 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Floating Appointment Notification for Logged-in Users */}
+            {/* Floating Appointment Notification - Circle Above LanguageToggle */}
             {session?.user && upcomingAppointment && !isAptDismissed && (
-                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-5 duration-700">
+                <div className="fixed bottom-32 sm:bottom-36 right-4 sm:right-8 z-50 group/indicator">
                     <Link
                         href="/profile"
                         onClick={() => setIsAptDismissed(true)}
-                        className="group relative flex items-center gap-2 bg-[#fffbeb] hover:bg-[#fff9db] p-1.5 pr-3 rounded-[2rem] shadow-[0_20px_50px_rgba(251,191,36,0.2)] border-2 border-[#fef3c7] transition-all active:scale-95 whitespace-nowrap overflow-hidden"
+                        className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-amber-400 text-amber-950 rounded-full shadow-[0_15px_40px_rgba(251,191,36,0.4)] border-2 border-white transition-all hover:scale-110 active:scale-90 animate-in slide-in-from-right-10 duration-700 overflow-visible"
                     >
-                        {/* Glow Effect */}
-                        <div className="absolute inset-0 bg-amber-400/10 animate-pulse"></div>
+                        {/* Pulse Ring */}
+                        <div className="absolute inset-0 bg-amber-400 rounded-full animate-ping opacity-30"></div>
+                        <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
 
-                        <div className="relative w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center shadow-inner ring-4 ring-white">
-                            <FaCalendarAlt className="animate-bounce" />
+                        <FaCalendarAlt className="relative z-10 text-lg sm:text-xl" />
+
+                        {/* Hover Tooltip (Desktop) */}
+                        <div className="absolute right-full mr-4 opacity-0 group-hover/indicator:opacity-100 transition-opacity pointer-events-none hidden lg:block">
+                            <div className="bg-white px-4 py-2 rounded-2xl shadow-xl border border-amber-100 whitespace-nowrap">
+                                <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1">
+                                    Fixed Appointment
+                                </p>
+                                <p className="text-xs font-black text-gray-900">
+                                    {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
+                                </p>
+                            </div>
                         </div>
 
-                        <div className="relative text-left">
-                            <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none flex items-center gap-1 mb-1">
-                                <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
-                                {language === 'hi' ? 'आपका तय अपॉइंटमेंट' : 'Your Fixed Appointment'}
-                            </p>
-                            <p className="text-sm font-black text-amber-900">
-                                {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
-                            </p>
-                        </div>
-                        <div className="ml-2 w-8 h-8 rounded-full bg-white/50 flex items-center justify-center group-hover:bg-white transition-colors">
-                            <FaArrowRight className="text-amber-500 group-hover:translate-x-1 transition-transform" />
+                        {/* Mobile Badge Only */}
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-white animate-bounce flex lg:hidden items-center justify-center">
+                            <div className="w-1 h-1 bg-white rounded-full"></div>
                         </div>
                     </Link>
                 </div>

@@ -19,15 +19,18 @@ const AddPatientForm = ({ onPatientAdded }: { onPatientAdded: () => void }) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/patients`, {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/patients`, {
                 name,
                 age: Number(age),
                 gender,
                 contact,
                 email: email.trim().toLowerCase() || undefined,
                 address: address.trim() || '-__-',
-                medicalHistory: medicalHistory.split(',').map(item => item.trim())
+                medicalHistory: medicalHistory.split(',').map(item => item.trim()),
+                addedByAdmin: true
             });
+            const patientId = res.data._id;
+
             setName('');
             setAge('');
             setGender('-__-');
@@ -37,6 +40,8 @@ const AddPatientForm = ({ onPatientAdded }: { onPatientAdded: () => void }) => {
             setMedicalHistory('');
             setShowForm(false);
             onPatientAdded();
+
+            alert(`Patient added successfully!\nRecord ID: ${patientId.slice(-8).toUpperCase()}\nGive this ID to the patient to link their clinical history.`);
         } catch (error) {
             console.error('Error adding patient:', error);
             alert('Failed to add patient');

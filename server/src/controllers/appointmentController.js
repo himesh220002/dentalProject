@@ -413,3 +413,64 @@ exports.getAppointmentDensity = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// Public: Check appointment status without login
+exports.publicCheckAppointment = async (req, res) => {
+    const { contact, namePrefix } = req.body;
+
+    try {
+        if (!contact || contact.length < 10) {
+            return res.status(400).json({ message: 'Valid contact number is required.' });
+        }
+
+        const cleanContact = contact.replace(/\D/g, '').slice(-10);
+
+        // Find patient(s) matching contact
+        const patients = await Patient.find({
+            contact: new RegExp(cleanContact + '$')
+        });
+
+        if (patients.length === 0) {
+            return res.status(404).json({ message: 'No records found for this contact.' });
+        }
+
+        // Filter by name if prefix provided
+        const targetPatients = namePrefix
+            ? patients.filter(p => p.name.toLowerCase().startsWith(namePrefix.toLowerCase()))
+            : patients;
+
+        if (targetPatients.length === 0) {
+            return res.status(404).json({ message: 'Patient name does not match record.' });
+        }
+
+        const patientIds = targetPatients.map(p => p._id);
+
+        // Find upcoming appointments
+        const appointments = await Appointment.find({
+            patientId: { $in: patientIds },
+            status: 'Scheduled',
+            isTicked: false
+        }).sort({ date: 1, time: 1 });
+
+        if (appointments.length === 0) {
+            return res.status(404).json({ message: 'No upcoming appointments found.' });
+        }
+
+        // Sanitize data (only return basic info)
+        const sanitizedApts = appointments.map(apt => {
+            const p = targetPatients.find(tp => String(tp._id) === String(apt.patientId));
+            return {
+                _id: apt._id,
+                date: apt.date,
+                time: apt.time,
+                status: apt.status,
+                patientName: (p?.name || 'Patient').replace(/.(?=.{2})/g, '*') // Mask name for privacy
+            };
+        });
+
+        res.status(200).json(sanitizedApts);
+    } catch (error) {
+        console.error('Error in public check appointment:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

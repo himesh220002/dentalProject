@@ -6,6 +6,9 @@ import { useClinic } from '../../context/ClinicContext';
 import { formatExperience } from '../../utils/urlHelper';
 import { translations } from '../../constants/translations';
 
+import dynamic from 'next/dynamic';
+const AppointmentSearchInline = dynamic(() => import('./AppointmentSearchInline'), { ssr: false });
+
 export default function HomeHero() {
     const { clinicData, language } = useClinic();
     const t = translations[language];
@@ -21,7 +24,7 @@ export default function HomeHero() {
     const clinicYears = Math.max(0, currentYear - estYear);
 
     return (
-        <section className="relative min-h-[550px] sm:min-h-[600px] h-[calc(100vh-64px)] overflow-hidden shadow-[0_0px_20px_-16px_rgba(0,0,0,0.2)] 2xl:rounded-3xl flex items-center md:items-center group ">
+        <section className="relative min-h-[550px] sm:min-h-[600px] h-[calc(100vh-50px)] overflow-hidden shadow-[0_0px_20px_-16px_rgba(0,0,0,0.2)] 2xl:rounded-3xl flex group ">
             {/* Immersive Background */}
             <div className="absolute inset-0">
                 <img
@@ -37,7 +40,10 @@ export default function HomeHero() {
             </div>
 
             {/* Content Layer */}
-            <div className="relative z-10 px-6 sm:px-12 md:px-20 w-full py-12 sm:py-20 text-white">
+            <div className="relative z-10 px-6 sm:px-12 md:px-20 w-full py-12 sm:py-12 text-white">
+                <div className="mb-10 sm:mb-14 max-w-3xl mx-auto">
+                    <AppointmentSearchInline />
+                </div>
                 <div className="max-w-4xl space-y-6 sm:space-y-10">
                     <div className="space-y-4 sm:space-y-6">
                         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-black tracking-[0.1em] sm:tracking-[0.2em] uppercase transition-all hover:bg-white/20">

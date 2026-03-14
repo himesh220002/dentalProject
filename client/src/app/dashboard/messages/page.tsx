@@ -29,6 +29,7 @@ export default function DashboardMessages() {
     const [schedulerInquiry, setSchedulerInquiry] = useState('');
     const [schedulerAppointmentId, setSchedulerAppointmentId] = useState('');
     const [resendingId, setResendingId] = useState<string | null>(null);
+    const [visibleCount, setVisibleCount] = useState(10);
 
     const fetchMessages = async () => {
         try {
@@ -97,7 +98,7 @@ export default function DashboardMessages() {
             </div>
 
             <div className="grid gap-6">
-                {messages.map((msg) => (
+                {messages.slice(0, visibleCount).map((msg) => (
                     <div
                         key={msg._id}
                         className={`bg-white p-4 sm:p-6 rounded-xl sm:rounded-3xl shadow-sm border-l-4 transition ${msg.status === 'Scheduled'
@@ -187,6 +188,17 @@ export default function DashboardMessages() {
                         </div>
                     </div>
                 ))}
+
+                {messages.length > visibleCount && (
+                    <div className="flex justify-center pt-4">
+                        <button
+                            onClick={() => setVisibleCount(prev => prev + 10)}
+                            className="bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-sm transition-all shadow-lg hover:shadow-blue-200"
+                        >
+                            Read More Messages
+                        </button>
+                    </div>
+                )}
 
                 {messages.length === 0 && (
                     <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200 text-gray-400">

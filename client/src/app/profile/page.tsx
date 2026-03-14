@@ -58,6 +58,51 @@ export default function ProfilePage() {
     const [upcomingAppointment, setUpcomingAppointment] = useState<any | null>(null);
     const [allAppointments, setAllAppointments] = useState<any[]>([]);
     const [isAptModalOpen, setIsAptModalOpen] = useState(false);
+    const [isLinkingModalOpen, setIsLinkingModalOpen] = useState(false);
+    const [linkingId, setLinkingId] = useState('');
+    const [isLinking, setIsLinking] = useState(false);
+
+    const handleLinkRecord = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        if (!linkingId.trim()) return;
+        setIsLinking(true);
+        setError(null);
+        setSuccess(null);
+
+        try {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+            const res = await axios.post(`${backendUrl}/api/auth/link-patient`, {
+                // @ts-ignore
+                userId: session?.user?.id,
+                patientRecordId: linkingId.trim()
+            });
+
+            if (res.data.patient) {
+                setPatient(res.data.patient);
+                setFormData({
+                    name: res.data.patient.name || '',
+                    age: res.data.patient.age || 0,
+                    gender: res.data.patient.gender || '-__-',
+                    address: res.data.patient.address || '',
+                    contact: res.data.patient.contact === '-__-' ? '' : (res.data.patient.contact || ''),
+                    alternateContact: res.data.patient.alternateContact || ''
+                });
+
+                // Refresh records
+                const recordsRes = await axios.get(`${backendUrl}/api/treatment-records/patient/${res.data.patient._id}`);
+                setRecords(recordsRes.data);
+            }
+
+            setSuccess('Clinical records connected successfully!');
+            setIsLinkingModalOpen(false);
+            setLinkingId('');
+        } catch (err: any) {
+            console.error('Error linking record:', err);
+            setError(err.response?.data?.message || 'Failed to connect records. Please double check the ID.');
+        } finally {
+            setIsLinking(false);
+        }
+    };
 
     useEffect(() => {
         if (records.length > 0) {
@@ -270,6 +315,14 @@ export default function ProfilePage() {
                                         <span className="flex items-center gap-1.5">
                                             Member since {patient?.createdAt ? new Date(patient.createdAt).getFullYear() : new Date().getFullYear()}
                                         </span>
+                                        {patient?._id && (
+                                            <>
+                                                <span className="hidden sm:inline opacity-40">•</span>
+                                                <span className="bg-white/10 px-2 py-0.5 rounded-md border border-white/10 text-[10px] sm:text-xs">
+                                                    ID: {patient._id.slice(-8).toUpperCase()}
+                                                </span>
+                                            </>
+                                        )}
                                     </p>
                                 </div>
                             </div>
@@ -590,7 +643,20 @@ export default function ProfilePage() {
                                 <FaHistory size={24} className="text-gray-300" />
                             </div>
                             <p className="text-gray-500 font-black text-lg">No records found</p>
-                            <p className="text-sm text-gray-400 max-w-xs mx-auto mt-2">Your clinical history will appear here after your first treatment session at the clinic.</p>
+                            <p className="text-sm text-gray-400 max-w-xs mx-auto mt-2 mb-6">Your clinical history will appear here after your first treatment session at the clinic.</p>
+
+                            <div className="bg-white inline-block p-6 rounded-3xl border border-blue-50 shadow-sm max-w-sm mx-auto">
+                                <p className="text-xs font-black text-blue-600 uppercase tracking-widest mb-3">Already a patient at the clinic?</p>
+                                <p className="text-[10px] text-gray-500 font-medium mb-4 leading-relaxed">
+                                    If you have visited us before, your records can be connected manually using your <strong>Patient Record ID</strong> from your booking WhatsApp message.
+                                </p>
+                                <button
+                                    onClick={() => setIsLinkingModalOpen(true)}
+                                    className="w-full py-3 bg-blue-50 text-blue-600 rounded-xl font-black text-xs hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                                >
+                                    Connect My Clinical History
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -696,6 +762,61 @@ export default function ProfilePage() {
                                 Close Details
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Linking Modal */}
+            {isLinkingModalOpen && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+                        <div className="p-8 border-b border-gray-50 bg-gray-50 flex justify-between items-center">
+                            <div>
+                                <h2 className="text-xl font-black text-gray-900 tracking-tight">Connect History</h2>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Manual synchronization</p>
+                            </div>
+                            <button
+                                onClick={() => setIsLinkingModalOpen(false)}
+                                className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-gray-400 hover:text-rose-600 transition shadow-sm border border-gray-100"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleLinkRecord} className="p-8 space-y-6">
+                            <div className="space-y-2">
+                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Patient Record ID</label>
+                                <input
+                                    type="text"
+                                    value={linkingId}
+                                    onChange={(e) => setLinkingId(e.target.value)}
+                                    placeholder="e.g. 65f2c... or E1C7B8FD"
+                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white px-5 py-4 rounded-2xl font-black text-gray-900 placeholder:text-gray-300 transition-all outline-none"
+                                    required
+                                />
+                                <p className="text-[9px] text-gray-400 font-medium italic pl-1">
+                                    You can find this ID in the booking confirmation message sent to your WhatsApp.
+                                </p>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={isLinking || !linkingId.trim()}
+                                className={`w-full py-4 rounded-2xl font-black text-white shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 ${isLinking ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/20'
+                                    }`}
+                            >
+                                {isLinking ? (
+                                    <>
+                                        <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                                        Connecting...
+                                    </>
+                                ) : (
+                                    'Connect Clinical Records'
+                                )}
+                            </button>
+                        </form>
                     </div>
                 </div>
             )}

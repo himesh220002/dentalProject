@@ -41,6 +41,12 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
     const [fetchingData, setFetchingData] = useState(true);
     const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
     const [density, setDensity] = useState<any>({});
+    const [isNewPatientMode, setIsNewPatientMode] = useState(false);
+    const [newPatientData, setNewPatientData] = useState({
+        name: '',
+        contact: '',
+        age: ''
+    });
     const { clinicData } = useClinic();
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -329,8 +335,30 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                 .filter(name => name !== '')
                 .join(', ');
 
+            let currentPatientId = formData.patientId;
+
+            // Step 1: Register new patient if in New Patient Mode
+            if (isNewPatientMode) {
+                const patientRes = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/patients`, {
+                    ...newPatientData,
+                    age: Number(newPatientData.age) || 0,
+                    addedByAdmin: true,
+                    gender: '-__-',
+                    address: '-__-',
+                    medicalHistory: []
+                });
+                currentPatientId = patientRes.data._id;
+            }
+
+            if (!currentPatientId) {
+                alert('Please select or add a patient');
+                setLoading(false);
+                return;
+            }
+
             const payload = {
                 ...formData,
+                patientId: currentPatientId,
                 reason: finalReason + (formData.notes ? ` (${formData.notes})` : ''),
                 amount: totalAmount,
                 contactId: messageId // Pass this for background email tracking
@@ -348,14 +376,29 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
             if (res.data.emailSentTo) {
                 setStatusMessage({
                     type: 'success',
-                    text: `Success! Confirmation sent to ${res.data.emailSentTo}`
+                    text: `Success! Confirmation sent to ${res.data.emailSentTo}. Record ID: ${currentPatientId.slice(-8).toUpperCase()}`
+                });
+            } else {
+                setStatusMessage({
+                    type: 'success',
+                    text: `Success! Appointment booked. Record ID: ${currentPatientId.slice(-8).toUpperCase()}`
                 });
             }
 
             // WhatsApp Redirect Logic
-            const selectedPatient = patients.find(p => p._id === formData.patientId);
-            if (selectedPatient && !skipWhatsApp) {
-                const patientPhone = selectedPatient.contact;
+            let whatsappPatient = patients.find(p => p._id === currentPatientId);
+
+            // For new patients, the patients state might not have updated yet, so use data from API response
+            if (isNewPatientMode && !whatsappPatient) {
+                whatsappPatient = {
+                    _id: currentPatientId,
+                    name: newPatientData.name,
+                    contact: newPatientData.contact
+                };
+            }
+
+            if (whatsappPatient && !skipWhatsApp) {
+                const patientPhone = whatsappPatient.contact;
                 const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
                 const clinicAddress = clinicData?.address;
                 const fullAddress = clinicAddress
@@ -369,7 +412,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     ? `https://www.google.com/maps/search/?api=1&query=${clinicData.address.latitude},${clinicData.address.longitude}`
                     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicName + " " + (clinicAddress?.city || ""))}`;
 
-                const message = `*Appointment Confirmed!* ✔️\n\nDear ${selectedPatient.name},\nYour appointment at *${clinicName}* has been scheduled successfully.\n\n*Date:* ${date}\n*Time:* ${time}\n*Location:* ${fullAddress}\n*Google Maps:* ${mapsLink}\n\n*Note:* Please try to arrive 5-10 minutes before your scheduled time.\n\nSee you soon!`;
+                const message = `*Appointment Confirmed!* ✔️\n\nDear ${whatsappPatient.name},\nYour appointment at *${clinicName}* has been scheduled successfully.\n\n*Date:* ${date}\n*Time:* ${time}\n*Location:* ${fullAddress}\n*Google Maps:* ${mapsLink}\n\n*Record ID:* ${currentPatientId.slice(-8).toUpperCase()}\n_(Use this ID to link your history on our website Profile page)_\n\nSee you soon!`;
 
                 const whatsappUrl = `https://wa.me/91${patientPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
@@ -461,63 +504,106 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                 )}
 
                 <form onSubmit={handleSubmit} className="p-8 space-y-2 max-h-[70vh] sm:max-h-[750px] overflow-y-auto custom-scrollbar">
-                    {/* Search & Select Patient */}
-                    <div className="space-y-2">
+                    {/* Search & Select/Add Patient */}
+                    <div className="flex items-center justify-between mb-2">
                         <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                            <FaUser size={10} /> Find Patient
+                            <FaUser size={10} /> {isNewPatientMode ? 'Register New Patient' : 'Find Patient'}
                         </label>
-                        <div className="relative group">
-                            <FaSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-500 transition-colors" />
-                            <input
-                                type="text"
-                                placeholder="Search by name or phone (10 digits)..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className={`w-full bg-gray-50 border-2 border-gray-100 rounded-2xl pl-12 pr-5 py-4 font-bold outline-none focus:border-blue-500 transition-colors ${/^\d+$/.test(searchTerm)
-                                    ? (searchTerm.length === 10 ? 'text-emerald-600' : 'text-rose-600')
-                                    : 'text-gray-800'
-                                    }`}
-                            />
-                        </div>
-
-                        <div className="relative">
-                            <select
-                                required
-                                value={formData.patientId}
-                                onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
-                                className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 font-bold text-gray-800 outline-none focus:border-blue-500 transition appearance-none"
-                            >
-                                <option value="">Select from {filteredPatients.length} results...</option>
-                                {filteredPatients.map(p => (
-                                    <option key={p._id} value={p._id}>{p.name} - {p.contact}</option>
-                                ))}
-                            </select>
-                            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </div>
-                        </div>
-
-                        {/* Quick Register for Enquirer */}
-                        {!formData.patientId && initialName && (
-                            <div className="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl flex items-center justify-between animate-in slide-in-from-top-2 duration-300">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                        <p className="text-xs font-black text-emerald-800 uppercase tracking-widest">New Enquirer</p>
-                                    </div>
-                                    <p className="text-sm font-bold text-emerald-600 italic">"{initialName}" is not in records</p>
-                                </div>
-                                <button
-                                    type="button"
-                                    disabled={loading}
-                                    onClick={handleQuickRegister}
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-emerald-600/20 transition active:scale-95 disabled:opacity-50 flex items-center gap-2"
-                                >
-                                    <FaPlusCircle /> {loading ? 'Registering...' : 'Register Now'}
-                                </button>
-                            </div>
-                        )}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsNewPatientMode(!isNewPatientMode);
+                                if (isNewPatientMode) {
+                                    setNewPatientData({ name: '', contact: '', age: '' });
+                                } else {
+                                    setFormData({ ...formData, patientId: '' });
+                                    setSearchTerm('');
+                                }
+                            }}
+                            className={`text-[10px] font-black uppercase tracking-tight py-1 px-3 rounded-lg transition-all border ${isNewPatientMode
+                                ? 'bg-blue-50 border-blue-200 text-blue-600'
+                                : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
+                                }`}
+                        >
+                            {isNewPatientMode ? '← Search Existing Instead' : '+ Add New Patient Instead'}
+                        </button>
                     </div>
+
+                    {!isNewPatientMode ? (
+                        <div className="space-y-2">
+                            <div className="relative group">
+                                <FaSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-500 transition-colors" />
+                                <input
+                                    type="text"
+                                    placeholder="Search by name or phone (10 digits)..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className={`w-full bg-gray-50 border-2 border-gray-100 rounded-2xl pl-12 pr-5 py-4 font-bold outline-none focus:border-blue-500 transition-colors ${/^\d+$/.test(searchTerm)
+                                        ? (searchTerm.length === 10 ? 'text-emerald-600' : 'text-rose-600')
+                                        : 'text-gray-800'
+                                        }`}
+                                />
+                            </div>
+
+                            <div className="relative">
+                                <select
+                                    required={!isNewPatientMode}
+                                    value={formData.patientId}
+                                    onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
+                                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 font-bold text-gray-800 outline-none focus:border-blue-500 transition appearance-none"
+                                >
+                                    <option value="">Select from {filteredPatients.length} results...</option>
+                                    {filteredPatients.map(p => (
+                                        <option key={p._id} value={p._id}>{p.name} - {p.contact}</option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="bg-emerald-50/50 p-6 rounded-3xl border-2 border-emerald-100/50 space-y-4 animate-in slide-in-from-right-4 duration-300">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-emerald-700 uppercase tracking-widest ml-1">Full Name</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        placeholder="Enter name"
+                                        value={newPatientData.name}
+                                        onChange={(e) => setNewPatientData({ ...newPatientData, name: e.target.value })}
+                                        className="w-full bg-white border-2 border-emerald-100 rounded-2xl px-5 py-3.5 font-bold text-gray-800 outline-none focus:border-emerald-500 transition shadow-sm"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-emerald-700 uppercase tracking-widest ml-1">Phone Number</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        placeholder="10 digit number"
+                                        value={newPatientData.contact}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                            setNewPatientData({ ...newPatientData, contact: val });
+                                        }}
+                                        className="w-full bg-white border-2 border-emerald-100 rounded-2xl px-5 py-3.5 font-bold text-gray-800 outline-none focus:border-emerald-500 transition shadow-sm"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-emerald-700 uppercase tracking-widest ml-1">Age (Optional)</label>
+                                <input
+                                    type="number"
+                                    placeholder="Patient age"
+                                    value={newPatientData.age}
+                                    onChange={(e) => setNewPatientData({ ...newPatientData, age: e.target.value })}
+                                    className="w-full bg-white border-2 border-emerald-100 rounded-2xl px-5 py-3.5 font-bold text-gray-800 outline-none focus:border-emerald-500 transition shadow-sm"
+                                />
+                            </div>
+                        </div>
+                    )}
+
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
