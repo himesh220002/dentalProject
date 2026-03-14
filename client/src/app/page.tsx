@@ -336,7 +336,7 @@ export default function Home() {
 
             {/* Floating Appointment Notification - Circle Above LanguageToggle */}
             {session?.user && upcomingAppointment && !isAptDismissed && (
-                <div className="fixed bottom-32 sm:bottom-36 right-4 sm:right-8 z-50 group/indicator">
+                <div className="fixed bottom-32 sm:bottom-16 right-4 sm:right-8 z-50 group/indicator">
                     <Link
                         href="/profile"
                         onClick={() => setIsAptDismissed(true)}
