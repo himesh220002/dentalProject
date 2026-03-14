@@ -191,7 +191,7 @@ export default function Navbar() {
                             <div className="ml-2 xl:ml-4 pl-2 xl:pl-4 border-l border-gray-100 flex items-center gap-2 xl:gap-3">
                                 {session ? (
                                     <div className="flex items-center gap-2 xl:gap-3">
-                                        {upcomingAppointment && (
+                                        {/* {upcomingAppointment && (
                                             <Link
                                                 href="/profile"
                                                 className="group relative flex items-center gap-2 bg-[#fffbeb] hover:bg-[#fff9db] px-4 py-2 rounded-xl border border-[#fef3c7] transition-all active:scale-95 shadow-sm overflow-hidden animate-in fade-in slide-in-from-right-4 duration-500"
@@ -205,7 +205,7 @@ export default function Navbar() {
                                                     </span>
                                                 </div>
                                             </Link>
-                                        )}
+                                        )} */}
                                         <div className="flex items-center gap-2 xl:gap-3">
                                             <div className="hidden xl:flex flex-col items-end">
                                                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Logged in as</span>
