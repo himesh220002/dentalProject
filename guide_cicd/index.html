@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI/CD Strategy Guide | Dental Clinic Project</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #06b6d4;
+            --primary-dark: #0891b2;
+            --secondary: #6366f1;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h2 .icon {
+            color: var(--primary);
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin: 20px 0 10px;
+        }
+
+        .code-block {
+            background: #020617;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+            font-size: 0.95rem;
+            color: #aeecff;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow-x: auto;
+        }
+
+        .code-block .comment {
+            color: #64748b;
+        }
+
+        .code-block .cmd {
+            color: #facc15;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .pill {
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .pill.accent {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        th {
+            text-align: left;
+            color: var(--primary);
+            padding: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .notice {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .notice h4 {
+            color: #f59e0b;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px 0;
+            font-size: 0.9rem;
+        }
+
+        ul {
+            list-style: none;
+            margin-left: 20px;
+        }
+
+        li {
+            position: relative;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+
+        li::before {
+            content: "→";
+            position: absolute;
+            left: -20px;
+            color: var(--primary);
+        }
+
+        .step-number {
+            display: inline-flex;
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: var(--bg);
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-right: 12px;
+        }
+
+        .highlight {
+            color: var(--text);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>CI/CD Strategy Guide</h1>
+            <p class="subtitle">Multi-Tenant Deployment & Branching Architecture</p>
+        </header>
+
+        <!-- HOW BRANCHES WORK -->
+        <div class="card">
+            <h2><span class="icon">🌿</span> How Branches Work</h2>
+            <p>Our pipeline is built on the <span class="highlight">one-branch-per-tenant</span> philosophy. This
+                ensures that changes destined for one clinic never affect another.</p>
+
+            <h3>1. Local Git Control</h3>
+            <p>You define the clinic's scope manually in your local environment.</p>
+            <div class="code-block">
+                <span class="comment"># Create a new branch with the clinic naming convention</span><br>
+                <span class="cmd">git checkout -b</span> clinic/smile-dental
+            </div>
+
+            <h3>2. Secure Push</h3>
+            <p>Once you push the branch, GitHub creates it remotely and alerts the CI/CD agent.</p>
+            <div class="code-block">
+                <span class="cmd">git push origin</span> clinic/smile-dental
+            </div>
+
+            <h3>3. Automated CI/CD Activation</h3>
+            <p>The workflow <span class="highlight">deploy-clinic.yml</span> is hard-wired to look for the <span
+                    class="pill">clinic/*</span> pattern. Only branches following this name will trigger the
+                multi-tenant engine.</p>
+        </div>
+
+        <!-- RECOMMENDED WORKFLOW -->
+        <div class="card">
+            <h2><span class="icon">🔄</span> Recommended Workflow</h2>
+
+            <div style="margin-top: 20px;">
+                <p><span class="step-number">1</span> <span class="highlight">Start from Master</span>: Pull latest code
+                    to your base.</p>
+                <div class="code-block"><span class="cmd">git checkout master && git pull origin master</span></div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <p><span class="step-number">2</span> <span class="highlight">Branch Out</span>: Create your
+                    tenant-specific branch.</p>
+                <div class="code-block"><span class="cmd">git checkout -b clinic/bright-dental</span></div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <p><span class="step-number">3</span> <span class="highlight">Personalize</span>: Add assets (logos,
+                    images) to <code>client/public/branding/</code>.</p>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <p><span class="step-number">4</span> <span class="highlight">Sync</span>: Commit and push to trigger
+                    the pipeline.</p>
+                <div class="code-block">
+                    <span class="cmd">git add .</span><br>
+                    <span class="cmd">git commit -m</span> "Setup Bright Dental clinic configs"<br>
+                    <span class="cmd">git push origin clinic/bright-dental</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- DEPLOYMENT DUALITY -->
+        <div class="status-grid">
+            <div class="card">
+                <h2><span class="icon">📡</span> Current (Dev)</h2>
+                <div class="pills">
+                    <span class="pill">Vercel (Frontend)</span>
+                    <span class="pill">Render (Backend)</span>
+                </div>
+                <p>The <code>master</code> branch provides a safe staging ground where tests run automatically and
+                    deployment is handled via Render's GitHub Webhooks.</p>
+            </div>
+            <div class="card">
+                <h2><span class="icon">🏛️</span> Future (Production)</h2>
+                <div class="pills">
+                    <span class="pill">Vercel (Frontend)</span>
+                    <span class="pill">Hostinger (Backend)</span>
+                </div>
+                <p>Clinic branches deploy the backend to Hostinger via <span class="highlight">SSH/PM2</span> with
+                    automated <code>.env</code> generation.</p>
+            </div>
+        </div>
+
+        <!-- CONFIGURATION NOTICE -->
+        <div class="card">
+            <h2><span class="icon">⚙️</span> Clinic Configuration Notice</h2>
+            <p>Once you've purchased resources for a new clinic, you <strong>never</strong> hard-code their values. Use
+                GitHub Secrets instead.</p>
+
+            <div class="notice">
+                <h4>🔐 Secret Management Pattern</h4>
+                <p>Secrets are injected based on the branch name. For <code>clinic/smile-dental</code>, the engine looks
+                    for <code>CLINIC_SMILE_DENTAL_*</code>.</p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Secret Key</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>VERCEL_PROJECT_ID</td>
+                        <td>Target Vercel project for this clinic</td>
+                    </tr>
+                    <tr>
+                        <td>BACKEND_URL</td>
+                        <td>The public API URL (Hostinger path)</td>
+                    </tr>
+                    <tr>
+                        <td>MONGO_URI</td>
+                        <td>Isolated MongoDB connection string</td>
+                    </tr>
+                    <tr>
+                        <td>HOST_SSH / KEY_SSH</td>
+                        <td>Access credentials for Hostinger</td>
+                    </tr>
+                    <tr>
+                        <td>JWT_SECRET</td>
+                        <td>Unique encryption key for this tenant</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TESTING CHECKLIST -->
+        <div class="card">
+            <h2><span class="icon">🧪</span> Live Test: <code>dentalAlpha</code></h2>
+            <div class="pills"><span class="pill accent">Test Initiated</span></div>
+            <ul>
+                <li><strong>Push local branch</strong>: <code>git push origin clinic/dentalAlpha</code></li>
+                <li><strong>GitHub Actions</strong>: Confirm <code>Deploy Clinic Instance</code> workflow triggers.</li>
+                <li><strong>Project Link</strong>: Pipeline will link to the new Vercel Project ID.</li>
+                <li><strong>Sanity Check</strong>: Verify frontend build success even without Hostinger being live.</li>
+            </ul>
+        </div>
+
+        <!-- THE MAGIC -->
+        <div class="card" style="border-color: var(--primary);">
+            <h2><span class="icon">🛡️</span> The "Security Wall"</h2>
+            <p>The architecture provides total isolation through branch-specific secret injection:</p>
+            <div style="margin-top: 20px;">
+                <p>✅ <strong>Master Isolation</strong>: Master only knows about Render and global dev secrets.</p>
+                <p>✅ <strong>Tenant Isolation</strong>: Clinic A cannot see Clinic B's database or server folders.</p>
+                <p>✅ <strong>Automated Injection</strong>: GitHub SSH scripts generate <code>.env</code> files
+                    on-the-fly, preventing manual errors.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>Dental Clinic Project &copy; 2026 | CI/CD Engineering Documentation</p>
+        </footer>
+    </div>
+</body>
+
+</html>
