@@ -52,6 +52,7 @@ interface RadialOrb {
 
 export default function CustomerInsightsModal({ isOpen, onClose, patients, appointments, messages, treatments }: InsightsModalProps) {
     const [mounted, setMounted] = useState(false);
+    const [activeBarIndex, setActiveBarIndex] = useState<number | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -239,7 +240,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
 
     const maxFlux = useMemo(() => Math.max(...fluxPulse, 1), [fluxPulse]);
 
-    const yearlyPerformance = useMemo(() => {
+    const { yearlyPerformance, maxAnnualRevenue } = useMemo(() => {
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const currentYear = new Date().getFullYear();
 
@@ -261,10 +262,14 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
         });
 
         const maxRevenue = Math.max(...data.map(d => d.revenue), 10000);
-        return data.map(d => ({
-            ...d,
-            percent: (d.revenue / maxRevenue) * 100
-        }));
+        return {
+            yearlyPerformance: data.map(d => ({
+                ...d,
+                percent: (d.revenue / maxRevenue) * 100,
+                isPeak: d.revenue === maxRevenue && d.revenue > 0
+            })),
+            maxAnnualRevenue: maxRevenue
+        };
     }, [appointments]);
 
     if (!mounted) return null;
@@ -590,24 +595,46 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-6 md:grid-cols-12 gap-2 sm:gap-4 h-32 items-end">
+                                    <div className="grid grid-cols-6 md:grid-cols-12 gap-2 sm:gap-4 h-32 items-end relative">
+                                        {/* Max Revenue Reference Line */}
+                                        <div className="absolute left-0 right-0 border-t border-dashed border-blue-500/30 z-0 flex items-center justify-end px-4 pointer-events-none" style={{ bottom: '95%' }}>
+                                            <span className="text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] bg-slate-900 px-2">Peak: ₹{maxAnnualRevenue.toLocaleString()}</span>
+                                        </div>
+
                                         {yearlyPerformance.map((data, i) => (
-                                            <div key={i} className="group/bar flex flex-col items-center gap-2 h-full relative">
+                                            <div
+                                                key={i}
+                                                className="group/bar flex flex-col items-center gap-2 h-full relative z-10 cursor-pointer"
+                                                onClick={() => setActiveBarIndex(activeBarIndex === i ? null : i)}
+                                            >
                                                 <div className="flex-grow w-full flex items-end gap-[1px]">
                                                     <div
-                                                        className="flex-grow bg-blue-500/20 group-hover/bar:bg-blue-500 transition-all duration-500 rounded-t-sm"
+                                                        className={`flex-grow ${data.isPeak ? 'bg-emerald-500/40' : 'bg-blue-500/20'} ${activeBarIndex === i ? 'bg-blue-500 opacity-100' : 'group-hover/bar:bg-blue-500'} transition-all duration-500 rounded-t-sm relative`}
                                                         style={{ height: `${data.percent}%` }}
-                                                    ></div>
+                                                    >
+                                                        {data.isPeak && (
+                                                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-emerald-400 rounded-full shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
+                                                        )}
+                                                    </div>
                                                     <div
                                                         className="w-[2px] bg-slate-800 h-full rounded-t-sm opacity-20"
                                                     ></div>
                                                 </div>
-                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">{data.month}</span>
+                                                <span className={`text-[10px] font-black uppercase tracking-tighter transition-colors ${activeBarIndex === i ? 'text-blue-400' : 'text-slate-500'}`}>{data.month}</span>
 
                                                 {/* Tooltip */}
-                                                <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-950 text-white p-2 rounded-lg border border-slate-700 opacity-0 group-hover/bar:opacity-100 transition-opacity z-50 pointer-events-none whitespace-nowrap shadow-2xl">
-                                                    <div className="text-[9px] font-black text-blue-400 uppercase mb-1">{data.month} Revenue</div>
-                                                    <div className="text-xs font-black">₹{data.revenue.toLocaleString()} <span className="text-[10px] text-slate-400 font-bold ml-1">COLLECTED</span></div>
+                                                <div className={`absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-950 text-white p-2 rounded-xl border border-blue-500/30 ${activeBarIndex === i ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-2 scale-90 sm:group-hover/bar:opacity-100 sm:group-hover/bar:translate-y-0 sm:group-hover/bar:scale-100'} transition-all duration-300 z-50 pointer-events-none whitespace-nowrap shadow-[0_20px_50px_rgba(0,0,0,0.5)]`}>
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${data.isPeak ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
+                                                        <div className="text-[9px] font-black text-blue-400 uppercase">{data.month} Performance</div>
+                                                    </div>
+                                                    <div className="text-sm font-black flex items-baseline gap-1">
+                                                        ₹{data.revenue.toLocaleString()}
+                                                        <span className="text-[8px] text-slate-500 font-black uppercase">Tax Incl.</span>
+                                                    </div>
+                                                    {data.isPeak && (
+                                                        <div className="mt-1 text-[7px] font-black text-emerald-400 uppercase tracking-widest border-t border-emerald-500/20 pt-1">✨ Annual Peak Revenue</div>
+                                                    )}
                                                 </div>
                                             </div>
                                         ))}
