@@ -8,6 +8,7 @@ on:
 jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
