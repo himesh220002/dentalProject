@@ -74,6 +74,7 @@ const authRoutes = require('./routes/authRoutes');
 const configRoutes = require('./routes/configRoutes');
 const handoverRoutes = require('./routes/handoverRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const { initSchedules } = require('./utils/scheduler');
 
 app.use('/api/treatments', treatmentRoutes);
 app.use('/api/patients', patientRoutes);
@@ -103,6 +104,9 @@ if (require.main === module) {
         } else {
             console.log('Keep-alive not started: RENDER_EXTERNAL_URL not found (likely local environment).');
         }
+
+        // Initialize Daily Scheduler
+        initSchedules();
     });
 }
 

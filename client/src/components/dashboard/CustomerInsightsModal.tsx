@@ -151,10 +151,10 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
     const flowMetrics = useMemo(() => {
         const completed = appointments.filter(a => a.status === 'Completed');
         const cancelled = appointments.filter(a => a.status === 'Cancelled');
-        const scheduled = appointments.filter(a => a.status === 'Scheduled' || a.status === 'Operating');
 
-        // Punctuality: % of appointments that didn't stay "Delayed"
-        const punctuality = Math.min(((completed.length) / (appointments.filter(a => a.status !== 'Cancelled').length || 1)) * 100, 100);
+        // Fulfillment Rate: % of scheduled appointments that were successfully completed
+        // (Factor in auto-cancellations at 7 PM as missed opportunities)
+        const fulfillmentRate = Math.min(((completed.length) / (appointments.length || 1)) * 100, 100);
 
         // Retention: % of patients with more than 1 appointment
         const patientApptCounts: { [key: string]: number } = {};
@@ -172,7 +172,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
         const followups = retainedPatients;
 
         return {
-            punctuality,
+            punctuality: fulfillmentRate, // Using Fulfillment as the primary efficiency metric
             retentionRate,
             cancellationRate: (cancelled.length / (appointments.length || 1)) * 100,
             funnel: [
@@ -471,7 +471,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                                                         <div className="h-full bg-slate-800/50" style={{ width: `${100 - flowMetrics.punctuality}%` }}></div>
                                                     </div>
                                                     <p className="text-[9px] text-slate-500 font-bold mt-2 uppercase tracking-tight italic">
-                                                        {flowMetrics.punctuality > 80 ? 'Exceptional flow. Treatment zones are optimally synchronized.' : 'Potential bottleneck detected in zone transitions.'}
+                                                        {flowMetrics.punctuality > 80 ? 'Exceptional flow. Fulfillment rate is high across all zones.' : 'Fulfillment gap detected. 7 PM auto-cancellations are impacting efficiency.'}
                                                     </p>
                                                 </div>
                                             </div>
