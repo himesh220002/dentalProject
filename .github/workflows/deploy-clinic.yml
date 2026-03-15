@@ -1,0 +1,86 @@
+name: Deploy Clinic Instance
+
+on:
+  push:
+    branches:
+      - 'clinic/*'
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
+
+      - name: Get Clinic Name
+        id: clinic
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          CLINIC_NAME="${BRANCH_NAME#clinic/}"
+          echo "name=$CLINIC_NAME" >> $GITHUB_OUTPUT
+          
+          # Prepare Uppercase version for secrets
+          UPPER_NAME=$(echo "$CLINIC_NAME" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+          echo "upper_name=$UPPER_NAME" >> $GITHUB_OUTPUT
+
+      # --- BACKEND TESTING ---
+      - name: Install Server Dependencies
+        run: cd server && npm install
+
+      - name: Run Backend Tests
+        run: cd server && npm test
+
+      # --- FRONTEND BUILD & DEPLOY (VERCEL) ---
+      - name: Install Client Dependencies
+        run: cd client && npm install
+
+      - name: Build and Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets[format('CLINIC_{0}_VERCEL_ORG_ID', steps.clinic.outputs.upper_name)] }}
+          vercel-project-id: ${{ secrets[format('CLINIC_{0}_VERCEL_PROJECT_ID', steps.clinic.outputs.upper_name)] }}
+          working-directory: ./client
+          vercel-args: '--prod --build-env NEXT_PUBLIC_BACKEND_URL=${{ secrets[format(''CLINIC_{0}_BACKEND_URL'', steps.clinic.outputs.upper_name)] }}'
+
+      # --- BACKEND DEPLOY (HOSTINGER via SSH) ---
+      - name: Deploy Server to Hostinger
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets[format('CLINIC_{0}_HOST_SSH', steps.clinic.outputs.upper_name)] }}
+          username: ${{ secrets[format('CLINIC_{0}_USER_SSH', steps.clinic.outputs.upper_name)] }}
+          key: ${{ secrets[format('CLINIC_{0}_KEY_SSH', steps.clinic.outputs.upper_name)] }}
+          port: 22
+          source: "server/*"
+          target: ${{ secrets[format('CLINIC_{0}_PATH_SSH', steps.clinic.outputs.upper_name)] }}
+          strip_components: 1
+
+      - name: Setup Env and Restart Node Server (Hostinger)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets[format('CLINIC_{0}_HOST_SSH', steps.clinic.outputs.upper_name)] }}
+          username: ${{ secrets[format('CLINIC_{0}_USER_SSH', steps.clinic.outputs.upper_name)] }}
+          key: ${{ secrets[format('CLINIC_{0}_KEY_SSH', steps.clinic.outputs.upper_name)] }}
+          port: 22
+          script: |
+            cd ${{ secrets[format('CLINIC_{0}_PATH_SSH', steps.clinic.outputs.upper_name)] }}
+            
+            # Create/Update .env file securely from secrets
+            echo "PORT=5000" > .env
+            echo "MONGO_URI=${{ secrets[format('CLINIC_{0}_MONGO_URI', steps.clinic.outputs.upper_name)] }}" >> .env
+            echo "FRONTEND_URL=${{ secrets[format('CLINIC_{0}_FRONTEND_URL', steps.clinic.outputs.upper_name)] }}" >> .env
+            echo "JWT_SECRET=${{ secrets[format('CLINIC_{0}_JWT_SECRET', steps.clinic.outputs.upper_name)] }}" >> .env
+            echo "MAILGUN_API_KEY=${{ secrets[format('CLINIC_{0}_MAILGUN_API_KEY', steps.clinic.outputs.upper_name)] }}" >> .env
+            echo "MAILGUN_DOMAIN=${{ secrets[format('CLINIC_{0}_MAILGUN_DOMAIN', steps.clinic.outputs.upper_name)] }}" >> .env
+            
+            npm install --production
+            pm2 restart app || pm2 start src/index.js --name app

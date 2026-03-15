@@ -1,0 +1,45 @@
+name: Deploy Master (Dev/Staging)
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
+
+      # --- BACKEND TESTING ---
+      - name: Install Server Dependencies
+        run: cd server && npm install
+
+      - name: Run Backend Tests
+        run: cd server && npm test
+
+      # --- FRONTEND BUILD & DEPLOY (VERCEL) ---
+      - name: Install Client Dependencies
+        run: cd client && npm install
+
+      - name: Build and Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./client
+          vercel-args: '--prod'
+
+      # NOTE: Backend deployment to Render is handled automatically via Render's GitHub Integration
+      # when pushing to the 'main' branch.
