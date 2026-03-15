@@ -29,6 +29,9 @@ jobs:
         env:
           NODE_ENV: test
           CI: true
+          JWT_SECRET: testsecret
+          MAILGUN_API_KEY: key-dummy
+          MAILGUN_DOMAIN: dummy.domain
         run: |
           cd server
           echo "📂 Project Structure Check:"

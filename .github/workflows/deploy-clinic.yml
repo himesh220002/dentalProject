@@ -37,6 +37,10 @@ jobs:
         run: cd server && npm install
 
       - name: Run Backend Tests
+        env:
+          NODE_ENV: test
+          MAILGUN_API_KEY: key-dummy
+          MAILGUN_DOMAIN: dummy.domain
         run: cd server && npm test
 
       # --- FRONTEND BUILD & DEPLOY (VERCEL) ---
