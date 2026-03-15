@@ -40,17 +40,11 @@ jobs:
           npx vitest run
 
       # --- FRONTEND BUILD & DEPLOY (VERCEL) ---
-      - name: Install Client Dependencies
-        run: cd client && npm install
+      - name: Install Vercel CLI
+        run: npm install -g vercel
 
       - name: Build and Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./client
-          vercel-args: '--prod'
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }} --yes ./client
 
       # NOTE: Backend deployment to Render is handled automatically via Render's GitHub Integration
       # when pushing to the 'main' branch.

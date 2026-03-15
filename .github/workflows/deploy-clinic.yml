@@ -44,17 +44,16 @@ jobs:
         run: cd server && npm test
 
       # --- FRONTEND BUILD & DEPLOY (VERCEL) ---
-      - name: Install Client Dependencies
-        run: cd client && npm install
+      - name: Install Vercel CLI
+        run: npm install -g vercel
 
       - name: Build and Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets[format('CLINIC_{0}_VERCEL_ORG_ID', steps.clinic.outputs.upper_name)] }}
-          vercel-project-id: ${{ secrets[format('CLINIC_{0}_VERCEL_PROJECT_ID', steps.clinic.outputs.upper_name)] }}
-          working-directory: ./client
-          vercel-args: '--prod --build-env NEXT_PUBLIC_BACKEND_URL=${{ secrets[format(''CLINIC_{0}_BACKEND_URL'', steps.clinic.outputs.upper_name)] }}'
+        run: |
+          vercel deploy --prod \
+            --token=${{ secrets.VERCEL_TOKEN }} \
+            --scope=${{ secrets.VERCEL_ORG_ID }} \
+            --yes ./client \
+            --build-env NEXT_PUBLIC_BACKEND_URL=${{ secrets[format('CLINIC_{0}_BACKEND_URL', steps.clinic.outputs.upper_name)] }}
 
       # --- BACKEND DEPLOY (HOSTINGER via SSH) ---
       - name: Deploy Server to Hostinger
