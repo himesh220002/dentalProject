@@ -6,18 +6,31 @@ let mongo: MongoMemoryServer;
 
 beforeAll(async () => {
     let uri: string;
+    console.log('🧪 Vitest Setup: Starting beforeAll...');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
 
     if (process.env.MONGO_URI_TEST) {
         uri = process.env.MONGO_URI_TEST;
-        console.log(`Connected to External Test MongoDB: ${uri}`);
+        console.log(`📡 Connected to External Test MongoDB: ${uri}`);
     } else {
-        // Spin up the in-memory MongoDB instance
-        mongo = await MongoMemoryServer.create();
-        uri = mongo.getUri();
-        console.log(`Connected to In-Memory MongoDB: ${uri}`);
+        console.log('🛠️ Spinning up In-Memory MongoDB...');
+        try {
+            mongo = await MongoMemoryServer.create();
+            uri = mongo.getUri();
+            console.log(`✅ In-Memory MongoDB Ready: ${uri}`);
+        } catch (error) {
+            console.error('❌ Failed to start MongoMemoryServer:', error);
+            throw error;
+        }
     }
 
-    await mongoose.connect(uri);
+    try {
+        await mongoose.connect(uri);
+        console.log('🔗 Mongoose connected successfully');
+    } catch (error) {
+        console.error('❌ Mongoose connection failed:', error);
+        throw error;
+    }
 });
 
 afterEach(async () => {

@@ -26,7 +26,14 @@ jobs:
         run: cd server && npm install
 
       - name: Run Backend Tests
-        run: cd server && npm test
+        env:
+          NODE_ENV: test
+          CI: true
+        run: |
+          cd server
+          echo "📂 Project Structure Check:"
+          ls -R src/__tests__
+          npx vitest run
 
       # --- FRONTEND BUILD & DEPLOY (VERCEL) ---
       - name: Install Client Dependencies
