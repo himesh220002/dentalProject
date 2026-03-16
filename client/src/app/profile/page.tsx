@@ -269,6 +269,36 @@ export default function ProfilePage() {
         }
     };
 
+    const handleCancel = async (id: string) => {
+        if (!confirm('Are you sure you want to cancel this appointment?')) return;
+        setSaving(true);
+        setError(null);
+        try {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+            await axios.delete(`${backendUrl}/api/appointments/${id}`);
+            setSuccess('Appointment cancelled successfully.');
+            // Refresh appointment list
+            if (patient?._id) {
+                const aptRes = await axios.get(`${backendUrl}/api/appointments/patient/${patient._id}`);
+                setAllAppointments(aptRes.data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+            }
+        } catch (err: any) {
+            console.error('Error cancelling appointment:', err);
+            setError(err.response?.data?.message || 'Failed to cancel appointment.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const isCancellable = (date: string, time: string) => {
+        const aptDateTime = new Date(date);
+        const [hours, minutes] = time.split(':').map(Number);
+        aptDateTime.setHours(hours, minutes, 0, 0);
+        const now = new Date();
+        const diffInMs = aptDateTime.getTime() - now.getTime();
+        return (diffInMs / (1000 * 60 * 60)) >= 3;
+    };
+
     if (loading) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center">
@@ -744,6 +774,18 @@ export default function ProfilePage() {
                                                 }`}>
                                                 {apt.isTicked ? 'Completed' : (apt.status || 'Scheduled')}
                                             </span>
+                                            {apt.status !== 'Cancelled' && apt.status !== 'Completed' && !apt.isTicked && (
+                                                isCancellable(apt.date, apt.time) ? (
+                                                    <button
+                                                        onClick={() => handleCancel(apt._id)}
+                                                        className="text-[10px] font-black text-rose-600 border-b border-rose-200 hover:text-rose-700 transition-colors"
+                                                    >
+                                                        Cancel Appt
+                                                    </button>
+                                                ) : (
+                                                    <span className="text-[8px] font-bold text-gray-400">Not cancellable (within 3h)</span>
+                                                )
+                                            )}
                                         </div>
                                     </div>
                                 ))

@@ -8,7 +8,10 @@ const { getAvailableSlots } = require('../utils/slotPicker');
 // Submit a new contact message
 exports.submitContact = async (req, res) => {
     try {
-        const { name, phone, email, message, userId, requestedDate, requestedTime, requestedTreatment } = req.body;
+        const { name, phone, email, message, userId, requestedDate, requestedTime, requestedTreatment, amount } = req.body;
+
+        // Ensure message is present to satisfy schema validation
+        const finalMessage = message || `Automated booking for ${requestedTreatment || 'General Consultation'}`;
 
         // 1. If user is logged in (googleId sent as userId), sync their profile contact if it's missing
         if (userId) {
@@ -66,10 +69,10 @@ exports.submitContact = async (req, res) => {
                     time: requestedTime,
                     reason: requestedTreatment || 'General Consultation',
                     status: 'Scheduled',
-                    amount: 0 // Will be updated by doctor later
+                    amount: amount || 0
                 });
                 automatedAppointment = await newAppointment.save();
-                console.log(`✔ Automated Appointment Created: ${automatedAppointment._id}`);
+                console.log(`✔ Automated Appointment Created: ${automatedAppointment._id} with amount ${amount || 0}`);
             } else {
                 console.warn(`⚠ Requested slot ${requestedTime} on ${requestedDate} is no longer available. Falling back to manual enquiry.`);
             }
@@ -79,7 +82,7 @@ exports.submitContact = async (req, res) => {
             name,
             phone,
             email,
-            message,
+            message: finalMessage,
             patientType,
             requestedTreatment,
             requestedDate: requestedDate ? new Date(requestedDate) : null,

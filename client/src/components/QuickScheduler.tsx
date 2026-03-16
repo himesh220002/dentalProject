@@ -413,14 +413,14 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     ? `https://www.google.com/maps/search/?api=1&query=${clinicData.address.latitude},${clinicData.address.longitude}`
                     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicName + " " + (clinicAddress?.city || ""))}`;
 
-                const message = `*Appointment Confirmed!* ✔️\n\nDear ${whatsappPatient.name},\nYour appointment at *${clinicName}* has been scheduled successfully.\n\n*Date:* ${date}\n*Time:* ${time}\n*Location:* ${fullAddress}\n*Google Maps:* ${mapsLink}\n\n*Record ID:* ${currentPatientId.slice(-8).toUpperCase()}\n_(Use this ID to link your history on our website Profile page)_\n\nSee you soon!`;
+                const message = `*Appointment Confirmed!* 🦷\n\nDear ${whatsappPatient.name},\nYour appointment at *${clinicName}* has been scheduled successfully.\n\n*Treatment:* ${finalReason}\n*Date:* ${date}\n*Time:* ${time}\n\n*Location:* ${fullAddress}\n*Google Maps:* ${mapsLink}\n\n*Record ID:* ${currentPatientId.slice(-8).toUpperCase()}\n_(Use this ID to link your history on our website Profile page)_\n\nSee you soon!`;
 
                 const whatsappUrl = `https://wa.me/91${patientPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
 
                 // WhatsApp Staff Trigger - 2 seconds later
                 const staffPhone = clinicData?.staffPhone || clinicData?.phone || "8105542318";
-                const staffMessage = `*New Booking Alert!* 📅\n\nPatient: ${whatsappPatient.name}\nDate: ${date}\nTime: ${time}\nReason: ${finalReason}`;
+                const staffMessage = `*New Booking Alert!* 🦷\n\nPatient: ${whatsappPatient.name}\nDate: ${date}\nTime: ${time}\nReason: ${finalReason}`;
                 const staffWhatsappUrl = `https://wa.me/91${staffPhone.replace(/\D/g, '')}?text=${encodeURIComponent(staffMessage)}`;
 
                 setTimeout(() => {

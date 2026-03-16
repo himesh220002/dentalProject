@@ -11,6 +11,7 @@ router.put('/:id', appointmentController.updateAppointmentStatus);
 router.post('/:id/resend', appointmentController.resendConfirmationEmail);
 router.post('/public-check', appointmentController.publicCheckAppointment);
 router.get('/patient/:patientId', appointmentController.getAppointmentsByPatientId);
+router.post('/bulk-retrieve', appointmentController.getAppointmentsByIds);
 router.delete('/:id', appointmentController.deleteAppointment);
 
 module.exports = router;

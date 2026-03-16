@@ -196,10 +196,38 @@ function ContactContent() {
             }
 
             // Standard slots
-            const allSlots = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
+            const allSlots = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
             const booked = dayData?.slots || [];
 
-            const available = allSlots.filter(slot => !booked.some((b: string) => b.startsWith(slot)));
+            // Get dynamic lunch time
+            const lunchTimeRange = clinicData?.lunchTime || "01:00 PM - 02:00 PM";
+
+            // Helper to parse lunch range to 24h hours
+            const parseTimeRange = (range: string) => {
+                try {
+                    const [startPart, endPart] = range.split('-').map(p => p.trim());
+                    const parseH = (t: string) => {
+                        const [time, period] = t.split(' ');
+                        let [h] = time.split(':').map(Number);
+                        if (period === 'PM' && h < 12) h += 12;
+                        if (period === 'AM' && h === 12) h = 0;
+                        return h;
+                    };
+                    return [parseH(startPart), parseH(endPart)];
+                } catch (e) {
+                    return [13, 14]; // Fallback to 1 PM
+                }
+            };
+
+            const [lunchStart, lunchEnd] = parseTimeRange(lunchTimeRange);
+
+            const available = allSlots.filter(slot => {
+                const hour = parseInt(slot.split(':')[0]);
+                const isBooked = booked.some((b: string) => b.startsWith(slot));
+                const isLunch = hour >= lunchStart && hour < lunchEnd;
+                return !isBooked && !isLunch;
+            });
+
             setAvailableTimes(available);
         } catch (err) {
             console.error('Error fetching times:', err);
@@ -245,13 +273,29 @@ function ContactContent() {
         setStatus({ type: '', message: '' });
 
         try {
+            // Find treatment price for amount mapping
+            const selectedTreat = treatments.find(t => t.name === formData.requestedTreatment);
+            const amountVal = selectedTreat ? parseFloat(selectedTreat.price.replace(/\D/g, '')) : 0;
+
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, {
                 ...formData,
+                message: formData.message || `Guided Booking for ${formData.requestedTreatment}`,
+                amount: amountVal,
                 // @ts-ignore
                 userId: session?.user?.id
             });
 
             const isAutomatedSuccess = res.data?.isAutomated;
+            const appointmentId = res.data?.appointmentId;
+
+            // --- LOCAL STORAGE TRACKING FOR GUESTS ---
+            if (isAutomatedSuccess && appointmentId) {
+                const existingBookings = JSON.parse(localStorage.getItem('drtooth_guest_bookings') || '[]');
+                if (!existingBookings.includes(appointmentId)) {
+                    existingBookings.push(appointmentId);
+                    localStorage.setItem('drtooth_guest_bookings', JSON.stringify(existingBookings));
+                }
+            }
 
             // Success Feedback
             setStatus({
@@ -267,7 +311,7 @@ function ContactContent() {
 
             let messageText = "";
             if (isAutomatedSuccess) {
-                messageText = `*Appointment Confirmed!* ✔️\n\nDear ${formData.name},\nYour appointment at *${clinicName}* has been scheduled.\n\n*Treatment:* ${formData.requestedTreatment}\n*Date:* ${formData.requestedDate}\n*Time:* ${formData.requestedTime}\n\nSee you soon!`;
+                messageText = `*Appointment Confirmed!* 🦷\n\nDear ${formData.name},\nYour appointment at *${clinicName}* has been scheduled.\n\n*Treatment:* ${formData.requestedTreatment}\n*Date:* ${formData.requestedDate}\n*Time:* ${formData.requestedTime}\n\nSee you soon!`;
             } else {
                 messageText = language === 'hi'
                     ? `नमस्ते डॉक्टर, मैं *${formData.name}* हूँ।\nमैं आपसे इस विषय में परामर्श करना चाहता/चाहती हूँ:- \n\n${formData.message}\n\n*मेरा फोन:* ${formData.phone}`
@@ -538,10 +582,10 @@ function ContactContent() {
                                                                         disabled={isPassed}
                                                                         onClick={() => setFormData(prev => ({ ...prev, requestedTime: time }))}
                                                                         className={`py-3 rounded-xl border-2 font-black text-xs transition-all ${formData.requestedTime === time
-                                                                                ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                                                                                : isPassed
-                                                                                    ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
-                                                                                    : 'border-gray-50 bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                                                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                                                                            : isPassed
+                                                                                ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
+                                                                                : 'border-gray-50 bg-gray-50 text-gray-600 hover:bg-gray-100'
                                                                             }`}
                                                                     >
                                                                         {time}

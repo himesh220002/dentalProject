@@ -1,5 +1,6 @@
 const Appointment = require('../models/Appointment');
 const Config = require('../models/Config');
+const Handover = require('../models/Handover');
 
 /**
  * Finds available time slots for a specific date.
@@ -36,15 +37,53 @@ const getAvailableSlots = async (dateStr) => {
         return closureDate === dateStr && c.type === 'partial';
     });
 
-    // 3. Define standard slots (9 AM to 8 PM, excluding 1 PM break)
-    // TODO: Dynamically fetch from active handover timings if possible
+    // 3. Define standard slots (9 AM to 8 PM)
     const allSlots = [
         "09:00", "10:00", "11:00", "12:00",
-        "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"
+        "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"
     ];
 
+    // 3.5. Fetch dynamic lunch time from Handover
+    const activeHandover = await Handover.findOne({ isActive: true });
+    let lunchTimeRange = "01:00 PM - 02:00 PM"; // Default
+
+    if (activeHandover && activeHandover.jsondata && activeHandover.jsondata.lunchTime) {
+        lunchTimeRange = activeHandover.jsondata.lunchTime;
+    }
+
+    // Filter out the lunch time slot
+    // Assuming lunchTimeRange is like "01:00 PM - 02:00 PM", we exclude the 24h hour(s) it covers
+    // Simple logic for single hour ranges or specific starts
+    const filteredSlots = allSlots.filter(slot => {
+        // Convert range string to start and end hours (24h)
+        // e.g., "01:00 PM - 02:00 PM" -> start 13, end 14
+        const parseTimeRange = (range) => {
+            try {
+                const [startPart, endPart] = range.split('-').map(p => p.trim());
+                const parseH = (t) => {
+                    const [time, period] = t.split(' ');
+                    let [h] = time.split(':').map(Number);
+                    if (period === 'PM' && h < 12) h += 12;
+                    if (period === 'AM' && h === 12) h = 0;
+                    return h;
+                };
+                return [parseH(startPart), parseH(endPart)];
+            } catch (e) {
+                return [13, 14]; // Fallback to 1 PM
+            }
+        };
+
+        const [lunchStart, lunchEnd] = parseTimeRange(lunchTimeRange);
+        const slotHour = parseInt(slot.split(':')[0]);
+
+        // Exclude if slot falls within lunch range
+        if (slotHour >= lunchStart && slotHour < lunchEnd) return false;
+
+        return true;
+    });
+
     // 4. Filter out booked slots and closures
-    const availableSlots = allSlots.filter(slot => {
+    const availableSlots = filteredSlots.filter(slot => {
         // Check if booked
         const isBooked = bookedTimes.some(bt => bt.startsWith(slot));
         if (isBooked) return false;

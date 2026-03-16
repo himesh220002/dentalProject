@@ -76,6 +76,7 @@ export default function TempClinicForm() {
             metaDescription: 'Expert dental care by Dr. Tooth. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
             keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist'
         },
+        lunchTime: '01:00 PM - 02:00 PM',
         isActive: false
     });
 
@@ -551,6 +552,22 @@ export default function TempClinicForm() {
                                 <div className="sm:col-span-2">
                                     <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Tagline/Hero Message</label>
                                     <input type="text" name="tagline" value={formData.tagline} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
+                                </div>
+                                <div className="sm:col-span-2">
+                                    <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Lunch Time Break (e.g. 01:00 PM - 02:00 PM)</label>
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex-1 relative">
+                                            <input
+                                                type="text"
+                                                name="lunchTime"
+                                                value={formData.lunchTime}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 font-bold text-blue-600"
+                                                placeholder="01:00 PM - 02:00 PM"
+                                            />
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-slate-400 font-bold uppercase mt-2 ml-1">This will automatically shade and disable these slots in the booking system.</p>
                                 </div>
                             </div>
                         </div>
