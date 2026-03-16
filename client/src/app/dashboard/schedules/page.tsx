@@ -26,6 +26,7 @@ interface Appointment {
     amount?: number;
     paymentStatus?: string;
     markedPaidAt?: string;
+    isDeleted?: boolean;
 }
 
 function DashboardSchedulesContent() {
@@ -86,6 +87,7 @@ function DashboardSchedulesContent() {
     });
 
     const filteredAppointments = sortedAppointments.filter(apt => {
+        if (apt.isDeleted) return false;
         if (apt.paymentStatus === 'Paid' && apt.markedPaidAt) {
             const paidTime = new Date(apt.markedPaidAt).getTime();
             const now = new Date().getTime();

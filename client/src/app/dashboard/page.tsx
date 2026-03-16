@@ -107,7 +107,7 @@ export default function DashboardOverview() {
 
                 // Calculate Queue Status (today's unticked appointments)
                 const untickedQueue = todayAppointments
-                    .filter((a: any) => !a.isTicked)
+                    .filter((a: any) => !a.isTicked && !a.isDeleted)
                     .sort((a: any, b: any) => a.time.localeCompare(b.time));
                 setQueue(untickedQueue);
 

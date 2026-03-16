@@ -25,7 +25,8 @@ const initSchedules = () => {
                 {
                     date: { $gte: todayStart, $lte: todayEnd },
                     status: 'Scheduled',
-                    isTicked: false
+                    isTicked: false,
+                    isDeleted: false
                 },
                 {
                     $set: { status: 'Cancelled' }

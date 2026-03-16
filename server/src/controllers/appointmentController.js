@@ -296,10 +296,50 @@ exports.getAppointmentsByPatientId = async (req, res) => {
 // Delete an appointment
 exports.deleteAppointment = async (req, res) => {
     try {
-        const deletedAppointment = await Appointment.findByIdAndDelete(req.params.id);
-        if (!deletedAppointment) return res.status(404).json({ message: 'Appointment not found' });
-        res.status(200).json({ message: 'Appointment deleted successfully' });
+        const appointmentId = req.params.id;
+        const appointment = await Appointment.findById(appointmentId);
+
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+
+        const isHardDeleteEligible = !['Operating', 'Completed'].includes(appointment.status);
+
+        if (isHardDeleteEligible) {
+            // HARD DELETE: Remove completely
+            console.log(`--- HARD DELETION START for Appointment: ${appointmentId} ---`);
+            await Appointment.findByIdAndDelete(appointmentId);
+
+            // Cleanup History (TreatmentRecord)
+            const deletedRecord = await TreatmentRecord.findOneAndDelete({ appointmentId: appointmentId });
+            if (deletedRecord) console.log('✔ TreatmentRecord hard-deleted.');
+
+            // Cleanup Contact
+            const updatedContact = await Contact.findOneAndUpdate(
+                { appointmentId: appointmentId },
+                {
+                    $set: { status: 'Read' },
+                    $unset: { appointmentId: "" }
+                },
+                { new: true }
+            );
+            if (updatedContact) console.log('✔ Contact reference cleaned up.');
+
+            console.log('--- HARD DELETION COMPLETE ---');
+            return res.status(200).json({ message: 'Appointment and records fully removed.' });
+        } else {
+            // SOFT DELETE: Keep for Revenue/History but hide from management
+            console.log(`--- SOFT DELETION START for Appointment: ${appointmentId} ---`);
+            appointment.isDeleted = true;
+            await appointment.save();
+
+            console.log('✔ Appointment marked as isDeleted (Soft Delete).');
+            console.log('--- SOFT DELETION COMPLETE ---');
+            return res.status(200).json({ message: 'Appointment hidden from schedules (soft delete).' });
+        }
+
     } catch (error) {
+        console.error('✖ DELETION ERROR:', error.message);
         res.status(500).json({ message: error.message });
     }
 };
