@@ -11,7 +11,7 @@ export async function generateMetadata() {
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
             (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
 
-        const response = await axios.get(`${API_BASE_URL}/handover/active`);
+        const response = await axios.get(`${API_BASE_URL}/handover/active`, { timeout: 5000 });
         const clinic = response.data.jsondata;
         const seo = clinic.seo;
 
@@ -83,7 +83,7 @@ export default async function RootLayout({
     try {
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
             (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
-        const response = await axios.get(`${API_BASE_URL}/handover/active`);
+        const response = await axios.get(`${API_BASE_URL}/handover/active`, { timeout: 5000 });
         clinicData = response.data.jsondata;
     } catch (e) {
         console.error("Failed to fetch clinic data for layout JSON-LD", e);

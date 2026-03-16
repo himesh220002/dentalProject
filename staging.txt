@@ -22,6 +22,11 @@ NEXTAUTH_SECRET              -> (Create a NEW random string for staging)
 PART 2: RENDER DASHBOARD ENV (Go to Render > Staging Service > Environment)
 ================================================================================
 
+⚠️ CRITICAL: FIX RENDER TYPO
+In Render Dashboard > Settings:
+- Build Command: `npm install`
+- Start Command: `npm start` (Make sure it is NOT `num run dev`)
+
 --- 🔹 DATABASE ---
 MONGO_URI                    -> mongodb+srv://.../dentalTestDB
 
