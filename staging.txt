@@ -41,6 +41,18 @@ MAILGUN_API_KEY              -> (Use your existing one)
 MAILGUN_DOMAIN               -> (Use your existing one)
 
 ================================================================================
+🛡️ DATA ISOLATION (How to keep Staging separate from Production)
+================================================================================
+
+1. In Render Dashboard, make sure you have TWO separate services.
+2. The Staging service must be connected to the `testbranch01` branch.
+3. In the Staging service's "Environment" tab:
+   - MONGO_URI must end in `/dentalTestDB` (NOT `/dentalDB`)
+   - JWT_SECRET should be different from Production.
+4. This ensures that any test appointments or patients you create in STAGING 
+   will NEVER appear on your main live website.
+
+================================================================================
 💡 PRO TIP: 
 You only need to add these ONCE. Any future push to testbranch01 will 
 automatically use these values and deploy everything 100% Green!
