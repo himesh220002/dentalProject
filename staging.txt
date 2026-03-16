@@ -1,23 +1,42 @@
-Staging Environment Setup Guide (testbranch01)
-To enable the new staging pipeline, you need to create a GitHub Environment called "Staging" and add the following secrets to it.
+🚀 STAGING ENVIRONMENT SETUP (testbranch01)
 
-🔑 Required GitHub Secrets
-Secret Name	Description	Example / Source
-VERCEL_TOKEN	Your Vercel account token	Vercel Account Settings
-VERCEL_ORG_ID	Your Vercel organization/team ID	Vercel Project Settings
-STAGING_BACKEND_URL	The URL of your Render Staging service	https://dr-tooth-staging.onrender.com
-RENDER_STAGING_DEPLOY_HOOK	The "Deploy Hook" for your Render service	Render Service > Settings > Deploy Hook
-⚙️ Environment Variables for Render (Staging)
-When setting up your backend service on Render for the testbranch01 branch, use these values:
+To make everything work (Google Login, Mail, Database), please add these secrets.
 
-Variable	Recommended Value
-MONGO_URI	mongodb+srv://.../dentalTestDB
-JWT_SECRET	A unique secret for staging
-FRONTEND_URL	Your Vercel Preview/Staging URL
-MAILGUN_API_KEY	(Use same or staging key)
-MAILGUN_DOMAIN	(Use same or staging domain)
-🚀 How to set up on GitHub
-Go to your Repository on GitHub.
-Click Settings > Environments.
-Click New environment and name it Staging.
-Inside Staging, click Add secret for each of the keys listed above.
+================================================================================
+PART 1: GITHUB ENVIRONMENT SECRETS (Go to Settings > Environments > Staging)
+================================================================================
+
+--- 🔹 CORE DEPLOYMENT ---
+VERCEL_TOKEN                 -> Your Vercel account token
+VERCEL_ORG_ID                -> Your Vercel team ID
+STAGING_BACKEND_URL          -> https://your-render-staging-app.onrender.com
+RENDER_STAGING_DEPLOY_HOOK    -> The URL from Render Settings > Deploy Hook
+STAGING_FRONTEND_URL         -> Your Vercel Preview URL (e.g. https://xxx-git-testbranch01-xxx.vercel.app)
+
+--- 🔹 AUTHENTICATION (NextAuth/Google) ---
+GOOGLE_CLIENT_ID             -> (Use your existing one or unique staging one)
+GOOGLE_CLIENT_SECRET         -> (Use your existing one or unique staging one)
+NEXTAUTH_SECRET              -> (Create a NEW random string for staging)
+
+================================================================================
+PART 2: RENDER DASHBOARD ENV (Go to Render > Staging Service > Environment)
+================================================================================
+
+--- 🔹 DATABASE ---
+MONGO_URI                    -> mongodb+srv://.../dentalTestDB
+
+--- 🔹 URLS & SECURITY ---
+FRONTEND_URL                 -> (Your Vercel Preview URL)
+JWT_SECRET                   -> (Create a NEW random string for staging)
+
+--- 🔹 MAILING ---
+GMAIL_USER                   -> satyamhimesh@gmail.com
+GMAIL_APP_PASS               -> swyhxhuqcisjnivk
+MAILGUN_API_KEY              -> (Use your existing one)
+MAILGUN_DOMAIN               -> (Use your existing one)
+
+================================================================================
+💡 PRO TIP: 
+You only need to add these ONCE. Any future push to testbranch01 will 
+automatically use these values and deploy everything 100% Green!
+================================================================================
