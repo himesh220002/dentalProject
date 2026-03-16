@@ -301,6 +301,7 @@ function ContactContent() {
                         <h2 className="text-2xl font-bold text-gray-800 mb-6 mt-2 flex justify-center items-center gap-2 text-left">
                             <FaEnvelope className="text-blue-500" /> {language === 'hi' ? 'संदेश भेजें' : 'Send a Message'}
                         </h2>
+                        <p className="text-md sm:text-xl md:text-2xl font-extrabold text-center text-blue-900 mb-6 border-t-2 p-2 border-gray-200">Request an Appointment</p>
 
                         {status.message && (
                             <div className={`mb-6 p-4 rounded-xl text-center font-bold ${status.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -310,20 +311,22 @@ function ContactContent() {
 
                         <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
                             <div className="space-y-2 text-left">
-                                <label htmlFor="name" className="text-sm font-semibold text-gray-700">{t.formName}</label>
+                                <label htmlFor="name" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
+                                    {t.formName}
+                                </label>
                                 <input
                                     type="text"
                                     id="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
                                     placeholder="yourname"
                                     required
                                 />
                             </div>
                             <div className="space-y-2 text-left">
-                                <label htmlFor="phone" className="text-sm font-semibold text-gray-700 flex justify-between">
-                                    <span>{t.formPhone} (10 {language === 'hi' ? 'अंक' : 'Digits'})</span>
+                                <label htmlFor="phone" className="text-sm font-semibold text-gray-700 h-8 flex items-end justify-start gap-2">
+                                    <span>{t.formPhone} </span><FaWhatsapp className="text-green-500 text-xl" />
                                     {formData.phone.length > 0 && formData.phone.length < 10 && (
                                         <span className="text-red-500 text-[10px] animate-pulse">Required: {formData.phone.length}/10</span>
                                     )}
@@ -342,20 +345,20 @@ function ContactContent() {
                                             ? 'border-red-100 focus:border-red-400 text-red-600'
                                             : 'border-gray-200 focus:border-blue-500'
                                         }`}
-                                    placeholder="00000 00000"
+                                    placeholder="Enter WhatsApp Number"
                                     required
                                 />
                             </div>
                             <div className="md:col-span-2 space-y-2 text-left">
-                                <label htmlFor="email" className="text-sm font-semibold text-gray-700">
-                                    {language === 'hi' ? 'ईमेल आईडी' : 'Email Address'} <span className="text-gray-400 font-normal text-[10px] uppercase tracking-widest">(Optional)</span>
+                                <label htmlFor="email" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
+                                    {language === 'hi' ? 'ईमेल आईडी' : 'Email Address'} <span className="ml-2 text-gray-400 font-normal text-[10px] uppercase tracking-widest">(Optional)</span>
                                 </label>
                                 <input
                                     type="email"
                                     id="email"
                                     value={(formData as any).email || ''}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
                                     placeholder="yourname@gmail.com"
                                 />
                             </div>
