@@ -28,6 +28,7 @@ interface Message {
 interface Treatment {
     _id: string;
     name: string;
+    price?: string;
 }
 
 interface InsightsModalProps {
@@ -53,10 +54,17 @@ interface RadialOrb {
 export default function CustomerInsightsModal({ isOpen, onClose, patients, appointments, messages, treatments }: InsightsModalProps) {
     const [mounted, setMounted] = useState(false);
     const [activeBarIndex, setActiveBarIndex] = useState<number | null>(null);
+    const [shouldAnimate, setShouldAnimate] = useState(false);
 
     useEffect(() => {
         setMounted(true);
-    }, []);
+        if (isOpen) {
+            // Reset and trigger animation when modal opens
+            setShouldAnimate(false);
+            const timer = setTimeout(() => setShouldAnimate(true), 300);
+            return () => clearTimeout(timer);
+        }
+    }, [isOpen]);
 
 
     // 1. Treatment Synergy (Distribution)
@@ -195,15 +203,26 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
         appointments.forEach(a => {
             if (a.status === 'Completed') {
                 const tName = a.reason.split('|')[0].trim() || 'General';
-                // Use a default weight for pricing if not present
-                const weight = tName.toLowerCase().includes('root canal') ? 5000 :
-                    tName.toLowerCase().includes('extraction') ? 1000 :
-                        tName.toLowerCase().includes('whitening') ? 3000 : 500;
-                segments[tName] = (segments[tName] || 0) + weight;
+
+                // Try to find the actual price from the treatments list
+                const treatmentData = treatments.find(t => t.name.toLowerCase() === tName.toLowerCase());
+                let priceValue = 0;
+
+                if (treatmentData?.price) {
+                    // Extract numeric value from string (e.g., "₹5,000" -> 5000)
+                    priceValue = parseInt(treatmentData.price.replace(/[^\d]/g, ''), 10) || 0;
+                } else {
+                    // Fallback to defaults if treatment not found or price missing
+                    priceValue = tName.toLowerCase().includes('root canal') ? 5000 :
+                        tName.toLowerCase().includes('extraction') ? 1000 :
+                            tName.toLowerCase().includes('whitening') ? 5000 : 500;
+                }
+
+                segments[tName] = (segments[tName] || 0) + priceValue;
             }
         });
         return Object.entries(segments).sort((a, b) => b[1] - a[1]).slice(0, 4);
-    }, [appointments]);
+    }, [appointments, treatments]);
 
     // 4. Daily Appointment Activity (Current Month)
     const dailyActivity = useMemo(() => {
@@ -484,15 +503,21 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
 
                                         {/* Revenue synergy */}
                                         <div className="bg-slate-800/40 p-8 rounded-[2.5rem] border border-slate-700/50 flex-grow">
-                                            <h3 className="text-sm font-black text-slate-400 mb-6 flex items-center gap-2 uppercase tracking-[0.2em]">
-                                                <FaTooth className="text-emerald-500" />
-                                                Revenue Synergy
-                                            </h3>
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h3 className="text-sm font-black text-slate-400 flex items-center gap-2 uppercase tracking-[0.2em]">
+                                                    <FaTooth className="text-emerald-500" />
+                                                    Revenue Synergy
+                                                </h3>
+                                                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                                                    <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse"></div>
+                                                    <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">Estimated</span>
+                                                </div>
+                                            </div>
                                             <div className="space-y-4">
                                                 {revenueSegments.map(([name, val], i) => (
                                                     <div key={i} className="flex items-center gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-[10px] font-black text-emerald-500 border border-emerald-500/20">
-                                                            P{i + 1}
+                                                        <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-[7px] font-black text-emerald-500 border border-emerald-500/20 uppercase tracking-tighter">
+                                                            RANK {i + 1}
                                                         </div>
                                                         <div className="flex-grow">
                                                             <div className="flex justify-between text-xs font-black mb-1">
@@ -538,8 +563,10 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                                                             </div>
                                                             <div className="h-1.5 bg-slate-950 rounded-full overflow-hidden">
                                                                 <div
-                                                                    className={`h-full ${step.color.replace('text', 'bg')} transition-all duration-[1.5s] delay-${i * 100}`}
-                                                                    style={{ width: `${(step.val / (flowMetrics.funnel[0].val || 1)) * 100}%` }}
+                                                                    className={`h-full ${step.color.replace('text', 'bg')} transition-all duration-[2s] ease-out`}
+                                                                    style={{
+                                                                        width: shouldAnimate ? `${(step.val / (Math.max(...flowMetrics.funnel.map(f => f.val), 1))) * 100}%` : '0%'
+                                                                    }}
                                                                 ></div>
                                                             </div>
                                                         </div>
