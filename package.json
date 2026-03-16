@@ -1,0 +1,10 @@
+{
+    "name": "dr-tooth-dental-clinic",
+    "version": "1.0.0",
+    "description": "Root package to manage dental clinic project",
+    "scripts": {
+        "test": "node scripts/test-all.js",
+        "test:server": "npm test --prefix server",
+        "test:client": "npm test --prefix client"
+    }
+}

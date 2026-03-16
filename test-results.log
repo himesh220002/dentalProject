@@ -1,68 +1,357 @@
-# 🏥 Dr. Tooth Dental Clinic - PROJECT-WIDE TEST VERIFICATION REPORT
-Generated on: 2026-03-13 15:30:00
-
 ================================================================================
-💠 OVERALL PROJECT SUMMARY
+              DR-TOOTH DENTAL CLINIC - GLOBAL TEST REPORT
 ================================================================================
-TOTAL TESTS: 48
-PASSING:     48
-FAILING:     0
-STATUS:      🟢 100% STABLE | ALL SYSTEMS VERIFIED
-================================================================================
-
---------------------------------------------------------------------------------
-🎨 FRONTEND COMPONENT VERIFICATION (Next.js / Vitest)
---------------------------------------------------------------------------------
-Category: Components & Pages
-✓ AddPatientForm (5 tests) - Form validation, submission logic, API mock interaction.
-✓ BlogListPage (4 tests)   - Initial loading, blog rendering, search filtering.
-✓ ProtectedRoute (3 tests) - Authentication check, children rendering, restricted access UI.
-✓ Dashboard (4 tests)      - Quick Scheduler rendering, handover state display.
-✓ Navbar (3 tests)         - Rendering, navigation links, mobile menu toggle.
-✓ ClinicContext (3 tests)  - Initial state, data fetching, API error fallback (SSOT).
-✓ Profile (3 tests)        - User info rendering, appointment status labels.
-
-Total Frontend: 25 PASSED | 0 FAILED
+Date: 3/16/2026, 12:13:38 PM
+Duration: 5.04s
+Overall Status: 💚 PASS
 --------------------------------------------------------------------------------
 
+[CATEGORY: EXECUTIVE SUMMARY]
 --------------------------------------------------------------------------------
-⚙️ BACKEND CONTROLLER VERIFICATION (Express / Vitest / Cluster 0)
+Server API:
+  - Files: 7 total (7 passed, 0 failed)
+  - Tests: 23 total (23 passed, 0 failed)
+  - Result: PASSED
+
+Client UI:
+  - Files: 12 total (12 passed, 0 failed)
+  - Tests: 40 total (40 passed, 0 failed)
+  - Result: PASSED
+
 --------------------------------------------------------------------------------
-Category: API & Database Logic
-✓ Auth & Merging API (3 tests)  - User sync and orphan patient merging logic.
-✓ Blog API & CRUD (5 tests)     - Slug generation, status filtering, content management.
-✓ Treatments & Records (3 tests) - Service listings and treatment record CRUD.
-✓ Config & Admin (4 tests)      - Password management, closures, mailer check.
-✓ Handover Logic (4 tests)      - Version saving, activation, and SSOT synchronization.
-✓ Patients API (2 tests)        - Patient creation and retrieval.
-✓ Appointments API (2 tests)    - Scheduling flow and contact message submission.
-
-Database Status: 🟢 VERIFIED on External Test MongoDB (dentalTestDB)
-Total Backend: 23 PASSED | 0 FAILED
+[CATEGORY: DETAILED INSIGHTS - SERVER]
 --------------------------------------------------------------------------------
 
+> server@1.0.0 test
+> vitest run
+
+
+ RUN  v4.1.0 /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+
+stdout | src/__tests__/otherAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/otherAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/treatmentAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/treatmentAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/configAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/patientAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/authAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/patientAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/authAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/configAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/blogAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/handoverAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/blogAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/handoverAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/otherAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:40435/
+
+stdout | src/__tests__/otherAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/authAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:38413/
+
+stdout | src/__tests__/treatmentAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:40501/
+
+stdout | src/__tests__/configAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:36953/
+
+stdout | src/__tests__/authAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/handoverAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:36179/
+
+stdout | src/__tests__/patientAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:42493/
+
+stdout | src/__tests__/treatmentAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/blogAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:43893/
+
+stdout | src/__tests__/configAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/handoverAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/patientAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/blogAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
+--- APPOINTMENT FLOW START ---
+Step 0: Validating payload... {
+  patientId: '69b7a69b0611d6081841b43d',
+  date: '2026-03-16T06:43:39.587Z',
+  time: '11:00 AM',
+  reason: 'Routine Checkup',
+  amount: 500
+}
+Step 1: Saving initial appointment record...
+
+stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
+✔ Step 1 PASSED: Record saved with ID new ObjectId('69b7a69b0611d6081841b440')
+Step 2: Fetching patient details for email notification...
+
+stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
+✔ Step 2 PASSED: Email address found - test@patient.com
+Step 3: Triggering background email notification for test@patient.com...
+Starting email delivery for test@patient.com via Mailgun API...
+Step 3A: Sending payload to Mailgun API...
+--- APPOINTMENT FLOW COMPLETE ---
+
+stdout | src/__tests__/authAPI.test.js > Auth & Patient Merging API > should merge an orphan patient into a new user during sync
+[SYNC] Found 1 orphan matching record(s) for orphan@example.com. Merging...
+
+stdout | src/__tests__/configAPI.test.js > Config API & Admin Settings > should check mailer configuration
+--- LIVE MAILER CHECK TRIGGERED ---
+
+ ✓ src/__tests__/patientAPI.test.js (2 tests) 387ms
+ ✓ src/__tests__/configAPI.test.js (4 tests) 432ms
+ ✓ src/__tests__/treatmentAPI.test.js (3 tests) 452ms
+ ✓ src/__tests__/authAPI.test.js (3 tests) 445ms
+ ✓ src/__tests__/otherAPI.test.js (2 tests) 474ms
+ ✓ src/__tests__/handoverAPI.test.js (4 tests) 443ms
+ ✓ src/__tests__/blogAPI.test.js (5 tests) 459ms
+
+ Test Files  7 passed (7)
+      Tests  23 passed (23)
+   Start at  12:13:38
+   Duration  1.20s (transform 94ms, setup 2.31s, import 1.75s, tests 3.09s, environment 1ms)
+
+
+(node:206719) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:206719) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:206688) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:206689) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+--------------------------------------------------------------------------------
+[CATEGORY: DETAILED INSIGHTS - CLIENT]
+--------------------------------------------------------------------------------
+
+> client@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.0 /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client
+
+ ✓ src/app/blogs/__tests__/BlogListPage.test.tsx (4 tests) 166ms
+ ✓ src/context/__tests__/ClinicContext.test.tsx (3 tests) 98ms
+stdout | src/components/__tests__/QuickScheduler.test.tsx > QuickScheduler Component > calculates total amount correctly
+Found 1000 elements count: 4
+
+ ✓ src/app/dashboard/__tests__/Dashboard.test.tsx (4 tests) 177ms
+ ✓ src/components/__tests__/ProtectedRoute.test.tsx (3 tests) 88ms
+ ✓ src/components/__tests__/AddPatientForm.test.tsx (5 tests) 207ms
+ ✓ src/app/__tests__/Home.test.tsx (3 tests) 177ms
+ ✓ src/app/treatments/__tests__/Treatments.test.tsx (3 tests) 366ms
+ ✓ src/components/__tests__/Navbar.test.tsx (3 tests) 253ms
+ ✓ src/app/profile/__tests__/Profile.test.tsx (3 tests) 466ms
+     ✓ renders user personal information correctly  373ms
+ ✓ src/app/contact/__tests__/Contact.test.tsx (4 tests) 481ms
+stdout | src/components/__tests__/QuickScheduler.test.tsx > QuickScheduler Component > submits the form successfully
+🚀 Submitting Appointment Payload: {
+  patientId: 'p1',
+  date: '2026-03-16',
+  time: '10:00',
+  selectedTreatments: [ { name: 'Scaling', price: 1000 } ],
+  additionalItems: [],
+  notes: '',
+  reason: 'Scaling',
+  amount: 1000,
+  contactId: undefined
+}
+
+ ✓ src/components/__tests__/QuickScheduler.test.tsx (3 tests) 730ms
+     ✓ submits the form successfully  499ms
+ ✓ src/components/__tests__/Footer.test.tsx (2 tests) 44ms
+
+ Test Files  12 passed (12)
+      Tests  40 passed (40)
+   Start at  12:13:40
+   Duration  3.12s (transform 1.42s, setup 1.22s, import 7.39s, tests 3.25s, environment 12.45s)
+
+
+stderr | src/context/__tests__/ClinicContext.test.tsx > ClinicContext > handles API error and keeps default data
+Error fetching active clinic data: { response: { data: { message: 'API Error' } } }
+
+Not implemented: Window's alert() method
+stderr | src/components/__tests__/AddPatientForm.test.tsx > AddPatientForm > should show an alert if the submission fails
+Error adding patient: Error: API Error
+    at /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client/src/components/__tests__/AddPatientForm.test.tsx:61:47
+    at file:///mnt/azprograms/Next.js%20projects/dr-tooth-dental-clinic/client/node_modules/@vitest/runner/dist/index.js:296:11
+    at file:///mnt/azprograms/Next.js%20projects/dr-tooth-dental-clinic/client/node_modules/@vitest/runner/dist/index.js:1258:26
+    at file:///mnt/azprograms/Next.js%20projects/dr-tooth-dental-clinic/client/node_modules/@vitest/runner/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///mnt/azprograms/Next.js%20projects/dr-tooth-dental-clinic/client/node_modules/@vitest/runner/dist/index.js:1678:10)
+    at file:///mnt/azprograms/Next.js%20projects/dr-tooth-dental-clinic/client/node_modules/@vitest/runner/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///mnt/azprograms/Next.js%20projects/dr-tooth-dental-clinic/client/node_modules/@vitest/runner/dist/index.js:1627:10)
+    at file:///mnt/azprograms/Next.js%20projects/dr-tooth-dental-clinic/client/node_modules/@vitest/runner/dist/index.js:2309:64
+
+stderr | src/app/__tests__/Home.test.tsx > Home Page Component > renders main sections of the home page
+Video loading failed: TypeError: Failed to parse URL from /video/dentist video1.mp4
+    at node:internal/deps/undici/undici:14902:13
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at loadVideo (/mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client/src/app/page.tsx:116:34) {
+  [cause]: TypeError: Invalid URL
+      at new URL (node:internal/url:806:29)
+      at new URL (file:///mnt/azprograms/Next.js%20projects/dr-tooth-dental-clinic/client/node_modules/vitest/dist/chunks/index.EY6TCHpo.js:557:2)
+      at new Request (node:internal/deps/undici/undici:9776:25)
+      at fetch (node:internal/deps/undici/undici:10505:25)
+      at fetch (node:internal/deps/undici/undici:14900:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:72:12)
+      at loadVideo (/mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client/src/app/page.tsx:116:40)
+      at processTicksAndRejections (node:internal/process/task_queues:95:5) {
+    code: 'ERR_INVALID_URL',
+    input: '/video/dentist video1.mp4'
+  }
+}
+
+stderr | src/app/__tests__/Home.test.tsx > Home Page Component > shows upcoming appointment notification when user is logged in
+Video loading failed: TypeError: Failed to parse URL from /video/dentist video1.mp4
+    at node:internal/deps/undici/undici:14902:13
+    at runNextTicks (node:internal/process/task_queues:60:5)
+    at listOnTimeout (node:internal/timers:545:9)
+    at processTimers (node:internal/timers:519:7)
+    at loadVideo (/mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client/src/app/page.tsx:116:34) {
+  [cause]: TypeError: Invalid URL
+      at new URL (node:internal/url:806:29)
+      at new URL (file:///mnt/azprograms/Next.js%20projects/dr-tooth-dental-clinic/client/node_modules/vitest/dist/chunks/index.EY6TCHpo.js:557:2)
+      at new Request (node:internal/deps/undici/undici:9776:25)
+      at fetch (node:internal/deps/undici/undici:10505:25)
+      at fetch (node:internal/deps/undici/undici:14900:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:72:12)
+      at loadVideo (/mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client/src/app/page.tsx:116:40)
+      at runNextTicks (node:internal/process/task_queues:60:5)
+      at listOnTimeout (node:internal/timers:545:9)
+      at processTimers (node:internal/timers:519:7) {
+    code: 'ERR_INVALID_URL',
+    input: '/video/dentist video1.mp4'
+  }
+}
+
+stderr | src/app/__tests__/Home.test.tsx > Home Page Component > displays doctor and team information correctly
+Video loading failed: TypeError: Failed to parse URL from /video/dentist video1.mp4
+    at node:internal/deps/undici/undici:14902:13
+    at runNextTicks (node:internal/process/task_queues:60:5)
+    at listOnTimeout (node:internal/timers:545:9)
+    at processTimers (node:internal/timers:519:7)
+    at loadVideo (/mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client/src/app/page.tsx:116:34) {
+  [cause]: TypeError: Invalid URL
+      at new URL (node:internal/url:806:29)
+      at new URL (file:///mnt/azprograms/Next.js%20projects/dr-tooth-dental-clinic/client/node_modules/vitest/dist/chunks/index.EY6TCHpo.js:557:2)
+      at new Request (node:internal/deps/undici/undici:9776:25)
+      at fetch (node:internal/deps/undici/undici:10505:25)
+      at fetch (node:internal/deps/undici/undici:14900:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:72:12)
+      at loadVideo (/mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client/src/app/page.tsx:116:40)
+      at runNextTicks (node:internal/process/task_queues:60:5)
+      at listOnTimeout (node:internal/timers:545:9)
+      at processTimers (node:internal/timers:519:7) {
+    code: 'ERR_INVALID_URL',
+    input: '/video/dentist video1.mp4'
+  }
+}
+An update to Home inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+Not implemented: Window's open() method
+
 ================================================================================
-✅ FINAL VERDICT: PROJECT STABLE
-================================================================================
-
-
-
-================================================================================
-TEST EXECUTION SUMMARY
-================================================================================
-Methodology: Comprehensive automated unit and integration testing.
-Primary Tools: Vitest, Express.js, MongoDB (External Test Instance), API Mocks.
-
-Metrics:
-- Total Tests Executed: 48 (25 Frontend | 23 Backend)
-- Initial Success Rate: 89% (43/48)
-- Partial/Total Failures Resolved: 5
-- Final Success Rate: 100% (48/48)
-
-Key Challenges & Resolutions:
-1. API Mock Inconsistency: AddPatientForm initially failed due to mismatched schema. Resolved by aligning mock responses with Express controller logic.
-2. Race Conditions in Handover: Handover logic displayed stale data. Fixed via SSOT (Single Source of Truth) synchronization in ClinicContext.
-3. Database State Persistence: Initial tests left orphan patients. Corrected by implementing a teardown script for the external MongoDB.
-
-Final Status: All components verified stable across Frontend and Backend.
+                         END OF SYSTEMATIC LOG
 ================================================================================

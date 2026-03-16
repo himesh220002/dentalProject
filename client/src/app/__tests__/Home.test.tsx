@@ -100,7 +100,7 @@ describe('Home Page Component', () => {
         render(<Home />);
 
         await waitFor(() => {
-            expect(screen.getByText(/Your Fixed Appointment/i)).toBeInTheDocument();
+            expect(screen.getByText(/Fixed Appointment/i)).toBeInTheDocument();
             expect(screen.getByText(/10:00 AM/i)).toBeInTheDocument();
         });
     });

@@ -32,7 +32,7 @@ describe('AddPatientForm', () => {
     });
 
     it('should successfully submit the form and call onPatientAdded', async () => {
-        (axios.post as any).mockResolvedValue({ data: { success: true } });
+        (axios.post as any).mockResolvedValue({ data: { _id: '1234567890abcdef12345678' } });
 
         render(<AddPatientForm onPatientAdded={mockOnPatientAdded} />);
         fireEvent.click(screen.getByText(/Add New Patient/i));
