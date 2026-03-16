@@ -32,6 +32,10 @@ const contactSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Appointment'
     },
+    patientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Patient'
+    },
     emailSent: {
         type: Boolean,
         default: false

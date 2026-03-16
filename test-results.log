@@ -1,8 +1,8 @@
 ================================================================================
               DR-TOOTH DENTAL CLINIC - GLOBAL TEST REPORT
 ================================================================================
-Date: 3/16/2026, 12:13:38 PM
-Duration: 5.04s
+Date: 3/16/2026, 8:57:54 PM
+Duration: 6.32s
 Overall Status: 💚 PASS
 --------------------------------------------------------------------------------
 
@@ -28,80 +28,15 @@ Client UI:
 
  RUN  v4.1.0 /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
 
-stdout | src/__tests__/otherAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
-Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
-MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
---- MAILER API DIAGNOSTIC ---
-MAILGUN_DOMAIN: ✔ LOADED
-MAILGUN_API_KEY: ✔ LOADED
-
-stdout | src/__tests__/otherAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
-stdout | src/__tests__/treatmentAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
-Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
-MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
---- MAILER API DIAGNOSTIC ---
-MAILGUN_DOMAIN: ✔ LOADED
-MAILGUN_API_KEY: ✔ LOADED
-
-stdout | src/__tests__/treatmentAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
 stdout | src/__tests__/configAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
 Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
 MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
 --- MAILER API DIAGNOSTIC ---
 MAILGUN_DOMAIN: ✔ LOADED
 MAILGUN_API_KEY: ✔ LOADED
 
-stdout | src/__tests__/patientAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
-Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
-MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
---- MAILER API DIAGNOSTIC ---
-MAILGUN_DOMAIN: ✔ LOADED
-MAILGUN_API_KEY: ✔ LOADED
-
-stdout | src/__tests__/authAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
-Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
-MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
---- MAILER API DIAGNOSTIC ---
-MAILGUN_DOMAIN: ✔ LOADED
-MAILGUN_API_KEY: ✔ LOADED
-
-stdout | src/__tests__/patientAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
-stdout | src/__tests__/authAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
-stdout | src/__tests__/configAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
-stdout | src/__tests__/blogAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
-Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
-MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
---- MAILER API DIAGNOSTIC ---
-MAILGUN_DOMAIN: ✔ LOADED
-MAILGUN_API_KEY: ✔ LOADED
-
-stdout | src/__tests__/handoverAPI.test.js
+stdout | src/__tests__/otherAPI.test.js
 [dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  enable debug logging with { debug: true }
 Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
 MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
@@ -109,63 +44,128 @@ MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mo
 MAILGUN_DOMAIN: ✔ LOADED
 MAILGUN_API_KEY: ✔ LOADED
 
+stdout | src/__tests__/patientAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/otherAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/configAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/authAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/patientAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/authAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/blogAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/handoverAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🛡️ auth for agents: https://vestauth.com
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/handoverAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
 stdout | src/__tests__/blogAPI.test.js
 🧪 Vitest Setup: Starting beforeAll...
 NODE_ENV: test
 🛠️ Spinning up In-Memory MongoDB...
 
-stdout | src/__tests__/handoverAPI.test.js
+stdout | src/__tests__/treatmentAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/treatmentAPI.test.js
 🧪 Vitest Setup: Starting beforeAll...
 NODE_ENV: test
 🛠️ Spinning up In-Memory MongoDB...
 
-stdout | src/__tests__/otherAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:40435/
-
-stdout | src/__tests__/otherAPI.test.js
-🔗 Mongoose connected successfully
+stdout | src/__tests__/configAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:37421/
 
 stdout | src/__tests__/authAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:38413/
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:46679/
 
-stdout | src/__tests__/treatmentAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:40501/
+stdout | src/__tests__/otherAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:36809/
 
 stdout | src/__tests__/configAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:36953/
-
-stdout | src/__tests__/authAPI.test.js
 🔗 Mongoose connected successfully
 
-stdout | src/__tests__/handoverAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:36179/
-
 stdout | src/__tests__/patientAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:42493/
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:39629/
 
-stdout | src/__tests__/treatmentAPI.test.js
+stdout | src/__tests__/authAPI.test.js
 🔗 Mongoose connected successfully
 
 stdout | src/__tests__/blogAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:43893/
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:36419/
 
-stdout | src/__tests__/configAPI.test.js
-🔗 Mongoose connected successfully
-
-stdout | src/__tests__/handoverAPI.test.js
+stdout | src/__tests__/otherAPI.test.js
 🔗 Mongoose connected successfully
 
 stdout | src/__tests__/patientAPI.test.js
 🔗 Mongoose connected successfully
 
+stdout | src/__tests__/handoverAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:37613/
+
 stdout | src/__tests__/blogAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/treatmentAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:35175/
+
+stdout | src/__tests__/handoverAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/treatmentAPI.test.js
 🔗 Mongoose connected successfully
 
 stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
 --- APPOINTMENT FLOW START ---
 Step 0: Validating payload... {
-  patientId: '69b7a69b0611d6081841b43d',
-  date: '2026-03-16T06:43:39.587Z',
+  patientId: '69b8217b13e9b66ba550eb3c',
+  date: '2026-03-16T15:27:55.865Z',
   time: '11:00 AM',
   reason: 'Routine Checkup',
   amount: 500
@@ -173,7 +173,7 @@ Step 0: Validating payload... {
 Step 1: Saving initial appointment record...
 
 stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
-✔ Step 1 PASSED: Record saved with ID new ObjectId('69b7a69b0611d6081841b440')
+✔ Step 1 PASSED: Record saved with ID new ObjectId('69b8217b13e9b66ba550eb3e')
 Step 2: Fetching patient details for email notification...
 
 stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
@@ -183,32 +183,35 @@ Starting email delivery for test@patient.com via Mailgun API...
 Step 3A: Sending payload to Mailgun API...
 --- APPOINTMENT FLOW COMPLETE ---
 
-stdout | src/__tests__/authAPI.test.js > Auth & Patient Merging API > should merge an orphan patient into a new user during sync
-[SYNC] Found 1 orphan matching record(s) for orphan@example.com. Merging...
-
 stdout | src/__tests__/configAPI.test.js > Config API & Admin Settings > should check mailer configuration
 --- LIVE MAILER CHECK TRIGGERED ---
 
- ✓ src/__tests__/patientAPI.test.js (2 tests) 387ms
- ✓ src/__tests__/configAPI.test.js (4 tests) 432ms
- ✓ src/__tests__/treatmentAPI.test.js (3 tests) 452ms
- ✓ src/__tests__/authAPI.test.js (3 tests) 445ms
- ✓ src/__tests__/otherAPI.test.js (2 tests) 474ms
- ✓ src/__tests__/handoverAPI.test.js (4 tests) 443ms
- ✓ src/__tests__/blogAPI.test.js (5 tests) 459ms
+stdout | src/__tests__/authAPI.test.js > Auth & Patient Merging API > should merge an orphan patient into a new user during sync
+[SYNC] Found 1 orphan matching record(s) for orphan@example.com. Merging...
+
+stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should submit a contact message
+Creating new patient profile for enquiry: John Inquiry (1234567890)
+
+ ✓ src/__tests__/treatmentAPI.test.js (3 tests) 487ms
+ ✓ src/__tests__/authAPI.test.js (3 tests) 535ms
+ ✓ src/__tests__/otherAPI.test.js (2 tests) 549ms
+ ✓ src/__tests__/blogAPI.test.js (5 tests) 507ms
+ ✓ src/__tests__/handoverAPI.test.js (4 tests) 522ms
+ ✓ src/__tests__/configAPI.test.js (4 tests) 1433ms
+ ✓ src/__tests__/patientAPI.test.js (2 tests) 1426ms
 
  Test Files  7 passed (7)
       Tests  23 passed (23)
-   Start at  12:13:38
-   Duration  1.20s (transform 94ms, setup 2.31s, import 1.75s, tests 3.09s, environment 1ms)
+   Start at  20:57:54
+   Duration  2.26s (transform 140ms, setup 2.65s, import 2.05s, tests 5.46s, environment 1ms)
 
 
-(node:206719) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:231241) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:206719) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
-(node:206688) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:231241) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:231224) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:206689) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:231216) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 --------------------------------------------------------------------------------
@@ -221,20 +224,20 @@ stdout | src/__tests__/configAPI.test.js > Config API & Admin Settings > should 
 
  RUN  v4.1.0 /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client
 
- ✓ src/app/blogs/__tests__/BlogListPage.test.tsx (4 tests) 166ms
- ✓ src/context/__tests__/ClinicContext.test.tsx (3 tests) 98ms
+ ✓ src/app/blogs/__tests__/BlogListPage.test.tsx (4 tests) 159ms
+ ✓ src/context/__tests__/ClinicContext.test.tsx (3 tests) 67ms
+ ✓ src/components/__tests__/ProtectedRoute.test.tsx (3 tests) 73ms
+ ✓ src/components/__tests__/AddPatientForm.test.tsx (5 tests) 190ms
+ ✓ src/app/dashboard/__tests__/Dashboard.test.tsx (4 tests) 181ms
 stdout | src/components/__tests__/QuickScheduler.test.tsx > QuickScheduler Component > calculates total amount correctly
 Found 1000 elements count: 4
 
- ✓ src/app/dashboard/__tests__/Dashboard.test.tsx (4 tests) 177ms
- ✓ src/components/__tests__/ProtectedRoute.test.tsx (3 tests) 88ms
- ✓ src/components/__tests__/AddPatientForm.test.tsx (5 tests) 207ms
- ✓ src/app/__tests__/Home.test.tsx (3 tests) 177ms
- ✓ src/app/treatments/__tests__/Treatments.test.tsx (3 tests) 366ms
- ✓ src/components/__tests__/Navbar.test.tsx (3 tests) 253ms
- ✓ src/app/profile/__tests__/Profile.test.tsx (3 tests) 466ms
-     ✓ renders user personal information correctly  373ms
- ✓ src/app/contact/__tests__/Contact.test.tsx (4 tests) 481ms
+ ✓ src/app/treatments/__tests__/Treatments.test.tsx (3 tests) 306ms
+ ✓ src/app/__tests__/Home.test.tsx (3 tests) 225ms
+ ✓ src/app/profile/__tests__/Profile.test.tsx (3 tests) 447ms
+     ✓ renders user personal information correctly  367ms
+ ✓ src/components/__tests__/Navbar.test.tsx (3 tests) 240ms
+ ✓ src/app/contact/__tests__/Contact.test.tsx (4 tests) 473ms
 stdout | src/components/__tests__/QuickScheduler.test.tsx > QuickScheduler Component > submits the form successfully
 🚀 Submitting Appointment Payload: {
   patientId: 'p1',
@@ -248,20 +251,20 @@ stdout | src/components/__tests__/QuickScheduler.test.tsx > QuickScheduler Compo
   contactId: undefined
 }
 
- ✓ src/components/__tests__/QuickScheduler.test.tsx (3 tests) 730ms
-     ✓ submits the form successfully  499ms
- ✓ src/components/__tests__/Footer.test.tsx (2 tests) 44ms
+ ✓ src/components/__tests__/QuickScheduler.test.tsx (3 tests) 706ms
+     ✓ submits the form successfully  429ms
+ ✓ src/components/__tests__/Footer.test.tsx (2 tests) 45ms
 
  Test Files  12 passed (12)
       Tests  40 passed (40)
-   Start at  12:13:40
-   Duration  3.12s (transform 1.42s, setup 1.22s, import 7.39s, tests 3.25s, environment 12.45s)
+   Start at  20:57:57
+   Duration  3.26s (transform 1.62s, setup 1.23s, import 6.92s, tests 3.11s, environment 14.42s)
 
 
+Not implemented: Window's alert() method
 stderr | src/context/__tests__/ClinicContext.test.tsx > ClinicContext > handles API error and keeps default data
 Error fetching active clinic data: { response: { data: { message: 'API Error' } } }
 
-Not implemented: Window's alert() method
 stderr | src/components/__tests__/AddPatientForm.test.tsx > AddPatientForm > should show an alert if the submission fails
 Error adding patient: Error: API Error
     at /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client/src/components/__tests__/AddPatientForm.test.tsx:61:47

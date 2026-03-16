@@ -39,6 +39,7 @@ const mergePatients = async (primaryId, orphanId) => {
 const findAndMergeOrphans = async (user, primaryPatient, inputContact = null) => {
     const normalizedEmail = user.email.toLowerCase();
     const cleanSearchContact = inputContact ? inputContact.replace(/\D/g, '').slice(-10) : (user.contact ? user.contact.replace(/\D/g, '').slice(-10) : '');
+    const cleanName = user.name.trim();
 
     const orphans = await Patient.find({
         _id: { $ne: primaryPatient?._id },
@@ -46,7 +47,7 @@ const findAndMergeOrphans = async (user, primaryPatient, inputContact = null) =>
         $or: [
             { email: normalizedEmail },
             ...(cleanSearchContact ? [{ contact: new RegExp(cleanSearchContact + '$') }] : []),
-            { name: new RegExp(`^${user.name}$`, 'i') }
+            { name: new RegExp(`^${cleanName}$`, 'i') }
         ]
     });
 

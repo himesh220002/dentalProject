@@ -19,8 +19,31 @@ exports.submitContact = async (req, res) => {
             }
         }
 
-        // 2. Tag as "prev" if patient exists with this phone
-        const existingPatient = await Patient.findOne({ contact: phone });
+        // 2. Find or create patient for EVERY enquiry (Manual or Automated)
+        let existingPatient = await Patient.findOne({ contact: phone });
+
+        // If phone not found, check by email if provided
+        if (!existingPatient && email && email !== '-__-') {
+            existingPatient = await Patient.findOne({ email: email.toLowerCase() });
+        }
+
+        let patientId = existingPatient ? existingPatient._id : null;
+        if (!patientId) {
+            console.log(`Creating new patient profile for enquiry: ${name} (${phone})`);
+            const newPatient = new Patient({
+                name,
+                contact: phone,
+                email: email || '-__-',
+                age: 0,
+                gender: '-__-',
+                address: '-__-',
+                medicalHistory: [],
+                addedByAdmin: false
+            });
+            const savedPatient = await newPatient.save();
+            patientId = savedPatient._id;
+        }
+
         const patientType = existingPatient ? 'prev' : 'new';
 
         // 3. Automated Booking Logic
@@ -36,22 +59,6 @@ exports.submitContact = async (req, res) => {
             const isAvailable = availableSlots.some(s => requestedTime.startsWith(s));
 
             if (isAvailable) {
-                // Find or create patient
-                let patientId = existingPatient ? existingPatient._id : null;
-                if (!patientId) {
-                    const newPatient = new Patient({
-                        name,
-                        contact: phone,
-                        email: email || '-__-',
-                        age: 0,
-                        gender: '-__-',
-                        address: '-__-',
-                        medicalHistory: []
-                    });
-                    const savedPatient = await newPatient.save();
-                    patientId = savedPatient._id;
-                }
-
                 // Create appointment
                 const newAppointment = new Appointment({
                     patientId,
@@ -78,7 +85,8 @@ exports.submitContact = async (req, res) => {
             requestedDate: requestedDate ? new Date(requestedDate) : null,
             requestedTime,
             status: automatedAppointment ? 'Scheduled' : 'Unread',
-            appointmentId: automatedAppointment ? automatedAppointment._id : null
+            appointmentId: automatedAppointment ? automatedAppointment._id : null,
+            patientId: patientId
         });
         await newContact.save();
 

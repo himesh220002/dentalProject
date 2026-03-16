@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaCalendarAlt, FaClock, FaUser, FaNotesMedical, FaTimes, FaCheck, FaSearch, FaMoneyBillWave, FaPlusCircle, FaEnvelope, FaLock, FaUnlock, FaTrash } from 'react-icons/fa';
 import { useClinic } from '../context/ClinicContext';
+import TreatmentIcon from './TreatmentIcon';
 
 interface Patient {
     _id: string;
@@ -416,13 +417,22 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
 
                 const whatsappUrl = `https://wa.me/91${patientPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
+
+                // WhatsApp Staff Trigger - 2 seconds later
+                const staffPhone = clinicData?.staffPhone || clinicData?.phone || "8105542318";
+                const staffMessage = `*New Booking Alert!* 📅\n\nPatient: ${whatsappPatient.name}\nDate: ${date}\nTime: ${time}\nReason: ${finalReason}`;
+                const staffWhatsappUrl = `https://wa.me/91${staffPhone.replace(/\D/g, '')}?text=${encodeURIComponent(staffMessage)}`;
+
+                setTimeout(() => {
+                    window.open(staffWhatsappUrl, '_blank');
+                }, 2000);
             }
 
             setTimeout(() => {
                 onSuccess();
                 onClose();
                 setStatusMessage(null);
-            }, res.data.emailSentTo ? 3000 : 500);
+            }, res.data.emailSentTo ? 3000 : (skipWhatsApp ? 500 : 2500));
 
             setFormData({
                 patientId: '',
@@ -473,8 +483,8 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
 
-            <div className="relative bg-white w-full max-w-3xl rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white relative">
+            <div className="relative bg-white w-full max-w-3xl rounded-3xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 sm:p-8 text-white relative">
                     <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-red-500/20 hover:bg-white/20 rounded-full transition">
                         <FaTimes />
                     </button>
@@ -503,7 +513,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-2 max-h-[70vh] sm:max-h-[750px] overflow-y-auto custom-scrollbar">
+                <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-2 max-h-[75vh] sm:max-h-[750px] overflow-y-auto overflow-x-hidden custom-scrollbar">
                     {/* Search & Select/Add Patient */}
                     <div className="flex items-center justify-between mb-2">
                         <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
@@ -520,12 +530,12 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                     setSearchTerm('');
                                 }
                             }}
-                            className={`text-[10px] font-black uppercase tracking-tight py-1 px-3 rounded-lg transition-all border ${isNewPatientMode
+                            className={`text-[8px] sm:text-[10px] font-black uppercase tracking-tight py-1 px-2 sm:px-3 rounded-lg transition-all border ${isNewPatientMode
                                 ? 'bg-blue-50 border-blue-200 text-blue-600'
                                 : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
                                 }`}
                         >
-                            {isNewPatientMode ? '← Search Existing Instead' : '+ Add New Patient Instead'}
+                            {isNewPatientMode ? '← Use Existing' : '+ Add New Patient'}
                         </button>
                     </div>
 
@@ -605,20 +615,57 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     )}
 
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                <FaCalendarAlt size={10} /> Date
-                            </label>
-                            <input
-                                type="date" required value={formData.date}
-                                onChange={handleDateChange}
-                                className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 font-bold text-gray-800 outline-none focus:border-blue-500 transition"
-                            />
+                    <div className="space-y-3">
+                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2 ml-1">
+                            <FaCalendarAlt size={10} /> Select Appointment Date
+                        </label>
+                        <div className="flex gap-2 overflow-x-auto pb-3 custom-scrollbar -mx-5 px-5 sm:-mx-8 sm:px-8">
+                            {[...Array(14)].map((_, i) => {
+                                const d = new Date();
+                                d.setDate(d.getDate() + i);
+                                const dateStr = d.toISOString().split('T')[0];
+                                const isSelected = formData.date === dateStr;
+                                const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+                                const dayNum = d.getDate();
+                                const monthName = d.toLocaleDateString('en-US', { month: 'short' });
+
+                                // Check density for this date
+                                const dateData = density[dateStr];
+                                const isClosed = dateData?.closed;
+                                const isBusy = (dateData?.count || 0) > 7;
+
+                                return (
+                                    <button
+                                        key={dateStr}
+                                        type="button"
+                                        onClick={() => handleDateChange({ target: { value: dateStr } } as any)}
+                                        className={`flex-shrink-0 w-20 p-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 relative ${isSelected
+                                            ? 'border-blue-600 bg-blue-50 shadow-md transform scale-105'
+                                            : 'border-gray-50 bg-gray-50 hover:border-blue-200'
+                                            } ${isClosed ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}
+                                    >
+                                        <span className={`text-[10px] font-black ${isSelected ? 'text-blue-600' : 'text-gray-400 uppercase'}`}>{dayName}</span>
+                                        <span className={`text-xl font-black ${isSelected ? 'text-blue-700' : 'text-gray-800'}`}>{dayNum}</span>
+                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">{monthName}</span>
+
+                                        {isClosed && (
+                                            <div className="absolute top-1 right-1">
+                                                <FaLock className="text-rose-500" size={8} />
+                                            </div>
+                                        )}
+                                        {isBusy && !isClosed && (
+                                            <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-rose-500"></div>
+                                        )}
+                                    </button>
+                                );
+                            })}
                         </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
                         <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                <FaClock size={10} /> Time
+                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2 ml-1">
+                                <FaClock size={10} /> Specific Time (Optional)
                             </label>
                             <input
                                 type="time" required value={formData.time}
@@ -649,7 +696,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                     <p className="text-[10px] font-black uppercase tracking-widest">No Appointments Possible</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5">
+                                <div className="flex gap-1.5 overflow-x-auto pb-2 custom-scrollbar -mx-5 px-5 sm:grid sm:grid-cols-12 sm:mx-0 sm:px-0">
                                     {[9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(hour => {
                                         const bookedSlots = density[formData.date]?.slots || [];
                                         const dayClosures = density[formData.date]?.closures || [];
@@ -698,7 +745,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                         return (
                                             <div
                                                 key={hour}
-                                                className={`h-12 flex flex-col items-center justify-center rounded-xl border transition-all relative ${bgColor} ${(hour === 13 && !isClosed && !isPast) ? 'opacity-50' : ''}`}
+                                                className={`flex-shrink-0 w-10 sm:w-auto h-10 sm:h-12 flex flex-col items-center justify-center rounded-xl border transition-all relative ${bgColor} ${(hour === 13 && !isClosed && !isPast) ? 'opacity-50' : ''}`}
                                                 title={`${hour}:00 ${isBooked ? '(Booked)' : ''} ${isClosed ? '(Closed)' : ''} ${isPast ? '(Past)' : ''}`}
                                             >
                                                 {isPast && (
@@ -824,25 +871,31 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
 
                         {formData.selectedTreatments.map((treatment, index) => (
                             <div key={index} className="flex gap-2 items-center animate-in slide-in-from-left-2 duration-200">
-                                <div className="relative flex-grow">
-                                    <select
-                                        required
-                                        aria-label="Select Treatment"
-                                        value={treatment.name}
-                                        onChange={(e) => handleTreatmentChange(index, e.target.value)}
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 font-bold text-gray-800 outline-none focus:border-blue-500 transition appearance-none text-sm"
-                                    >
-                                        <option value="">Select Treatment...</option>
-                                        {treatments.map(t => (
-                                            <option key={t._id} value={t.name}>{t.name} ({t.price})</option>
-                                        ))}
-                                        {treatment.name && treatment.name !== 'Other' && !treatments.find(t => t.name === treatment.name) && (
-                                            <option value={treatment.name}>{treatment.name} (Previous)</option>
-                                        )}
-                                        <option value="Other / General Consultation">Other / General Consultation</option>
-                                    </select>
-                                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                <div className="relative flex-grow flex items-center gap-2">
+                                    <TreatmentIcon
+                                        treatmentName={treatment.name}
+                                        className="text-xl text-blue-600 flex-shrink-0"
+                                    />
+                                    <div className="relative flex-grow">
+                                        <select
+                                            required
+                                            aria-label="Select Treatment"
+                                            value={treatment.name}
+                                            onChange={(e) => handleTreatmentChange(index, e.target.value)}
+                                            className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl pl-5 pr-10 py-3 font-bold text-gray-800 outline-none focus:border-blue-500 transition appearance-none text-sm"
+                                        >
+                                            <option value="">Select Treatment...</option>
+                                            {treatments.map(t => (
+                                                <option key={t._id} value={t.name}>{t.name} ({t.price})</option>
+                                            ))}
+                                            {treatment.name && treatment.name !== 'Other' && !treatments.find(t => t.name === treatment.name) && (
+                                                <option value={treatment.name}>{treatment.name} (Previous)</option>
+                                            )}
+                                            <option value="Other / General Consultation">Other / General Consultation</option>
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </div>
                                     </div>
                                 </div>
                                 <button
@@ -1011,10 +1064,10 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                         </div>
                     </div>
 
-                    <div className="pt-2 flex gap-4">
-                        <button type="button" onClick={onClose} className="flex-1 px-8 py-4 rounded-2xl font-black text-gray-500 hover:bg-gray-100 transition active:scale-95">Cancel</button>
-                        <button type="submit" disabled={loading} className="flex-1 bg-blue-600 text-white px-8 py-4 rounded-2xl font-black shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50">
-                            {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <><FaCheck /> {appointmentId ? 'Update & Save' : 'Schedule'}</>}
+                    <div className="pt-2 flex gap-2 sm:gap-4">
+                        <button type="button" onClick={onClose} className="flex-1 px-4 sm:px-8 py-3 sm:py-4 rounded-2xl font-black text-[10px] sm:text-xs text-gray-500 hover:bg-gray-100 transition active:scale-95 uppercase tracking-widest">Cancel</button>
+                        <button type="submit" disabled={loading} className="flex-1 bg-blue-600 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-2xl font-black text-[10px] sm:text-xs shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 uppercase tracking-widest">
+                            {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <><FaCheck className="text-[10px]" /> {appointmentId ? 'Update' : 'Schedule'}</>}
                         </button>
                     </div>
                 </form>

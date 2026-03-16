@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaPaperPlane, FaChevronRight, FaChevronLeft, FaCalendarCheck, FaClock, FaCheckCircle } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
 import { translations } from '../../constants/translations';
+import TreatmentIcon from '../../components/TreatmentIcon';
 
 function ContactContent() {
     const { clinicData, language } = useClinic();
@@ -279,6 +280,16 @@ function ContactContent() {
             // Redirect after a short delay
             setTimeout(() => {
                 window.open(finalWhatsappLink, '_blank');
+
+                // WhatsApp Staff Trigger - 2 seconds later
+                const staffPhoneNum = staffPhone.replace(/\D/g, '');
+                const staffMsg = `*New Lead/Booking Alert!* 📧\n\nName: ${formData.name}\nPhone: ${formData.phone}\nMessage: ${formData.message}\n\n*Treatment:* ${formData.requestedTreatment}\n*Date:* ${formData.requestedDate}\n*Time:* ${formData.requestedTime}`;
+                const staffWhatsappUrl = `https://wa.me/91${staffPhoneNum}?text=${encodeURIComponent(staffMsg)}`;
+
+                setTimeout(() => {
+                    window.open(staffWhatsappUrl, '_blank');
+                }, 2000);
+
                 setFormData({ name: '', phone: '', email: '', message: '', requestedTreatment: '', requestedDate: '', requestedTime: '' });
                 setCurrentStep(1);
             }, 1500);
@@ -296,7 +307,7 @@ function ContactContent() {
     };
 
     return (
-        <div className="relative px-2 py-5 sm:py-20 sm:px-20 max-w-[1400px]  mx-auto  space-y-8 sm:space-y-16 px-4">
+        <div className="relative px-4 py-8 sm:py-20 sm:px-20 max-w-[1400px] mx-auto space-y-8 sm:space-y-16 overflow-x-hidden">
 
 
             {/* Header */}
@@ -370,9 +381,11 @@ function ContactContent() {
                     {/* Contact Form / Guided Booking */}
                     <div className="bg-white p-4 sm:p-8 rounded-3xl shadow-xl overflow-hidden">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
+                            <h2 className="text-lg sm:text-xl font-black text-gray-800 flex items-center gap-2">
                                 <FaCalendarCheck className="text-blue-600" />
-                                {isAutoBookingEnabled ? 'Guided Booking' : (language === 'hi' ? 'संदेश भेजें' : 'Send a Message')}
+                                {isAutoBookingEnabled ? (
+                                    <span className="truncate max-w-[150px] sm:max-w-none">Guided Booking</span>
+                                ) : (language === 'hi' ? 'संदेश भेजें' : 'Send a Message')}
                             </h2>
                             {isAutoBookingEnabled && (
                                 <div className="flex gap-1">
@@ -447,27 +460,28 @@ function ContactContent() {
                                                         key={t._id}
                                                         type="button"
                                                         onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: t.name }))}
-                                                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gray-50/50 hover:bg-gray-100'}`}
+                                                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gradient-to-r from-purple-100/50 to-green-100/50 hover:bg-gray-100'}`}
                                                     >
-                                                        <span className="text-2xl">{t.icon || '🦷'}</span>
+                                                        <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
                                                         <span className="text-[10px] font-black uppercase text-center leading-tight">{t.name}</span>
                                                     </button>
                                                 ))}
                                             </div>
-                                            <div className="flex gap-4">
+                                            <div className="flex gap-2 sm:gap-4 mt-2">
                                                 <button
                                                     type="button" onClick={() => setCurrentStep(1)}
-                                                    className="w-1/3 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+                                                    className="w-1/4 sm:w-1/3 py-3 sm:py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-1 sm:gap-2"
                                                 >
-                                                    <FaChevronLeft /> Back
+                                                    <FaChevronLeft className="text-[10px]" /> Back
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => formData.requestedTreatment && setCurrentStep(3)}
                                                     disabled={!formData.requestedTreatment}
-                                                    className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                                                    className="flex-1 py-3 sm:py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50"
                                                 >
-                                                    Select Slot <FaChevronRight />
+                                                    <span className="sm:inline">Select Slot</span>
+                                                    <FaChevronRight className="text-[10px]" />
                                                 </button>
                                             </div>
                                         </div>
@@ -478,7 +492,7 @@ function ContactContent() {
                                         <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                                             <div className="space-y-4">
                                                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Available Dates</label>
-                                                <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+                                                <div className="flex flex-wrap gap-2 overflow-x-auto pb-3 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
                                                     {suggestedDates.map((item) => (
                                                         <button
                                                             key={item.dateStr}
@@ -487,7 +501,7 @@ function ContactContent() {
                                                                 setFormData(prev => ({ ...prev, requestedDate: item.dateStr, requestedTime: '' }));
                                                                 fetchAvailableTimes(item.dateStr);
                                                             }}
-                                                            className={`flex-shrink-0 w-24 p-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 ${formData.requestedDate === item.dateStr ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gray-50'}`}
+                                                            className={`flex-shrink-0 w-24 p-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 cursor-pointer ${formData.requestedDate === item.dateStr ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gray-50'}`}
                                                         >
                                                             <span className="text-[10px] font-black text-blue-600">{item.display.split(' ')[0]}</span>
                                                             <span className="text-sm font-black text-gray-800">{item.display.split(' ')[1]}</span>
@@ -504,16 +518,36 @@ function ContactContent() {
                                                         <div className="flex items-center gap-2 text-blue-600 font-bold text-xs"><div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div> Fetching slots...</div>
                                                     ) : availableTimes.length > 0 ? (
                                                         <div className="grid grid-cols-4 gap-2">
-                                                            {availableTimes.map(time => (
-                                                                <button
-                                                                    key={time}
-                                                                    type="button"
-                                                                    onClick={() => setFormData(prev => ({ ...prev, requestedTime: time }))}
-                                                                    className={`py-3 rounded-xl border-2 font-black text-xs transition-all ${formData.requestedTime === time ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-gray-50 bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
-                                                                >
-                                                                    {time}
-                                                                </button>
-                                                            ))}
+                                                            {availableTimes.map(time => {
+                                                                const isToday = formData.requestedDate === new Date().toISOString().split('T')[0];
+                                                                let isPassed = false;
+                                                                if (isToday) {
+                                                                    const [slotHour, slotMin] = time.split(':').map(Number);
+                                                                    const now = new Date();
+                                                                    const currentHour = now.getHours();
+                                                                    const currentMin = now.getMinutes();
+                                                                    if (slotHour < currentHour || (slotHour === currentHour && slotMin <= currentMin)) {
+                                                                        isPassed = true;
+                                                                    }
+                                                                }
+
+                                                                return (
+                                                                    <button
+                                                                        key={time}
+                                                                        type="button"
+                                                                        disabled={isPassed}
+                                                                        onClick={() => setFormData(prev => ({ ...prev, requestedTime: time }))}
+                                                                        className={`py-3 rounded-xl border-2 font-black text-xs transition-all ${formData.requestedTime === time
+                                                                                ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                                                                                : isPassed
+                                                                                    ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
+                                                                                    : 'border-gray-50 bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                                                            }`}
+                                                                    >
+                                                                        {time}
+                                                                    </button>
+                                                                );
+                                                            })}
                                                         </div>
                                                     ) : (
                                                         <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-xs font-bold border border-rose-100">No free slots on this day. Please pick another date.</div>
@@ -521,19 +555,20 @@ function ContactContent() {
                                                 </div>
                                             )}
 
-                                            <div className="flex gap-4 pt-4">
+                                            <div className="flex gap-2 sm:gap-4 pt-4">
                                                 <button
                                                     type="button" onClick={() => setCurrentStep(2)}
-                                                    className="w-1/3 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+                                                    className="w-1/4 sm:w-1/3 py-3 sm:py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-1 sm:gap-2"
                                                 >
-                                                    <FaChevronLeft /> Back
+                                                    <FaChevronLeft className="text-[10px]" /> Back
                                                 </button>
                                                 <button
                                                     type="submit"
                                                     disabled={submitting || !formData.requestedTime}
-                                                    className="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                                                    className="flex-1 py-3 sm:py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 px-2"
                                                 >
-                                                    {submitting ? 'Confirming...' : 'Book Appointment'} <FaCheckCircle />
+                                                    <span className="sm:inline">{submitting ? 'Confirming...' : (formData.phone.length === 10 ? 'Book Appointment' : 'Complete Form')}</span>
+                                                    <FaCheckCircle className="text-[10px] flex-shrink-0" />
                                                 </button>
                                             </div>
                                         </div>
