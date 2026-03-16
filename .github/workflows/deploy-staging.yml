@@ -1,0 +1,61 @@
+name: Deploy Staging (testbranch01)
+
+on:
+  push:
+    branches:
+      - testbranch01
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    # This uses the "Staging" environment in GitHub to access specific secrets
+    environment: Staging
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
+
+      # --- 1. RUN GLOBAL SYSTEMATIC TESTS ---
+      - name: Install All Dependencies
+        run: |
+          npm install --prefix server
+          npm install --prefix client
+
+      - name: Run Systematic Project Tests
+        env:
+          NODE_ENV: test
+          CI: true
+          # We use dummy keys for tests as they use an In-Memory DB anyway
+          JWT_SECRET: testsecret
+          MAILGUN_API_KEY: key-dummy
+          MAILGUN_DOMAIN: dummy.domain
+        run: npm test
+
+      # --- 2. STAGING FRONTEND DEPLOY (VERCEL) ---
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel (Staging/Preview)
+        # Note: We omit --prod to deploy as a Preview/Staging build
+        run: |
+          vercel deploy \
+            --token=${{ secrets.VERCEL_TOKEN }} \
+            --scope=${{ secrets.VERCEL_ORG_ID }} \
+            --yes ./client \
+            --build-env NEXT_PUBLIC_BACKEND_URL=${{ secrets.STAGING_BACKEND_URL }}
+
+      # --- 3. STAGING BACKEND DEPLOY (RENDER) ---
+      - name: Trigger Render Staging Deploy
+        env:
+          RENDER_HOOK: ${{ secrets.RENDER_STAGING_DEPLOY_HOOK }}
+        if: env.RENDER_HOOK != ''
+        run: |
+          curl -X GET $RENDER_HOOK

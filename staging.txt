@@ -1,0 +1,23 @@
+Staging Environment Setup Guide (testbranch01)
+To enable the new staging pipeline, you need to create a GitHub Environment called "Staging" and add the following secrets to it.
+
+🔑 Required GitHub Secrets
+Secret Name	Description	Example / Source
+VERCEL_TOKEN	Your Vercel account token	Vercel Account Settings
+VERCEL_ORG_ID	Your Vercel organization/team ID	Vercel Project Settings
+STAGING_BACKEND_URL	The URL of your Render Staging service	https://dr-tooth-staging.onrender.com
+RENDER_STAGING_DEPLOY_HOOK	The "Deploy Hook" for your Render service	Render Service > Settings > Deploy Hook
+⚙️ Environment Variables for Render (Staging)
+When setting up your backend service on Render for the testbranch01 branch, use these values:
+
+Variable	Recommended Value
+MONGO_URI	mongodb+srv://.../dentalTestDB
+JWT_SECRET	A unique secret for staging
+FRONTEND_URL	Your Vercel Preview/Staging URL
+MAILGUN_API_KEY	(Use same or staging key)
+MAILGUN_DOMAIN	(Use same or staging domain)
+🚀 How to set up on GitHub
+Go to your Repository on GitHub.
+Click Settings > Environments.
+Click New environment and name it Staging.
+Inside Staging, click Add secret for each of the keys listed above.
