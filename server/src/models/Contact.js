@@ -40,6 +40,18 @@ const contactSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    requestedTreatment: {
+        type: String,
+        default: null
+    },
+    requestedDate: {
+        type: Date,
+        default: null
+    },
+    requestedTime: {
+        type: String,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now

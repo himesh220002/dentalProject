@@ -75,7 +75,8 @@ export default function TempClinicForm() {
             metaTitle: 'Best Dental Clinic in Katihar | Dr. Tooth Dental Clinic',
             metaDescription: 'Expert dental care by Dr. Tooth. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
             keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist'
-        }
+        },
+        isActive: false
     });
 
     const [jsonOutput, setJsonOutput] = useState('');

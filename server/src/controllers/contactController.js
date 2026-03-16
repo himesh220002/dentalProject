@@ -1,11 +1,14 @@
 const Contact = require('../models/Contact');
 const Patient = require('../models/Patient');
 const User = require('../models/User');
+const Config = require('../models/Config');
+const Appointment = require('../models/Appointment');
+const { getAvailableSlots } = require('../utils/slotPicker');
 
 // Submit a new contact message
 exports.submitContact = async (req, res) => {
     try {
-        const { name, phone, email, message, userId } = req.body;
+        const { name, phone, email, message, userId, requestedDate, requestedTime, requestedTreatment } = req.body;
 
         // 1. If user is logged in (googleId sent as userId), sync their profile contact if it's missing
         if (userId) {
@@ -20,9 +23,70 @@ exports.submitContact = async (req, res) => {
         const existingPatient = await Patient.findOne({ contact: phone });
         const patientType = existingPatient ? 'prev' : 'new';
 
-        const newContact = new Contact({ name, phone, email, message, patientType });
+        // 3. Automated Booking Logic
+        let automatedAppointment = null;
+        const autoBookingConfig = await Config.findOne({ key: 'automated_booking' });
+        const isAutomated = autoBookingConfig && autoBookingConfig.value === 'true';
+
+        if (isAutomated && requestedDate && requestedTime) {
+            console.log(`Automated Booking Triggered for ${name} (${phone}) on ${requestedDate} at ${requestedTime}`);
+
+            // Check availability
+            const availableSlots = await getAvailableSlots(requestedDate);
+            const isAvailable = availableSlots.some(s => requestedTime.startsWith(s));
+
+            if (isAvailable) {
+                // Find or create patient
+                let patientId = existingPatient ? existingPatient._id : null;
+                if (!patientId) {
+                    const newPatient = new Patient({
+                        name,
+                        contact: phone,
+                        email: email || '-__-',
+                        age: 0,
+                        gender: '-__-',
+                        address: '-__-',
+                        medicalHistory: []
+                    });
+                    const savedPatient = await newPatient.save();
+                    patientId = savedPatient._id;
+                }
+
+                // Create appointment
+                const newAppointment = new Appointment({
+                    patientId,
+                    date: new Date(requestedDate),
+                    time: requestedTime,
+                    reason: requestedTreatment || 'General Consultation',
+                    status: 'Scheduled',
+                    amount: 0 // Will be updated by doctor later
+                });
+                automatedAppointment = await newAppointment.save();
+                console.log(`✔ Automated Appointment Created: ${automatedAppointment._id}`);
+            } else {
+                console.warn(`⚠ Requested slot ${requestedTime} on ${requestedDate} is no longer available. Falling back to manual enquiry.`);
+            }
+        }
+
+        const newContact = new Contact({
+            name,
+            phone,
+            email,
+            message,
+            patientType,
+            requestedTreatment,
+            requestedDate: requestedDate ? new Date(requestedDate) : null,
+            requestedTime,
+            status: automatedAppointment ? 'Scheduled' : 'Unread',
+            appointmentId: automatedAppointment ? automatedAppointment._id : null
+        });
         await newContact.save();
-        res.status(201).json({ message: 'Message sent successfully' });
+
+        res.status(201).json({
+            message: automatedAppointment ? 'Appointment booked successfully!' : 'Message sent successfully',
+            appointmentId: automatedAppointment ? automatedAppointment._id : null,
+            isAutomated: !!automatedAppointment
+        });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
