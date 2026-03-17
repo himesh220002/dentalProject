@@ -280,9 +280,12 @@ function ContactContent() {
             const selectedTreat = treatments.find(t => t.name === formData.requestedTreatment);
             const amountVal = selectedTreat ? parseFloat(selectedTreat.price.replace(/\D/g, '')) : 0;
 
+            const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
+            const enthusiasticMessage = `Hi *${clinicName}*! 👋 I just booked an appointment through your website for a *${formData.requestedTreatment}*. I’m looking forward to getting my smile checked! 🦷\n\n*Details:*\n📅 *Date:* ${formData.requestedDate}\n⏰ *Time:* ${formData.requestedTime}\n👤 *Name:* ${formData.name}\n\nSee you soon!`;
+
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, {
                 ...formData,
-                message: formData.message || `Guided Booking for ${formData.requestedTreatment}`,
+                message: (isAutoBookingEnabled && formData.requestedTreatment) ? enthusiasticMessage : (formData.message || `Consultation for ${formData.requestedTreatment}`),
                 amount: amountVal,
                 // @ts-ignore
                 userId: session?.user?.id
@@ -310,11 +313,10 @@ function ContactContent() {
 
             // Construct the WhatsApp Message
             const clinicPhone = staffPhone.replace(/\D/g, '');
-            const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
 
             let messageText = "";
             if (isAutomatedSuccess) {
-                messageText = `Hi *${clinicName}*! 👋 I just booked an appointment through your website for a *${formData.requestedTreatment}*. I’m looking forward to getting my smile checked! 🦷\n\n*Details:*\n📅 *Date:* ${formData.requestedDate}\n⏰ *Time:* ${formData.requestedTime}\n👤 *Name:* ${formData.name}\n\nSee you soon!`;
+                messageText = enthusiasticMessage;
             } else {
                 messageText = language === 'hi'
                     ? `नमस्ते डॉक्टर, मैं *${formData.name}* हूँ।\nमैं आपसे इस विषय में परामर्श करना चाहता/चाहती हूँ:- \n\n${formData.message}\n\n*मेरा फोन:* ${formData.phone}`
