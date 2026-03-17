@@ -54,7 +54,7 @@ describe('Contact Page Component', () => {
 
         expect(await screen.findByText(/Get In Touch/i)).toBeInTheDocument();
         expect(screen.getByText(/1234567890/i)).toBeInTheDocument();
-        expect(screen.getByPlaceholderText('yourname')).toBeInTheDocument();
+        expect(await screen.findByPlaceholderText('yourname')).toBeInTheDocument();
     });
 
     it('pre-fills message from treatment in URL', async () => {
@@ -71,7 +71,7 @@ describe('Contact Page Component', () => {
     it('validates phone number length (10 digits)', async () => {
         render(<Contact />);
 
-        const phoneInput = screen.getByPlaceholderText('Enter WhatsApp Number');
+        const phoneInput = await screen.findByPlaceholderText('Enter WhatsApp Number');
 
         // Enter 5 digits
         fireEvent.change(phoneInput, { target: { value: '12345' } });
@@ -89,7 +89,8 @@ describe('Contact Page Component', () => {
         // and focus on the form submission success state.
         render(<Contact />);
 
-        fireEvent.change(screen.getByPlaceholderText('yourname'), { target: { id: 'name', value: 'John Doe' } });
+        const nameInput = await screen.findByPlaceholderText('yourname');
+        fireEvent.change(nameInput, { target: { id: 'name', value: 'John Doe' } });
         fireEvent.change(screen.getByPlaceholderText('Enter WhatsApp Number'), { target: { id: 'phone', value: '9876543210' } });
         fireEvent.change(screen.getByPlaceholderText('yourname@gmail.com'), { target: { id: 'email', value: 'john@example.com' } });
         fireEvent.change(screen.getByPlaceholderText(/I would like to book an appointment for/i), { target: { id: 'message', value: 'Hello I need an appointment' } });

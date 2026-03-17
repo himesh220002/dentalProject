@@ -122,7 +122,7 @@ export default function SettingsPage() {
                 <div className="md:col-span-2 space-y-8">
                     {/* Automation Control */}
                     <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
-                        <div className="flex items-center justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row items-end sm:items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
                                 <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
                                     <FaDatabase />

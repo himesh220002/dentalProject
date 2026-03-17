@@ -24,7 +24,7 @@ exports.updateAdminPassword = async (req, res) => {
         const config = await Config.findOneAndUpdate(
             { key: 'admin_password' },
             { value: newPassword, updatedAt: Date.now() },
-            { new: true, upsert: true }
+            { returnDocument: 'after', upsert: true }
         );
 
         res.status(200).json({ message: 'Password updated successfully' });
@@ -154,7 +154,7 @@ exports.updateClinicClosures = async (req, res) => {
         const config = await Config.findOneAndUpdate(
             { key: 'clinic_closures' },
             { value: JSON.stringify(validatedClosures), updatedAt: Date.now() },
-            { new: true, upsert: true }
+            { returnDocument: 'after', upsert: true }
         );
 
         res.status(200).json({ message: 'Closures updated successfully', closures: validatedClosures });
@@ -184,7 +184,7 @@ exports.updateConfig = async (req, res) => {
         const config = await Config.findOneAndUpdate(
             { key },
             { value: value.toString(), updatedAt: Date.now() },
-            { new: true, upsert: true }
+            { returnDocument: 'after', upsert: true }
         );
 
         res.status(200).json({ message: 'Config updated successfully', config });

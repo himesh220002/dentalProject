@@ -339,7 +339,7 @@ exports.deleteAppointment = async (req, res) => {
                     $set: { status: 'Read' },
                     $unset: { appointmentId: "" }
                 },
-                { new: true }
+                { returnDocument: 'after' }
             );
             if (updatedContact) console.log('✔ Contact reference cleaned up.');
 

@@ -116,7 +116,7 @@ exports.getAllContacts = async (req, res) => {
 // Mark message as read
 exports.markAsRead = async (req, res) => {
     try {
-        const contact = await Contact.findByIdAndUpdate(req.params.id, { status: 'Read' }, { new: true });
+        const contact = await Contact.findByIdAndUpdate(req.params.id, { status: 'Read' }, { returnDocument: 'after' });
         if (!contact) return res.status(404).json({ message: 'Message not found' });
         res.status(200).json(contact);
     } catch (error) {
@@ -132,7 +132,7 @@ exports.markAsScheduled = async (req, res) => {
         if (appointmentId) updateData.appointmentId = appointmentId;
         if (emailSent !== undefined) updateData.emailSent = emailSent;
 
-        const contact = await Contact.findByIdAndUpdate(req.params.id, updateData, { new: true });
+        const contact = await Contact.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' });
         if (!contact) return res.status(404).json({ message: 'Message not found' });
         res.status(200).json(contact);
     } catch (error) {

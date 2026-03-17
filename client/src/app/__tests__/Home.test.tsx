@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import Home from '../page';
 import { useClinic } from '../../context/ClinicContext';
 import { useSession } from 'next-auth/react';
@@ -45,6 +45,25 @@ global.caches = {
     })
 } as any;
 
+// Mock global fetch for video loading
+global.fetch = vi.fn().mockImplementation((url) => {
+    if (url === '/video/dentist video1.mp4') {
+        const stream = new ReadableStream({
+            start(controller) {
+                controller.enqueue(new Uint8Array(200));
+                controller.close();
+            }
+        });
+        return Promise.resolve(new Response(stream, {
+            headers: { 'Content-Length': '1000', 'Content-Type': 'video/mp4' }
+        }));
+    }
+    return Promise.resolve(new Response(JSON.stringify({}), { status: 200 }));
+}) as any;
+
+// Mock URL.createObjectURL
+global.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url');
+
 describe('Home Page Component', () => {
     const mockClinicData = {
         clinicName: 'Dr. Tooth Dental Clinic',
@@ -67,7 +86,9 @@ describe('Home Page Component', () => {
     });
 
     it('renders main sections of the home page', async () => {
-        render(<Home />);
+        await act(async () => {
+            render(<Home />);
+        });
 
         expect(screen.getByTestId('home-hero')).toBeInTheDocument();
         expect(screen.getByTestId('action-tiles')).toBeInTheDocument();
@@ -97,7 +118,9 @@ describe('Home Page Component', () => {
             return Promise.resolve({ data: {} });
         });
 
-        render(<Home />);
+        await act(async () => {
+            render(<Home />);
+        });
 
         await waitFor(() => {
             expect(screen.getByText(/Fixed Appointment/i)).toBeInTheDocument();
@@ -105,8 +128,10 @@ describe('Home Page Component', () => {
         });
     });
 
-    it('displays doctor and team information correctly', () => {
-        render(<Home />);
+    it('displays doctor and team information correctly', async () => {
+        await act(async () => {
+            render(<Home />);
+        });
 
         const doctorNames = screen.getAllByText(/Dr. John Smith/i);
         expect(doctorNames.length).toBeGreaterThan(0);

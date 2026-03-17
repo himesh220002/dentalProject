@@ -37,7 +37,7 @@ exports.updateTreatmentRecord = async (req, res) => {
         const updatedRecord = await TreatmentRecord.findByIdAndUpdate(
             req.params.id,
             req.body,
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         );
         if (!updatedRecord) return res.status(404).json({ message: 'Record not found' });
         res.status(200).json(updatedRecord);

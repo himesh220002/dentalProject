@@ -45,6 +45,7 @@ function ContactContent() {
     const [currentStep, setCurrentStep] = useState(1);
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);
     const [loadingTimes, setLoadingTimes] = useState(false);
+    const [configLoading, setConfigLoading] = useState(true);
 
     useEffect(() => {
         const fetchTreatments = async () => {
@@ -107,6 +108,8 @@ function ContactContent() {
                 setIsAutoBookingEnabled(res.data?.value === 'true');
             } catch (err) {
                 console.error('Error fetching auto booking config:', err);
+            } finally {
+                setConfigLoading(false);
             }
         };
         fetchTreatments();
@@ -446,306 +449,318 @@ function ContactContent() {
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {isAutoBookingEnabled ? (
-                                <>
-                                    {/* STEP 1: PERSONAL DETAILS */}
-                                    {currentStep === 1 && (
-                                        <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                                            <div className="grid sm:grid-cols-2 gap-6">
+                        {configLoading ? (
+                            <div className="space-y-6 animate-pulse p-4">
+                                <div className="h-4 bg-gray-100 rounded-full w-1/4 mb-8"></div>
+                                <div className="grid sm:grid-cols-2 gap-6">
+                                    <div className="h-14 bg-gray-50 rounded-2xl"></div>
+                                    <div className="h-14 bg-gray-50 rounded-2xl"></div>
+                                </div>
+                                <div className="h-32 bg-gray-50 rounded-2xl"></div>
+                                <div className="h-14 bg-blue-100 rounded-2xl w-full"></div>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                {isAutoBookingEnabled ? (
+                                    <>
+                                        {/* STEP 1: PERSONAL DETAILS */}
+                                        {currentStep === 1 && (
+                                            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
+                                                <div className="grid sm:grid-cols-2 gap-6">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formName}</label>
+                                                        <input
+                                                            type="text" id="name" value={formData.name} onChange={handleChange} required
+                                                            className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
+                                                            placeholder="e.g. Rahul Kumar"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1 flex items-center gap-2">
+                                                            {t.formPhone} <FaWhatsapp className="text-emerald-500" />
+                                                        </label>
+                                                        <input
+                                                            type="tel" id="phone" value={formData.phone} required
+                                                            onChange={(e) => {
+                                                                const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                                                setFormData(prev => ({ ...prev, phone: val }));
+                                                            }}
+                                                            className={`w-full px-5 py-4 rounded-2xl bg-gray-50 border-2 font-bold outline-none transition-all ${formData.phone.length === 10 ? 'border-emerald-100 text-emerald-600' : 'border-transparent focus:border-blue-500'}`}
+                                                            placeholder="10 digit number"
+                                                        />
+                                                    </div>
+                                                </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formName}</label>
+                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Email (Optional)</label>
                                                     <input
-                                                        type="text" id="name" value={formData.name} onChange={handleChange} required
+                                                        type="email" id="email" value={formData.email} onChange={handleChange}
                                                         className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
-                                                        placeholder="e.g. Rahul Kumar"
+                                                        placeholder="rahul@example.com"
                                                     />
                                                 </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1 flex items-center gap-2">
-                                                        {t.formPhone} <FaWhatsapp className="text-emerald-500" />
-                                                    </label>
-                                                    <input
-                                                        type="tel" id="phone" value={formData.phone} required
-                                                        onChange={(e) => {
-                                                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                                            setFormData(prev => ({ ...prev, phone: val }));
-                                                        }}
-                                                        className={`w-full px-5 py-4 rounded-2xl bg-gray-50 border-2 font-bold outline-none transition-all ${formData.phone.length === 10 ? 'border-emerald-100 text-emerald-600' : 'border-transparent focus:border-blue-500'}`}
-                                                        placeholder="10 digit number"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Email (Optional)</label>
-                                                <input
-                                                    type="email" id="email" value={formData.email} onChange={handleChange}
-                                                    className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
-                                                    placeholder="rahul@example.com"
-                                                />
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => formData.name && formData.phone.length === 10 && setCurrentStep(2)}
-                                                disabled={!formData.name || formData.phone.length !== 10}
-                                                className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
-                                            >
-                                                Choose Treatment <FaChevronRight />
-                                            </button>
-                                        </div>
-                                    )}
-
-                                    {/* STEP 2: CHOOSE TREATMENT */}
-                                    {currentStep === 2 && (
-                                        <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                                {treatments.map((t) => (
-                                                    <button
-                                                        key={t._id}
-                                                        type="button"
-                                                        onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: t.name }))}
-                                                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gradient-to-r from-purple-100/50 to-green-100/50 hover:bg-gray-100'}`}
-                                                    >
-                                                        <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
-                                                        <span className="text-[10px] font-black uppercase text-center leading-tight">{t.name}</span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                            <div className="flex gap-2 sm:gap-4 mt-2">
-                                                <button
-                                                    type="button" onClick={() => setCurrentStep(1)}
-                                                    className="w-1/4 sm:w-1/3 py-3 sm:py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-1 sm:gap-2"
-                                                >
-                                                    <FaChevronLeft className="text-[10px]" /> Back
-                                                </button>
                                                 <button
                                                     type="button"
-                                                    onClick={() => formData.requestedTreatment && setCurrentStep(3)}
-                                                    disabled={!formData.requestedTreatment}
-                                                    className="flex-1 py-3 sm:py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50"
+                                                    onClick={() => formData.name && formData.phone.length === 10 && setCurrentStep(2)}
+                                                    disabled={!formData.name || formData.phone.length !== 10}
+                                                    className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
                                                 >
-                                                    <span className="sm:inline">Select Slot</span>
-                                                    <FaChevronRight className="text-[10px]" />
+                                                    Choose Treatment <FaChevronRight />
                                                 </button>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
 
-                                    {/* STEP 3: SELECT DATE & TIME */}
-                                    {currentStep === 3 && (
-                                        <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                                            <div className="space-y-4">
-                                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Available Dates</label>
-                                                <div className="flex flex-wrap gap-2 overflow-x-auto pb-3 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-                                                    {suggestedDates.map((item) => (
+                                        {/* STEP 2: CHOOSE TREATMENT */}
+                                        {currentStep === 2 && (
+                                            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
+                                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                                    {treatments.map((t) => (
                                                         <button
-                                                            key={item.dateStr}
+                                                            key={t._id}
                                                             type="button"
-                                                            onClick={() => {
-                                                                setFormData(prev => ({ ...prev, requestedDate: item.dateStr, requestedTime: '' }));
-                                                                fetchAvailableTimes(item.dateStr);
-                                                            }}
-                                                            className={`flex-shrink-0 w-24 p-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 cursor-pointer ${formData.requestedDate === item.dateStr ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gray-50'}`}
+                                                            onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: t.name }))}
+                                                            className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gradient-to-r from-purple-100/50 to-green-100/50 hover:bg-gray-100'}`}
                                                         >
-                                                            <span className="text-[10px] font-black text-blue-600">{item.display.split(' ')[0]}</span>
-                                                            <span className="text-sm font-black text-gray-800">{item.display.split(' ')[1]}</span>
-                                                            <span className="text-[8px] font-bold text-gray-400">{item.display.split(' ')[2]}</span>
+                                                            <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
+                                                            <span className="text-[10px] font-black uppercase text-center leading-tight">{t.name}</span>
                                                         </button>
                                                     ))}
                                                 </div>
-                                            </div>
-
-                                            {formData.requestedDate && (
-                                                <div className="space-y-4 pt-4 border-t border-gray-100">
-                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Available Time Slots</label>
-                                                    {loadingTimes ? (
-                                                        <div className="flex items-center gap-2 text-blue-600 font-bold text-xs"><div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div> Fetching slots...</div>
-                                                    ) : availableTimes.length > 0 ? (
-                                                        <div className="grid grid-cols-4 gap-2">
-                                                            {availableTimes.map(time => {
-                                                                const isToday = formData.requestedDate === new Date().toISOString().split('T')[0];
-                                                                let isPassed = false;
-                                                                if (isToday) {
-                                                                    const [slotHour, slotMin] = time.split(':').map(Number);
-                                                                    const now = new Date();
-                                                                    const currentHour = now.getHours();
-                                                                    const currentMin = now.getMinutes();
-                                                                    if (slotHour < currentHour || (slotHour === currentHour && slotMin <= currentMin)) {
-                                                                        isPassed = true;
-                                                                    }
-                                                                }
-
-                                                                return (
-                                                                    <button
-                                                                        key={time}
-                                                                        type="button"
-                                                                        disabled={isPassed}
-                                                                        onClick={() => setFormData(prev => ({ ...prev, requestedTime: time }))}
-                                                                        className={`py-3 rounded-xl border-2 font-black text-xs transition-all ${formData.requestedTime === time
-                                                                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                                                                            : isPassed
-                                                                                ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
-                                                                                : 'border-gray-50 bg-gray-50 text-gray-600 hover:bg-gray-100'
-                                                                            }`}
-                                                                    >
-                                                                        {time}
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-xs font-bold border border-rose-100">No free slots on this day. Please pick another date.</div>
-                                                    )}
+                                                <div className="flex gap-2 sm:gap-4 mt-2">
+                                                    <button
+                                                        type="button" onClick={() => setCurrentStep(1)}
+                                                        className="w-1/4 sm:w-1/3 py-3 sm:py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-1 sm:gap-2"
+                                                    >
+                                                        <FaChevronLeft className="text-[10px]" /> Back
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => formData.requestedTreatment && setCurrentStep(3)}
+                                                        disabled={!formData.requestedTreatment}
+                                                        className="flex-1 py-3 sm:py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50"
+                                                    >
+                                                        <span className="sm:inline">Select Slot</span>
+                                                        <FaChevronRight className="text-[10px]" />
+                                                    </button>
                                                 </div>
-                                            )}
-
-                                            <div className="flex gap-2 sm:gap-4 pt-4">
-                                                <button
-                                                    type="button" onClick={() => setCurrentStep(2)}
-                                                    className="w-1/4 sm:w-1/3 py-3 sm:py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-1 sm:gap-2"
-                                                >
-                                                    <FaChevronLeft className="text-[10px]" /> Back
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    disabled={submitting || !formData.requestedTime}
-                                                    className="flex-1 py-3 sm:py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 px-2"
-                                                >
-                                                    <span className="sm:inline">{submitting ? 'Confirming...' : (formData.phone.length === 10 ? 'Book Appointment' : 'Complete Form')}</span>
-                                                    <FaCheckCircle className="text-[10px] flex-shrink-0" />
-                                                </button>
                                             </div>
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <>
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="space-y-2 text-left">
-                                            <label htmlFor="name" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
-                                                {t.formName}
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="name"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
-                                                placeholder="yourname"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="space-y-2 text-left">
-                                            <label htmlFor="phone" className="text-sm font-semibold text-gray-700 h-8 flex items-end justify-start gap-2">
-                                                <span>{t.formPhone} </span><FaWhatsapp className="text-green-500 text-xl" />
-                                                {formData.phone.length > 0 && formData.phone.length < 10 && (
-                                                    <span className="text-red-500 text-[10px] animate-pulse">Required: {formData.phone.length}/10</span>
-                                                )}
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                id="phone"
-                                                value={formData.phone}
-                                                onChange={(e) => {
-                                                    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                                    setFormData(prev => ({ ...prev, phone: val }));
-                                                }}
-                                                className={`w-full px-4 py-3 rounded-xl border-2 font-bold outline-none transition-all ${formData.phone.length === 10
-                                                    ? 'border-green-200 focus:border-green-500 text-green-600'
-                                                    : formData.phone.length > 0
-                                                        ? 'border-red-100 focus:border-red-400 text-red-600'
-                                                        : 'border-gray-200 focus:border-blue-500'
-                                                    }`}
-                                                placeholder="Enter WhatsApp Number"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="md:col-span-2 space-y-2 text-left">
-                                            <label htmlFor="email" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
-                                                {language === 'hi' ? 'ईमेल आईडी' : 'Email Address'} <span className="ml-2 text-gray-400 font-normal text-[10px] uppercase tracking-widest">(Optional)</span>
-                                            </label>
-                                            <input
-                                                type="email"
-                                                id="email"
-                                                value={(formData as any).email || ''}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
-                                                placeholder="yourname@gmail.com"
-                                            />
-                                        </div>
-                                        <div className="md:col-span-2 space-y-4">
-                                            <div className="space-y-2 text-left">
-                                                <label htmlFor="message" className="text-sm font-semibold text-gray-700 flex justify-between items-center">
-                                                    <span>{t.formMessage}</span>
-                                                    <span className="text-gray-400 font-normal text-xs uppercase tracking-widest italic">Optional Selection</span>
-                                                </label>
+                                        )}
 
-                                                <div className="flex flex-wrap gap-2 mb-3">
-                                                    {suggestions.map((s) => (
-                                                        <button
-                                                            key={s.value}
-                                                            type="button"
-                                                            onClick={() => handleSuggestionClick(s.label)}
-                                                            className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 transform active:scale-90 ${s.color}`}
-                                                        >
-                                                            + {s.label}
-                                                        </button>
-                                                    ))}
-                                                </div>
-
-                                                <div className="space-y-2">
-                                                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest pl-1 mb-1">
-                                                        {language === 'hi' ? 'सुझाए गए खाली दिन' : 'Smart Date Suggestions'}
-                                                    </p>
-                                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {/* STEP 3: SELECT DATE & TIME */}
+                                        {currentStep === 3 && (
+                                            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
+                                                <div className="space-y-4">
+                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Available Dates</label>
+                                                    <div className="flex flex-wrap gap-2 overflow-x-auto pb-3 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
                                                         {suggestedDates.map((item) => (
                                                             <button
                                                                 key={item.dateStr}
                                                                 type="button"
-                                                                onClick={() => handleDateSuggestion(item)}
-                                                                className={`px-3 py-2 rounded-2xl flex flex-col items-center border shadow-sm transition-all transform active:scale-95 ${item.count < 6 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
-                                                                    item.count < 8 ? 'bg-amber-50 border-amber-200 text-amber-700' :
-                                                                        'bg-rose-50 border-rose-200 text-rose-700'
-                                                                    }`}
+                                                                onClick={() => {
+                                                                    setFormData(prev => ({ ...prev, requestedDate: item.dateStr, requestedTime: '' }));
+                                                                    fetchAvailableTimes(item.dateStr);
+                                                                }}
+                                                                className={`flex-shrink-0 w-24 p-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 cursor-pointer ${formData.requestedDate === item.dateStr ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gray-50'}`}
                                                             >
-                                                                <span className="text-[10px] font-black uppercase tracking-tighter leading-none mb-1">{item.display}</span>
-                                                                <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${item.count < 6 ? 'bg-emerald-100' :
-                                                                    item.count < 8 ? 'bg-amber-100' :
-                                                                        'bg-rose-100'
-                                                                    }`}>
-                                                                    {item.count < 6 ? (language === 'hi' ? 'उपलब्ध' : 'Flexible') :
-                                                                        item.count < 8 ? (language === 'hi' ? 'सामान्य' : 'Steady') :
-                                                                            (language === 'hi' ? 'व्यस्त' : 'Busy')}
-                                                                </span>
+                                                                <span className="text-[10px] font-black text-blue-600">{item.display.split(' ')[0]}</span>
+                                                                <span className="text-sm font-black text-gray-800">{item.display.split(' ')[1]}</span>
+                                                                <span className="text-[8px] font-bold text-gray-400">{item.display.split(' ')[2]}</span>
                                                             </button>
                                                         ))}
                                                     </div>
                                                 </div>
 
-                                                <textarea
-                                                    id="message"
-                                                    rows={4}
-                                                    value={formData.message}
+                                                {formData.requestedDate && (
+                                                    <div className="space-y-4 pt-4 border-t border-gray-100">
+                                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Available Time Slots</label>
+                                                        {loadingTimes ? (
+                                                            <div className="flex items-center gap-2 text-blue-600 font-bold text-xs"><div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div> Fetching slots...</div>
+                                                        ) : availableTimes.length > 0 ? (
+                                                            <div className="grid grid-cols-4 gap-2">
+                                                                {availableTimes.map(time => {
+                                                                    const isToday = formData.requestedDate === new Date().toISOString().split('T')[0];
+                                                                    let isPassed = false;
+                                                                    if (isToday) {
+                                                                        const [slotHour, slotMin] = time.split(':').map(Number);
+                                                                        const now = new Date();
+                                                                        const currentHour = now.getHours();
+                                                                        const currentMin = now.getMinutes();
+                                                                        if (slotHour < currentHour || (slotHour === currentHour && slotMin <= currentMin)) {
+                                                                            isPassed = true;
+                                                                        }
+                                                                    }
+
+                                                                    return (
+                                                                        <button
+                                                                            key={time}
+                                                                            type="button"
+                                                                            disabled={isPassed}
+                                                                            onClick={() => setFormData(prev => ({ ...prev, requestedTime: time }))}
+                                                                            className={`py-3 rounded-xl border-2 font-black text-xs transition-all ${formData.requestedTime === time
+                                                                                ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                                                                                : isPassed
+                                                                                    ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
+                                                                                    : 'border-gray-50 bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                                                                }`}
+                                                                        >
+                                                                            {time}
+                                                                        </button>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-xs font-bold border border-rose-100">No free slots on this day. Please pick another date.</div>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                <div className="flex gap-2 sm:gap-4 pt-4">
+                                                    <button
+                                                        type="button" onClick={() => setCurrentStep(2)}
+                                                        className="w-1/4 sm:w-1/3 py-3 sm:py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-1 sm:gap-2"
+                                                    >
+                                                        <FaChevronLeft className="text-[10px]" /> Back
+                                                    </button>
+                                                    <button
+                                                        type="submit"
+                                                        disabled={submitting || !formData.requestedTime}
+                                                        className="flex-1 py-3 sm:py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 px-2"
+                                                    >
+                                                        <span className="sm:inline">{submitting ? 'Confirming...' : (formData.phone.length === 10 ? 'Book Appointment' : 'Complete Form')}</span>
+                                                        <FaCheckCircle className="text-[10px] flex-shrink-0" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="space-y-2 text-left">
+                                                <label htmlFor="name" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
+                                                    {t.formName}
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="name"
+                                                    value={formData.name}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                                                    placeholder="I would like to book an appointment for..."
+                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
+                                                    placeholder="yourname"
                                                     required
-                                                ></textarea>
+                                                />
+                                            </div>
+                                            <div className="space-y-2 text-left">
+                                                <label htmlFor="phone" className="text-sm font-semibold text-gray-700 h-8 flex items-end justify-start gap-2">
+                                                    <span>{t.formPhone} </span><FaWhatsapp className="text-green-500 text-xl" />
+                                                    {formData.phone.length > 0 && formData.phone.length < 10 && (
+                                                        <span className="text-red-500 text-[10px] animate-pulse">Required: {formData.phone.length}/10</span>
+                                                    )}
+                                                </label>
+                                                <input
+                                                    type="tel"
+                                                    id="phone"
+                                                    value={formData.phone}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                                        setFormData(prev => ({ ...prev, phone: val }));
+                                                    }}
+                                                    className={`w-full px-4 py-3 rounded-xl border-2 font-bold outline-none transition-all ${formData.phone.length === 10
+                                                        ? 'border-green-200 focus:border-green-500 text-green-600'
+                                                        : formData.phone.length > 0
+                                                            ? 'border-red-100 focus:border-red-400 text-red-600'
+                                                            : 'border-gray-200 focus:border-blue-500'
+                                                        }`}
+                                                    placeholder="Enter WhatsApp Number"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="md:col-span-2 space-y-2 text-left">
+                                                <label htmlFor="email" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
+                                                    {language === 'hi' ? 'ईमेल आईडी' : 'Email Address'} <span className="ml-2 text-gray-400 font-normal text-[10px] uppercase tracking-widest">(Optional)</span>
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    id="email"
+                                                    value={(formData as any).email || ''}
+                                                    onChange={handleChange}
+                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
+                                                    placeholder="yourname@gmail.com"
+                                                />
+                                            </div>
+                                            <div className="md:col-span-2 space-y-4">
+                                                <div className="space-y-2 text-left">
+                                                    <label htmlFor="message" className="text-sm font-semibold text-gray-700 flex justify-between items-center">
+                                                        <span>{t.formMessage}</span>
+                                                        <span className="text-gray-400 font-normal text-xs uppercase tracking-widest italic">Optional Selection</span>
+                                                    </label>
+
+                                                    <div className="flex flex-wrap gap-2 mb-3">
+                                                        {suggestions.map((s) => (
+                                                            <button
+                                                                key={s.value}
+                                                                type="button"
+                                                                onClick={() => handleSuggestionClick(s.label)}
+                                                                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 transform active:scale-90 ${s.color}`}
+                                                            >
+                                                                + {s.label}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest pl-1 mb-1">
+                                                            {language === 'hi' ? 'सुझाए गए खाली दिन' : 'Smart Date Suggestions'}
+                                                        </p>
+                                                        <div className="flex flex-wrap gap-2 mb-4">
+                                                            {suggestedDates.map((item) => (
+                                                                <button
+                                                                    key={item.dateStr}
+                                                                    type="button"
+                                                                    onClick={() => handleDateSuggestion(item)}
+                                                                    className={`px-3 py-2 rounded-2xl flex flex-col items-center border shadow-sm transition-all transform active:scale-95 ${item.count < 6 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
+                                                                        item.count < 8 ? 'bg-amber-50 border-amber-200 text-amber-700' :
+                                                                            'bg-rose-50 border-rose-200 text-rose-700'
+                                                                        }`}
+                                                                >
+                                                                    <span className="text-[10px] font-black uppercase tracking-tighter leading-none mb-1">{item.display}</span>
+                                                                    <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${item.count < 6 ? 'bg-emerald-100' :
+                                                                        item.count < 8 ? 'bg-amber-100' :
+                                                                            'bg-rose-100'
+                                                                        }`}>
+                                                                        {item.count < 6 ? (language === 'hi' ? 'उपलब्ध' : 'Flexible') :
+                                                                            item.count < 8 ? (language === 'hi' ? 'सामान्य' : 'Steady') :
+                                                                                (language === 'hi' ? 'व्यस्त' : 'Busy')}
+                                                                    </span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    <textarea
+                                                        id="message"
+                                                        rows={4}
+                                                        value={formData.message}
+                                                        onChange={handleChange}
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                                                        placeholder="I would like to book an appointment for..."
+                                                        required
+                                                    ></textarea>
+                                                </div>
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <button
+                                                    type="submit"
+                                                    disabled={submitting}
+                                                    className={`w-full ${submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center gap-2`}
+                                                >
+                                                    <FaPaperPlane /> {submitting ? t.submitting : t.send}
+                                                </button>
                                             </div>
                                         </div>
-                                        <div className="md:col-span-2">
-                                            <button
-                                                type="submit"
-                                                disabled={submitting}
-                                                className={`w-full ${submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center gap-2`}
-                                            >
-                                                <FaPaperPlane /> {submitting ? t.submitting : t.send}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </form>
+                                    </>
+                                )}
+                            </form>
+                        )}
                     </div>
 
                     {/* Google Map Integration */}

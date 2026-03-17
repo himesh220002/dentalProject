@@ -109,7 +109,7 @@ exports.getPatientById = async (req, res) => {
 // Update a patient
 exports.updatePatient = async (req, res) => {
     try {
-        const updatedPatient = await Patient.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updatedPatient = await Patient.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' });
         if (!updatedPatient) return res.status(404).json({ message: 'Patient not found' });
         res.status(200).json(updatedPatient);
     } catch (error) {
