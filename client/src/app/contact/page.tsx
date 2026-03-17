@@ -314,7 +314,7 @@ function ContactContent() {
 
             let messageText = "";
             if (isAutomatedSuccess) {
-                messageText = `*Appointment Confirmed!* 🦷\n\nDear ${formData.name},\nYour appointment at *${clinicName}* has been scheduled.\n\n*Treatment:* ${formData.requestedTreatment}\n*Date:* ${formData.requestedDate}\n*Time:* ${formData.requestedTime}\n\nSee you soon!`;
+                messageText = `Hi *${clinicName}*! 👋 I just booked an appointment through your website for a *${formData.requestedTreatment}*. I’m looking forward to getting my smile checked! 🦷\n\n*Details:*\n📅 *Date:* ${formData.requestedDate}\n⏰ *Time:* ${formData.requestedTime}\n👤 *Name:* ${formData.name}\n\nSee you soon!`;
             } else {
                 messageText = language === 'hi'
                     ? `नमस्ते डॉक्टर, मैं *${formData.name}* हूँ।\nमैं आपसे इस विषय में परामर्श करना चाहता/चाहती हूँ:- \n\n${formData.message}\n\n*मेरा फोन:* ${formData.phone}`
@@ -378,7 +378,7 @@ function ContactContent() {
                 </div>
 
                 {/* Contact Info Column */}
-                <div className="lg:col-span-1 space-y-4 text-left">
+                <div className="hidden lg:block lg:col-span-1 space-y-4 text-left">
 
                     {/* Phone Card */}
                     <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
@@ -512,7 +512,7 @@ function ContactContent() {
                                         {/* STEP 2: CHOOSE TREATMENT */}
                                         {currentStep === 2 && (
                                             <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                                <div className="grid grid-cols-2 sm:grid-cols-3 h-[500px] overflow-y-scroll gap-3">
                                                     {treatments.map((t) => (
                                                         <button
                                                             key={t._id}
@@ -778,6 +778,51 @@ function ContactContent() {
                         ></iframe>
                     </div>
 
+                </div>
+
+                {/* Contact Info Column */}
+                <div className="block lg:hidden lg:col-span-1 space-y-4 text-left">
+
+                    {/* Phone Card */}
+                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
+                            <div className="bg-blue-100 p-3 rounded-full text-blue-600">
+                                <FaPhoneAlt className="text-xl" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800">{t.callNow}</h3>
+                        </div>
+                        <p className="text-gray-600 mb-2">{clinicData?.timings.monday || (language === 'hi' ? 'सोम-शनि सुबह 10 बजे से रात 8 बजे तक' : 'Mon-Sat from 10am to 8pm')}</p>
+                        <a href={`tel:${staffPhone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block">
+                            {staffPhone}
+                        </a>
+                    </div>
+
+                    {/* Whatsapp Card */}
+                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
+                            <div className="bg-green-100 p-3 rounded-full text-green-600">
+                                <FaWhatsapp className="text-xl" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800">WhatsApp</h3>
+                        </div>
+                        <p className="text-gray-600 mb-2">{language === 'hi' ? 'त्वरित प्रश्नों के लिए हमारे साथ चैट करें' : 'Chat with us for quick queries'}</p>
+                        <a href={whatsappLink} target="_blank" className="text-center sm:text-left text-lg font-bold text-green-700 hover:underline block">
+                            {language === 'hi' ? 'अभी चैट करें' : 'Chat Now'}
+                        </a>
+                    </div>
+
+                    {/* Visit Us Card */}
+                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
+                            <div className="bg-teal-100 p-3 rounded-full text-teal-600">
+                                <FaMapMarkerAlt className="text-xl" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800">{t.location}</h3>
+                        </div>
+                        <p className="text-gray-600 leading-relaxed whitespace-pre-line text-center sm:text-left">
+                            {address}
+                        </p>
+                    </div>
                 </div>
 
             </div>
