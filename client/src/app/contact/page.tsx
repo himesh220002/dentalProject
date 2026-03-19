@@ -464,7 +464,7 @@ function ContactContent() {
     };
 
     return (
-        <div className="relative px-4 py-2 sm:py-8 lg:py-20 sm:px-20  mx-auto space-y-8 sm:space-y-16 overflow-x-hidden">
+        <div className="relative px-4 py-2 sm:py-8 lg:py-20 sm:px-20 xl:px-40  mx-auto space-y-8 sm:space-y-16 overflow-x-hidden">
 
 
 

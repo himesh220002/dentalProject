@@ -60,7 +60,7 @@ export default function About() {
                         {t.aboutHero.excellence}
                     </div>
                     <h1 className="text-4xl sm:text-5xl xl:text-7xl font-black text-gray-900 leading-[1.05] tracking-tight">
-                        {t.aboutHero.meet} {useClinic().isLoading ? <Skeleton variant="text" className="inline-block w-48 h-12" /> : <span className="bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">{doctorName}</span>}, {t.aboutHero.guardian}
+                        {t.aboutHero.meet} {useClinic().isLoading ? <Skeleton variant="text" className="inline-block w-48 h-12" /> : <span className="bg-gradient-to-r from-blue-800 via-blue-600 to-purple-800 bg-clip-text text-transparent">{doctorName}</span>}, {t.aboutHero.guardian}
                     </h1>
                     <p className="text-lg sm:text-xl text-gray-600 leading-relaxed font-medium max-w-xl">
                         {doctorDesc}

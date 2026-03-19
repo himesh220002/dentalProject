@@ -161,7 +161,7 @@ export default function Home() {
     }, []);
 
     return (
-        <div className="max-w-[1600px] mx-auto space-y-20 md:space-y-32 overflow-x-hidden">
+        <div className=" mx-auto space-y-20 md:space-y-32 overflow-x-hidden">
             {/* Hero Section - Elite Landing */}
             <HomeHero />
 
@@ -216,7 +216,7 @@ export default function Home() {
             </section>
 
             {/* Meet Our Team - New Dynamic Section with High-tech Pattern */}
-            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] sm:rounded-[4rem] group mx-2 sm:mx-5">
+            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] sm:rounded-[4rem] group mx-2 sm:mx-5 xl:mx-20 2xl:mx-40">
                 {/* Immersive Lab Background */}
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
                     <NextImage
@@ -261,7 +261,7 @@ export default function Home() {
             </section>
 
             {/* Why Patients Trust - Preview Section with refined layout */}
-            <section className="bg-gray-900 mx-auto md:mx-10 px-6 sm:px-12 lg:px-16 py-10 sm:py-20  sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
+            <section className="bg-gray-900 mx-auto md:mx-10 xl:mx-20 2xl:mx-40 px-6 sm:px-12 lg:px-16 py-10 sm:py-20  sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
                 <div className="max-w-7xl mx-auto space-y-10">
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                         <div className="space-y-6">
@@ -322,7 +322,7 @@ export default function Home() {
             </div> */}
 
             {/* Virtual Clinic Tour - Refined */}
-            <section className="space-y-12 sm:space-y-16">
+            <section className="space-y-12 sm:space-y-16 xl:mx-20 2xl:mx-40">
                 <div className="text-center space-y-3 sm:space-y-4">
                     <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-blue-900 uppercase">
                         {translations[language].homeVirtualTour.title}
@@ -332,14 +332,14 @@ export default function Home() {
                         {translations[language].homeVirtualTour.subtitle}
                     </p>
                 </div>
-                <div className="bg-white p-4 sm:p-8 mx-2 sm:mx-6 lg:mx-8 rounded-[2rem] sm:rounded-[4rem] shadow-2xl border border-gray-100 overflow-hidden">
+                <div className="bg-white p-4 sm:p-8 mx-2 sm:mx-6 lg:mx-8  rounded-[2rem] sm:rounded-[4rem] shadow-2xl border border-gray-100 overflow-hidden">
                     <ClinicCarousel />
                 </div>
             </section>
 
             {/* Floating Appointment Notification - Circle Above LanguageToggle */}
             {session?.user && upcomingAppointment && !isAptDismissed && (
-                <div className="fixed top-70 sm:top-70 2xl:right-40 2xl:top-40 right-4 sm:right-6 z-50 group/indicator">
+                <div className="fixed top-70 sm:top-70 2xl:right-40 2xl:top-40  right-4 sm:right-6 z-50 group/indicator">
                     <Link
                         href="/profile"
                         onClick={() => setIsAptDismissed(true)}
@@ -373,7 +373,7 @@ export default function Home() {
 
             {/* Elite CTA Strip */}
             <section className="pb-12 sm:pb-20 overflow-hidden relative">
-                <div className="bg-gradient-to-br from-blue-800 to-black text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 sm:p-16 md:p-24 mx-1 sm:mx-5 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(37,99,235,0.4)] relative overflow-hidden group">
+                <div className="bg-gradient-to-br from-blue-800 to-black text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 sm:p-16 md:p-24 mx-1 sm:mx-5 xl:mx-20 2xl:mx-40 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(37,99,235,0.4)] relative overflow-hidden group">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-44 -mt-44 blur-[100px] group-hover:bg-white/20 transition-all duration-700"></div>
                     <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-400/20 rounded-full -mr-40 -mb-40 blur-[80px]"></div>
