@@ -227,9 +227,9 @@ export default function WeeklyPlanner() {
                                 </span>
                             </div>
 
-                            <div className={`flex flex-col gap-3 flex-grow mt-3 md:mt-0 ${isExpanded ? 'block' : 'hidden md:flex'}`}>
+                            <div className={`flex flex-col gap-3 flex-grow mt-3 md:mt-0 overflow-y-auto max-h-[400px] scrollbar-hide ${isExpanded ? 'block' : 'hidden md:flex'}`}>
                                 {dayAppointments.length > 0 ? (
-                                    dayAppointments.slice(0, 4).map((app) => {
+                                    dayAppointments.map((app) => {
                                         const expired = isPastTime(app.date, app.time);
                                         const done = app.isTicked || (app.status === 'Completed');
                                         const operating = app.status === 'Operating';
@@ -297,11 +297,6 @@ export default function WeeklyPlanner() {
                                         <div className="text-[10px] text-gray-300 font-black uppercase tracking-[0.2em] border-2 border-dashed border-gray-100 px-4 py-8 rounded-2xl w-full text-center">
                                             Free
                                         </div>
-                                    </div>
-                                )}
-                                {dayAppointments.length > 4 && (
-                                    <div className="text-[10px] text-center font-black text-gray-400 py-1 bg-gray-50 rounded-xl">
-                                        + {dayAppointments.length - 4} more
                                     </div>
                                 )}
                             </div>

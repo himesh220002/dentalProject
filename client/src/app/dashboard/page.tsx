@@ -84,10 +84,14 @@ export default function DashboardOverview() {
                     return d.getTime() > tomorrowTime;
                 });
 
+                const todayRemaining = todayAppointments.filter((a: any) =>
+                    !a.isTicked && !a.isDeleted && a.status !== 'Completed' && a.status !== 'Cancelled'
+                );
+
                 setStats({
                     patients: allPatients.length,
                     messages: allMessages.filter((m: any) => m.status === 'Unread').length,
-                    todayApts: todayAppointments.length,
+                    todayApts: todayRemaining.length,
                     tomorrowApts: tomorrowAppointments.length,
                     upcomingApts: upcomingAppointments.length,
                     treatments: treatmentsRes.data.length,
