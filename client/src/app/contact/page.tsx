@@ -99,9 +99,7 @@ function ContactContent() {
                 if (next3Closed) {
                     setStatus({
                         type: 'info',
-                        message: language === 'hi'
-                            ? `नोट: ${next3Closed.display} को डॉक्टर छुट्टी पर हैं। कृपया अन्य उपलब्ध दिन चुनें।`
-                            : `Note: Doctor is on leave on ${next3Closed.display}. Please pick other available days.`
+                        message: t.leaveAlert.replace('{date}', next3Closed.display)
                     });
                 }
             } catch (err) {
@@ -159,7 +157,8 @@ function ContactContent() {
 
             // Filter out cancelled/completed ones for "Recent" view if preferred, 
             // but user said "Your Recent Bookings" so we show scheduled ones
-            setGuestAppointments(appointments.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+            // Sort latest to oldest and take 2
+            setGuestAppointments(appointments.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 2));
         } catch (err) {
             console.error('Error fetching bookings:', err);
         } finally {
@@ -172,7 +171,7 @@ function ContactContent() {
     }, [session]);
 
     const handleCancelGuestBooking = async (id: string) => {
-        if (!confirm(language === 'hi' ? 'क्या आप वाकई इस अपॉइंटमेंट को रद्द करना चाहते हैं?' : 'Are you sure you want to cancel this appointment?')) return;
+        if (!confirm(t.confirmCancel)) return;
         try {
             await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${id}`);
             // Update local state
@@ -206,7 +205,7 @@ function ContactContent() {
             fetchAllRecentBookings();
             setStatus({
                 type: 'success',
-                message: language === 'hi' ? 'अपॉइंटमेंट सफलतापूर्वक अपडेट किया गया!' : 'Appointment updated successfully!'
+                message: t.updateSuccess
             });
         } catch (err) {
             console.error('Error updating booking:', err);
@@ -242,9 +241,7 @@ function ContactContent() {
         if (treatment) {
             setFormData(prev => ({
                 ...prev,
-                message: language === 'hi'
-                    ? `मैं इनके लिए अपॉइंटमेंट बुक करना चाहता हूँ: ${treatment.toUpperCase()}`
-                    : `I would like to book an appointment for: ${treatment.toUpperCase()}`
+                message: t.placeholderMsg.replace('...', treatment.toUpperCase())
             }));
             // Clean up the URL to prevent repeating on refresh
             const newUrl = window.location.pathname;
@@ -274,8 +271,8 @@ function ContactContent() {
 
     const handleSuggestionClick = (label: string) => {
         const textToAppend = formData.message
-            ? `\n${language === 'hi' ? 'मैं चर्चा करना चाहता हूं' : 'I would like to discuss'}: ${label}, `
-            : `${language === 'hi' ? 'मैं चर्चा करना चाहता हूं' : 'I would like to discuss'}: ${label}, `;
+            ? `\n${t.discuss}: ${label}, `
+            : `${t.discuss}: ${label}, `;
         setFormData(prev => ({
             ...prev,
             message: prev.message + textToAppend
@@ -344,7 +341,7 @@ function ContactContent() {
             setCurrentStep(3);
             return;
         }
-        const textToAppend = `\n${language === 'hi' ? 'सुझाया गया समय' : 'Suggested Appointment'}: ${item.display}, `;
+        const textToAppend = `\n${t.suggestedApt}: ${item.display}, `;
         setFormData(prev => ({
             ...prev,
             message: prev.message + textToAppend
@@ -406,8 +403,8 @@ function ContactContent() {
             setStatus({
                 type: 'success',
                 message: isAutomatedSuccess
-                    ? (language === 'hi' ? 'आपका अपॉइंटमेंट पक्का हो गया है! विवरण व्हाट्सएप पर भेजे जा रहे हैं...' : 'Your appointment is confirmed! Sending details to WhatsApp...')
-                    : (language === 'hi' ? 'विवरण सुरक्षित हो गया! अब आपको व्हाट्सएप पर भेजा जा रहा है...' : 'Details saved! Redirecting you to WhatsApp...')
+                    ? t.bookingConfirmed
+                    : t.detailsSaved
             });
 
             // Construct the WhatsApp Message
@@ -458,8 +455,8 @@ function ContactContent() {
             setStatus({
                 type: 'error',
                 message: language === 'hi'
-                    ? 'विफल। कृपया पुन: प्रयास करें। ' + (error as any).response?.data?.message || ''
-                    : 'Failed. Please try again. ' + (error as any).response?.data?.message || ''
+                    ? t.failedTryAgain + ' ' + (error as any).response?.data?.message || ''
+                    : t.failedTryAgain + ' ' + (error as any).response?.data?.message || ''
             });
         } finally {
             setSubmitting(false);
@@ -474,9 +471,7 @@ function ContactContent() {
             <div className="3xl:block hidden text-center space-y-4">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900">{t.getIntouch}</h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                    {language === 'hi'
-                        ? 'कोई प्रश्न है या अपॉइंटमेंट बुक करना चाहते हैं? हम यहाँ मदद के लिए हैं। फोन, ईमेल द्वारा हमसे संपर्क करें या सीधे हमारे क्लिनिक आएं।'
-                        : 'Have a question or want to book an appointment? We are here to help. Reach out to us via phone, email, or visit our clinic directly.'}
+                    {t.contactHeroSub}
                 </p>
             </div>
 
@@ -501,7 +496,7 @@ function ContactContent() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-800">{t.callNow}</h3>
                         </div>
-                        <p className="text-gray-600 mb-2">{clinicData?.timings.monday || (language === 'hi' ? 'सोम-शनि सुबह 10 बजे से रात 8 बजे तक' : 'Mon-Sat from 10am to 8pm')}</p>
+                        <p className="text-gray-600 mb-2">{clinicData?.timings.monday || (t.timingsSub)}</p>
                         <a href={`tel:${staffPhone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block">
                             {staffPhone}
                         </a>
@@ -515,9 +510,9 @@ function ContactContent() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-800">WhatsApp</h3>
                         </div>
-                        <p className="text-gray-600 mb-2">{language === 'hi' ? 'त्वरित प्रश्नों के लिए हमारे साथ चैट करें' : 'Chat with us for quick queries'}</p>
+                        <p className="text-gray-600 mb-2">{t.chatHelp}</p>
                         <a href={whatsappLink} target="_blank" className="text-center sm:text-left text-lg font-bold text-green-700 hover:underline block">
-                            {language === 'hi' ? 'अभी चैट करें' : 'Chat Now'}
+                            {t.chatNow}
                         </a>
                     </div>
 
@@ -544,8 +539,8 @@ function ContactContent() {
                             <h2 className="text-lg sm:text-xl font-black text-gray-800 flex items-center gap-2">
                                 <FaCalendarCheck className="text-blue-600" />
                                 {isAutoBookingEnabled ? (
-                                    <span className="">Appointment Booking</span>
-                                ) : (language === 'hi' ? 'संदेश भेजें' : 'Send a Message')}
+                                    <span className="">{t.appointmentBooking}</span>
+                                ) : t.send}
                             </h2>
                             {isAutoBookingEnabled && (
                                 <div className="flex gap-1">
@@ -585,7 +580,7 @@ function ContactContent() {
                                                         <input
                                                             type="text" id="name" value={formData.name} onChange={handleChange} required
                                                             className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
-                                                            placeholder="e.g. Rahul Kumar"
+                                                            placeholder={t.namePlaceholder}
                                                         />
                                                     </div>
                                                     <div className="space-y-2">
@@ -604,11 +599,11 @@ function ContactContent() {
                                                     </div>
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Email (Optional)</label>
+                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.emailOptional}</label>
                                                     <input
                                                         type="email" id="email" value={formData.email} onChange={handleChange}
                                                         className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
-                                                        placeholder="rahul@example.com"
+                                                        placeholder={t.emailPlaceholder}
                                                     />
                                                 </div>
                                                 <button
@@ -617,7 +612,7 @@ function ContactContent() {
                                                     disabled={!formData.name || formData.phone.length !== 10}
                                                     className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
                                                 >
-                                                    Choose Treatment <FaChevronRight />
+                                                    {t.chooseTreatment} <FaChevronRight />
                                                 </button>
                                             </div>
                                         )}
@@ -651,7 +646,7 @@ function ContactContent() {
                                                         disabled={!formData.requestedTreatment}
                                                         className="flex-1 py-3 sm:py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50"
                                                     >
-                                                        <span className="sm:inline">Select Slot</span>
+                                                        <span className="sm:inline">{t.selectSlot}</span>
                                                         <FaChevronRight className="text-[10px]" />
                                                     </button>
                                                 </div>
@@ -662,7 +657,7 @@ function ContactContent() {
                                         {currentStep === 3 && (
                                             <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                                                 <div className="space-y-4">
-                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Available Dates</label>
+                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.availableDates}</label>
                                                     <div className="flex flex-wrap gap-2 overflow-x-auto pb-3 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
                                                         {suggestedDates.map((item) => (
                                                             <button
@@ -684,9 +679,9 @@ function ContactContent() {
 
                                                 {formData.requestedDate && (
                                                     <div className="space-y-4 pt-4 border-t border-gray-100">
-                                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Available Time Slots</label>
+                                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.availableSlots}</label>
                                                         {loadingTimes ? (
-                                                            <div className="flex items-center gap-2 text-blue-600 font-bold text-xs"><div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div> Fetching slots...</div>
+                                                            <div className="flex items-center gap-2 text-blue-600 font-bold text-xs"><div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div> {t.fetchingSlots}</div>
                                                         ) : availableTimes.length > 0 ? (
                                                             <div className="grid grid-cols-4 gap-2">
                                                                 {availableTimes.map(time => {
@@ -721,7 +716,7 @@ function ContactContent() {
                                                                 })}
                                                             </div>
                                                         ) : (
-                                                            <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-xs font-bold border border-rose-100">No free slots on this day. Please pick another date.</div>
+                                                            <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-xs font-bold border border-rose-100">{t.noSlots}</div>
                                                         )}
                                                     </div>
                                                 )}
@@ -738,7 +733,7 @@ function ContactContent() {
                                                         disabled={submitting || !formData.requestedTime}
                                                         className="flex-1 py-3 sm:py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 px-2"
                                                     >
-                                                        <span className="sm:inline">{submitting ? 'Confirming...' : (formData.phone.length === 10 ? 'Book Appointment' : 'Complete Form')}</span>
+                                                        <span className="sm:inline">{submitting ? t.confirming : (formData.phone.length === 10 ? t.bookApt : t.completeForm)}</span>
                                                         <FaCheckCircle className="text-[10px] flex-shrink-0" />
                                                     </button>
                                                 </div>
@@ -758,7 +753,7 @@ function ContactContent() {
                                                     value={formData.name}
                                                     onChange={handleChange}
                                                     className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
-                                                    placeholder="yourname"
+                                                    placeholder={t.yourNamePlaceholder}
                                                     required
                                                 />
                                             </div>
@@ -766,7 +761,7 @@ function ContactContent() {
                                                 <label htmlFor="phone" className="text-sm font-semibold text-gray-700 h-8 flex items-end justify-start gap-2">
                                                     <span>{t.formPhone} </span><FaWhatsapp className="text-green-500 text-xl" />
                                                     {formData.phone.length > 0 && formData.phone.length < 10 && (
-                                                        <span className="text-red-500 text-[10px] animate-pulse">Required: {formData.phone.length}/10</span>
+                                                        <span className="text-red-500 text-[10px] animate-pulse">{t.phoneRequired}: {formData.phone.length}/10</span>
                                                     )}
                                                 </label>
                                                 <input
@@ -783,7 +778,7 @@ function ContactContent() {
                                                             ? 'border-red-100 focus:border-red-400 text-red-600'
                                                             : 'border-gray-200 focus:border-blue-500'
                                                         }`}
-                                                    placeholder="Enter WhatsApp Number"
+                                                    placeholder={t.waPlaceholder}
                                                     required
                                                 />
                                             </div>
@@ -797,7 +792,7 @@ function ContactContent() {
                                                     value={(formData as any).email || ''}
                                                     onChange={handleChange}
                                                     className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
-                                                    placeholder="yourname@gmail.com"
+                                                    placeholder={t.yourEmailPlaceholder}
                                                 />
                                             </div>
                                             <div className="md:col-span-2 space-y-4">
@@ -822,7 +817,7 @@ function ContactContent() {
 
                                                     <div className="space-y-2">
                                                         <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest pl-1 mb-1">
-                                                            {language === 'hi' ? 'सुझाए गए खाली दिन' : 'Smart Date Suggestions'}
+                                                            {t.smartSuggestions}
                                                         </p>
                                                         <div className="flex flex-wrap gap-2 mb-4">
                                                             {suggestedDates.map((item) => (
@@ -840,9 +835,9 @@ function ContactContent() {
                                                                         item.count < 8 ? 'bg-amber-100' :
                                                                             'bg-rose-100'
                                                                         }`}>
-                                                                        {item.count < 6 ? (language === 'hi' ? 'उपलब्ध' : 'Flexible') :
-                                                                            item.count < 8 ? (language === 'hi' ? 'सामान्य' : 'Steady') :
-                                                                                (language === 'hi' ? 'व्यस्त' : 'Busy')}
+                                                                        {item.count < 6 ? t.flexible :
+                                                                            item.count < 8 ? t.steady :
+                                                                                t.busy}
                                                                     </span>
                                                                 </button>
                                                             ))}
@@ -855,7 +850,7 @@ function ContactContent() {
                                                         value={formData.message}
                                                         onChange={handleChange}
                                                         className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                                                        placeholder="I would like to book an appointment for..."
+                                                        placeholder={t.placeholderMsg}
                                                         required
                                                     ></textarea>
                                                 </div>
@@ -882,21 +877,31 @@ function ContactContent() {
                     {/* YOUR RECENT BOOKINGS */}
                     {guestAppointments.length > 0 && (
                         <div className="p-6 sm:p-8 bg-gradient-to-br from-white to-blue-50/30 rounded-[2.5rem] shadow-xl border border-blue-100 space-y-6 mt-8">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row gap-1 items-center justify-between">
                                 <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
                                     <FaCalendarCheck className="text-blue-600" />
-                                    {language === 'hi' ? 'आपके हालिया बुकिंग' : 'Your Recent Bookings'}
+                                    {t.recentBookings}
                                 </h2>
-                                <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest ${session?.user ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}`}>
-                                    {session?.user ? 'Patient Profile' : 'Guest mode'}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    {session?.user && (
+                                        <button
+                                            onClick={() => router.push('/profile')}
+                                            className="text-[10px] font-black bg-blue-600 text-white px-3 py-1 rounded-full uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95 shadow-sm"
+                                        >
+                                            {t.seeProfile}
+                                        </button>
+                                    )}
+                                    <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest ${session?.user ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-gray-400'}`}>
+                                        {session?.user ? t.patientProfile : t.guestMode}
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="grid gap-4">
                                 {guestAppointments.map((apt: any) => {
                                     const treatment = treatments.find((t: any) => t.name === apt.reason);
                                     const isEditing = editingAptId === apt._id;
-                                    const patientName = apt.patientId?.name || apt.name || "Guest";
+                                    const patientName = apt.patientId?.name || apt.name || t.guest;
                                     const patientPhone = apt.patientId?.contact || apt.phone || "";
                                     const patientEmail = apt.patientId?.email || apt.email || "";
 
@@ -942,13 +947,13 @@ function ContactContent() {
                                                                 }}
                                                                 className="text-[10px] font-black text-blue-600 hover:text-blue-700 uppercase tracking-widest underline underline-offset-4"
                                                             >
-                                                                {language === 'hi' ? 'बदलाव करें' : 'Edit'}
+                                                                {t.edit}
                                                             </button>
                                                             <button
                                                                 onClick={() => handleCancelGuestBooking(apt._id)}
                                                                 className="text-[10px] font-black text-rose-600 hover:text-rose-700 uppercase tracking-widest underline underline-offset-4"
                                                             >
-                                                                {language === 'hi' ? 'रद्द करें' : 'Cancel'}
+                                                                {t.cancel}
                                                             </button>
                                                         </>
                                                     )}
@@ -960,7 +965,7 @@ function ContactContent() {
                                                 <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 flex flex-col sm:flex-row items-end gap-3 animate-in zoom-in-95 duration-200">
                                                     <div className="w-full sm:w-auto flex-grow grid grid-cols-2 gap-3">
                                                         <div className="space-y-1">
-                                                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1">New Date</label>
+                                                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.newDate}</label>
                                                             <input
                                                                 type="date"
                                                                 min={new Date().toISOString().split('T')[0]}
@@ -970,7 +975,7 @@ function ContactContent() {
                                                             />
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1">New Time</label>
+                                                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.newTime}</label>
                                                             <select
                                                                 value={editData.time}
                                                                 onChange={(e) => setEditData(prev => ({ ...prev, time: e.target.value }))}
@@ -990,19 +995,19 @@ function ContactContent() {
                                                             disabled={savingEdit}
                                                             className="flex-grow sm:flex-none px-6 py-2 bg-blue-600 text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
                                                         >
-                                                            {savingEdit ? '...' : (language === 'hi' ? 'सहेजें' : 'Save')}
+                                                            {savingEdit ? '...' : t.save}
                                                         </button>
                                                         <button
                                                             onClick={() => handleCancelGuestBooking(apt._id)}
                                                             className="flex-grow sm:flex-none px-6 py-2 bg-rose-50 text-rose-600 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-rose-100 transition-all active:scale-95"
                                                         >
-                                                            {language === 'hi' ? 'रद्द करें' : 'Cancel Booking'}
+                                                            {t.cancelBooking}
                                                         </button>
                                                         <button
                                                             onClick={() => setEditingAptId(null)}
                                                             className="flex-grow sm:flex-none px-6 py-2 bg-gray-100 text-gray-500 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-200 transition-all active:scale-95"
                                                         >
-                                                            {language === 'hi' ? 'पीछे' : 'Back'}
+                                                            {t.back}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -1014,8 +1019,8 @@ function ContactContent() {
 
                             <p className="text-[10px] text-gray-400 font-medium text-center italic leading-tight">
                                 {session?.user
-                                    ? (language === 'hi' ? '*यह सूचि आपके प्रोफाइल से सिंक की गई है।' : '*This list is synced with your patient profile.')
-                                    : (language === 'hi' ? '*यह सूची केवल इसी ब्राउज़र के लिए है।' : '*This list is stored only on this browser.')}
+                                    ? t.syncMsg
+                                    : t.guestSyncMsg}
                             </p>
                         </div>
                     )}
@@ -1057,7 +1062,7 @@ function ContactContent() {
                                 }).then(() => {
                                     setGeneralStatus({
                                         type: 'success',
-                                        message: language === 'hi' ? 'पुष्टि हो गई! आपका संदेश क्लिनिक को भेज दिया गया है।' : 'Confirmed! Your message has been sent to the clinic.'
+                                        message: t.successMsg
                                     });
                                     setFormData(prev => ({ ...prev, message: '' }));
                                 }).catch(err => {
@@ -1075,10 +1080,10 @@ function ContactContent() {
                                     </div>
                                     <div>
                                         <h2 className="text-xl font-black text-gray-800 tracking-tight">
-                                            {language === 'hi' ? 'सामान्य पूछताछ' : 'General Inquiry'}
+                                            {t.generalInquiry}
                                         </h2>
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                            {language === 'hi' ? 'क्लिनिक को एक सीधा संदेश भेजें' : 'Send a direct message to clinic'}
+                                            {t.directMsg}
                                         </p>
                                     </div>
                                 </div>
@@ -1092,7 +1097,7 @@ function ContactContent() {
                                                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                                                 required
                                                 className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
-                                                placeholder="Name"
+                                                placeholder={t.generalNamePlaceholder}
                                             />
                                         </div>
                                         <div className="space-y-1">
@@ -1102,17 +1107,17 @@ function ContactContent() {
                                                 onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
                                                 required
                                                 className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
-                                                placeholder="Phone"
+                                                placeholder={t.generalPhonePlaceholder}
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Email (Optional)</label>
+                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.emailOptional}</label>
                                         <input
                                             type="email" value={formData.email}
                                             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                                             className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
-                                            placeholder="Email"
+                                            placeholder={t.generalEmailPlaceholder}
                                         />
                                     </div>
                                     <div className="space-y-1">
@@ -1123,7 +1128,7 @@ function ContactContent() {
                                             onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                                             required
                                             className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all resize-none"
-                                            placeholder={language === 'hi' ? 'आप क्या पूछना चाहते हैं?' : 'What would you like to ask?'}
+                                            placeholder={t.askPlaceholder}
                                         />
                                     </div>
                                     <button
@@ -1131,7 +1136,7 @@ function ContactContent() {
                                         disabled={submitting}
                                         className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-gray-200"
                                     >
-                                        <FaPaperPlane /> {submitting ? t.submitting : (language === 'hi' ? 'संदेश भेजें' : 'Send Message')}
+                                        <FaPaperPlane /> {submitting ? t.submitting : t.send}
                                     </button>
                                 </div>
                             </form>
@@ -1151,7 +1156,7 @@ function ContactContent() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-800">{t.callNow}</h3>
                         </div>
-                        <p className="text-gray-600 mb-2">{clinicData?.timings.monday || (language === 'hi' ? 'सोम-शनि सुबह 10 बजे से रात 8 बजे तक' : 'Mon-Sat from 10am to 8pm')}</p>
+                        <p className="text-gray-600 mb-2">{clinicData?.timings.monday || (t.timingsSub)}</p>
                         <a href={`tel:${staffPhone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block">
                             {staffPhone}
                         </a>
@@ -1165,9 +1170,9 @@ function ContactContent() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-800">WhatsApp</h3>
                         </div>
-                        <p className="text-gray-600 mb-2">{language === 'hi' ? 'त्वरित प्रश्नों के लिए हमारे साथ चैट करें' : 'Chat with us for quick queries'}</p>
+                        <p className="text-gray-600 mb-2">{t.chatHelp}</p>
                         <a href={whatsappLink} target="_blank" className="text-center sm:text-left text-lg font-bold text-green-700 hover:underline block">
-                            {language === 'hi' ? 'अभी चैट करें' : 'Chat Now'}
+                            {t.chatNow}
                         </a>
                     </div>
 
