@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { FaAward, FaUserMd, FaSmile, FaCertificate, FaQuoteLeft, FaCheckCircle, FaStar } from 'react-icons/fa';
 import AchievementsGrid from '@/components/about/AchievementsGrid';
 import PatientReviews from '@/components/about/PatientReviews';
@@ -12,6 +13,15 @@ import Skeleton from '@/components/ui/Skeleton';
 
 export default function About() {
     const { clinicData, language } = useClinic();
+    const [imgLoaded, setImgLoaded] = useState(false);
+    const imgRef = useRef<HTMLImageElement>(null);
+
+    useEffect(() => {
+        if (imgRef.current && imgRef.current.complete) {
+            setImgLoaded(true);
+        }
+    }, []);
+
     const t = translations[language as keyof typeof translations];
 
     const doctorName = clinicData?.doctorName || 'Dr. Tooth';
@@ -41,7 +51,7 @@ export default function About() {
     const consultantExpLabel = language === 'hi' ? 'का अनुभव' : 'Experience';
 
     return (
-        <div className=" max-w-[1600px] mx-auto space-y-12 sm:pt-4 lg:pt-0">
+        <div className=" max-w-[1600px] mx-auto space-y-12 sm:pt-4 lg:pt-0 overflow-x-clip">
             {/* Hero Section - Refined */}
             <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">
@@ -70,7 +80,10 @@ export default function About() {
 
                 {/* Doctor Image Refined */}
                 <div className="relative order-1 lg:order-2 flex justify-center mt-12 sm:mt-16 lg:mt-0">
-                    <div className="absolute -inset-10 bg-gradient-to-tr from-blue-100 via-teal-50 to-indigo-100 rounded-full opacity-50 blur-3xl -z-10 animate-pulse"></div>
+                    {/* Decorative glow wrapped to prevent overflow */}
+                    <div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
+                        <div className="absolute -inset-10 bg-gradient-to-tr from-blue-100 via-teal-50 to-indigo-100 rounded-full opacity-50 blur-3xl animate-pulse"></div>
+                    </div>
 
                     {/* Interactive Badge Moved Above */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white/95 backdrop-blur-md px-4 py-2 sm:px-8 sm:py-5 rounded-2xl sm:rounded-[2rem] shadow-2xl flex items-center gap-3 sm:gap-5 border border-blue-50 animate-bounce whitespace-nowrap">
@@ -84,10 +97,18 @@ export default function About() {
                     </div>
 
                     <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-[450px] lg:h-[450px] bg-gray-200 rounded-full shadow-2xl overflow-hidden flex items-center justify-center text-gray-400 group border-8 border-white">
+                        {!imgLoaded && (
+                            <div className="absolute inset-0">
+                                <Skeleton variant="rect" className="w-full h-full !rounded-none" />
+                            </div>
+                        )}
                         <img
-                            src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1964&auto=format&fit=crop"
+                            ref={imgRef}
+                            // src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1964&auto=format&fit=crop"
+                            src="/images/rendering-anime-doctor-job.jpg"
                             alt={doctorName}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            onLoad={() => setImgLoaded(true)}
+                            className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent"></div>
                     </div>

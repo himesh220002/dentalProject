@@ -53,6 +53,7 @@ describe('Contact Page Component', () => {
         render(<Contact />);
 
         expect(await screen.findByText(/Get In Touch/i)).toBeInTheDocument();
+        screen.debug();
         expect(screen.getByText(/1234567890/i)).toBeInTheDocument();
         expect(await screen.findByPlaceholderText('yourname')).toBeInTheDocument();
     });

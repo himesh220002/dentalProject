@@ -38,6 +38,7 @@ function ContactContent() {
     });
     const [treatments, setTreatments] = useState<any[]>([]);
     const [status, setStatus] = useState({ type: '', message: '' });
+    const [generalStatus, setGeneralStatus] = useState({ type: '', message: '' });
     const [submitting, setSubmitting] = useState(false);
     const [density, setDensity] = useState<any>({});
     const [suggestedDates, setSuggestedDates] = useState<any[]>([]);
@@ -46,6 +47,11 @@ function ContactContent() {
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);
     const [loadingTimes, setLoadingTimes] = useState(false);
     const [configLoading, setConfigLoading] = useState(true);
+    const [guestAppointments, setGuestAppointments] = useState<any[]>([]);
+    const [loadingGuestApts, setLoadingGuestApts] = useState(false);
+    const [editingAptId, setEditingAptId] = useState<string | null>(null);
+    const [editData, setEditData] = useState({ date: '', time: '' });
+    const [savingEdit, setSavingEdit] = useState(false);
 
     useEffect(() => {
         const fetchTreatments = async () => {
@@ -116,6 +122,98 @@ function ContactContent() {
         fetchDensity();
         fetchConfig();
     }, [language]);
+
+    const fetchAllRecentBookings = async () => {
+        try {
+            setLoadingGuestApts(true);
+            let appointments: any[] = [];
+
+            // 1. If logged in, fetch from backend via patient ID
+            if (session?.user) {
+                const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+                // @ts-ignore
+                const userRes = await axios.get(`${backendUrl}/api/auth/google/${session.user.id}`);
+                const patientId = userRes.data?.patientId?._id;
+
+                if (patientId) {
+                    const aptRes = await axios.get(`${backendUrl}/api/appointments/patient/${patientId}`);
+                    appointments = aptRes.data;
+                }
+            }
+
+            // 2. If guest or if logged-in list is empty, also check localStorage for local bookings
+            const storedIds = localStorage.getItem('drtooth_guest_bookings');
+            if (storedIds) {
+                const ids = JSON.parse(storedIds);
+                if (ids.length > 0) {
+                    const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/bulk-retrieve`, { ids });
+                    // Merge with global ones, avoid duplicates
+                    const localApts = res.data;
+                    localApts.forEach((apt: any) => {
+                        if (!appointments.find(a => a._id === apt._id)) {
+                            appointments.push(apt);
+                        }
+                    });
+                }
+            }
+
+            // Filter out cancelled/completed ones for "Recent" view if preferred, 
+            // but user said "Your Recent Bookings" so we show scheduled ones
+            setGuestAppointments(appointments.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+        } catch (err) {
+            console.error('Error fetching bookings:', err);
+        } finally {
+            setLoadingGuestApts(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAllRecentBookings();
+    }, [session]);
+
+    const handleCancelGuestBooking = async (id: string) => {
+        if (!confirm(language === 'hi' ? 'क्या आप वाकई इस अपॉइंटमेंट को रद्द करना चाहते हैं?' : 'Are you sure you want to cancel this appointment?')) return;
+        try {
+            await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${id}`);
+            // Update local state
+            setGuestAppointments(prev => prev.filter(a => a._id !== id));
+            // Update localStorage
+            const storedIds = localStorage.getItem('drtooth_guest_bookings');
+            if (storedIds) {
+                const ids = JSON.parse(storedIds);
+                const newIds = ids.filter((sid: string) => sid !== id);
+                localStorage.setItem('drtooth_guest_bookings', JSON.stringify(newIds));
+            }
+            setStatus({
+                type: 'success',
+                message: language === 'hi' ? 'अपॉइंटमेंट सफलतापूर्वक रद्द कर दिया गया।' : 'Appointment cancelled successfully.'
+            });
+        } catch (err) {
+            console.error('Error cancelling booking:', err);
+        }
+    };
+
+    const handleUpdateBooking = async (id: string) => {
+        if (!editData.date || !editData.time) return;
+        setSavingEdit(true);
+        try {
+            await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${id}`, {
+                date: editData.date,
+                time: editData.time,
+                status: 'Scheduled'
+            });
+            setEditingAptId(null);
+            fetchAllRecentBookings();
+            setStatus({
+                type: 'success',
+                message: language === 'hi' ? 'अपॉइंटमेंट सफलतापूर्वक अपडेट किया गया!' : 'Appointment updated successfully!'
+            });
+        } catch (err) {
+            console.error('Error updating booking:', err);
+        } finally {
+            setSavingEdit(false);
+        }
+    };
 
     useEffect(() => {
         const fetchPatientProfile = async () => {
@@ -281,7 +379,7 @@ function ContactContent() {
             const amountVal = selectedTreat ? parseFloat(selectedTreat.price.replace(/\D/g, '')) : 0;
 
             const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
-            const enthusiasticMessage = `Hi *${clinicName}*! 👋 I just booked an appointment through your website for a *${formData.requestedTreatment}*. I’m looking forward to getting my smile checked! 🦷\n\n*Details:*\n📅 *Date:* ${formData.requestedDate}\n⏰ *Time:* ${formData.requestedTime}\n👤 *Name:* ${formData.name}\n\nSee you soon!`;
+            const enthusiasticMessage = `Hi *${clinicName}*! 👋 I just booked an appointment through your website. I’m looking forward to getting my smile checked! 🦷\n\n*Details:*\nTreatment: *${formData.requestedTreatment}*\n📅 *Date:* ${formData.requestedDate}\n⏰ *Time:* ${formData.requestedTime}\n👤 *Name:* ${formData.name}\n\nSee you soon!`;
 
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, {
                 ...formData,
@@ -301,6 +399,7 @@ function ContactContent() {
                     existingBookings.push(appointmentId);
                     localStorage.setItem('drtooth_guest_bookings', JSON.stringify(existingBookings));
                 }
+                fetchAllRecentBookings(); // Refresh the list
             }
 
             // Success Feedback
@@ -326,22 +425,34 @@ function ContactContent() {
             const encodedMessage = encodeURIComponent(messageText);
             const finalWhatsappLink = `https://wa.me/${clinicPhone}?text=${encodedMessage}`;
 
-            // Redirect after a short delay
-            setTimeout(() => {
-                window.open(finalWhatsappLink, '_blank');
-
-                // WhatsApp Staff Trigger - 2 seconds later
-                const staffPhoneNum = staffPhone.replace(/\D/g, '');
-                const staffMsg = `*New Lead/Booking Alert!* 📧\n\nName: ${formData.name}\nPhone: ${formData.phone}\nMessage: ${formData.message}\n\n*Treatment:* ${formData.requestedTreatment}\n*Date:* ${formData.requestedDate}\n*Time:* ${formData.requestedTime}`;
-                const staffWhatsappUrl = `https://wa.me/91${staffPhoneNum}?text=${encodeURIComponent(staffMsg)}`;
-
+            // Redirect after a short delay (Only if automated or if user explicitly needs WA)
+            // The user requested NO wa message for general message. 
+            // So we only open it if it's automated? Or if they didn't specify?
+            // "it does not need open wa message for general message"
+            if (isAutomatedSuccess) {
                 setTimeout(() => {
-                    window.open(staffWhatsappUrl, '_blank');
-                }, 2000);
+                    window.open(finalWhatsappLink, '_blank');
 
-                setFormData({ name: '', phone: '', email: '', message: '', requestedTreatment: '', requestedDate: '', requestedTime: '' });
-                setCurrentStep(1);
-            }, 1500);
+                    // WhatsApp Staff Trigger - 2 seconds later
+                    const staffPhoneNum = staffPhone.replace(/\D/g, '');
+                    const staffMsg = `*New Lead/Booking Alert!* 📧\n\nName: ${formData.name}\nPhone: ${formData.phone}\nMessage: ${formData.message}\n\n*Treatment:* ${formData.requestedTreatment}\n*Date:* ${formData.requestedDate}\n*Time:* ${formData.requestedTime}`;
+                    const staffWhatsappUrl = `https://wa.me/91${staffPhoneNum}?text=${encodeURIComponent(staffMsg)}`;
+
+                    setTimeout(() => {
+                        window.open(staffWhatsappUrl, '_blank');
+                    }, 2000);
+
+                    setFormData({ name: '', phone: '', email: '', message: '', requestedTreatment: '', requestedDate: '', requestedTime: '' });
+                    setCurrentStep(1);
+                }, 1500);
+            } else {
+                // For non-automated manual request, we SHOULD open WhatsApp as per user feedback
+                setTimeout(() => {
+                    window.open(finalWhatsappLink, '_blank');
+                    setFormData({ name: '', phone: '', email: '', message: '', requestedTreatment: '', requestedDate: '', requestedTime: '' });
+                    setCurrentStep(1);
+                }, 1500);
+            }
 
         } catch (error) {
             setStatus({
@@ -356,11 +467,11 @@ function ContactContent() {
     };
 
     return (
-        <div className="relative px-4 py-8 sm:py-20 sm:px-20 max-w-[1400px] mx-auto space-y-8 sm:space-y-16 overflow-x-hidden">
+        <div className="relative px-4 py-2 sm:py-8 lg:py-20 sm:px-20  mx-auto space-y-8 sm:space-y-16 overflow-x-hidden">
 
 
-            {/* Header */}
-            <div className="text-center space-y-4">
+
+            <div className="3xl:block hidden text-center space-y-4">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900">{t.getIntouch}</h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                     {language === 'hi'
@@ -373,7 +484,7 @@ function ContactContent() {
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
                     <img
                         src="/images/sciencehanddrawnbg.jpg"
-                        className="w-full h-full sm:rounded-t-xl object-cover opacity-[0.4]"
+                        className="w-full h-full object-cover opacity-[0.4]"
                         alt="pattern"
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-transparent to-teal-50/10"></div>
@@ -429,11 +540,11 @@ function ContactContent() {
 
                     {/* Contact Form / Guided Booking */}
                     <div className="bg-white p-4 sm:p-8 rounded-3xl shadow-xl overflow-hidden">
-                        <div className="flex justify-between items-center mb-6">
+                        <div className="flex flex-col sm:flex-row gap-2 justify-between items-center mb-6">
                             <h2 className="text-lg sm:text-xl font-black text-gray-800 flex items-center gap-2">
                                 <FaCalendarCheck className="text-blue-600" />
                                 {isAutoBookingEnabled ? (
-                                    <span className="truncate max-w-[150px] sm:max-w-none">Guided Booking</span>
+                                    <span className="">Appointment Booking</span>
                                 ) : (language === 'hi' ? 'संदेश भेजें' : 'Send a Message')}
                             </h2>
                             {isAutoBookingEnabled && (
@@ -520,7 +631,7 @@ function ContactContent() {
                                                             key={t._id}
                                                             type="button"
                                                             onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: t.name }))}
-                                                            className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gradient-to-r from-purple-100/50 to-green-100/50 hover:bg-gray-100'}`}
+                                                            className={`p-2 sm:p-4 rounded-2xl border-2 shadow-inner transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gradient-to-b from-purple-100/50 to-blue-100/50 backdrop-blur-sm hover:bg-gray-100'}`}
                                                         >
                                                             <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
                                                             <span className="text-[10px] font-black uppercase text-center leading-tight">{t.name}</span>
@@ -758,12 +869,156 @@ function ContactContent() {
                                                     <FaPaperPlane /> {submitting ? t.submitting : t.send}
                                                 </button>
                                             </div>
+
                                         </div>
                                     </>
                                 )}
                             </form>
                         )}
                     </div>
+
+
+
+                    {/* YOUR RECENT BOOKINGS */}
+                    {guestAppointments.length > 0 && (
+                        <div className="p-6 sm:p-8 bg-gradient-to-br from-white to-blue-50/30 rounded-[2.5rem] shadow-xl border border-blue-100 space-y-6 mt-8">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
+                                    <FaCalendarCheck className="text-blue-600" />
+                                    {language === 'hi' ? 'आपके हालिया बुकिंग' : 'Your Recent Bookings'}
+                                </h2>
+                                <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest ${session?.user ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}`}>
+                                    {session?.user ? 'Patient Profile' : 'Guest mode'}
+                                </span>
+                            </div>
+
+                            <div className="grid gap-4">
+                                {guestAppointments.map((apt: any) => {
+                                    const treatment = treatments.find((t: any) => t.name === apt.reason);
+                                    const isEditing = editingAptId === apt._id;
+                                    const patientName = apt.patientId?.name || apt.name || "Guest";
+                                    const patientPhone = apt.patientId?.contact || apt.phone || "";
+                                    const patientEmail = apt.patientId?.email || apt.email || "";
+
+                                    return (
+                                        <div key={apt._id} className="p-5 rounded-3xl bg-white/50 border border-blue-50 flex flex-col gap-4 hover:shadow-md transition-all">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 bg-blue-100/50 rounded-2xl flex items-center justify-center text-blue-600 shadow-sm shrink-0">
+                                                        <TreatmentIcon
+                                                            iconName={treatment?.icon || ""}
+                                                            treatmentName={apt.reason}
+                                                            treatmentDescription={treatment?.description || ""}
+                                                            className="text-xl"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-black text-gray-800 leading-tight mb-1">{apt.reason}</div>
+                                                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                                            {patientName} {patientPhone && `• ${patientPhone}`}
+                                                        </div>
+                                                        {patientEmail && (
+                                                            <div className="text-[9px] font-bold text-gray-400/80 mb-1">{patientEmail}</div>
+                                                        )}
+                                                        <div className="text-xs font-bold text-blue-600 flex items-center gap-2">
+                                                            <FaClock className="text-[10px]" /> {new Date(apt.date).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short' })} • {apt.time}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${apt.status === 'Scheduled' ? 'bg-emerald-50 text-emerald-600' :
+                                                        apt.status === 'Completed' ? 'bg-blue-50 text-blue-600' :
+                                                            'bg-rose-50 text-rose-600'
+                                                        }`}>
+                                                        {apt.status}
+                                                    </div>
+                                                    {apt.status === 'Scheduled' && !isEditing && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setEditingAptId(apt._id);
+                                                                    setEditData({ date: apt.date.split('T')[0], time: apt.time });
+                                                                }}
+                                                                className="text-[10px] font-black text-blue-600 hover:text-blue-700 uppercase tracking-widest underline underline-offset-4"
+                                                            >
+                                                                {language === 'hi' ? 'बदलाव करें' : 'Edit'}
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleCancelGuestBooking(apt._id)}
+                                                                className="text-[10px] font-black text-rose-600 hover:text-rose-700 uppercase tracking-widest underline underline-offset-4"
+                                                            >
+                                                                {language === 'hi' ? 'रद्द करें' : 'Cancel'}
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* EDIT MODE UI */}
+                                            {isEditing && (
+                                                <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 flex flex-col sm:flex-row items-end gap-3 animate-in zoom-in-95 duration-200">
+                                                    <div className="w-full sm:w-auto flex-grow grid grid-cols-2 gap-3">
+                                                        <div className="space-y-1">
+                                                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1">New Date</label>
+                                                            <input
+                                                                type="date"
+                                                                min={new Date().toISOString().split('T')[0]}
+                                                                value={editData.date}
+                                                                onChange={(e) => setEditData(prev => ({ ...prev, date: e.target.value }))}
+                                                                className="w-full px-3 py-2 rounded-xl bg-white border border-blue-100 font-bold text-xs outline-none focus:border-blue-500"
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1">New Time</label>
+                                                            <select
+                                                                value={editData.time}
+                                                                onChange={(e) => setEditData(prev => ({ ...prev, time: e.target.value }))}
+                                                                className="w-full px-3 py-2 rounded-xl bg-white border border-blue-100 font-bold text-xs outline-none focus:border-blue-500"
+                                                            >
+                                                                {availableTimes.length > 0 ? (
+                                                                    availableTimes.map(t => <option key={t} value={t}>{t}</option>)
+                                                                ) : (
+                                                                    [apt.time, "10:00", "11:00", "12:00", "13:00", "14:00", "17:00", "18:00", "19:00"].map(t => <option key={t} value={t}>{t}</option>)
+                                                                )}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                                                        <button
+                                                            onClick={() => handleUpdateBooking(apt._id)}
+                                                            disabled={savingEdit}
+                                                            className="flex-grow sm:flex-none px-6 py-2 bg-blue-600 text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
+                                                        >
+                                                            {savingEdit ? '...' : (language === 'hi' ? 'सहेजें' : 'Save')}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleCancelGuestBooking(apt._id)}
+                                                            className="flex-grow sm:flex-none px-6 py-2 bg-rose-50 text-rose-600 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-rose-100 transition-all active:scale-95"
+                                                        >
+                                                            {language === 'hi' ? 'रद्द करें' : 'Cancel Booking'}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setEditingAptId(null)}
+                                                            className="flex-grow sm:flex-none px-6 py-2 bg-gray-100 text-gray-500 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-200 transition-all active:scale-95"
+                                                        >
+                                                            {language === 'hi' ? 'पीछे' : 'Back'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            <p className="text-[10px] text-gray-400 font-medium text-center italic leading-tight">
+                                {session?.user
+                                    ? (language === 'hi' ? '*यह सूचि आपके प्रोफाइल से सिंक की गई है।' : '*This list is synced with your patient profile.')
+                                    : (language === 'hi' ? '*यह सूची केवल इसी ब्राउज़र के लिए है।' : '*This list is stored only on this browser.')}
+                            </p>
+                        </div>
+                    )}
 
                     {/* Google Map Integration */}
                     <div id="map" className="bg-white p-3 rounded-3xl shadow-xl overflow-hidden h-[400px] w-full border-4 border-white transform hover:shadow-2xl transition duration-500">
@@ -779,6 +1034,109 @@ function ContactContent() {
                             title="Dr Tooth Dental Clinic Location"
                         ></iframe>
                     </div>
+
+                    {/* GENERAL INQUIRY FORM (Only when auto-booking is enabled) */}
+                    {isAutoBookingEnabled && !configLoading && (
+                        <div className='p-6 sm:p-8 bg-gradient-to-br from-white to-blue-50/30 rounded-[2.5rem] shadow-xl border border-blue-50 animate-in fade-in slide-in-from-bottom-4 duration-700'>
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                // Manual submission for general inquiry
+                                const clinicPhone = staffPhone.replace(/\D/g, '');
+                                const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
+                                const messageText = language === 'hi'
+                                    ? `नमस्ते *${clinicName}*, मैं *${formData.name}* हूँ।\nमेरा संदेश:- \n\n${formData.message}\n\n*संपर्क:* ${formData.phone}`
+                                    : `Hello *${clinicName}*, I'm *${formData.name}*.\nMy message:- \n\n${formData.message}\n\n*Contact:* ${formData.phone}`;
+
+                                setSubmitting(true);
+                                axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, {
+                                    ...formData,
+                                    requestedTreatment: '',
+                                    requestedDate: null,
+                                    requestedTime: '',
+                                    message: formData.message
+                                }).then(() => {
+                                    setGeneralStatus({
+                                        type: 'success',
+                                        message: language === 'hi' ? 'पुष्टि हो गई! आपका संदेश क्लिनिक को भेज दिया गया है।' : 'Confirmed! Your message has been sent to the clinic.'
+                                    });
+                                    setFormData(prev => ({ ...prev, message: '' }));
+                                }).catch(err => {
+                                    setGeneralStatus({ type: 'error', message: err.message });
+                                }).finally(() => setSubmitting(false));
+                            }} className="space-y-6">
+                                {generalStatus.message && (
+                                    <div className={`p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${generalStatus.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
+                                        {generalStatus.message}
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                                        <FaEnvelope />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-black text-gray-800 tracking-tight">
+                                            {language === 'hi' ? 'सामान्य पूछताछ' : 'General Inquiry'}
+                                        </h2>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            {language === 'hi' ? 'क्लिनिक को एक सीधा संदेश भेजें' : 'Send a direct message to clinic'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formName}</label>
+                                            <input
+                                                type="text" value={formData.name}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                                required
+                                                className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
+                                                placeholder="Name"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formPhone}</label>
+                                            <input
+                                                type="tel" value={formData.phone}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
+                                                required
+                                                className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
+                                                placeholder="Phone"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Email (Optional)</label>
+                                        <input
+                                            type="email" value={formData.email}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                            className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
+                                            placeholder="Email"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formMessage}</label>
+                                        <textarea
+                                            rows={3}
+                                            value={formData.message}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                                            required
+                                            className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all resize-none"
+                                            placeholder={language === 'hi' ? 'आप क्या पूछना चाहते हैं?' : 'What would you like to ask?'}
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        disabled={submitting}
+                                        className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-gray-200"
+                                    >
+                                        <FaPaperPlane /> {submitting ? t.submitting : (language === 'hi' ? 'संदेश भेजें' : 'Send Message')}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
 
                 </div>
 
@@ -826,6 +1184,8 @@ function ContactContent() {
                         </p>
                     </div>
                 </div>
+
+
 
             </div>
         </div>

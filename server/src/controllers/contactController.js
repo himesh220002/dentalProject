@@ -69,7 +69,9 @@ exports.submitContact = async (req, res) => {
                     time: requestedTime,
                     reason: requestedTreatment || 'General Consultation',
                     status: 'Scheduled',
-                    amount: amount || 0
+                    amount: amount || 0,
+                    isAutoBooked: true,
+                    isViewed: false
                 });
                 automatedAppointment = await newAppointment.save();
                 console.log(`✔ Automated Appointment Created: ${automatedAppointment._id} with amount ${amount || 0}`);

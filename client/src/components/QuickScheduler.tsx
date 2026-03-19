@@ -483,7 +483,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
 
-            <div className="relative bg-white w-full max-w-3xl rounded-3xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">
+            <div className="relative bg-white w-full max-w-3xl max-h-[95vh] rounded-3xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300 flex flex-col">
                 <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 sm:p-8 text-white relative">
                     <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-red-500/20 hover:bg-white/20 rounded-full transition">
                         <FaTimes />
@@ -513,7 +513,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-2 max-h-[75vh] sm:max-h-[750px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-2 flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
                     {/* Search & Select/Add Patient */}
                     <div className="flex items-center justify-between mb-2">
                         <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
@@ -616,11 +616,49 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
 
 
                     <div className="space-y-3">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2 ml-1">
-                            <FaCalendarAlt size={10} /> Select Appointment Date
-                        </label>
-                        <div className="flex gap-2 overflow-x-auto pb-3 custom-scrollbar -mx-5 px-5 sm:-mx-8 sm:px-8">
-                            {[...Array(14)].map((_, i) => {
+                        <div className="flex items-center justify-between ml-1">
+                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                <FaCalendarAlt size={10} /> Date:
+                                <span className="text-blue-600 ml-1 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-100">
+                                    {new Date(formData.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                </span>
+                            </label>
+
+                            {/* Backup Date Picker Icon */}
+                            <div className="relative z-10">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const input = document.getElementById('backup-date-picker') as any;
+                                        if (input) {
+                                            if (typeof input.showPicker === 'function') {
+                                                try {
+                                                    input.showPicker();
+                                                } catch (e) {
+                                                    input.click();
+                                                }
+                                            } else {
+                                                input.click();
+                                            }
+                                        }
+                                    }}
+                                    className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg border border-blue-200 cursor-pointer transition-all active:scale-95 text-[10px] font-black uppercase tracking-tighter"
+                                    title="Pick any date from calendar"
+                                >
+                                    <FaCalendarAlt size={10} />
+                                    <span>Other Date</span>
+                                </button>
+                                <input
+                                    id="backup-date-picker"
+                                    type="date"
+                                    value={formData.date}
+                                    onChange={(e) => handleDateChange(e)}
+                                    className="absolute inset-0 opacity-0 pointer-events-none w-0 h-0"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex gap-2 overflow-x-auto py-3 custom-scrollbar -mx-5 px-5 sm:-mx-8 sm:px-8">
+                            {[...Array(12)].map((_, i) => {
                                 const d = new Date();
                                 d.setDate(d.getDate() + i);
                                 const dateStr = d.toISOString().split('T')[0];
@@ -639,7 +677,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                         key={dateStr}
                                         type="button"
                                         onClick={() => handleDateChange({ target: { value: dateStr } } as any)}
-                                        className={`flex-shrink-0 w-20 p-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 relative ${isSelected
+                                        className={`flex-shrink-0 w-15 md:w-20 p-2 sm:p-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 relative ${isSelected
                                             ? 'border-blue-600 bg-blue-50 shadow-md transform scale-105'
                                             : 'border-gray-50 bg-gray-50 hover:border-blue-200'
                                             } ${isClosed ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}
@@ -696,7 +734,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                     <p className="text-[10px] font-black uppercase tracking-widest">No Appointments Possible</p>
                                 </div>
                             ) : (
-                                <div className="flex gap-1.5 overflow-x-auto pb-2 custom-scrollbar -mx-5 px-5 sm:grid sm:grid-cols-12 sm:mx-0 sm:px-0">
+                                <div className="flex gap-1.5 overflow-x-auto py-2 custom-scrollbar -mx-5 px-5 sm:grid sm:grid-cols-12 sm:mx-0 sm:px-0">
                                     {[9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(hour => {
                                         const bookedSlots = density[formData.date]?.slots || [];
                                         const dayClosures = density[formData.date]?.closures || [];
@@ -720,6 +758,8 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
 
                                         const totalCount = density[formData.date]?.count || 0;
 
+                                        const isSelectedTime = formData.time.startsWith(hour.toString().padStart(2, '0'));
+
                                         let bgColor = 'bg-emerald-50 border-emerald-100';
                                         let textColor = 'text-emerald-700';
 
@@ -742,10 +782,20 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                             textColor = 'text-gray-400';
                                         }
 
+                                        if (isSelectedTime && !isPast && !isClosed) {
+                                            bgColor = 'ring-4 ring-blue-600 border-blue-600 bg-blue-50 scale-110 z-10';
+                                            textColor = 'text-blue-700';
+                                        }
+
                                         return (
                                             <div
                                                 key={hour}
-                                                className={`flex-shrink-0 w-10 sm:w-auto h-10 sm:h-12 flex flex-col items-center justify-center rounded-xl border transition-all relative ${bgColor} ${(hour === 13 && !isClosed && !isPast) ? 'opacity-50' : ''}`}
+                                                onClick={() => {
+                                                    if (!isPast && !isClosed) {
+                                                        setFormData({ ...formData, time: `${hour.toString().padStart(2, '0')}:00` });
+                                                    }
+                                                }}
+                                                className={`flex-shrink-0 w-10 sm:w-auto h-10 sm:h-12 flex flex-col items-center justify-center rounded-xl border transition-all relative ${bgColor} ${(hour === 13 && !isClosed && !isPast) ? 'opacity-50' : ''} ${(!isPast && !isClosed) ? 'cursor-pointer hover:scale-105 hover:shadow-md' : ''}`}
                                                 title={`${hour}:00 ${isBooked ? '(Booked)' : ''} ${isClosed ? '(Closed)' : ''} ${isPast ? '(Past)' : ''}`}
                                             >
                                                 {isPast && (

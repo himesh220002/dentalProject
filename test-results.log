@@ -1,22 +1,22 @@
 ================================================================================
-              DR-TOOTH DENTAL CLINIC - GLOBAL TEST REPORT
+              DENTALALPHA DENTAL CLINIC - GLOBAL TEST REPORT
 ================================================================================
-Date: 3/17/2026, 12:50:50 PM
-Duration: 9.59s
-Overall Status: 💚 PASS
+Date: 3/19/2026, 1:56:17 PM
+Duration: 6.85s
+Overall Status: 💔 FAIL
 --------------------------------------------------------------------------------
 
 [CATEGORY: EXECUTIVE SUMMARY]
 --------------------------------------------------------------------------------
 Server API:
-  - Files: 7 total (7 passed, 0 failed)
-  - Tests: 23 total (23 passed, 0 failed)
-  - Result: PASSED
+  - Files: 7 total (5 passed, 2 failed)
+  - Tests: 23 total (19 passed, 4 failed)
+  - Result: FAILED
 
 Client UI:
-  - Files: 12 total (12 passed, 0 failed)
-  - Tests: 40 total (40 passed, 0 failed)
-  - Result: PASSED
+  - Files: 12 total (11 passed, 1 failed)
+  - Tests: 40 total (39 passed, 1 failed)
+  - Result: FAILED
 
 --------------------------------------------------------------------------------
 [CATEGORY: DETAILED INSIGHTS - SERVER]
@@ -28,67 +28,15 @@ Client UI:
 
  RUN  v4.1.0 /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
 
-stdout | src/__tests__/authAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
-Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
-MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
---- MAILER API DIAGNOSTIC ---
-MAILGUN_DOMAIN: ✔ LOADED
-MAILGUN_API_KEY: ✔ LOADED
-
-stdout | src/__tests__/blogAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
-Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
-MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
---- MAILER API DIAGNOSTIC ---
-MAILGUN_DOMAIN: ✔ LOADED
-MAILGUN_API_KEY: ✔ LOADED
-
-stdout | src/__tests__/patientAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
-Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
-MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
---- MAILER API DIAGNOSTIC ---
-MAILGUN_DOMAIN: ✔ LOADED
-MAILGUN_API_KEY: ✔ LOADED
-
-stdout | src/__tests__/authAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
-stdout | src/__tests__/blogAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
-stdout | src/__tests__/patientAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
-stdout | src/__tests__/treatmentAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
-Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
-MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
---- MAILER API DIAGNOSTIC ---
-MAILGUN_DOMAIN: ✔ LOADED
-MAILGUN_API_KEY: ✔ LOADED
-
-stdout | src/__tests__/otherAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
-Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
-MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
---- MAILER API DIAGNOSTIC ---
-MAILGUN_DOMAIN: ✔ LOADED
-MAILGUN_API_KEY: ✔ LOADED
-
-stdout | src/__tests__/treatmentAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
 stdout | src/__tests__/handoverAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/patientAPI.test.js
 [dotenv@17.3.1] injecting env (7) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
 Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
 MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
@@ -96,115 +44,259 @@ MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mo
 MAILGUN_DOMAIN: ✔ LOADED
 MAILGUN_API_KEY: ✔ LOADED
 
-stdout | src/__tests__/configAPI.test.js
-[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+stdout | src/__tests__/treatmentAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
 Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
 MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
 --- MAILER API DIAGNOSTIC ---
 MAILGUN_DOMAIN: ✔ LOADED
 MAILGUN_API_KEY: ✔ LOADED
 
-stdout | src/__tests__/otherAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
-stdout | src/__tests__/handoverAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
-stdout | src/__tests__/configAPI.test.js
-🧪 Vitest Setup: Starting beforeAll...
-NODE_ENV: test
-🛠️ Spinning up In-Memory MongoDB...
-
-stdout | src/__tests__/otherAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:43657/
+stdout | src/__tests__/blogAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
 
 stdout | src/__tests__/patientAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:45241/
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
 
 stdout | src/__tests__/handoverAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:36913/
-
-stdout | src/__tests__/treatmentAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:39577/
-
-stdout | src/__tests__/blogAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:34121/
-
-stdout | src/__tests__/configAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:38141/
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
 
 stdout | src/__tests__/authAPI.test.js
-✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:41119/
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/treatmentAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/otherAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/blogAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/configAPI.test.js
+[dotenv@17.3.1] injecting env (7) from .env -- tip: 🛡️ auth for agents: https://vestauth.com
+Current directory: /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server
+MONGO_URI from env: mongodb+srv://satyamhimesh:06452220002Hq@cluster0.ckkeqng.mongodb.net/dentalDB
+--- MAILER API DIAGNOSTIC ---
+MAILGUN_DOMAIN: ✔ LOADED
+MAILGUN_API_KEY: ✔ LOADED
+
+stdout | src/__tests__/authAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/otherAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/configAPI.test.js
+🧪 Vitest Setup: Starting beforeAll...
+NODE_ENV: test
+🛠️ Spinning up In-Memory MongoDB...
+
+stdout | src/__tests__/handoverAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:37845/
+
+stdout | src/__tests__/authAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:37665/
+
+stdout | src/__tests__/blogAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:34401/
+
+stdout | src/__tests__/handoverAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/authAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/blogAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/treatmentAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:44723/
+
+stdout | src/__tests__/treatmentAPI.test.js
+🔗 Mongoose connected successfully
+
+stdout | src/__tests__/otherAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:43901/
+
+stdout | src/__tests__/patientAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:45965/
+
+stdout | src/__tests__/configAPI.test.js
+✅ In-Memory MongoDB Ready: mongodb://127.0.0.1:46551/
 
 stdout | src/__tests__/otherAPI.test.js
 🔗 Mongoose connected successfully
 
-stdout | src/__tests__/patientAPI.test.js
-🔗 Mongoose connected successfully
-
-stdout | src/__tests__/treatmentAPI.test.js
-🔗 Mongoose connected successfully
-
 stdout | src/__tests__/configAPI.test.js
 🔗 Mongoose connected successfully
 
-stdout | src/__tests__/blogAPI.test.js
-🔗 Mongoose connected successfully
-
-stdout | src/__tests__/handoverAPI.test.js
-🔗 Mongoose connected successfully
-
-stdout | src/__tests__/authAPI.test.js
+stdout | src/__tests__/patientAPI.test.js
 🔗 Mongoose connected successfully
 
 stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
 --- APPOINTMENT FLOW START ---
 Step 0: Validating payload... {
-  patientId: '69b900d58b0f7f90ecefcd8f',
-  date: '2026-03-17T07:20:53.888Z',
+  patientId: '69bbb32bf9a9874f3e49e422',
+  date: '2026-03-19T08:26:19.242Z',
   time: '11:00 AM',
   reason: 'Routine Checkup',
   amount: 500
 }
 Step 1: Saving initial appointment record...
 
-stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
-✔ Step 1 PASSED: Record saved with ID new ObjectId('69b900d58b0f7f90ecefcd94')
-Step 2: Fetching patient details for email notification...
+stdout | src/__tests__/authAPI.test.js > Auth & Patient Merging API > should merge an orphan patient into a new user during sync
+[SYNC] Found 1 orphan matching record(s) for orphan@example.com. Merging...
+
+stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should submit a contact message
+Creating new patient profile for enquiry: John Inquiry (1234567890)
 
 stdout | src/__tests__/configAPI.test.js > Config API & Admin Settings > should check mailer configuration
 --- LIVE MAILER CHECK TRIGGERED ---
 
-stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
-✔ Step 2 PASSED: Email address found - test@patient.com
-Step 3: Triggering background email notification for test@patient.com...
-Starting email delivery for test@patient.com via Mailgun API...
-Step 3A: Sending payload to Mailgun API...
---- APPOINTMENT FLOW COMPLETE ---
+ ✓ src/__tests__/patientAPI.test.js (2 tests) 786ms
+ ✓ src/__tests__/configAPI.test.js (4 tests) 792ms
+ ✓ src/__tests__/treatmentAPI.test.js (3 tests) 804ms
+ ❯ src/__tests__/otherAPI.test.js (2 tests | 1 failed) 813ms
+     × should create a new appointment 37ms
+     ✓ should submit a contact message 42ms
+ ✓ src/__tests__/handoverAPI.test.js (4 tests) 830ms
+ ✓ src/__tests__/blogAPI.test.js (5 tests) 840ms
+     ✓ should create a blog and generate a slug automatically  337ms
+ ❯ src/__tests__/authAPI.test.js (3 tests | 3 failed) 837ms
+     × should create a new user and a linked patient record on sync 324ms
+     × should merge an orphan patient into a new user during sync 44ms
+     × should update user name and contact when profile is updated 144ms
 
-stdout | src/__tests__/authAPI.test.js > Auth & Patient Merging API > should merge an orphan patient into a new user during sync
-[SYNC] Found 1 orphan matching record(s) for orphan@example.com. Merging...
+ Test Files  2 failed | 5 passed (7)
+      Tests  4 failed | 19 passed (23)
+   Start at  13:56:17
+   Duration  1.85s (transform 228ms, setup 3.26s, import 2.27s, tests 5.70s, environment 1ms)
 
- ✓ src/__tests__/patientAPI.test.js (2 tests) 1076ms
-stdout | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should submit a contact message
-Creating new patient profile for enquiry: John Inquiry (1234567890)
 
- ✓ src/__tests__/configAPI.test.js (4 tests) 1136ms
- ✓ src/__tests__/treatmentAPI.test.js (3 tests) 1184ms
- ✓ src/__tests__/handoverAPI.test.js (4 tests) 1207ms
- ✓ src/__tests__/blogAPI.test.js (5 tests) 1240ms
- ✓ src/__tests__/authAPI.test.js (3 tests) 1248ms
- ✓ src/__tests__/otherAPI.test.js (2 tests) 1219ms
+stderr | src/__tests__/authAPI.test.js > Auth & Patient Merging API > should create a new user and a linked patient record on sync
+Error syncing user: TypeError: Appointment.findOne is not a function
+    at exports.syncUser (/mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server/src/controllers/authController.js:122:55)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
 
- Test Files  7 passed (7)
-      Tests  23 passed (23)
-   Start at  12:50:51
-   Duration  2.78s (transform 369ms, setup 5.07s, import 3.71s, tests 8.31s, environment 1ms)
+stderr | src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
+✖ CRITICAL ERROR (Step 1): Appointment is not a constructor
 
+stderr | src/__tests__/authAPI.test.js > Auth & Patient Merging API > should merge an orphan patient into a new user during sync
+Error syncing user: TypeError: Appointment.findOne is not a function
+    at exports.syncUser (/mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server/src/controllers/authController.js:122:55)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+stderr | src/__tests__/authAPI.test.js > Auth & Patient Merging API > should update user name and contact when profile is updated
+Error updating profile: TypeError: Appointment.findOne is not a function
+    at exports.updateProfile (/mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/server/src/controllers/authController.js:181:55)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/__tests__/authAPI.test.js > Auth & Patient Merging API > should create a new user and a linked patient record on sync
+AssertionError: expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ src/__tests__/authAPI.test.js:20:28
+     18|             .send(userData);
+     19|
+     20|         expect(res.status).toBe(200);
+       |                            ^
+     21|         expect(res.body.googleId).toBe('google-123');
+     22|         expect(res.body.patientId).toBeDefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/__tests__/authAPI.test.js > Auth & Patient Merging API > should merge an orphan patient into a new user during sync
+AssertionError: expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ src/__tests__/authAPI.test.js:51:28
+     49|             .send(userData);
+     50|
+     51|         expect(res.status).toBe(200);
+       |                            ^
+     52|         // The patientId in response should be the one we created
+     53|         expect(res.body.patientId).toBe(orphanPatient._id.toString());
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/__tests__/authAPI.test.js > Auth & Patient Merging API > should update user name and contact when profile is updated
+AssertionError: expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ src/__tests__/authAPI.test.js:75:28
+     73|             .send(updateData);
+     74|
+     75|         expect(res.status).toBe(200);
+       |                            ^
+     76|         expect(res.body.patient.name).toBe('New Name');
+     77|         expect(res.body.patient.contact).toBe('9876543210');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/__tests__/otherAPI.test.js > Appointments & Contacts API > should create a new appointment
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ❯ src/__tests__/otherAPI.test.js:33:28
+     31|             .send(appointmentData);
+     32|
+     33|         expect(res.status).toBe(201);
+       |                            ^
+     34|         expect(res.body.reason).toBe('Routine Checkup');
+     35|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
 
 
 --------------------------------------------------------------------------------
@@ -217,27 +309,154 @@ Creating new patient profile for enquiry: John Inquiry (1234567890)
 
  RUN  v4.1.0 /mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client
 
- ✓ src/context/__tests__/ClinicContext.test.tsx (3 tests) 133ms
- ✓ src/components/__tests__/ProtectedRoute.test.tsx (3 tests) 132ms
- ✓ src/app/dashboard/__tests__/Dashboard.test.tsx (4 tests) 327ms
- ✓ src/app/blogs/__tests__/BlogListPage.test.tsx (4 tests) 258ms
- ✓ src/components/__tests__/AddPatientForm.test.tsx (5 tests) 332ms
- ✓ src/app/__tests__/Home.test.tsx (3 tests) 272ms
+ ✓ src/context/__tests__/ClinicContext.test.tsx (3 tests) 78ms
+ ✓ src/components/__tests__/ProtectedRoute.test.tsx (3 tests) 85ms
+ ✓ src/app/blogs/__tests__/BlogListPage.test.tsx (4 tests) 226ms
+stdout | src/app/contact/__tests__/Contact.test.tsx > Contact Page Component > renders contact form and clinic information
+<body>
+  <div>
+    <div
+      class="relative px-4 py-2 sm:py-8 lg:py-20 sm:px-20  mx-auto space-y-8 sm:space-y-16 overflow-x-hidden"
+    >
+      <div
+        class="3xl:block hidden text-center space-y-4"
+      >
+        <h1
+          class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900"
+        >
+          Get In Touch
+        </h1>
+        <p
+          class="text-lg text-gray-600 max-w-2xl mx-auto"
+        >
+          Have a question or want to book an appointment? We are here to help. Reach out to us via phone, email, or visit our clinic directly.
+        </p>
+      </div>
+      <div
+        class=" grid lg:grid-cols-3 gap-12"
+      >
+        <div
+          class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]"
+        >
+          <img
+            alt="pattern"
+            class="w-full h-full object-cover opacity-[0.4]"
+            src="/images/sciencehanddrawnbg.jpg"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-transparent to-teal-50/10"
+          />
+        </div>
+        <div
+          class="hidden lg:block lg:col-span-1 space-y-4 text-left"
+        >
+          <div
+            class="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300"
+          >
+            <div
+              class="flex items-center justify-center sm:justify-start gap-4 mb-3"
+            >
+              <div
+                class="bg-blue-100 p-3 rounded-full text-blue-600"
+              >
+                <svg
+                  class="text-xl"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M497.39 361.8l-112-48a24 24 0 0 0-28 6.9l-49.6 60.6A370.66 370.66 0 0 1 130.6 204.11l60.6-49.6a23.94 23.94 0 0 0 6.9-28l-48-112A24.16 24.16 0 0 0 122.6.61l-104 24A24 24 0 0 0 0 48c0 256.5 207.9 464 464 464a24 24 0 0 0 23.4-18.6l24-104a24.29 24.29 0 0 0-14.01-27.6z"
+                  />
+                </svg>
+              </div>
+              <h3
+                class="text-xl font-bold text-gray-800"
+              >
+                Call Now
+              </h3>
+            </div>
+            <p
+              class="text-gray-600 mb-2"
+            >
+              10am-8pm
+            </p>
+            <a
+              class="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block"
+              href="tel:1234567890"
+            >
+              1234567890
+            </a>
+          </div>
+          <div
+            class="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300"
+          >
+            <div
+              class="flex items-center justify-center sm:justify-start gap-4 mb-3"
+            >
+              <div
+                class="bg-green-100 p-3 rounded-full text-green-600"
+              >
+                <svg
+                  class="text-xl"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 448 512"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"
+                  />
+                </svg>
+              </div>
+              <h3
+                class="text-xl font-bold text-gray-800"
+              >
+                WhatsApp
+              </h3>
+            </div>
+            <p
+              class="text-gray-600 mb-2"
+            >
+              Chat with us for quick queries
+            </p>
+            <a
+              class="text-center sm:text-left text-lg font-bold text-green-700 hover:underline block"
+              href="https://wa.me/1234567890"
+              target="_blank"
+            >
+              Chat Now
+            </a>
+          </div>
+          <div
+            [...
+
+ ✓ src/app/dashboard/__tests__/Dashboard.test.tsx (4 tests) 234ms
+ ✓ src/app/__tests__/Home.test.tsx (3 tests) 230ms
+ ✓ src/components/__tests__/AddPatientForm.test.tsx (5 tests) 324ms
 stdout | src/components/__tests__/QuickScheduler.test.tsx > QuickScheduler Component > calculates total amount correctly
 Found 1000 elements count: 4
 
- ✓ src/app/treatments/__tests__/Treatments.test.tsx (3 tests) 645ms
-     ✓ navigates to contact page when Book Appointment is clicked  457ms
- ✓ src/components/__tests__/Navbar.test.tsx (3 tests) 495ms
-     ✓ toggles mobile menu when button is clicked  312ms
- ✓ src/app/profile/__tests__/Profile.test.tsx (3 tests) 780ms
-     ✓ renders user personal information correctly  662ms
- ✓ src/app/contact/__tests__/Contact.test.tsx (4 tests) 880ms
-     ✓ submits the form successfully and triggers redirection  437ms
+ ✓ src/app/treatments/__tests__/Treatments.test.tsx (3 tests) 410ms
+ ✓ src/components/__tests__/Navbar.test.tsx (3 tests) 371ms
+ ✓ src/app/profile/__tests__/Profile.test.tsx (3 tests) 576ms
+     ✓ renders user personal information correctly  495ms
+ ❯ src/app/contact/__tests__/Contact.test.tsx (4 tests | 1 failed) 676ms
+     × renders contact form and clinic information 193ms
+     ✓ pre-fills message from treatment in URL 82ms
+     ✓ validates phone number length (10 digits) 89ms
+     ✓ submits the form successfully and triggers redirection  309ms
 stdout | src/components/__tests__/QuickScheduler.test.tsx > QuickScheduler Component > submits the form successfully
 🚀 Submitting Appointment Payload: {
   patientId: 'p1',
-  date: '2026-03-17',
+  date: '2026-03-19',
   time: '10:00',
   selectedTreatments: [ { name: 'Scaling', price: 1000 } ],
   additionalItems: [],
@@ -247,14 +466,14 @@ stdout | src/components/__tests__/QuickScheduler.test.tsx > QuickScheduler Compo
   contactId: undefined
 }
 
- ✓ src/components/__tests__/QuickScheduler.test.tsx (3 tests) 1482ms
-     ✓ submits the form successfully  960ms
- ✓ src/components/__tests__/Footer.test.tsx (2 tests) 87ms
+ ✓ src/components/__tests__/QuickScheduler.test.tsx (3 tests) 967ms
+     ✓ submits the form successfully  569ms
+ ✓ src/components/__tests__/Footer.test.tsx (2 tests) 62ms
 
- Test Files  12 passed (12)
-      Tests  40 passed (40)
-   Start at  12:50:55
-   Duration  5.13s (transform 2.76s, setup 2.13s, import 11.51s, tests 5.82s, environment 19.47s)
+ Test Files  1 failed | 11 passed (12)
+      Tests  1 failed | 39 passed (40)
+   Start at  13:56:19
+   Duration  4.12s (transform 1.90s, setup 1.75s, import 9.08s, tests 4.24s, environment 17.27s)
 
 
 stderr | src/app/__tests__/Home.test.tsx > Home Page Component > renders main sections of the home page
@@ -275,6 +494,172 @@ Video loading failed: TypeError: object.stream is not a function
     at extractBody (node:internal/deps/undici/undici:5601:25)
     at new Response (node:internal/deps/undici/undici:9322:41)
     at loadVideo (/mnt/azprograms/Next.js projects/dr-tooth-dental-clinic/client/src/app/page.tsx:145:43)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/contact/__tests__/Contact.test.tsx > Contact Page Component > renders contact form and clinic information
+TestingLibraryElementError: Found multiple elements with the text: /1234567890/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+<a
+  class="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block"
+  href="tel:1234567890"
+>
+  1234567890
+</a>
+
+Ignored nodes: comments, script, style
+<a
+  class="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block"
+  href="tel:1234567890"
+>
+  1234567890
+</a>
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="relative px-4 py-2 sm:py-8 lg:py-20 sm:px-20  mx-auto space-y-8 sm:space-y-16 overflow-x-hidden"
+    >
+      <div
+        class="3xl:block hidden text-center space-y-4"
+      >
+        <h1
+          class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900"
+        >
+          Get In Touch
+        </h1>
+        <p
+          class="text-lg text-gray-600 max-w-2xl mx-auto"
+        >
+          Have a question or want to book an appointment? We are here to help. Reach out to us via phone, email, or visit our clinic directly.
+        </p>
+      </div>
+      <div
+        class=" grid lg:grid-cols-3 gap-12"
+      >
+        <div
+          class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]"
+        >
+          <img
+            alt="pattern"
+            class="w-full h-full object-cover opacity-[0.4]"
+            src="/images/sciencehanddrawnbg.jpg"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-transparent to-teal-50/10"
+          />
+        </div>
+        <div
+          class="hidden lg:block lg:col-span-1 space-y-4 text-left"
+        >
+          <div
+            class="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300"
+          >
+            <div
+              class="flex items-center justify-center sm:justify-start gap-4 mb-3"
+            >
+              <div
+                class="bg-blue-100 p-3 rounded-full text-blue-600"
+              >
+                <svg
+                  class="text-xl"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M497.39 361.8l-112-48a24 24 0 0 0-28 6.9l-49.6 60.6A370.66 370.66 0 0 1 130.6 204.11l60.6-49.6a23.94 23.94 0 0 0 6.9-28l-48-112A24.16 24.16 0 0 0 122.6.61l-104 24A24 24 0 0 0 0 48c0 256.5 207.9 464 464 464a24 24 0 0 0 23.4-18.6l24-104a24.29 24.29 0 0 0-14.01-27.6z"
+                  />
+                </svg>
+              </div>
+              <h3
+                class="text-xl font-bold text-gray-800"
+              >
+                Call Now
+              </h3>
+            </div>
+            <p
+              class="text-gray-600 mb-2"
+            >
+              10am-8pm
+            </p>
+            <a
+              class="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block"
+              href="tel:1234567890"
+            >
+              1234567890
+            </a>
+          </div>
+          <div
+            class="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300"
+          >
+            <div
+              class="flex items-center justify-center sm:justify-start gap-4 mb-3"
+            >
+              <div
+                class="bg-green-100 p-3 rounded-full text-green-600"
+              >
+                <svg
+                  class="text-xl"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 448 512"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"
+                  />
+                </svg>
+              </div>
+              <h3
+                class="text-xl font-bold text-gray-800"
+              >
+                WhatsApp
+              </h3>
+            </div>
+            <p
+              class="text-gray-600 mb-2"
+            >
+              Chat with us for quick queries
+            </p>
+            <a
+              class="text-center sm:text-left text-lg font-bold text-green-700 hover:underline block"
+              href="https://wa.me/1234567890"
+              target="_blank"
+            >
+              Chat Now
+            </a>
+          </div>
+          <div
+            [...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/app/contact/__tests__/Contact.test.tsx:57:23
+     55|         expect(await screen.findByText(/Get In Touch/i)).toBeInTheDocu…
+     56|         screen.debug();
+     57|         expect(screen.getByText(/1234567890/i)).toBeInTheDocument();
+       |                       ^
+     58|         expect(await screen.findByPlaceholderText('yourname')).toBeInT…
+     59|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
 
 
 ================================================================================

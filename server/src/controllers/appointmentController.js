@@ -557,9 +557,24 @@ exports.getAppointmentsByIds = async (req, res) => {
         const Appointment = require('../models/Appointment');
         const appointments = await Appointment.find({
             _id: { $in: ids }
-        }).sort({ date: -1 });
+        }).populate('patientId').sort({ date: -1 });
 
         res.status(200).json(appointments);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.markAsViewed = async (req, res) => {
+    try {
+        const Appointment = require('../models/Appointment');
+        const appointment = await Appointment.findByIdAndUpdate(
+            req.params.id,
+            { isViewed: true },
+            { new: true }
+        );
+        if (!appointment) return res.status(404).json({ message: 'Appointment not found' });
+        res.status(200).json(appointment);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
