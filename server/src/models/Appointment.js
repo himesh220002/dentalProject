@@ -18,23 +18,31 @@ const appointmentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    isTicked: {
-        type: Boolean,
-        default: false
+    status: {
+        type: String,
+        enum: ['Scheduled', 'Completed', 'Operating', 'Cancelled', 'Fixed'],
+        default: 'Scheduled'
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['Pending', 'Paid'],
+        default: 'Pending'
     },
     amount: {
         type: Number,
         default: 0
     },
-    paymentStatus: {
-        type: String,
-        enum: ['None', 'Pending', 'Paid'],
-        default: 'None'
+    isTicked: {
+        type: Boolean,
+        default: false
     },
-    status: {
-        type: String,
-        enum: ['Scheduled', 'Completed', 'Cancelled', 'Operating', 'Delayed'],
-        default: 'Scheduled'
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    isViewed: {
+        type: Boolean,
+        default: false
     },
     markedPaidAt: {
         type: Date
@@ -45,10 +53,6 @@ const appointmentSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    },
-    isDeleted: {
-        type: Boolean,
-        default: false
     }
 });
 

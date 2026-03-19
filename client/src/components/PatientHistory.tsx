@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaClipboardList, FaFileMedical, FaRupeeSign, FaCalendarAlt, FaNotesMedical, FaPlus, FaTimes, FaStethoscope, FaHistory } from 'react-icons/fa';
 import { parseAppointmentReason, cleanNotes } from '@/utils/appointmentUtils';
+import TreatmentIcon from './TreatmentIcon';
 
 interface TreatmentRecord {
     _id: string;
@@ -266,7 +267,11 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
                             <div className="space-y-4">
                                 {selectedTreatments.map((treatment, index) => (
                                     <div key={index} className="flex gap-4 items-center animate-in slide-in-from-left-6 duration-500 group">
-                                        <div className="relative flex-grow">
+                                        <div className="relative flex-grow flex items-center gap-3">
+                                            <TreatmentIcon
+                                                treatmentName={treatment.name}
+                                                className="text-2xl text-indigo-500 flex-shrink-0"
+                                            />
                                             <select
                                                 value={treatment.name}
                                                 onChange={(e) => handleTreatmentChange(index, e.target.value)}
@@ -667,6 +672,10 @@ const PatientHistory = ({ patientId, records, onRefresh, isEditingProfile }: { p
                                                     className="cursor-pointer group/title"
                                                 >
                                                     <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-gray-900 mb-4 uppercase tracking-tighter leading-tight flex items-center gap-4 transition-colors group-hover/title:text-blue-600">
+                                                        <TreatmentIcon
+                                                            treatmentName={parseAppointmentReason(record.treatmentName).treatmentName}
+                                                            className="text-blue-600"
+                                                        />
                                                         {parseAppointmentReason(record.treatmentName).treatmentName}
                                                         <div className={`p-2 bg-gray-50 rounded-xl transition-all duration-500 ${expandedRecords[record._id] ? 'rotate-180 bg-blue-50 text-blue-600' : ''}`}>
                                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>

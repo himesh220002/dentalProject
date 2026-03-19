@@ -24,7 +24,7 @@ exports.updateAdminPassword = async (req, res) => {
         const config = await Config.findOneAndUpdate(
             { key: 'admin_password' },
             { value: newPassword, updatedAt: Date.now() },
-            { new: true, upsert: true }
+            { returnDocument: 'after', upsert: true }
         );
 
         res.status(200).json({ message: 'Password updated successfully' });
@@ -154,11 +154,41 @@ exports.updateClinicClosures = async (req, res) => {
         const config = await Config.findOneAndUpdate(
             { key: 'clinic_closures' },
             { value: JSON.stringify(validatedClosures), updatedAt: Date.now() },
-            { new: true, upsert: true }
+            { returnDocument: 'after', upsert: true }
         );
 
         res.status(200).json({ message: 'Closures updated successfully', closures: validatedClosures });
     } catch (error) {
         res.status(500).json({ message: 'Error updating closures', error: error.message });
+    }
+};
+
+exports.getConfig = async (req, res) => {
+    try {
+        const { key } = req.params;
+        const config = await Config.findOne({ key });
+        if (!config) {
+            return res.status(404).json({ message: 'Config not found' });
+        }
+        res.status(200).json(config);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching config', error: error.message });
+    }
+};
+
+exports.updateConfig = async (req, res) => {
+    try {
+        const { key } = req.params;
+        const { value } = req.body;
+
+        const config = await Config.findOneAndUpdate(
+            { key },
+            { value: value.toString(), updatedAt: Date.now() },
+            { returnDocument: 'after', upsert: true }
+        );
+
+        res.status(200).json({ message: 'Config updated successfully', config });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating config', error: error.message });
     }
 };

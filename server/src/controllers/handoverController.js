@@ -68,7 +68,7 @@ const activateHandover = async (req, res) => {
         const activeHandover = await Handover.findOneAndUpdate(
             { handoverformId: id },
             { isActive: true },
-            { new: true }
+            { returnDocument: 'after' }
         );
 
         if (!activeHandover) return res.status(404).json({ message: `Handover version with ID '${id}' not found in database.` });

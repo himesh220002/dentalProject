@@ -11,8 +11,38 @@ export default function SettingsPage() {
         new: '',
         confirm: ''
     });
+    const [automatedBooking, setAutomatedBooking] = useState(false);
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState({ type: '', message: '' });
+
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
+        (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
+
+    useState(() => {
+        const fetchConfig = async () => {
+            try {
+                const res = await axios.get(`${API_BASE_URL}/config/automated_booking`);
+                setAutomatedBooking(res.data?.value === 'true');
+            } catch (err) {
+                console.error('Error fetching automated booking config:', err);
+            }
+        };
+        fetchConfig();
+    });
+
+    const handleToggleAutomation = async () => {
+        const newState = !automatedBooking;
+        setAutomatedBooking(newState);
+        try {
+            await axios.put(`${API_BASE_URL}/config/automated_booking`, {
+                value: newState ? 'true' : 'false'
+            });
+            setStatus({ type: 'success', message: `Automated Booking ${newState ? 'Enabled' : 'Disabled'} Successfully!` });
+        } catch (err) {
+            setAutomatedBooking(!newState); // revert
+            setStatus({ type: 'error', message: 'Failed to update automation setting.' });
+        }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPasswords({ ...passwords, [e.target.name]: e.target.value });
@@ -34,9 +64,6 @@ export default function SettingsPage() {
 
         setLoading(true);
         try {
-            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
-                (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
-
             // First verify current password
             const verifyRes = await axios.post(`${API_BASE_URL}/config/verify-password`, {
                 password: passwords.current
@@ -92,7 +119,32 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 space-y-8">
+                    {/* Automation Control */}
+                    <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+                        <div className="flex flex-col sm:flex-row items-end sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+                                    <FaDatabase />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-black text-gray-900">Automation Settings</h2>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest leading-none mt-1">Automated Appointment Booking</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleToggleAutomation}
+                                className={`relative w-14 h-7 rounded-full transition-colors duration-200 focus:outline-none ${automatedBooking ? 'bg-indigo-600' : 'bg-slate-200'}`}
+                            >
+                                <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${automatedBooking ? 'translate-x-7' : ''}`} />
+                            </button>
+                        </div>
+                        <p className="mt-4 text-[11px] text-gray-400 font-bold leading-relaxed lowercase italic bg-blue-50/50 p-4 rounded-xl border border-blue-100/30">
+                            When enabled, patients can book appointments directly from the contact page with instant confirmation. Disable this to revert to manual message inquiries.
+                        </p>
+                    </div>
+
+                    {/* Change Admin Password */}
                     <div className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm border border-gray-100">
                         <div className="flex items-center gap-3 mb-8">
                             <div className="p-3 bg-rose-50 text-rose-600 rounded-2xl">

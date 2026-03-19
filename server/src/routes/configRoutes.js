@@ -9,5 +9,7 @@ router.get('/mailer-check', configController.checkMailer);
 router.get('/email-history', configController.getEmailHistory);
 router.get('/closures', configController.getClinicClosures);
 router.put('/closures', configController.updateClinicClosures);
+router.get('/:key', configController.getConfig);
+router.put('/:key', configController.updateConfig);
 
 module.exports = router;

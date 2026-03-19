@@ -32,11 +32,27 @@ const contactSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Appointment'
     },
+    patientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Patient'
+    },
     emailSent: {
         type: Boolean,
         default: false
     },
     lastEmailError: {
+        type: String,
+        default: null
+    },
+    requestedTreatment: {
+        type: String,
+        default: null
+    },
+    requestedDate: {
+        type: Date,
+        default: null
+    },
+    requestedTime: {
         type: String,
         default: null
     },

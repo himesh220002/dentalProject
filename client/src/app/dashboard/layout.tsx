@@ -15,6 +15,7 @@ export default function DashboardLayout({
     const pathname = usePathname();
     const router = useRouter();
     const [unreadCount, setUnreadCount] = useState(0);
+    const [newBookingsCount, setNewBookingsCount] = useState(0);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const handleLogout = () => {
@@ -23,20 +24,26 @@ export default function DashboardLayout({
         window.location.href = '/';
     };
 
-    const fetchUnreadCount = async () => {
+    const fetchCounts = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`);
-            const unread = response.data.filter((m: any) => m.status === 'Unread').length;
+            // Fetch unread messages
+            const msgResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`);
+            const unread = msgResponse.data.filter((m: any) => m.status === 'Unread').length;
             setUnreadCount(unread);
+
+            // Fetch unviewed auto-bookings
+            const aptResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments`);
+            const unviewed = aptResponse.data.filter((a: any) => a.isAutoBooked && !a.isViewed).length;
+            setNewBookingsCount(unviewed);
         } catch (error) {
-            console.error('Error fetching unread count:', error);
+            console.error('Error fetching dashboard counts:', error);
         }
     };
 
     useEffect(() => {
-        fetchUnreadCount();
+        fetchCounts();
         // Refresh every 30 seconds
-        const interval = setInterval(fetchUnreadCount, 30000);
+        const interval = setInterval(fetchCounts, 30000);
         return () => clearInterval(interval);
     }, []);
 
@@ -44,7 +51,7 @@ export default function DashboardLayout({
         { name: 'Overview', path: '/dashboard', icon: FaChartLine },
         { name: 'Patients', path: '/dashboard/patients', icon: FaUsers },
         { name: 'Messages', path: '/dashboard/messages', icon: FaEnvelope, badge: unreadCount },
-        { name: 'Schedules', path: '/dashboard/schedules', icon: FaCalendarAlt },
+        { name: 'Schedules', path: '/dashboard/schedules', icon: FaCalendarAlt, badge: newBookingsCount, pulse: true },
         { name: 'Blogs', path: '/dashboard/blogs', icon: FaNewspaper },
         { name: 'Settings', path: '/dashboard/settings', icon: FaCog },
     ];
@@ -99,7 +106,7 @@ export default function DashboardLayout({
                                                 <span className="font-medium">{item.name}</span>
                                             </div>
                                             {item.badge !== undefined && item.badge > 0 && (
-                                                <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                                                <span className={`${(item as any).pulse ? 'bg-blue-500 animate-pulse ring-2 ring-blue-400' : 'bg-rose-500'} text-white text-[10px] font-black px-2 py-0.5 rounded-full`}>
                                                     {item.badge}
                                                 </span>
                                             )}

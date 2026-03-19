@@ -303,6 +303,24 @@ exports.deleteAppointment = async (req, res) => {
             return res.status(404).json({ message: 'Appointment not found' });
         }
 
+        // --- 3 HOUR RULE: Prevent cancellation if appointment is within 3 hours ---
+        const aptDateTime = new Date(appointment.date);
+        // Combine date and time if necessary. Assuming appointment.time is "HH:mm" (24h)
+        const [hours, minutes] = appointment.time.split(':').map(Number);
+        aptDateTime.setHours(hours, minutes, 0, 0);
+
+        const now = new Date();
+        const diffInMs = aptDateTime.getTime() - now.getTime();
+        const diffInHours = diffInMs / (1000 * 60 * 60);
+
+        // If it's a future appointment but within 3 hours, reject.
+        // Also reject if it's already in the past (handled by isHardDeleteEligible check anyway, but good to be explicit)
+        if (diffInHours < 3 && appointment.status !== 'Completed' && appointment.status !== 'Operating') {
+            return res.status(400).json({
+                message: 'Appointments cannot be cancelled within 3 hours of the scheduled time. Please contact the clinic for urgent changes.'
+            });
+        }
+
         const isHardDeleteEligible = !['Operating', 'Completed'].includes(appointment.status);
 
         if (isHardDeleteEligible) {
@@ -321,7 +339,7 @@ exports.deleteAppointment = async (req, res) => {
                     $set: { status: 'Read' },
                     $unset: { appointmentId: "" }
                 },
-                { new: true }
+                { returnDocument: 'after' }
             );
             if (updatedContact) console.log('✔ Contact reference cleaned up.');
 
@@ -525,5 +543,39 @@ exports.publicCheckAppointment = async (req, res) => {
     } catch (error) {
         console.error('Error in public check appointment:', error);
         res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Bulk retrieve appointments by IDs
+exports.getAppointmentsByIds = async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!ids || !Array.isArray(ids)) {
+            return res.status(400).json({ message: 'Invalid IDs provided' });
+        }
+
+        const Appointment = require('../models/Appointment');
+        const appointments = await Appointment.find({
+            _id: { $in: ids }
+        }).populate('patientId').sort({ date: -1 });
+
+        res.status(200).json(appointments);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.markAsViewed = async (req, res) => {
+    try {
+        const Appointment = require('../models/Appointment');
+        const appointment = await Appointment.findByIdAndUpdate(
+            req.params.id,
+            { isViewed: true },
+            { new: true }
+        );
+        if (!appointment) return res.status(404).json({ message: 'Appointment not found' });
+        res.status(200).json(appointment);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

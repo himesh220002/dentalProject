@@ -2,20 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaTooth, FaMagic, FaUserMd, FaNotesMedical, FaRegSmileBeam, FaMedkit } from 'react-icons/fa';
+import {
+    FaTooth, FaMagic, FaUserMd, FaNotesMedical, FaRegSmileBeam, FaMedkit,
+    FaSyringe, FaShieldAlt, FaStethoscope, FaSmile, FaSearchPlus
+} from 'react-icons/fa';
+import {
+    MdOutlineCleanHands, MdOutlineHealthAndSafety, MdOutlineVisibility,
+    MdOutlineLocalHospital
+} from 'react-icons/md';
 import { useClinic } from '../../context/ClinicContext';
 import { translations } from '../../constants/translations';
 import { TreatmentCardSkeleton } from '@/components/ui/Skeleton';
 
-// Map icon strings from backend to React Icons components
-const iconMap: { [key: string]: any } = {
-    FaTooth,
-    FaMagic,
-    FaUserMd,
-    FaNotesMedical,
-    FaRegSmileBeam,
-    FaMedkit
-};
+import TreatmentIcon from '../../components/TreatmentIcon';
 
 const colorThemes = [
     {
@@ -110,7 +109,7 @@ export default function Treatments() {
                         description: t.description,
                         image: t.image,
                         price: t.price.toString().startsWith('₹') ? t.price : `₹${t.price}`,
-                        icon: 'FaTooth'
+                        icon: t.icon
                     }));
                     setTreatments(mappedTreatments);
                     setLoading(false);
@@ -124,6 +123,7 @@ export default function Treatments() {
                     throw new Error('Failed to fetch treatments');
                 }
                 const data = await res.json();
+
                 setTreatments(data);
             } catch (err: any) {
                 console.error('Error fetching treatments:', err);
@@ -164,7 +164,6 @@ export default function Treatments() {
             <div className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-10 max-w-7xl mx-auto">
                 {treatments.map((item, index) => {
                     const theme = colorThemes[index % colorThemes.length];
-                    const IconComponent = iconMap[item.icon] || FaTooth;
 
                     return (
                         <div
@@ -179,7 +178,12 @@ export default function Treatments() {
                                 {/* Header */}
                                 <div className="flex items-center gap-5">
                                     <div className={`${theme.iconBg} p-4 rounded-2xl shadow-inner group-hover:rotate-12 transition-transform duration-500`}>
-                                        <IconComponent className={`text-4xl ${theme.icon}`} />
+                                        <TreatmentIcon
+                                            iconName={item.icon}
+                                            treatmentName={item.name}
+                                            treatmentDescription={item.description}
+                                            className={`text-4xl ${theme.icon}`}
+                                        />
                                     </div>
                                     <h3 className="text-2xl font-bold text-gray-800 leading-tight">{item.name}</h3>
                                 </div>

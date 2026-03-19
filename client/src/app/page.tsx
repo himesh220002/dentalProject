@@ -114,7 +114,10 @@ export default function Home() {
                 }
 
                 const response = await fetch(videoUrl);
-                if (!response.body) return;
+                if (!response.body || !response.body.getReader) {
+                    setIsVideoLoaded(true);
+                    return;
+                }
 
                 const contentLength = +(response.headers.get('Content-Length') || 0);
                 const reader = response.body.getReader();

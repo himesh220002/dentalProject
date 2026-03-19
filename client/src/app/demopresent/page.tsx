@@ -214,6 +214,116 @@ export default function DemoPresent() {
 
             <section className="container">
                 <div className="section-title">
+                    <h2>Complete Patient & Treatment Journey</h2>
+                    <p>The total digital lifecycle: from first click to clinical recovery and financial settlement.</p>
+                </div>
+                <div className="diagram-container">
+                    <div className="mermaid w-full max-w-[1200px] mx-auto">
+                        {`graph TD
+                        %% Booking Phase
+                        subgraph Booking ["1. Booking & Scheduling"]
+                            Patient["🌐 Patient"] -- "Guided Booking" --> API
+                            Admin["🏥 Admin"] -- "Direct Input" --> API
+                            API["⚙️ Backend API"] -- "Socket.io" --> Dash["📊 Admin Dashboard"]
+                        end
+
+                        %% Arrival Phase
+                        subgraph Arrival ["2. Patient Arrival"]
+                            Dash -- "Check-in" --> Status["⏳ Status: Scheduled → Operating"]
+                            Status -- "Open Profile" --> Journey["📂 Patient Profile"]
+                        end
+
+                        %% treatment Phase
+                        subgraph Treatment ["3. Clinical Session"]
+                            Journey -- "Diagnostics" --> Input["🩺 Clinical Notes"]
+                            Input -- "Procedure" --> Select["🦷 Select Treatment"]
+                            Select -- "Pharmacology" --> Presc["💊 Prescription"]
+                        end
+
+                        %% billing Phase
+                        subgraph Billing ["4. Financial Settlement"]
+                            Select -- "Fee Calc" --> Adjust["💰 Adjust Price"]
+                            Adjust -- "Generate" --> Record["📑 Treatment Record"]
+                            Record -- "Payment" --> PayStatus["💳 Pending → Paid"]
+                        end
+
+                        %% completion Phase
+                        subgraph Completion ["5. Follow-up & Closure"]
+                            PayStatus -- "Finalize" --> FinalStatus["✅ Completed"]
+                            FinalStatus -- "Socket.io" --> ProfileUpdate["🔄 History Sync"]
+                            FinalStatus -- "Post-Op" --> WhatsApp["🟢 WhatsApp Care Guide"]
+                        end
+
+                        %% Aesthetics
+                        style Patient fill:#1e293b,stroke:#2563eb,color:#fff
+                        style Admin fill:#1e293b,stroke:#2563eb,color:#fff
+                        style API fill:#1e293b,stroke:#f59e0b,color:#fff
+                        style Dash fill:#1e3a8a,color:#fff
+                        style Status fill:#1e293b,stroke:#f59e0b
+                        style Select fill:#1e3a8a,stroke:#2563eb
+                        style Record fill:#064e3b,stroke:#10b981
+                        style FinalStatus fill:#064e3b,stroke:#10b981,color:#fff
+                        style WhatsApp fill:#064e3b,stroke:#10b981,color:#fff`}
+                    </div>
+                </div>
+            </section>
+
+            <section className="container">
+                <div className="section-title">
+                    <h2>Automated Booking System</h2>
+                    <p>Tech-wise process flow: Direct synchronization between frontend controllers and backend persistence.</p>
+                </div>
+                <div className="diagram-container">
+                    <div className="mermaid w-full max-w-[1200px] mx-auto">
+                        {`graph TD
+                        %% Controllers & Methods
+                        subgraph Frontend ["Client-Side (React/Next.js)"]
+                            Guided["Contact Page (Guided Booking)"] -- "user-driven" --> UI1["Date/Time Picker Logic"]
+                            Quick["Quick Scheduler (Admin Dash)"] -- "admin-driven" --> UI2["Direct Select Internal"]
+                        end
+
+                        %% Network Layer
+                        subgraph Network ["Transport Layer"]
+                            UI1 -- "HTTP POST" --> Axios["Axios Request (Auth/Public)"]
+                            UI2 -- "HTTP POST" --> Axios
+                            Axios -- "JSON Payload" --> Endpoint["/api/appointments"]
+                        end
+
+                        %% Backend processing
+                        subgraph Backend ["Server-Side (Node.js/Express)"]
+                            Endpoint --> Controller["Appointment Controller"]
+                            Controller --> Val["Validation & Sanitization"]
+                            Val --> Mongoose["Mongoose Middleware"]
+                            Mongoose --> Logic["Auto-Confirm Logic"]
+                        end
+
+                        %% Persistence & Real-time
+                        subgraph Storage ["Data & Real-time Layer"]
+                            Logic --> DB[(MongoDB Atlas)]
+                            Logic -- "Emit Change" --> IO["Socket.io Server"]
+                        end
+
+                        %% Notification & UI Sync
+                        subgraph Sync ["Synchronization"]
+                            IO -- "Update Event" --> Dash["Admin Schedule Table"]
+                            IO -- "Link Ready" --> WhatsApp["WhatsApp Web API"]
+                            Dash -- "Refetch" --> API_Refetch["/api/appointments/density"]
+                        end
+
+                        %% Styles
+                        style Guided fill:#1e293b,stroke:#2563eb,color:#fff
+                        style Quick fill:#1e293b,stroke:#2563eb,color:#fff
+                        style Axios fill:#1e293b,stroke:#f59e0b,color:#fff
+                        style Controller fill:#1e3a8a,color:#fff
+                        style DB fill:#064e3b,stroke:#10b981,color:#fff
+                        style IO fill:#4338ca,stroke:#6366f1,color:#fff
+                        style Dash fill:#1e293b,stroke:#f59e0b`}
+                    </div>
+                </div>
+            </section>
+
+            <section className="container">
+                <div className="section-title">
                     <h2>Manual Chaos vs. Robotic Precision</h2>
                     <p>How automation eliminates human error and latency.</p>
                 </div>
