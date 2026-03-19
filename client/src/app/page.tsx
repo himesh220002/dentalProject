@@ -272,7 +272,7 @@ export default function Home() {
                                     <>A healthy smile is the <br /> <span className="text-blue-500">gateway</span> to a healthy life.</>
                                 )}
                             </h2>
-                            <p className="text-gray-400 text-xl font-medium max-w-2xl leading-relaxed">
+                            <p className="text-gray-400 text-sm md:text-xl font-medium max-w-2xl leading-relaxed">
                                 {language === 'hi'
                                     ? '"हमारे क्लिनिक में, हम केवल दांत नहीं ठीक करते; हम आत्मविश्वास जगाते हैं। हमने अपने क्लिनिक को एक सुरक्षित, स्वागत योग्य स्थान के रूप में तैयार किया है जहां आप सहज महसूस कर सकें।"'
                                     : '"At our clinic, we don\'t just fix teeth; we build confidence. We\'ve designed our practice to be a safe, welcoming space where you can feel at ease."'

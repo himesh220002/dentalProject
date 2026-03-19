@@ -257,13 +257,15 @@ export default function WeeklyPlanner() {
                                                             )}
                                                         </div>
                                                         <div className="flex items-center gap-1 shrink-0">
-                                                            <button
-                                                                onClick={(e) => handleReschedule(e, app)}
-                                                                className="p-1 rounded-md bg-amber-50 text-amber-600 hover:bg-amber-100 transition"
-                                                                title="Reschedule"
-                                                            >
-                                                                <FaHistory size={10} />
-                                                            </button>
+                                                            {!done && !operating && (
+                                                                <button
+                                                                    onClick={(e) => handleReschedule(e, app)}
+                                                                    className="p-1 rounded-md bg-amber-50 text-amber-600 hover:bg-amber-100 transition"
+                                                                    title="Reschedule"
+                                                                >
+                                                                    <FaHistory size={10} />
+                                                                </button>
+                                                            )}
                                                             <button
                                                                 onClick={(e) => toggleTick(e, app)}
                                                                 className={`p-1 rounded-md transition ${app.isTicked ? 'text-blue-600' : 'text-gray-300 hover:text-blue-400'}`}
