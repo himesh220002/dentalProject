@@ -54,7 +54,7 @@ describe('Contact Page Component', () => {
 
         expect(await screen.findByText(/Get In Touch/i)).toBeInTheDocument();
         screen.debug();
-        expect(screen.getByText(/1234567890/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/1234567890/i)[0]).toBeInTheDocument();
         expect(await screen.findByPlaceholderText('yourname')).toBeInTheDocument();
     });
 
