@@ -56,7 +56,7 @@ export default function ActionTiles() {
                         <div
                             key={index}
                             onClick={() => tile.link && router.push(tile.link)}
-                            className={`bg-gradient-to-br from-purple-100 to-teal-50 p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-3 border-gray-50 flex flex-col gap-5 sm:gap-6 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 group transform hover:-translate-y-2 active:scale-95 cursor-pointer ${tile.className || ''}`}
+                            className={`bg-gradient-to-br from-purple-400/30 to-teal-50 backdrop-blur-md p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-3 border-gray-50 flex flex-col gap-5 sm:gap-6 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 group transform hover:-translate-y-2 active:scale-95 cursor-pointer ${tile.className || ''}`}
                         >
                             <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-6
                             ${tile.color === 'blue' ? 'bg-purple-200 text-blue-600' :

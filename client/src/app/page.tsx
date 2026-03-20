@@ -261,7 +261,7 @@ export default function Home() {
             </section>
 
             {/* Why Patients Trust - Preview Section with refined layout */}
-            <section className="bg-gray-900 mx-auto md:mx-10 xl:mx-20 2xl:mx-40 px-6 sm:px-12 lg:px-16 py-10 sm:py-20  sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
+            <section className="bg-gradient-to-br from-gray-900 to-blue-900/80 backdrop-blur-md mx-auto md:mx-10 xl:mx-20 2xl:mx-40 px-6 sm:px-12 lg:px-16 py-10 sm:py-20  sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
                 <div className="max-w-7xl mx-auto space-y-10">
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                         <div className="space-y-6">
@@ -296,7 +296,7 @@ export default function Home() {
                         {defaultHighlights.map((defaultHighlights, idx) => (
                             <div key={idx} className="space-y-4">
                                 <h3 className="text-lg md:text-xl font-black">{defaultHighlights.title}</h3>
-                                <p className="text-gray-500 leading-relaxed font-medium text-sm md:text-base">{defaultHighlights.description}</p>
+                                <p className="text-gray-300 leading-relaxed font-medium text-sm md:text-base">{defaultHighlights.description}</p>
                             </div>
                         ))}
                     </div>

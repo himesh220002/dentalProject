@@ -26,6 +26,7 @@ describe('QuickScheduler Component', () => {
         vi.clearAllMocks();
         mockUseClinic.mockReturnValue({
             clinicData: { clinicName: 'Test Clinic' },
+            language: 'en'
         } as any);
         mockedAxios.get.mockImplementation((url: string) => {
             if (url.includes('/api/patients')) return Promise.resolve({ data: mockPatients });

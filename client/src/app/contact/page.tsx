@@ -464,7 +464,7 @@ function ContactContent() {
     };
 
     return (
-        <div className="relative px-4 py-2 sm:py-8 lg:py-20 sm:px-20 xl:px-40  mx-auto space-y-8 sm:space-y-16 overflow-x-hidden">
+        <div className="relative px-4 py-2 sm:py-8 lg:py-10 sm:px-20 xl:px-40  mx-auto space-y-8 sm:space-y-16 overflow-x-hidden">
 
 
 
@@ -534,7 +534,7 @@ function ContactContent() {
                 <div className="lg:col-span-2 space-y-8">
 
                     {/* Contact Form / Guided Booking */}
-                    <div className="bg-white p-4 sm:p-8 rounded-3xl shadow-xl overflow-hidden">
+                    <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden border border-[10px] border-white shadow-inner">
                         <div className="flex flex-col sm:flex-row gap-2 justify-between items-center mb-6">
                             <h2 className="text-lg sm:text-xl font-black text-gray-800 flex items-center gap-2">
                                 <FaCalendarCheck className="text-blue-600" />
@@ -576,15 +576,15 @@ function ContactContent() {
                                             <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                                                 <div className="grid sm:grid-cols-2 gap-6">
                                                     <div className="space-y-2">
-                                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formName}</label>
+                                                        <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">{t.formName}</label>
                                                         <input
                                                             type="text" id="name" value={formData.name} onChange={handleChange} required
-                                                            className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
+                                                            className="w-full px-5 py-4 rounded-2xl bg-white border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
                                                             placeholder={t.namePlaceholder}
                                                         />
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1 flex items-center gap-2">
+                                                        <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1 flex items-center gap-2">
                                                             {t.formPhone} <FaWhatsapp className="text-emerald-500" />
                                                         </label>
                                                         <input
@@ -593,16 +593,16 @@ function ContactContent() {
                                                                 const val = e.target.value.replace(/\D/g, '').slice(0, 10);
                                                                 setFormData(prev => ({ ...prev, phone: val }));
                                                             }}
-                                                            className={`w-full px-5 py-4 rounded-2xl bg-gray-50 border-2 font-bold outline-none transition-all ${formData.phone.length === 10 ? 'border-emerald-100 text-emerald-600' : 'border-transparent focus:border-blue-500'}`}
+                                                            className={`w-full px-5 py-4 rounded-2xl bg-white border-2 font-bold outline-none transition-all ${formData.phone.length === 10 ? 'border-emerald-100 text-emerald-600' : 'border-transparent focus:border-blue-500'}`}
                                                             placeholder="10 digit number"
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.emailOptional}</label>
+                                                    <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">{t.emailOptional}</label>
                                                     <input
                                                         type="email" id="email" value={formData.email} onChange={handleChange}
-                                                        className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
+                                                        className="w-full px-5 py-4 rounded-2xl bg-white border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
                                                         placeholder={t.emailPlaceholder}
                                                     />
                                                 </div>
@@ -620,7 +620,7 @@ function ContactContent() {
                                         {/* STEP 2: CHOOSE TREATMENT */}
                                         {currentStep === 2 && (
                                             <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                                                <div className="grid grid-cols-2 sm:grid-cols-3 h-[500px] overflow-y-scroll gap-3">
+                                                <div className="grid grid-cols-2 sm:grid-cols-3 h-[500px]  gap-3">
                                                     {treatments.map((t) => (
                                                         <button
                                                             key={t._id}
@@ -629,7 +629,9 @@ function ContactContent() {
                                                             className={`p-2 sm:p-4 rounded-2xl border-2 shadow-inner transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gradient-to-b from-purple-100/50 to-blue-100/50 backdrop-blur-sm hover:bg-gray-100'}`}
                                                         >
                                                             <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
-                                                            <span className="text-[10px] font-black uppercase text-center leading-tight">{t.name}</span>
+                                                            <span className="text-[12px] md:text-[15px] font-black uppercase text-center leading-tight">
+                                                                {(translations[language] as any).treatmentNames?.[t.name] || t.name}
+                                                            </span>
                                                         </button>
                                                     ))}
                                                 </div>

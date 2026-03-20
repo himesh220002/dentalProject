@@ -183,6 +183,23 @@ export const translations = {
             subtitle: 'Join hundreds of happy patients who trust our preventative care approach. Book your initial consultation today.',
             getStarted: 'Get Started Now',
             viewTreatments: 'View Treatments'
+        },
+        treatmentNames: {
+            'General Consultation': 'General Consultation',
+            'Scaling & Cleaning': 'Scaling & Cleaning',
+            'Dental Fillings': 'Dental Fillings',
+            'Tooth Extraction': 'Tooth Extraction',
+            'Root Canal Treatment': 'Root Canal Treatment',
+            'Dental Implants': 'Dental Implants',
+            'Teeth Whitening': 'Teeth Whitening',
+            'Orthodontic Braces': 'Orthodontic Braces',
+            'Crowns & Bridges': 'Crowns & Bridges',
+            "Kid's Dentistry": "Kid's Dentistry",
+            'Full Mouth X-Ray': 'Full Mouth X-Ray',
+            'Other / General Consultation': 'Other / General Consultation'
+        },
+        treatmentDescriptions: {
+            'Treatment details provided by clinic.': 'Treatment details provided by clinic.'
         }
     },
     hi: {
@@ -369,6 +386,23 @@ export const translations = {
             subtitle: 'उन सैकड़ों खुश मरीजों में शामिल हों जो हमारी निवारक देखभाल दृष्टिकोण पर भरोसा करते हैं। आज ही अपना प्रारंभिक परामर्श बुक करें।',
             getStarted: 'अभी शुरू करें',
             viewTreatments: 'उपचार देखें'
+        },
+        treatmentNames: {
+            'General Consultation': 'सामान्य परामर्श',
+            'Scaling & Cleaning': 'स्केलिंग और सफाई',
+            'Dental Fillings': 'डेंटल फिलिंग',
+            'Tooth Extraction': 'दांत निकालना',
+            'Root Canal Treatment': 'रूट कैनाल उपचार',
+            'Dental Implants': 'डेंटल इंप्लांट',
+            'Teeth Whitening': 'दांतों की सफाई और सफेदी',
+            'Orthodontic Braces': 'ऑर्थोडोंटिक ब्रेसेस',
+            'Crowns & Bridges': 'क्राउन और ब्रिज',
+            "Kid's Dentistry": 'बच्चों की दंत चिकित्सा',
+            'Full Mouth X-Ray': 'पूरे मुंह का एक्स-रे',
+            'Other / General Consultation': 'अन्य / सामान्य परामर्श'
+        },
+        treatmentDescriptions: {
+            'Treatment details provided by clinic.': 'क्लिनिक द्वारा प्रदान की गई उपचार विवरण।'
         }
     }
 };

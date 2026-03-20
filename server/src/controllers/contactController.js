@@ -95,6 +95,18 @@ exports.submitContact = async (req, res) => {
         });
         await newContact.save();
 
+        // Emit real-time event
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('newContact', newContact);
+            if (automatedAppointment) {
+                io.emit('newAppointment', {
+                    appointmentId: automatedAppointment._id,
+                    patientId: patientId
+                });
+            }
+        }
+
         res.status(201).json({
             message: automatedAppointment ? 'Appointment booked successfully!' : 'Message sent successfully',
             appointmentId: automatedAppointment ? automatedAppointment._id : null,
@@ -120,6 +132,13 @@ exports.markAsRead = async (req, res) => {
     try {
         const contact = await Contact.findByIdAndUpdate(req.params.id, { status: 'Read' }, { returnDocument: 'after' });
         if (!contact) return res.status(404).json({ message: 'Message not found' });
+
+        // Emit real-time event
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('updateContact', contact);
+        }
+
         res.status(200).json(contact);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -136,6 +155,13 @@ exports.markAsScheduled = async (req, res) => {
 
         const contact = await Contact.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' });
         if (!contact) return res.status(404).json({ message: 'Message not found' });
+
+        // Emit real-time event
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('updateContact', contact);
+        }
+
         res.status(200).json(contact);
     } catch (error) {
         res.status(400).json({ message: error.message });

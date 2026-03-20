@@ -185,9 +185,10 @@ export default function Treatments() {
                                             className={`text-4xl ${theme.icon}`}
                                         />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-gray-800 leading-tight">{item.name}</h3>
+                                    <h3 className="text-2xl font-bold text-gray-800 leading-tight">
+                                        {(t as any).treatmentNames?.[item.name] || item.name}
+                                    </h3>
                                 </div>
-
                                 {/* Body */}
                                 <div className="space-y-5">
                                     <div className="text-left">
@@ -195,7 +196,9 @@ export default function Treatments() {
                                             <div className={`w-1 h-4 ${theme.btn.split(' ')[0]} rounded-full`}></div>
                                             <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">{language === 'hi' ? 'विवरण' : 'Description'}</h4>
                                         </div>
-                                        <p className="text-gray-600 leading-relaxed font-medium">{item.description}</p>
+                                        <p className="text-gray-600 leading-relaxed font-medium">
+                                            {(t as any).treatmentDescriptions?.[item.description] || item.description}
+                                        </p>
                                     </div>
                                     <div className="overflow-hidden rounded-2xl border-2 border-gray-100/50 shadow-inner group-hover:border-blue-100 transition-all duration-500">
                                         <img

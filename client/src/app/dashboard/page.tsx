@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { FaUsers, FaEnvelope, FaCalendarAlt, FaTooth, FaChartLine } from 'react-icons/fa';
 import Link from 'next/link';
 import WeeklyPlanner from '@/components/WeeklyPlanner';
 import { parseAppointmentReason } from '@/utils/appointmentUtils';
 import CustomerInsightsModal from '@/components/dashboard/CustomerInsightsModal';
+import { io } from 'socket.io-client';
 
 export default function DashboardOverview() {
     const [stats, setStats] = useState({
@@ -36,94 +37,125 @@ export default function DashboardOverview() {
         treatments: []
     });
 
+    const fetchDashboardData = useCallback(async () => {
+        try {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const todayTime = now.getTime();
+
+            const tomorrow = new Date(now);
+            tomorrow.setDate(now.getDate() + 1);
+            const tomorrowTime = tomorrow.getTime();
+
+            const [patientsRes, messagesRes, appointmentsRes, treatmentsRes, financialRes] = await Promise.all([
+                axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/patients`),
+                axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`),
+                axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments`),
+                axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/treatments`),
+                axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/stats`)
+            ]);
+
+            const allAppts = appointmentsRes.data;
+            const allPatients = patientsRes.data;
+            const allMessages = messagesRes.data;
+
+            setRawData({
+                patients: allPatients,
+                appointments: allAppts,
+                messages: allMessages,
+                treatments: treatmentsRes.data
+            });
+
+            const todayAppointments = allAppts.filter((a: any) => {
+                const d = new Date(a.date);
+                d.setHours(0, 0, 0, 0);
+                return d.getTime() === todayTime;
+            });
+
+            const tomorrowAppointments = allAppts.filter((a: any) => {
+                const d = new Date(a.date);
+                d.setHours(0, 0, 0, 0);
+                return d.getTime() === tomorrowTime;
+            });
+
+            const upcomingAppointments = allAppts.filter((a: any) => {
+                const d = new Date(a.date);
+                d.setHours(0, 0, 0, 0);
+                return d.getTime() > tomorrowTime;
+            });
+
+            const todayRemaining = todayAppointments.filter((a: any) =>
+                !a.isTicked && !a.isDeleted && a.status !== 'Completed' && a.status !== 'Cancelled'
+            );
+
+            setStats({
+                patients: allPatients.length,
+                messages: allMessages.filter((m: any) => m.status === 'Unread').length,
+                todayApts: todayRemaining.length,
+                tomorrowApts: tomorrowAppointments.length,
+                upcomingApts: upcomingAppointments.length,
+                treatments: treatmentsRes.data.length,
+                todayCollection: financialRes.data.todayCollection
+            });
+
+            // Calculate Recent Activity (merge appointments and messages)
+            const combinedActivity = [
+                ...allAppts.map((a: any) => ({
+                    ...a,
+                    type: 'appointment',
+                    timeStamp: (a.status === 'Completed' && a.completedAt) ? new Date(a.completedAt) : new Date(a.createdAt)
+                })),
+                ...allMessages.map((m: any) => ({ ...m, type: 'message', timeStamp: new Date(m.createdAt) }))
+            ].sort((a, b) => b.timeStamp - a.timeStamp).slice(0, 5);
+            setRecentActivity(combinedActivity);
+
+            // Calculate Queue Status (today's unticked appointments)
+            const untickedQueue = todayAppointments
+                .filter((a: any) => !a.isTicked && !a.isDeleted)
+                .sort((a: any, b: any) => a.time.localeCompare(b.time));
+            setQueue(untickedQueue);
+
+        } catch (error) {
+            console.error('Error fetching dashboard stats:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                const now = new Date();
-                now.setHours(0, 0, 0, 0);
-                const todayTime = now.getTime();
+        fetchDashboardData();
+    }, [fetchDashboardData]);
 
-                const tomorrow = new Date(now);
-                tomorrow.setDate(now.getDate() + 1);
-                const tomorrowTime = tomorrow.getTime();
+    useEffect(() => {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+        const socket = io(backendUrl);
 
-                const [patientsRes, messagesRes, appointmentsRes, treatmentsRes, financialRes] = await Promise.all([
-                    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/patients`),
-                    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`),
-                    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments`),
-                    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/treatments`),
-                    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/stats`)
-                ]);
-
-                const allAppts = appointmentsRes.data;
-                const allPatients = patientsRes.data;
-                const allMessages = messagesRes.data;
-
-                setRawData({
-                    patients: allPatients,
-                    appointments: allAppts,
-                    messages: allMessages,
-                    treatments: treatmentsRes.data
-                });
-
-                const todayAppointments = allAppts.filter((a: any) => {
-                    const d = new Date(a.date);
-                    d.setHours(0, 0, 0, 0);
-                    return d.getTime() === todayTime;
-                });
-
-                const tomorrowAppointments = allAppts.filter((a: any) => {
-                    const d = new Date(a.date);
-                    d.setHours(0, 0, 0, 0);
-                    return d.getTime() === tomorrowTime;
-                });
-
-                const upcomingAppointments = allAppts.filter((a: any) => {
-                    const d = new Date(a.date);
-                    d.setHours(0, 0, 0, 0);
-                    return d.getTime() > tomorrowTime;
-                });
-
-                const todayRemaining = todayAppointments.filter((a: any) =>
-                    !a.isTicked && !a.isDeleted && a.status !== 'Completed' && a.status !== 'Cancelled'
-                );
-
-                setStats({
-                    patients: allPatients.length,
-                    messages: allMessages.filter((m: any) => m.status === 'Unread').length,
-                    todayApts: todayRemaining.length,
-                    tomorrowApts: tomorrowAppointments.length,
-                    upcomingApts: upcomingAppointments.length,
-                    treatments: treatmentsRes.data.length,
-                    todayCollection: financialRes.data.todayCollection
-                });
-
-                // Calculate Recent Activity (merge appointments and messages)
-                const combinedActivity = [
-                    ...allAppts.map((a: any) => ({
-                        ...a,
-                        type: 'appointment',
-                        timeStamp: (a.status === 'Completed' && a.completedAt) ? new Date(a.completedAt) : new Date(a.createdAt)
-                    })),
-                    ...allMessages.map((m: any) => ({ ...m, type: 'message', timeStamp: new Date(m.createdAt) }))
-                ].sort((a, b) => b.timeStamp - a.timeStamp).slice(0, 5);
-                setRecentActivity(combinedActivity);
-
-                // Calculate Queue Status (today's unticked appointments)
-                const untickedQueue = todayAppointments
-                    .filter((a: any) => !a.isTicked && !a.isDeleted)
-                    .sort((a: any, b: any) => a.time.localeCompare(b.time));
-                setQueue(untickedQueue);
-
-            } catch (error) {
-                console.error('Error fetching dashboard stats:', error);
-            } finally {
-                setLoading(false);
-            }
+        const handleRealTimeUpdate = () => {
+            console.log('Real-time update received, refreshing dashboard...');
+            fetchDashboardData();
         };
 
-        fetchDashboardData();
-    }, []);
+        socket.on('newAppointment', handleRealTimeUpdate);
+        socket.on('updateAppointment', handleRealTimeUpdate);
+        socket.on('deleteAppointment', handleRealTimeUpdate);
+        socket.on('newContact', handleRealTimeUpdate);
+        socket.on('updateContact', handleRealTimeUpdate);
+        socket.on('newPatient', handleRealTimeUpdate);
+        socket.on('updatePatient', handleRealTimeUpdate);
+        socket.on('deletePatient', handleRealTimeUpdate);
+
+        return () => {
+            socket.off('newAppointment', handleRealTimeUpdate);
+            socket.off('updateAppointment', handleRealTimeUpdate);
+            socket.off('deleteAppointment', handleRealTimeUpdate);
+            socket.off('newContact', handleRealTimeUpdate);
+            socket.off('updateContact', handleRealTimeUpdate);
+            socket.off('newPatient', handleRealTimeUpdate);
+            socket.off('updatePatient', handleRealTimeUpdate);
+            socket.off('deletePatient', handleRealTimeUpdate);
+            socket.disconnect();
+        };
+    }, [fetchDashboardData]);
 
     const statCards = [
         { label: 'Total Patients', value: stats.patients, icon: FaUsers, color: 'text-blue-600', bg: 'bg-blue-100' },

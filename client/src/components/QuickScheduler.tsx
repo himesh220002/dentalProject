@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaCalendarAlt, FaClock, FaUser, FaNotesMedical, FaTimes, FaCheck, FaSearch, FaMoneyBillWave, FaPlusCircle, FaEnvelope, FaLock, FaUnlock, FaTrash } from 'react-icons/fa';
 import { useClinic } from '../context/ClinicContext';
+import { translations } from '../constants/translations';
 import TreatmentIcon from './TreatmentIcon';
 
 interface Patient {
@@ -48,7 +49,8 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
         contact: '',
         age: ''
     });
-    const { clinicData } = useClinic();
+    const { clinicData, language } = useClinic();
+    const t_labels = translations[language] || translations.en;
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, date: e.target.value });
@@ -934,14 +936,18 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                                             onChange={(e) => handleTreatmentChange(index, e.target.value)}
                                             className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl pl-5 pr-10 py-3 font-bold text-gray-800 outline-none focus:border-blue-500 transition appearance-none text-sm"
                                         >
-                                            <option value="">Select Treatment...</option>
+                                            <option value="">+ Add Treatment...</option>
                                             {treatments.map(t => (
-                                                <option key={t._id} value={t.name}>{t.name} ({t.price})</option>
+                                                <option key={t._id} value={t.name}>
+                                                    {(t_labels as any).treatmentNames?.[t.name] || t.name}
+                                                </option>
                                             ))}
-                                            {treatment.name && treatment.name !== 'Other' && !treatments.find(t => t.name === treatment.name) && (
-                                                <option value={treatment.name}>{treatment.name} (Previous)</option>
+                                            {treatment.name && treatment.name !== 'Other / General Consultation' && !treatments.find(t => t.name === treatment.name) && (
+                                                <option value={treatment.name}>{(t_labels as any).treatmentNames?.[treatment.name] || treatment.name} (Previous)</option>
                                             )}
-                                            <option value="Other / General Consultation">Other / General Consultation</option>
+                                            <option value="Other / General Consultation">
+                                                {t_labels.treatmentNames?.['Other / General Consultation'] || 'Other / General Consultation'}
+                                            </option>
                                         </select>
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>

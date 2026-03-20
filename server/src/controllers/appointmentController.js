@@ -95,7 +95,10 @@ exports.createAppointment = async (req, res) => {
         // Emit real-time event
         const io = req.app.get('socketio');
         if (io) {
-            io.emit('newAppointment', { patientId: savedAppointment.patientId });
+            io.emit('newAppointment', {
+                appointmentId: savedAppointment._id,
+                patientId: savedAppointment.patientId
+            });
         }
 
         // Auto-Record: Check if created as Completed
@@ -240,7 +243,10 @@ exports.updateAppointmentStatus = async (req, res) => {
         // Emit real-time event
         const io = req.app.get('socketio');
         if (io) {
-            io.emit('updateAppointment', { patientId: updatedAppointment.patientId._id || updatedAppointment.patientId });
+            io.emit('updateAppointment', {
+                appointmentId: updatedAppointment._id,
+                patientId: updatedAppointment.patientId._id || updatedAppointment.patientId
+            });
         }
 
         res.status(200).json({ ...updatedAppointment.toObject(), emailSentTo });
@@ -344,6 +350,13 @@ exports.deleteAppointment = async (req, res) => {
             if (updatedContact) console.log('✔ Contact reference cleaned up.');
 
             console.log('--- HARD DELETION COMPLETE ---');
+
+            // Emit real-time event
+            const io = req.app.get('socketio');
+            if (io) {
+                io.emit('deleteAppointment', { appointmentId: appointmentId });
+            }
+
             return res.status(200).json({ message: 'Appointment and records fully removed.' });
         } else {
             // SOFT DELETE: Keep for Revenue/History but hide from management
@@ -353,6 +366,13 @@ exports.deleteAppointment = async (req, res) => {
 
             console.log('✔ Appointment marked as isDeleted (Soft Delete).');
             console.log('--- SOFT DELETION COMPLETE ---');
+
+            // Emit real-time event
+            const io = req.app.get('socketio');
+            if (io) {
+                io.emit('updateAppointment', { appointmentId: appointmentId });
+            }
+
             return res.status(200).json({ message: 'Appointment hidden from schedules (soft delete).' });
         }
 

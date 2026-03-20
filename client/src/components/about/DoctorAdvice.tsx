@@ -51,7 +51,7 @@ export default function DoctorAdvice() {
             {/* Background Accent */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/50 rounded-full blur-3xl -z-10 -mr-64 -mt-64"></div>
 
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-12 sm:gap-16 mx-1 sm:mx-5">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-12 sm:gap-16 mx-1 sm:mx-5 sm:px-6 md:px-10">
                 <div className="space-y-6 sm:space-y-8 max-w-2xl text-center lg:text-left">
                     <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-blue-600 text-white rounded-full font-black tracking-[0.2em] text-[10px] uppercase shadow-lg shadow-blue-500/20">
                         <FaLightbulb /> {t.aboutAdvice.title}

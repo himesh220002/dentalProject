@@ -89,6 +89,13 @@ exports.createPatient = async (req, res) => {
     try {
         const newPatient = new Patient(req.body);
         const savedPatient = await newPatient.save();
+
+        // Emit real-time event
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('newPatient', savedPatient);
+        }
+
         res.status(201).json(savedPatient);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -111,6 +118,13 @@ exports.updatePatient = async (req, res) => {
     try {
         const updatedPatient = await Patient.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' });
         if (!updatedPatient) return res.status(404).json({ message: 'Patient not found' });
+
+        // Emit real-time event
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('updatePatient', updatedPatient);
+        }
+
         res.status(200).json(updatedPatient);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -122,6 +136,13 @@ exports.deletePatient = async (req, res) => {
     try {
         const deletedPatient = await Patient.findByIdAndDelete(req.params.id);
         if (!deletedPatient) return res.status(404).json({ message: 'Patient not found' });
+
+        // Emit real-time event
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('deletePatient', { patientId: req.params.id });
+        }
+
         res.status(200).json({ message: 'Patient deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });

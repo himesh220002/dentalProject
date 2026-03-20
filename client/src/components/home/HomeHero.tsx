@@ -96,7 +96,7 @@ export default function HomeHero() {
             </div>
 
             {/* Floating UI Elements (Desktop Only) */}
-            <div className="hidden lg:block absolute right-10 xl:right-20 bottom-10 xl:bottom-20 animate-float">
+            <div className="hidden md:block absolute right-10 xl:right-20 bottom-10 xl:bottom-20 animate-float">
                 <div className="bg-white/10 backdrop-blur-2xl border border-white/20 p-6 xl:p-8 rounded-[2.5rem] xl:rounded-[3rem] shadow-2xl space-y-4 max-w-[240px] xl:max-w-[280px]">
                     <div className="flex -space-x-3 xl:-space-x-4">
                         {[1, 2, 3, 4].map((i) => (
