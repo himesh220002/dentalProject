@@ -50,7 +50,12 @@ jobs:
             --token=${{ secrets.VERCEL_TOKEN }} \
             --scope=${{ secrets.VERCEL_ORG_ID }} \
             --yes ./client \
-            --build-env NEXT_PUBLIC_BACKEND_URL=${{ secrets.STAGING_BACKEND_URL }}
+            --build-env NEXT_PUBLIC_BACKEND_URL=${{ secrets.STAGING_BACKEND_URL }} \
+            --build-env GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+            --build-env GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            --build-env NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
+            --build-env NEXTAUTH_URL=${{ secrets.STAGING_FRONTEND_URL }} \
+            --build-env NEXT_PUBLIC_FRONTEND_URL=${{ secrets.STAGING_FRONTEND_URL }}
 
       # --- 3. STAGING BACKEND DEPLOY (RENDER) ---
       - name: Trigger Render Staging Deploy
