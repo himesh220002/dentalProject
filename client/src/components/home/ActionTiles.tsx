@@ -3,6 +3,7 @@ import { useClinic } from '../../context/ClinicContext';
 import { translations } from '../../constants/translations';
 import { ActionTileSkeleton } from '../ui/Skeleton';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function ActionTiles() {
     const { clinicData, language } = useClinic();
@@ -44,10 +45,15 @@ export default function ActionTiles() {
 
     return (
         <section className="relative z-20 px-4 sm:px-6 py-6 sm:py-8 overflow-hidden ">
-            <div
-                className="absolute inset-0 max-w-[1600px] mx-auto -z-10 bg-cover bg-center bg-no-repeat rounded-[2rem] sm:rounded-[2.5rem]"
-                style={{ backgroundImage: "url('/images/laboratory-with-scientist-futuristic-interior.jpg')" }}
-            />
+            <div className="absolute inset-0 max-w-[1600px] mx-auto -z-10 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden">
+                <Image
+                    src="/images/laboratory-with-scientist-futuristic-interior.jpg"
+                    alt="Clinic Background"
+                    fill
+                    className="object-cover"
+                    priority
+                />
+            </div>
             <div className="absolute inset-0 -z-10 bg-[#c7d1f200]/45 backdrop-blur-[1px]" />
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 ">
                 {useClinic().isLoading ? (
