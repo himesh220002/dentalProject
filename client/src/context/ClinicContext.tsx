@@ -152,12 +152,25 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
         try {
             const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
                 (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
-            const response = await axios.get(`${API_BASE_URL}/handover/active`);
-            setClinicData(response.data.jsondata);
-            setError(null);
-        } catch (err: any) {
+            const normalizedApiBaseUrl = API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}/api`;
+            const response = await axios.get(`${normalizedApiBaseUrl}/handover/active`, {
+                validateStatus: () => true,
+            });
+
+            if (response.status === 200 && response.data?.jsondata) {
+                setClinicData(response.data.jsondata);
+                setError(null);
+            } else if (response.status === 404) {
+                // No active handover yet; keep default clinic data without noisy console errors.
+                setClinicData(DEFAULT_CLINIC_DATA);
+                setError(null);
+            } else {
+                setError(response.data?.message || 'Connecting to server...');
+            }
+        } catch (err: unknown) {
+            const axiosError = err as { response?: { data?: { message?: string } } };
             console.error('Error fetching active clinic data:', err);
-            setError(err.response?.data?.message || 'Connecting to server...');
+            setError(axiosError.response?.data?.message || 'Connecting to server...');
         } finally {
             setIsLoading(false);
         }

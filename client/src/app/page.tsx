@@ -216,7 +216,7 @@ export default function Home() {
             </section>
 
             {/* Meet Our Team - New Dynamic Section with High-tech Pattern */}
-            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] sm:rounded-[4rem] group mx-2 sm:mx-5 xl:mx-20 2xl:mx-40">
+            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] sm:rounded-[4rem] group mx-2 sm:mx-5 xl:mx-20 2xl:mx-40 border border-slate-200/60 bg-white">
                 {/* Immersive Lab Background */}
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
                     <NextImage
@@ -226,7 +226,7 @@ export default function Home() {
                         alt="Dr. Tooth Dental Clinic - Advanced Biotechnology Background"
                         priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/60 via-transparent to-indigo-50/60"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50/70 via-white/10 to-blue-50/30"></div>
                 </div>
 
                 <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-10">
@@ -244,12 +244,12 @@ export default function Home() {
                         [...Array(4)].map((_, i) => <ConsultantCardSkeleton key={i} />)
                     ) : (
                         clinicData?.consultants.map((consultant, idx) => (
-                            <div key={idx} className="bg-white/70 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl border border-gray-100/50 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
-                                <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-12 transition-transform">
-                                    <FaUserMd size={40} className="text-blue-600" />
+                            <div key={idx} className="bg-white/90 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl border border-slate-200/70 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
+                                <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-6 transition-transform">
+                                    <FaUserMd size={40} className="text-blue-700" />
                                 </div>
                                 <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
-                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultant.role}</p>
+                                <p className="text-blue-700 font-bold uppercase tracking-widest text-xs mb-4">{consultant.role}</p>
                                 <div className="space-y-2">
                                     <p className="text-gray-500 text-sm font-medium">{consultant.info}</p>
                                     <p className="text-gray-900 text-sm font-black italic">{consultant.experience} {translations[language].homeSpecialists.experience}</p>
@@ -261,15 +261,15 @@ export default function Home() {
             </section>
 
             {/* Why Patients Trust - Preview Section with refined layout */}
-            <section className="bg-gradient-to-br from-gray-900 to-blue-900/80 backdrop-blur-md mx-auto md:mx-10 xl:mx-20 2xl:mx-40 px-6 sm:px-12 lg:px-16 py-10 sm:py-20  sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
+            <section className="bg-gradient-to-br from-slate-900 to-slate-800 mx-auto md:mx-10 xl:mx-20 2xl:mx-40 px-6 sm:px-12 lg:px-16 py-10 sm:py-20 sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
                 <div className="max-w-7xl mx-auto space-y-10">
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                         <div className="space-y-6">
                             <h2 className="text-2xl sm:text-3xl md:text-4xl xl:text-5xl font-black leading-tight">
                                 {language === 'hi' ? (
-                                    <>एक स्वस्थ मुस्कान स्वस्थ जीवन का <br /> <span className="text-blue-500">द्वार</span> है।</>
+                                    <>एक स्वस्थ मुस्कान स्वस्थ जीवन का <br /> <span className="text-blue-300">द्वार</span> है।</>
                                 ) : (
-                                    <>A healthy smile is the <br /> <span className="text-blue-500">gateway</span> to a healthy life.</>
+                                    <>A healthy smile is the <br /> <span className="text-blue-300">gateway</span> to a healthy life.</>
                                 )}
                             </h2>
                             <p className="text-gray-400 text-sm md:text-xl font-medium max-w-2xl leading-relaxed">
@@ -280,12 +280,12 @@ export default function Home() {
                             </p>
                         </div>
                         <div className="shrink-0 flex items-center gap-6">
-                            <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/20">
+                            <div className="w-20 h-20 bg-blue-700 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/20">
                                 <FaUserMd size={40} className="text-white" />
                             </div>
                             <div>
                                 <h4 className="text-xl font-black">{doctorName}</h4>
-                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs">
+                                <p className="text-blue-300 font-bold uppercase tracking-widest text-xs">
                                     {language === 'hi' ? 'मुख्य दंत शल्य चिकित्सक' : doctorRole}
                                 </p>
                             </div>
@@ -373,15 +373,15 @@ export default function Home() {
 
             {/* Elite CTA Strip */}
             <section className="pb-12 sm:pb-20 overflow-hidden relative">
-                <div className="bg-gradient-to-br from-blue-800 to-black text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 sm:p-16 md:p-24 mx-1 sm:mx-5 xl:mx-20 2xl:mx-40 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(37,99,235,0.4)] relative overflow-hidden group">
+                <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 sm:p-16 md:p-24 mx-1 sm:mx-5 xl:mx-20 2xl:mx-40 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(15,23,42,0.45)] relative overflow-hidden group">
                     {/* Decorative Elements */}
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-44 -mt-44 blur-[100px] group-hover:bg-white/20 transition-all duration-700"></div>
-                    <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-400/20 rounded-full -mr-40 -mb-40 blur-[80px]"></div>
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-44 -mt-44 blur-[100px] transition-all duration-700"></div>
+                    <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-500/15 rounded-full -mr-40 -mb-40 blur-[80px]"></div>
 
                     <div className="relative z-10 space-y-6 sm:space-y-8">
                         <h2 className="text-3xl sm:text-5xl md:text-6xl font-black leading-tight max-w-4xl mx-auto tracking-tight">
                             {translations[language].homeCTA.title1} <br />
-                            <span className="bg-gradient-to-r from-blue-300 to-teal-300 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">
                                 {translations[language].homeCTA.title2}
                             </span>
                         </h2>

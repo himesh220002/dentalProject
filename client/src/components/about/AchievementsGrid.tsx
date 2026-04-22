@@ -1,11 +1,9 @@
 'use client';
 import { FaUsers, FaRegThumbsUp, FaAward, FaCalendarAlt } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
-import { translations } from '@/constants/translations';
 
 export default function AchievementsGrid() {
     const { clinicData, language } = useClinic();
-    const t = translations[language as keyof typeof translations];
 
     const stats = {
         patients: clinicData?.happyCustomers || '5,000+',
@@ -77,16 +75,16 @@ export default function AchievementsGrid() {
                 {achievements.map((item, index) => (
                     <div
                         key={index}
-                        className="p-6 sm:p-8 bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group text-center"
+                        className="p-6 sm:p-8 bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-blue-200 transition-all duration-300 group text-center"
                     >
-                        <div className="mb-4 sm:mb-6 inline-block p-3 sm:p-4 bg-gray-50 rounded-xl sm:rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <div className="mb-4 sm:mb-6 inline-block p-3 sm:p-4 bg-slate-50 rounded-xl sm:rounded-2xl group-hover:scale-105 transition-transform duration-300">
                             <div className="scale-90 sm:scale-100">
                                 {item.icon}
                             </div>
                         </div>
-                        <h3 className="text-2xl sm:text-4xl font-black text-gray-900 mb-1 sm:mb-2">{item.count}</h3>
-                        <p className="font-bold text-gray-800 mb-1 sm:mb-2 uppercase tracking-tight text-[10px] sm:text-xs">{item.label}</p>
-                        <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">{item.description}</p>
+                        <h3 className="text-2xl sm:text-4xl font-black text-slate-900 mb-1 sm:mb-2">{item.count}</h3>
+                        <p className="font-bold text-slate-800 mb-1 sm:mb-2 uppercase tracking-tight text-[10px] sm:text-xs">{item.label}</p>
+                        <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">{item.description}</p>
                     </div>
                 ))}
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { FaAward, FaUserMd, FaSmile, FaCertificate, FaQuoteLeft, FaCheckCircle, FaStar } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaAward, FaUserMd, FaSmile, FaCertificate, FaQuoteLeft } from 'react-icons/fa';
 import AchievementsGrid from '@/components/about/AchievementsGrid';
 import PatientReviews from '@/components/about/PatientReviews';
 import DoctorAdvice from '@/components/about/DoctorAdvice';
@@ -14,13 +14,6 @@ import Skeleton from '@/components/ui/Skeleton';
 export default function About() {
     const { clinicData, language } = useClinic();
     const [imgLoaded, setImgLoaded] = useState(false);
-    const imgRef = useRef<HTMLImageElement>(null);
-
-    useEffect(() => {
-        if (imgRef.current && imgRef.current.complete) {
-            setImgLoaded(true);
-        }
-    }, []);
 
     const t = translations[language as keyof typeof translations];
 
@@ -29,7 +22,6 @@ export default function About() {
     const clinicExperience = formatExperience(clinicData?.clinicExperience || '10');
     const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
     const doctorExperience = chiefConsultant?.experience || '12 Years';
-    const year = clinicData?.establishedYear || '2014';
 
     // Description text (localized)
     const doctorDesc = language === 'hi'
@@ -51,22 +43,22 @@ export default function About() {
     const consultantExpLabel = language === 'hi' ? 'का अनुभव' : 'Experience';
 
     return (
-        <div className=" max-w-[1600px] mx-auto space-y-12 sm:pt-4 lg:pt-0 overflow-x-clip">
+        <div className=" max-w-[1600px] mx-auto space-y-14 sm:space-y-16 sm:pt-4 lg:pt-0 overflow-x-clip">
             {/* Hero Section - Refined */}
             <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">
-                    <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-5 py-2 rounded-2xl text-xs font-black tracking-widest uppercase">
-                        <FaCertificate className="text-blue-500 animate-pulse" />
+                    <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-5 py-2 rounded-2xl text-xs font-black tracking-widest uppercase">
+                        <FaCertificate className="text-blue-600" />
                         {t.aboutHero.excellence}
                     </div>
                     <h1 className="text-4xl sm:text-5xl xl:text-7xl font-black text-gray-900 leading-[1.05] tracking-tight">
                         {t.aboutHero.meet} {useClinic().isLoading ? <Skeleton variant="text" className="inline-block w-48 h-12" /> : <span className="bg-gradient-to-r from-blue-800 via-blue-600 to-purple-800 bg-clip-text text-transparent">{doctorName}</span>}, {t.aboutHero.guardian}
                     </h1>
-                    <p className="text-lg sm:text-xl text-gray-600 leading-relaxed font-medium max-w-xl">
+                    <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-medium max-w-xl">
                         {doctorDesc}
                     </p>
-                    <div className="relative p-8 bg-gray-900 text-white rounded-[2.5rem] overflow-hidden group shadow-2xl">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full -mr-16 -mt-16 blur-xl group-hover:bg-blue-600/40 transition-colors"></div>
+                    <div className="relative p-8 bg-gray-900 text-white rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full -mr-16 -mt-16 blur-xl"></div>
                         <FaQuoteLeft className="text-4xl text-blue-500/30 mb-4" />
                         <p className="text-lg font-bold leading-relaxed italic relative z-10">
                             {t.aboutHero.quote}
@@ -86,7 +78,7 @@ export default function About() {
                     </div>
 
                     {/* Interactive Badge Moved Above */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white/95 backdrop-blur-md px-4 py-2 sm:px-8 sm:py-5 rounded-2xl sm:rounded-[2rem] shadow-2xl flex items-center gap-3 sm:gap-5 border border-blue-50 animate-bounce whitespace-nowrap">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white/95 backdrop-blur-md px-4 py-2 sm:px-8 sm:py-5 rounded-2xl sm:rounded-[2rem] shadow-2xl flex items-center gap-3 sm:gap-5 border border-blue-50 whitespace-nowrap">
                         <div className="bg-yellow-100 p-2 sm:p-3 rounded-xl sm:rounded-2xl text-yellow-600 shadow-inner">
                             <FaAward size={18} className="sm:size-[24px]" />
                         </div>
@@ -103,7 +95,6 @@ export default function About() {
                             </div>
                         )}
                         <img
-                            ref={imgRef}
                             // src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1964&auto=format&fit=crop"
                             src="/images/rendering-anime-doctor-job.jpg"
                             alt={doctorName}
@@ -138,21 +129,26 @@ export default function About() {
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-transparent to-teal-50/10"></div>
                 </div>
 
-                <div className="text-start space-y-4 mb-16">
-                    <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">{t.aboutExperts.title}</h2>
-                    <h3 className="text-3xl xl:text-5xl font-black text-gray-900">{t.aboutExperts.subtitle} <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent ">{clinicName}</span></h3>
+                <div className="text-start space-y-4 mb-16 max-w-4xl">
+                    <h2 className="text-sm font-black text-blue-700 uppercase tracking-[0.2em]">{t.aboutExperts.title}</h2>
+                    <h3 className="text-3xl xl:text-5xl font-black text-gray-900 leading-tight">{t.aboutExperts.subtitle} <span className="bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent ">{clinicName}</span></h3>
+                    <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+                        {language === 'hi'
+                            ? 'हमारी टीम अनुभवी दंत विशेषज्ञों से बनी है जो सटीक निदान, स्पष्ट सलाह और दीर्घकालिक उपचार परिणामों पर ध्यान देती है।'
+                            : 'Our team combines clinical experience with patient-first communication, so every treatment plan is clear, transparent, and outcome-focused.'}
+                    </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {useClinic().isLoading ? (
                         [...Array(4)].map((_, i) => <ConsultantCardSkeleton key={i} />)
                     ) : (
                         clinicData?.consultants.map((consultant, idx) => (
-                            <div key={idx} className="bg-white/80 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-xl border border-2 border-gray-50 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
-                                <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-12 transition-transform">
-                                    <FaUserMd size={40} className="text-blue-600" />
+                            <div key={idx} className="bg-white/85 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-xl border border-slate-200 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
+                                <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-6 transition-transform">
+                                    <FaUserMd size={40} className="text-blue-700" />
                                 </div>
                                 <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
-                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-4">{consultantRole(consultant.role)}</p>
+                                <p className="text-blue-700 font-bold uppercase tracking-widest text-xs mb-4">{consultantRole(consultant.role)}</p>
                                 <div className="space-y-2">
                                     <p className="text-gray-500 text-sm font-medium">{language === 'hi' ? 'विशेषज्ञ दंत चिकित्सा सेवाएं प्रदान करना' : consultant.info}</p>
                                     <p className="text-gray-900 text-sm font-black italic">{consultant.experience} {consultantExpLabel}</p>
@@ -165,9 +161,14 @@ export default function About() {
 
             {/* Achievements Grid Section */}
             <div className="pt-12 sm:pt-20 px-6 sm:px-16">
-                <div className="space-y-4 mb-12">
-                    <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">{t.aboutMilestones.title}</h2>
-                    <p className="text-3xl xl:text-5xl font-black text-gray-900">{t.aboutMilestones.subtitle} <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">{t.aboutMilestones.provenSmiles}</span></p>
+                <div className="space-y-4 mb-12 max-w-4xl">
+                    <h2 className="text-sm font-black text-blue-700 uppercase tracking-[0.2em]">{t.aboutMilestones.title}</h2>
+                    <p className="text-3xl xl:text-5xl font-black text-gray-900 leading-tight">{t.aboutMilestones.subtitle} <span className="bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">{t.aboutMilestones.provenSmiles}</span></p>
+                    <p className="text-slate-600 text-base sm:text-lg">
+                        {language === 'hi'
+                            ? 'हमारे परिणाम निरंतर गुणवत्ता, कड़े संक्रमण नियंत्रण और सुव्यवस्थित उपचार प्रोटोकॉल पर आधारित हैं।'
+                            : 'These outcomes reflect consistent standards in diagnosis, sterilization, and follow-through across every treatment stage.'}
+                    </p>
                 </div>
                 <AchievementsGrid />
             </div>
@@ -183,11 +184,11 @@ export default function About() {
             </div>
 
             {/* Our Values / Mission Refined */}
-            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-6 mb-10 xl:mb-20 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative mx-2 sm:mx-4">
+            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-10 xl:mb-20 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative mx-2 sm:mx-4">
                 <div className="max-w-5xl mx-auto space-y-5 sm:space-y-20">
                     <div className="text-center space-y-4 sm:space-y-6">
                         <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-white leading-tight">{t.aboutValues.title}</h2>
-                        <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">{t.aboutValues.subtitle}</p>
+                        <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto">{t.aboutValues.subtitle}</p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-12 text-white">

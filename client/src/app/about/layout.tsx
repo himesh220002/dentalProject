@@ -5,8 +5,8 @@ export async function generateMetadata(): Promise<Metadata> {
     try {
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
             (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
-
-        const response = await axios.get(`${API_BASE_URL}/handover/active`);
+        const normalizedApiBaseUrl = API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}/api`;
+        const response = await axios.get(`${normalizedApiBaseUrl}/handover/active`);
         const clinic = response.data.jsondata;
         const clinicName = clinic.clinicName || 'Dr. Tooth Dental Clinic';
         const city = clinic.address?.city || 'Katihar';
@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
                 description: `Meet our team of specialists at ${clinicName}. Discover our mission for painless and professional dental care.`,
             }
         };
-    } catch (error) {
+    } catch {
         return {
             title: 'About Our Dental Clinic | Professional Care',
             description: 'Learn about our heritage and commitment to dental excellence.',

@@ -6,20 +6,31 @@ import LanguageToggle from '../components/LanguageToggle';
 
 import axios from 'axios';
 
+type ClinicDataForLayout = {
+    clinicName?: string;
+    phone?: string;
+    address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        zip?: string;
+        latitude?: number | string;
+        longitude?: number | string;
+    };
+};
+
 export async function generateMetadata() {
     try {
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
             (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
-
-        const response = await axios.get(`${API_BASE_URL}/handover/active`);
+        const normalizedApiBaseUrl = API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}/api`;
+        const response = await axios.get(`${normalizedApiBaseUrl}/handover/active`);
         const clinic = response.data.jsondata;
         const seo = clinic.seo;
 
         const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || 'https://drtoothdental.in';
         const clinicName = clinic.clinicName || 'Dr. Tooth Dental Clinic';
         const city = clinic.address?.city || 'Katihar';
-        const phone = clinic.phone || '+91 81055423118';
-
         return {
             title: seo.metaTitle || `${clinicName} | Best Dentist in ${city}, Bihar`,
             description: seo.metaDescription || `Experience professional dental care at ${clinicName}, ${city}. Specializing in painless treatments, implants, and orthodontic care with ${clinic.clinicExperience || '10+'}+ years of expertise.`,
@@ -66,7 +77,7 @@ export async function generateMetadata() {
                 },
             },
         };
-    } catch (error) {
+    } catch {
         return {
             title: 'Dr. Tooth Dental Clinic | Best Dentist in Katihar',
             description: 'Professional Dental Care with Years of Experience',
@@ -79,14 +90,19 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
-    let clinicData: any = null;
+    let clinicData: ClinicDataForLayout | null = null;
     try {
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
             (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
-        const response = await axios.get(`${API_BASE_URL}/handover/active`);
-        clinicData = response.data.jsondata;
-    } catch (e) {
-        console.error("Failed to fetch clinic data for layout JSON-LD", e);
+        const normalizedApiBaseUrl = API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}/api`;
+        const response = await axios.get(`${normalizedApiBaseUrl}/handover/active`, {
+            validateStatus: () => true,
+        });
+        if (response.status === 200 && response.data?.jsondata) {
+            clinicData = response.data.jsondata;
+        }
+    } catch {
+        console.error("Failed to fetch clinic data for layout JSON-LD");
     }
 
     const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";

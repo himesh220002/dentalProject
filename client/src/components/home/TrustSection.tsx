@@ -42,7 +42,7 @@ export default function TrustSection() {
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
                 {/* Left: Visual Content */}
                 <div className="flex-1 relative order-2 lg:order-1 w-full max-w-[500px] lg:max-w-none mx-auto lg:mx-0 mt-8 lg:mt-0">
-                    <div className="absolute -inset-4 sm:-inset-6 bg-blue-100 rounded-[2rem] sm:rounded-[3rem] -rotate-3 -z-10"></div>
+                    <div className="absolute -inset-4 sm:-inset-6 bg-slate-100 rounded-[2rem] sm:rounded-[3rem] -rotate-2 -z-10"></div>
                     <div className="relative bg-white p-3 sm:p-4 rounded-[2rem] sm:rounded-[3rem] shadow-2xl">
                         {useClinic().isLoading ? (
                             <Skeleton variant="rect" className="rounded-[1.5rem] sm:rounded-[2.5rem] w-full h-[300px] sm:h-[400px] lg:h-[450px]" />
@@ -55,8 +55,8 @@ export default function TrustSection() {
                         )}
                         {/* Floating Experience Badge */}
                         {!useClinic().isLoading && (
-                            <div className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 lg:-bottom-10 lg:-right-10 bg-gray-900 text-white p-4 sm:p-6 lg:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl border-4 border-white flex items-center gap-4 sm:gap-6 animate-float">
-                                <div className="bg-blue-600 p-3 sm:p-4 rounded-2xl sm:rounded-3xl text-white">
+                            <div className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 lg:-bottom-10 lg:-right-10 bg-slate-900 text-white p-4 sm:p-6 lg:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl border-4 border-white flex items-center gap-4 sm:gap-6">
+                                <div className="bg-blue-700 p-3 sm:p-4 rounded-2xl sm:rounded-3xl text-white">
                                     <FaCertificate size={24} className="sm:size-[32px]" />
                                 </div>
                                 <div>
@@ -71,7 +71,7 @@ export default function TrustSection() {
                 {/* Right: Text Content */}
                 <div className="flex-1 space-y-8 sm:space-y-10 order-1 lg:order-2 text-center lg:text-left">
                     <div className="space-y-4">
-                        <div className="inline-block bg-blue-50 text-blue-600 px-4 py-1 rounded-full text-[10px] sm:text-xs font-black tracking-widest uppercase">
+                        <div className="inline-block bg-slate-100 text-slate-700 px-4 py-1 rounded-full text-[10px] sm:text-xs font-black tracking-widest uppercase">
                             {t.homeTrust.tag}
                         </div>
                         <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-tight">
@@ -81,9 +81,15 @@ export default function TrustSection() {
                                 )) || t.homeTrust.title
                             )}
                         </h2>
-                        <p className="text-gray-500 text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
-                            {useClinic().isLoading ? <Skeleton variant="text" className="h-20" /> : t.homeTrust.description}
-                        </p>
+                        {useClinic().isLoading ? (
+                            <div className="max-w-xl mx-auto lg:mx-0">
+                                <Skeleton variant="text" className="h-20" />
+                            </div>
+                        ) : (
+                            <p className="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
+                                {t.homeTrust.description}
+                            </p>
+                        )}
                     </div>
 
                     <div className="space-y-6 sm:space-y-8 max-w-xl mx-auto lg:mx-0">
@@ -101,17 +107,17 @@ export default function TrustSection() {
                             features.map((feature, index) => (
                                 <div key={index} className="flex gap-4 sm:gap-6 group text-left">
                                     <div className={`w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110
-                                        ${feature.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                            feature.color === 'teal' ? 'bg-teal-100 text-teal-600' :
-                                                'bg-indigo-100 text-indigo-600'}`}
+                                        ${feature.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                                            feature.color === 'teal' ? 'bg-cyan-100 text-cyan-700' :
+                                                'bg-indigo-100 text-indigo-700'}`}
                                     >
                                         <div className="scale-90 sm:scale-100">
                                             {feature.icon}
                                         </div>
                                     </div>
                                     <div className="space-y-0.5 sm:space-y-1">
-                                        <h3 className="text-lg sm:text-xl font-black text-gray-900 group-hover:text-blue-600 transition-colors tracking-tight">{feature.title}</h3>
-                                        <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">{feature.description}</p>
+                                        <h3 className="text-lg sm:text-xl font-black text-slate-900 group-hover:text-blue-700 transition-colors tracking-tight">{feature.title}</h3>
+                                        <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">{feature.description}</p>
                                     </div>
                                 </div>
                             ))

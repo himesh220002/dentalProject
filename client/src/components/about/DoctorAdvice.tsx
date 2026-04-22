@@ -60,7 +60,7 @@ export default function DoctorAdvice() {
                         {doctorName}{language === 'hi' ? ' की' : "'s"} {language === 'hi' ? 'सलाह' : 'Advice'} <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">{t.aboutAdvice.thoughts}</span>
                     </h2>
-                    <p className="text-gray-500 text-lg sm:text-xl font-medium leading-relaxed">
+                    <p className="text-slate-600 text-lg sm:text-xl font-medium leading-relaxed">
                         {t.aboutAdvice.quote}
                     </p>
                 </div>
@@ -75,15 +75,15 @@ export default function DoctorAdvice() {
                 {tips.map((tip, index) => (
                     <div
                         key={index}
-                        className="group bg-white p-10 sm:p-12 rounded-[3rem] border border-gray-100 hover:border-blue-200 transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 relative overflow-hidden"
+                        className="group bg-white p-10 sm:p-12 rounded-[3rem] border border-slate-200 hover:border-blue-200 transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-1 relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 w-24 h-24 bg-gray-50 rounded-bl-[3rem] group-hover:bg-blue-50 transition-colors"></div>
                         <div className="mb-10 w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center group-hover:bg-blue-300 group-hover:text-white transition-all duration-500 shadow-inner overflow-hidden relative z-10">
                             {tip.icon}
                         </div>
                         <div className="space-y-4 relative z-10">
-                            <h3 className="text-2xl sm:text-3xl font-black text-gray-900 group-hover:text-blue-600 transition-colors">{tip.title}</h3>
-                            <p className="text-gray-500 text-base sm:text-lg leading-relaxed font-medium">
+                            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 group-hover:text-blue-700 transition-colors">{tip.title}</h3>
+                            <p className="text-slate-600 text-base sm:text-lg leading-relaxed font-medium">
                                 {tip.content}
                             </p>
                         </div>
@@ -110,7 +110,7 @@ export default function DoctorAdvice() {
                         const msg = encodeURIComponent("Regarding Dental - ");
                         window.open(`https://wa.me/${cleanPhone}/?text=${msg}`, '_blank');
                     }}
-                    className="relative z-10 bg-white text-gray-900 px-12 py-6 rounded-[2rem] font-black hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-2 active:scale-95 shadow-2xl flex items-center gap-4 text-xs sm:text-lg"
+                    className="relative z-10 bg-white text-gray-900 px-12 py-6 rounded-[2rem] font-black hover:bg-blue-700 hover:text-white transition-all transform hover:-translate-y-1 active:scale-95 shadow-2xl flex items-center gap-4 text-xs sm:text-lg"
                 >
                     {t.aboutAdvice.send} <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-900 group-hover:bg-white group-hover:translate-x-2 transition-all"><FaLightbulb size={14} /></div>
                 </button>
