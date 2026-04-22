@@ -38,7 +38,18 @@ export default function TrustSection() {
     })) || defaultFeatures;
 
     return (
-        <section className="py-12 sm:py-20 lg:py-24 space-y-12 sm:space-y-20 px-6 sm:px-40 overflow-hidden">
+        <section className="relative py-12 sm:py-20 lg:py-24 space-y-12 sm:space-y-20 px-6 sm:px-40 overflow-hidden">
+            {/* Steel Fence Cross-Net Pattern Background */}
+            <div className="absolute inset-0 -z-20"
+                style={{
+                    backgroundImage: `
+                        radial-gradient(circle at 1px  1px, rgba(100,116,139,0.12) 1px, transparent 1px),
+                        repeating-linear-gradient(45deg, transparent 0, transparent 9px, rgba(100,116,139,0.08) 9px, rgba(100,116,139,0.08) 10px),
+                        repeating-linear-gradient(-45deg, transparent 0, transparent 9px, rgba(100,116,139,0.08) 9px, rgba(100,116,139,0.08) 10px)
+                    `,
+                    backgroundSize: '120px 120px'
+                }}
+            />
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
                 {/* Left: Visual Content */}
                 <div className="flex-1 relative order-2 lg:order-1 w-full max-w-[500px] lg:max-w-none mx-auto lg:mx-0 mt-8 lg:mt-0">

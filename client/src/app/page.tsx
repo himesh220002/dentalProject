@@ -217,7 +217,7 @@ export default function Home() {
             </section>
 
             {/* Meet Our Team - New Dynamic Section with High-tech Pattern */}
-            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] sm:rounded-[4rem] group mx-2 sm:mx-5 xl:mx-20 2xl:mx-40 border border-slate-200/60 bg-white">
+            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] sm:rounded-[4rem] group mx-2 sm:mx-5 xl:mx-20 2xl:mx-40 border border-slate-200/60">
                 {/* Immersive Lab Background */}
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
                     <NextImage
@@ -232,7 +232,7 @@ export default function Home() {
 
                 <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-10">
                     <div className="space-y-4 text-center sm:text-start">
-                        <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-gray-900 leading-tight tracking-tight">
+                        <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-blue-900 leading-tight tracking-tight">
                             {translations[language].homeSpecialists.title}
                         </h2>
                         <p className="text-black text-sm md:text-base lg:text-xl font-medium leading-relaxed max-w-xl">
@@ -339,38 +339,40 @@ export default function Home() {
             </section>
 
             {/* Floating Appointment Notification - Circle Above LanguageToggle */}
-            {session?.user && upcomingAppointment && !isAptDismissed && (
-                <div className="fixed top-70 sm:top-70 2xl:right-40 2xl:top-40  right-4 sm:right-6 z-50 group/indicator">
-                    <Link
-                        href="/profile"
-                        onClick={() => setIsAptDismissed(true)}
-                        className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-amber-400 text-amber-950 rounded-full shadow-[0_15px_40px_rgba(251,191,36,0.4)] border-2 border-white transition-all hover:scale-110 active:scale-90 animate-in slide-in-from-right-10 duration-700 overflow-visible"
-                    >
-                        {/* Pulse Ring */}
-                        <div className="absolute inset-0 bg-amber-400 rounded-full animate-ping opacity-30"></div>
-                        <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
+            {
+                session?.user && upcomingAppointment && !isAptDismissed && (
+                    <div className="fixed top-70 sm:top-70 2xl:right-40 2xl:top-40  right-4 sm:right-6 z-50 group/indicator">
+                        <Link
+                            href="/profile"
+                            onClick={() => setIsAptDismissed(true)}
+                            className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-amber-400 text-amber-950 rounded-full shadow-[0_15px_40px_rgba(251,191,36,0.4)] border-2 border-white transition-all hover:scale-110 active:scale-90 animate-in slide-in-from-right-10 duration-700 overflow-visible"
+                        >
+                            {/* Pulse Ring */}
+                            <div className="absolute inset-0 bg-amber-400 rounded-full animate-ping opacity-30"></div>
+                            <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
 
-                        <FaCalendarAlt className="relative z-10 text-lg sm:text-xl" />
+                            <FaCalendarAlt className="relative z-10 text-lg sm:text-xl" />
 
-                        {/* Hover Tooltip (Desktop) */}
-                        <div className="absolute right-full mr-4 opacity-0 group-hover/indicator:opacity-100 transition-opacity pointer-events-none hidden lg:block">
-                            <div className="bg-white px-4 py-2 rounded-2xl shadow-xl border border-amber-100 whitespace-nowrap">
-                                <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1">
-                                    Fixed Appointment
-                                </p>
-                                <p className="text-xs font-black text-gray-900">
-                                    {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
-                                </p>
+                            {/* Hover Tooltip (Desktop) */}
+                            <div className="absolute right-full mr-4 opacity-0 group-hover/indicator:opacity-100 transition-opacity pointer-events-none hidden lg:block">
+                                <div className="bg-white px-4 py-2 rounded-2xl shadow-xl border border-amber-100 whitespace-nowrap">
+                                    <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1">
+                                        Fixed Appointment
+                                    </p>
+                                    <p className="text-xs font-black text-gray-900">
+                                        {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Mobile Badge Only */}
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-white animate-bounce flex lg:hidden items-center justify-center">
-                            <div className="w-1 h-1 bg-white rounded-full"></div>
-                        </div>
-                    </Link>
-                </div>
-            )}
+                            {/* Mobile Badge Only */}
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-white animate-bounce flex lg:hidden items-center justify-center">
+                                <div className="w-1 h-1 bg-white rounded-full"></div>
+                            </div>
+                        </Link>
+                    </div>
+                )
+            }
 
             {/* Elite CTA Strip */}
             <section className="pb-12 sm:pb-20 overflow-hidden relative">
