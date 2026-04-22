@@ -10,7 +10,7 @@ import CustomerInsightsModal from '@/components/dashboard/CustomerInsightsModal'
 import { io } from 'socket.io-client';
 
 export default function DashboardOverview() {
-    type PatientLite = { _id: string; name?: string };
+    type PatientLite = { _id: string; name: string; address: string; createdAt: string };
     type ContactLite = { _id: string; name: string; status?: string; createdAt: string };
     type AppointmentLite = {
         _id: string;
@@ -335,7 +335,7 @@ export default function DashboardOverview() {
                                         <p className="text-sm font-bold text-gray-800">
                                             {act.type === 'appointment' ? (
                                                 <>
-                                                    Appt: <Link href={`/patients/${(typeof act.patientId === 'string' ? act.patientId : act.patientId?._id) || ''}`} className="hover:text-blue-600 hover:underline transition-colors">{(typeof act.patientId === 'string' ? 'Patient' : act.patientId?.name) || 'New Patient'}</Link>
+                                                    Appt: <Link href={`/patients/${(typeof act.patientId === 'object' && act.patientId !== null ? act.patientId._id : act.patientId) || ''}`} className="hover:text-blue-600 hover:underline transition-colors">{(typeof act.patientId === 'object' && act.patientId !== null ? act.patientId.name : 'Patient') || 'New Patient'}</Link>
                                                 </>
                                             ) : (
                                                 `Message from ${act.name}`
@@ -369,10 +369,10 @@ export default function DashboardOverview() {
                                     </div>
                                     <div>
                                         <Link
-                                            href={`/patients/${q.patientId?._id}`}
+                                            href={`/patients/${(typeof q.patientId === 'object' && q.patientId !== null ? q.patientId._id : q.patientId) || ''}`}
                                             className="text-sm font-black text-gray-800 hover:text-emerald-600 hover:underline transition-colors"
                                         >
-                                            {q.patientId?.name || 'Unknown'}
+                                            {(typeof q.patientId === 'object' && q.patientId !== null ? q.patientId.name : 'Unknown') || 'Unknown'}
                                         </Link>
                                         <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">{parseAppointmentReason(q.reason).treatmentName}</p>
                                     </div>

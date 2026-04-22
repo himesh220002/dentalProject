@@ -13,7 +13,7 @@ interface Patient {
 
 interface Appointment {
     _id: string;
-    patientId: unknown;
+    patientId?: { _id: string; name: string } | string | null;
     date: string;
     reason: string;
     status: string;
@@ -83,7 +83,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                     d.setHours(0, 0, 0, 0);
                     return d.getTime() === todayTime && a.status !== 'Cancelled';
                 })
-                .map(a => (a.patientId?._id || a.patientId)?.toString())
+                .map(a => (typeof a.patientId === 'object' && a.patientId !== null ? a.patientId._id : a.patientId)?.toString())
                 .filter(Boolean)
         );
 
@@ -95,7 +95,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
                     d.setHours(0, 0, 0, 0);
                     return d.getTime() > todayTime && a.status !== 'Cancelled';
                 })
-                .map(a => (a.patientId?._id || a.patientId)?.toString())
+                .map(a => (typeof a.patientId === 'object' && a.patientId !== null ? a.patientId._id : a.patientId)?.toString())
                 .filter(Boolean)
         );
 
@@ -170,7 +170,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
         // Retention: % of patients with more than 1 appointment
         const patientApptCounts: { [key: string]: number } = {};
         appointments.forEach(a => {
-            const pId = (a.patientId?._id || a.patientId)?.toString();
+            const pId = (typeof a.patientId === 'object' && a.patientId !== null ? a.patientId._id : a.patientId)?.toString();
             if (pId) patientApptCounts[pId] = (patientApptCounts[pId] || 0) + 1;
         });
         const retainedPatients = Object.values(patientApptCounts).filter(count => count > 1).length;
