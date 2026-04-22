@@ -43,8 +43,13 @@ export default function ActionTiles() {
     ];
 
     return (
-        <section className=" relative z-20 px-4 sm:px-6">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <section className="relative z-20 px-4 sm:px-6 py-6 sm:py-8 overflow-hidden ">
+            <div
+                className="absolute inset-0 max-w-[1600px] mx-auto -z-10 bg-cover bg-center bg-no-repeat rounded-[2rem] sm:rounded-[2.5rem]"
+                style={{ backgroundImage: "url('/images/laboratory-with-scientist-futuristic-interior.jpg')" }}
+            />
+            <div className="absolute inset-0 -z-10 bg-[#c7d1f200]/45 backdrop-blur-[1px]" />
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 ">
                 {useClinic().isLoading ? (
                     [...Array(3)].map((_, i) => (
                         <div key={i} className={i === 0 ? 'hidden lg:block' : ''}>

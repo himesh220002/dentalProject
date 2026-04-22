@@ -197,7 +197,7 @@ export default function WeeklyPlanner() {
                     </div>
                 </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-2 overflow-x-hidden">
                 {weekDays.map((day) => {
                     const dayAppointments = getAppointmentsForDay(day.date);
                     const isExpanded = expandedDate === day.date.toISOString();
@@ -209,10 +209,10 @@ export default function WeeklyPlanner() {
                         <div
                             key={day.date.toISOString()}
                             onClick={() => setExpandedDate(isExpanded ? null : day.date.toISOString())}
-                            className={`flex flex-col rounded-2xl md:rounded-3xl p-3 md:p-4 transition-all border-2 cursor-pointer md:cursor-default ${day.isToday
+                            className={`flex flex-col h-full min-w-0 rounded-2xl md:rounded-3xl p-2 md:p-3 transition-all border-2 cursor-pointer md:cursor-default overflow-x-hidden ${day.isToday
                                 ? 'bg-blue-50 border-blue-200 ring-2 md:ring-4 ring-blue-50'
                                 : 'bg-gray-50 border-transparent hover:border-gray-200'
-                                } ${isExpanded ? 'min-h-[220px]' : 'min-h-0 md:min-h-[220px]'}`}
+                                } ${isExpanded ? 'min-h-[220px]' : 'min-h-0 md:min-h-[420px]'}`}
                         >
                             <div className="flex justify-between items-center md:mb-4">
                                 <div className="flex items-center gap-3">
@@ -229,7 +229,7 @@ export default function WeeklyPlanner() {
                             </div>
 
                             {/* Day summary (always visible) */}
-                            <div className="m-2 md:mt-0 flex flex-wrap items-center gap-2">
+                            <div className="m-2 md:mt-0 flex flex-wrap items-center gap-2 min-w-0 overflow-x-hidden">
                                 <span className="px-2 py-1 rounded-xl bg-white text-[9px] font-black uppercase tracking-widest text-gray-600 border border-gray-100 whitespace-nowrap">
                                     Total: {dayAppointments.length}
                                 </span>
@@ -246,7 +246,7 @@ export default function WeeklyPlanner() {
                                 )}
                             </div>
 
-                            <div className={`flex flex-col gap-3 flex-grow mt-3 md:mt-0 overflow-y-auto max-h-[400px] scrollbar-hide ${isExpanded ? 'block' : 'hidden md:flex'}`}>
+                            <div className={`flex flex-col gap-3 flex-grow mt-3 md:mt-0 overflow-y-auto overflow-x-hidden max-h-[400px] scrollbar-hide min-w-0 ${isExpanded ? 'block' : 'hidden md:flex'}`}>
                                 {dayAppointments.length > 0 ? (
                                     dayAppointments.map((app) => {
                                         const expired = isPastTime(app.date, app.time);
@@ -260,7 +260,7 @@ export default function WeeklyPlanner() {
                                             <div
                                                 key={app._id}
                                                 onClick={(e) => e.stopPropagation()}
-                                                className={`p-3 rounded-2xl shadow-sm border transition-all ${operating
+                                                className={`w-full min-w-0 p-3 rounded-2xl shadow-sm border transition-all ${operating
                                                     ? 'bg-indigo-600 border-indigo-400 shadow-indigo-200/40 shadow-lg scale-[1.01] z-10'
                                                     : done
                                                         ? 'bg-white/40 opacity-60 border-gray-100'
@@ -269,14 +269,14 @@ export default function WeeklyPlanner() {
                                                             : 'bg-white border-gray-100 hover:shadow-md hover:border-blue-200'
                                                     }`}
                                             >
-                                                <div className="flex flex-col gap-1">
-                                                    <div className="flex flex-col items-center justify-between gap-2">
+                                                <div className="flex flex-col gap-1 min-w-0">
+                                                    <div className="flex flex-col items-center justify-between gap-2 min-w-0">
                                                         <div className="flex items-center gap-1.5 shrink-0">
                                                             <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg uppercase tracking-tight ${operating ? 'bg-white text-indigo-700 shadow-sm' : displayStatus === 'Delayed' ? 'bg-amber-100 text-amber-700' : 'bg-blue-50 text-blue-700'}`}>
                                                                 {app.time}
                                                             </span>
                                                             <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-lg uppercase tracking-widest ${operating ? 'bg-white/15 text-white border border-white/20' : done ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : displayStatus === 'Delayed' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-slate-50 text-slate-600 border border-slate-100'}`}>
-                                                                {operating ? 'Operating' : done ? 'Done' : displayStatus === 'Delayed' ? 'Delayed' : 'Scheduled'}
+                                                                {operating ? 'Op...' : done ? 'Done' : displayStatus === 'Delay' ? 'Delayed' : 'S...'}
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center gap-1 shrink-0">
@@ -297,14 +297,14 @@ export default function WeeklyPlanner() {
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <div className="flex flex-col items-center justify-between gap-2 bg-blue-50 shadow-inner rounded-lg p-2">
+                                                    <div className="flex flex-col items-center justify-between gap-2 bg-blue-50 shadow-inner rounded-lg p-2 min-w-0 w-full">
                                                     <Link
                                                         href={`/dashboard/schedules?highlight=${app._id}`}
-                                                        className={`text-xs font-black truncate hover:underline transition-all ${operating ? 'text-white' : done ? 'text-gray-500' : 'text-gray-800 hover:text-blue-600'}`}
+                                                        className={`text-xs font-black truncate hover:underline transition-all max-w-full ${operating ? 'text-blue-600' : done ? 'text-gray-500' : 'text-gray-800 hover:text-blue-600'}`}
                                                     >
                                                         {app.patientId?.name || 'Unknown'}
                                                     </Link>
-                                                    <div className={`text-[9px] font-black uppercase tracking-wider truncate ${operating ? 'text-indigo-100' : 'text-slate-500'}`}>
+                                                    <div className={`text-[9px] max-w-full font-black uppercase tracking-wider truncate ${operating ? 'text-indigo-500' : 'text-slate-500'}`}>
                                                         {treatmentName}
                                                     </div>
                                                     </div>

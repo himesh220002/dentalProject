@@ -53,6 +53,13 @@ function ContactContent() {
     const [editData, setEditData] = useState({ date: '', time: '' });
     const [savingEdit, setSavingEdit] = useState(false);
 
+    const formatSlot = (time24: string) => {
+        const [h, m] = time24.split(':').map(Number);
+        const period = h >= 12 ? 'PM' : 'AM';
+        const hour12 = h % 12 === 0 ? 12 : h % 12;
+        return `${hour12}:${String(m).padStart(2, '0')} ${period}`;
+    };
+
     useEffect(() => {
         const fetchTreatments = async () => {
             try {
@@ -464,15 +471,21 @@ function ContactContent() {
     };
 
     return (
-        <div className="relative px-4 py-2 sm:py-8 lg:py-10 sm:px-20 xl:px-40  mx-auto space-y-8 sm:space-y-16 overflow-x-hidden">
+        <div className="relative px-4 py-2 sm:py-8 lg:py-10 sm:px-20 xl:px-40  mx-auto space-y-8 sm:space-y-14 overflow-x-hidden">
 
 
 
-            <div className="3xl:block hidden text-center space-y-4">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900">{t.getIntouch}</h1>
+            <div className="block text-center space-y-4">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">{t.getIntouch}</h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                     {t.contactHeroSub}
                 </p>
+                {isAutoBookingEnabled && (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100 text-[11px] font-black uppercase tracking-widest">
+                        <FaCheckCircle className="text-emerald-600" />
+                        Automated booking enabled
+                    </div>
+                )}
             </div>
 
             <div className=" grid lg:grid-cols-3 gap-12">
@@ -489,7 +502,7 @@ function ContactContent() {
                 <div className="hidden lg:block lg:col-span-1 space-y-4 text-left">
 
                     {/* Phone Card */}
-                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
                         <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
                             <div className="bg-blue-100 p-3 rounded-full text-blue-600">
                                 <FaPhoneAlt className="text-xl" />
@@ -503,7 +516,7 @@ function ContactContent() {
                     </div>
 
                     {/* Whatsapp Card */}
-                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
                         <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
                             <div className="bg-green-100 p-3 rounded-full text-green-600">
                                 <FaWhatsapp className="text-xl" />
@@ -517,7 +530,7 @@ function ContactContent() {
                     </div>
 
                     {/* Visit Us Card */}
-                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
                         <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
                             <div className="bg-teal-100 p-3 rounded-full text-teal-600">
                                 <FaMapMarkerAlt className="text-xl" />
@@ -534,7 +547,7 @@ function ContactContent() {
                 <div className="lg:col-span-2 space-y-8">
 
                     {/* Contact Form / Guided Booking */}
-                    <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden border border-[10px] border-white shadow-inner">
+                    <div className="bg-white p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-sm">
                         <div className="flex flex-col sm:flex-row gap-2 justify-between items-center mb-6">
                             <h2 className="text-lg sm:text-xl font-black text-gray-800 flex items-center gap-2">
                                 <FaCalendarCheck className="text-blue-600" />
@@ -550,6 +563,26 @@ function ContactContent() {
                                 </div>
                             )}
                         </div>
+
+                        {isAutoBookingEnabled && (
+                            <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Booking summary</div>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                                    <div className="rounded-xl bg-gray-100 border shadow-inner border-slate-200 px-3 py-2">
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Treatment</div>
+                                        <div className="font-black text-slate-900 ">{formData.requestedTreatment || 'Not selected'}</div>
+                                    </div>
+                                    <div className="rounded-xl bg-gray-100 shadow-inner border border-slate-200 px-3 py-2">
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Date</div>
+                                        <div className="font-black text-slate-900">{formData.requestedDate || 'Not selected'}</div>
+                                    </div>
+                                    <div className="rounded-xl bg-gray-100 shadow-inner border border-slate-200 px-3 py-2">
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Time</div>
+                                        <div className="font-black text-slate-900">{formData.requestedTime ? formatSlot(formData.requestedTime) : 'Not selected'}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {status.message && (
                             <div className={`mb-6 p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
@@ -579,7 +612,7 @@ function ContactContent() {
                                                         <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">{t.formName}</label>
                                                         <input
                                                             type="text" id="name" value={formData.name} onChange={handleChange} required
-                                                            className="w-full px-5 py-4 rounded-2xl bg-white border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
+                                                            className="w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
                                                             placeholder={t.namePlaceholder}
                                                         />
                                                     </div>
@@ -593,7 +626,7 @@ function ContactContent() {
                                                                 const val = e.target.value.replace(/\D/g, '').slice(0, 10);
                                                                 setFormData(prev => ({ ...prev, phone: val }));
                                                             }}
-                                                            className={`w-full px-5 py-4 rounded-2xl bg-white border-2 font-bold outline-none transition-all ${formData.phone.length === 10 ? 'border-emerald-100 text-emerald-600' : 'border-transparent focus:border-blue-500'}`}
+                                                            className={`w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 font-bold outline-none transition-all ${formData.phone.length === 10 ? 'border-emerald-100 text-emerald-600' : 'border-transparent focus:border-blue-500'}`}
                                                             placeholder="10 digit number"
                                                         />
                                                     </div>
@@ -602,7 +635,7 @@ function ContactContent() {
                                                     <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">{t.emailOptional}</label>
                                                     <input
                                                         type="email" id="email" value={formData.email} onChange={handleChange}
-                                                        className="w-full px-5 py-4 rounded-2xl bg-white border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
+                                                        className="w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
                                                         placeholder={t.emailPlaceholder}
                                                     />
                                                 </div>
@@ -620,20 +653,22 @@ function ContactContent() {
                                         {/* STEP 2: CHOOSE TREATMENT */}
                                         {currentStep === 2 && (
                                             <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                                                <div className="grid grid-cols-2 sm:grid-cols-3 h-[500px]  gap-3">
-                                                    {treatments.map((t) => (
-                                                        <button
-                                                            key={t._id}
-                                                            type="button"
-                                                            onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: t.name }))}
-                                                            className={`p-2 sm:p-4 rounded-2xl border-2 shadow-inner transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gradient-to-b from-purple-100/50 to-blue-100/50 backdrop-blur-sm hover:bg-gray-100'}`}
-                                                        >
-                                                            <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
-                                                            <span className="text-[12px] md:text-[15px] font-black uppercase text-center leading-tight">
-                                                                {(translations[language] as any).treatmentNames?.[t.name] || t.name}
-                                                            </span>
-                                                        </button>
-                                                    ))}
+                                                <div className="max-h-[520px] overflow-y-auto pr-1 custom-scrollbar">
+                                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                                        {treatments.map((t) => (
+                                                            <button
+                                                                key={t._id}
+                                                                type="button"
+                                                                onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: t.name }))}
+                                                                className={`p-2 sm:p-4 lg:py-8 rounded-2xl border-2 shadow-inner transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-200' : 'border-gray-50 bg-gradient-to-b from-purple-100/50 to-blue-100/50 backdrop-blur-sm hover:bg-gray-100'}`}
+                                                            >
+                                                                <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
+                                                                <span className="text-[12px] md:text-[15px] font-black uppercase text-center leading-tight">
+                                                                    {(translations[language] as any).treatmentNames?.[t.name] || t.name}
+                                                                </span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                                 <div className="flex gap-2 sm:gap-4 mt-2">
                                                     <button
@@ -674,6 +709,9 @@ function ContactContent() {
                                                                 <span className="text-[10px] font-black text-blue-600">{item.display.split(' ')[0]}</span>
                                                                 <span className="text-sm font-black text-gray-800">{item.display.split(' ')[1]}</span>
                                                                 <span className="text-[8px] font-bold text-gray-400">{item.display.split(' ')[2]}</span>
+                                                                <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${item.count < 6 ? 'bg-emerald-100 text-emerald-700' : item.count < 8 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>
+                                                                    {item.count < 6 ? t.flexible : item.count < 8 ? t.steady : t.busy}
+                                                                </span>
                                                             </button>
                                                         ))}
                                                     </div>
@@ -712,7 +750,7 @@ function ContactContent() {
                                                                                     : 'border-gray-50 bg-gray-50 text-gray-600 hover:bg-gray-100'
                                                                                 }`}
                                                                         >
-                                                                            {time}
+                                                                            {formatSlot(time)}
                                                                         </button>
                                                                     );
                                                                 })}
@@ -1151,7 +1189,7 @@ function ContactContent() {
                 <div className="block lg:hidden lg:col-span-1 space-y-4 text-left">
 
                     {/* Phone Card */}
-                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
                         <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
                             <div className="bg-blue-100 p-3 rounded-full text-blue-600">
                                 <FaPhoneAlt className="text-xl" />
@@ -1165,7 +1203,7 @@ function ContactContent() {
                     </div>
 
                     {/* Whatsapp Card */}
-                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
                         <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
                             <div className="bg-green-100 p-3 rounded-full text-green-600">
                                 <FaWhatsapp className="text-xl" />
@@ -1179,7 +1217,7 @@ function ContactContent() {
                     </div>
 
                     {/* Visit Us Card */}
-                    <div className="text-center sm:text-left bg-gradient-to-br from-purple-100 to-teal-50 p-4 sm:p-6 rounded-3xl shadow-lg border border-3 border-gray-50 hover:bg-gradient-to-br hover:from-green-50 hover:to-purple-100 hover:transform hover:scale-105 transition duration-300">
+                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
                         <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
                             <div className="bg-teal-100 p-3 rounded-full text-teal-600">
                                 <FaMapMarkerAlt className="text-xl" />

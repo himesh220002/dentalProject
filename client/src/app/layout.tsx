@@ -1,8 +1,6 @@
 import './globals.css';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import Providers from '../components/Providers';
-import LanguageToggle from '../components/LanguageToggle';
+import AppChrome from '../components/AppChrome';
 
 import axios from 'axios';
 
@@ -154,12 +152,7 @@ export default async function RootLayout({
                     }}
                 />
                 <Providers>
-                    <Navbar />
-                    <main className="flex-grow mx-auto w-full">
-                        {children}
-                    </main>
-                    <Footer />
-                    <LanguageToggle />
+                    <AppChrome>{children}</AppChrome>
                 </Providers>
             </body>
         </html>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { FaUsers, FaEnvelope, FaCalendarAlt, FaChartLine } from 'react-icons/fa';
+import { FaUsers, FaEnvelope, FaCalendarAlt, FaChartLine, FaChevronDown } from 'react-icons/fa';
 import Link from 'next/link';
 import WeeklyPlanner from '@/components/WeeklyPlanner';
 import { parseAppointmentReason } from '@/utils/appointmentUtils';
@@ -44,6 +44,7 @@ export default function DashboardOverview() {
     const [queue, setQueue] = useState<AppointmentLite[]>([]);
     const [loading, setLoading] = useState(true);
     const [isInsightsOpen, setIsInsightsOpen] = useState(false);
+    const [isOverviewCollapsed, setIsOverviewCollapsed] = useState(true);
 
     // Raw data for insights
     const [rawData, setRawData] = useState<{
@@ -200,6 +201,63 @@ export default function DashboardOverview() {
         },
     ];
 
+    const renderStatCards = () => (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6">
+            {statCards.map((stat, idx) => {
+                const Icon = stat.icon;
+                let href = '#';
+                if (stat.label === 'Total Patients') href = '/dashboard/patients';
+                else if (stat.label === 'New Messages') href = '/dashboard/messages';
+                else if (stat.isAptCard) href = '/dashboard/schedules';
+
+                const handleClick = (e: React.MouseEvent) => {
+                    if (stat.isInsightsCard) {
+                        e.preventDefault();
+                        setIsInsightsOpen(true);
+                    }
+                };
+
+                return (
+                    <Link
+                        href={href}
+                        key={idx}
+                        className="block group cursor-pointer"
+                        onClick={handleClick}
+                    >
+                        <div className="bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition h-full">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition`}>
+                                    <Icon className="text-2xl" />
+                                </div>
+                                {stat.isAptCard ? (
+                                    <div className="flex flex-col items-end">
+                                        <div className="flex gap-4">
+                                            <div className="text-center">
+                                                <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Today</p>
+                                                <p className="text-xl font-black text-gray-900 leading-none">{stats.todayApts}</p>
+                                            </div>
+                                            <div className="text-center border-x border-gray-100 px-3">
+                                                <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Tmrw</p>
+                                                <p className="text-xl font-black text-gray-900 leading-none">{stats.tomorrowApts}</p>
+                                            </div>
+                                            <div className="text-center">
+                                                <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Next</p>
+                                                <p className="text-xl font-black text-gray-900 leading-none">{stats.upcomingApts}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <span className="text-3xl font-black text-gray-900">{stat.value}</span>
+                                )}
+                            </div>
+                            <h3 className="text-slate-600 font-black uppercase tracking-widest text-[10px]">{stat.label}</h3>
+                        </div>
+                    </Link>
+                );
+            })}
+        </div>
+    );
+
     if (loading) return (
         <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -215,65 +273,37 @@ export default function DashboardOverview() {
                         Daily operations snapshot: patients, inquiries, queue, and revenue.
                     </p>
                 </div>
-                <div className="bg-white border border-slate-200 rounded-2xl px-4 py-2 text-center sm:text-right">
+                <div className="hidden lg:block bg-white border border-slate-200 rounded-2xl px-4 py-2 text-center sm:text-right">
                     <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Today&apos;s collection</div>
                     <div className="text-xl font-black text-slate-900">₹{stats.todayCollection}</div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6">
-                {statCards.map((stat, idx) => {
-                    const Icon = stat.icon;
-                    let href = '#';
-                    if (stat.label === 'Total Patients') href = '/dashboard/patients';
-                    else if (stat.label === 'New Messages') href = '/dashboard/messages';
-                    else if (stat.isAptCard) href = '/dashboard/schedules';
+            <div className="lg:hidden bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+                <button
+                    type="button"
+                    onClick={() => setIsOverviewCollapsed((prev) => !prev)}
+                    className="w-full px-4 py-4 flex items-center justify-between text-left"
+                >
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Daily Snapshot</p>
+                        <p className="text-sm font-bold text-slate-800">Collection, patients, messages, appointments, insights</p>
+                    </div>
+                    <FaChevronDown className={`text-slate-500 transition-transform ${isOverviewCollapsed ? 'rotate-0' : 'rotate-180'}`} />
+                </button>
+                {!isOverviewCollapsed && (
+                    <div className="p-3 sm:p-4 border-t border-slate-100 space-y-3 sm:space-y-4">
+                        <div className="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-center">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Today&apos;s collection</div>
+                            <div className="text-2xl font-black text-slate-900">₹{stats.todayCollection}</div>
+                        </div>
+                        {renderStatCards()}
+                    </div>
+                )}
+            </div>
 
-                    const handleClick = (e: React.MouseEvent) => {
-                        if (stat.isInsightsCard) {
-                            e.preventDefault();
-                            setIsInsightsOpen(true);
-                        }
-                    };
-
-                    return (
-                        <Link
-                            href={href}
-                            key={idx}
-                            className="block group cursor-pointer"
-                            onClick={handleClick}
-                        >
-                            <div className="bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition h-full">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition`}>
-                                        <Icon className="text-2xl" />
-                                    </div>
-                                    {stat.isAptCard ? (
-                                        <div className="flex flex-col items-end">
-                                            <div className="flex gap-4">
-                                                <div className="text-center">
-                                                    <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Today</p>
-                                                    <p className="text-xl font-black text-gray-900 leading-none">{stats.todayApts}</p>
-                                                </div>
-                                                <div className="text-center border-x border-gray-100 px-3">
-                                                    <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Tmrw</p>
-                                                    <p className="text-xl font-black text-gray-900 leading-none">{stats.tomorrowApts}</p>
-                                                </div>
-                                                <div className="text-center">
-                                                    <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Next</p>
-                                                    <p className="text-xl font-black text-gray-900 leading-none">{stats.upcomingApts}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <span className="text-3xl font-black text-gray-900">{stat.value}</span>
-                                    )}
-                                </div>
-                                <h3 className="text-slate-600 font-black uppercase tracking-widest text-[10px]">{stat.label}</h3>
-                            </div>
-                        </Link>
-                    );
-                })}
+            <div className="hidden lg:block">
+                {renderStatCards()}
             </div>
 
             <CustomerInsightsModal

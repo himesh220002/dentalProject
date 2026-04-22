@@ -62,6 +62,7 @@ export default function DashboardLayout({
     };
 
     const menuItems: MenuItem[] = [
+        { name: 'Home', path: '/', icon: FaHome },
         { name: 'Overview', path: '/dashboard', icon: FaChartLine },
         { name: 'Patients', path: '/dashboard/patients', icon: FaUsers },
         { name: 'Messages', path: '/dashboard/messages', icon: FaEnvelope, badge: unreadCount },
@@ -154,9 +155,6 @@ export default function DashboardLayout({
                     </nav>
 
                     <div className="p-6 border-t border-white/10 space-y-4 shrink-0">
-                        <Link href="/" className="flex items-center gap-3 text-slate-300 hover:text-white transition">
-                            <FaHome /> <span>Back to Site</span>
-                        </Link>
                         <button
                             onClick={handleLogout}
                             className="flex items-center gap-3 text-rose-300 hover:text-rose-200 transition w-full"

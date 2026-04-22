@@ -21,6 +21,7 @@ import { ConsultantCardSkeleton } from '@/components/ui/Skeleton';
 import { io } from 'socket.io-client';
 import { parseAppointmentReason } from '@/utils/appointmentUtils';
 import AppointmentSearchInline from '@/components/home/AppointmentSearchInline';
+import GeneralInquiryForm from '@/components/contact/GeneralInquiryForm';
 
 export default function Home() {
     const { data: session } = useSession();
@@ -404,6 +405,10 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <section className="px-4 sm:px-8 xl:px-20 2xl:px-40 pb-12 sm:pb-20">
+                <GeneralInquiryForm />
             </section>
         </div>
     );
