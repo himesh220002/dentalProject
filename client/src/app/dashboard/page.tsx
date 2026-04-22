@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { FaUsers, FaEnvelope, FaCalendarAlt, FaTooth, FaChartLine } from 'react-icons/fa';
+import { FaUsers, FaEnvelope, FaCalendarAlt, FaChartLine } from 'react-icons/fa';
 import Link from 'next/link';
 import WeeklyPlanner from '@/components/WeeklyPlanner';
 import { parseAppointmentReason } from '@/utils/appointmentUtils';
@@ -10,6 +10,27 @@ import CustomerInsightsModal from '@/components/dashboard/CustomerInsightsModal'
 import { io } from 'socket.io-client';
 
 export default function DashboardOverview() {
+    type PatientLite = { _id: string; name?: string };
+    type ContactLite = { _id: string; name: string; status?: string; createdAt: string };
+    type AppointmentLite = {
+        _id: string;
+        patientId?: PatientLite | string | null;
+        date: string;
+        time: string;
+        reason: string;
+        status: string;
+        isTicked?: boolean;
+        isDeleted?: boolean;
+        createdAt: string;
+        completedAt?: string;
+    };
+    type TreatmentLite = { _id: string; name: string; price?: string };
+    type FinancialStats = { todayCollection: number };
+
+    type ActivityItem =
+        | (AppointmentLite & { type: 'appointment'; timeStamp: Date })
+        | (ContactLite & { type: 'message'; timeStamp: Date });
+
     const [stats, setStats] = useState({
         patients: 0,
         messages: 0,
@@ -19,17 +40,17 @@ export default function DashboardOverview() {
         treatments: 0,
         todayCollection: 0
     });
-    const [recentActivity, setRecentActivity] = useState<any[]>([]);
-    const [queue, setQueue] = useState<any[]>([]);
+    const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
+    const [queue, setQueue] = useState<AppointmentLite[]>([]);
     const [loading, setLoading] = useState(true);
     const [isInsightsOpen, setIsInsightsOpen] = useState(false);
 
     // Raw data for insights
     const [rawData, setRawData] = useState<{
-        patients: any[];
-        appointments: any[];
-        messages: any[];
-        treatments: any[];
+        patients: PatientLite[];
+        appointments: AppointmentLite[];
+        messages: ContactLite[];
+        treatments: TreatmentLite[];
     }>({
         patients: [],
         appointments: [],
@@ -55,64 +76,65 @@ export default function DashboardOverview() {
                 axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/stats`)
             ]);
 
-            const allAppts = appointmentsRes.data;
-            const allPatients = patientsRes.data;
-            const allMessages = messagesRes.data;
+            const allAppts = appointmentsRes.data as AppointmentLite[];
+            const allPatients = patientsRes.data as PatientLite[];
+            const allMessages = messagesRes.data as ContactLite[];
+            const financialStats = financialRes.data as FinancialStats;
 
             setRawData({
                 patients: allPatients,
                 appointments: allAppts,
                 messages: allMessages,
-                treatments: treatmentsRes.data
+                treatments: treatmentsRes.data as TreatmentLite[]
             });
 
-            const todayAppointments = allAppts.filter((a: any) => {
+            const todayAppointments = allAppts.filter((a) => {
                 const d = new Date(a.date);
                 d.setHours(0, 0, 0, 0);
                 return d.getTime() === todayTime;
             });
 
-            const tomorrowAppointments = allAppts.filter((a: any) => {
+            const tomorrowAppointments = allAppts.filter((a) => {
                 const d = new Date(a.date);
                 d.setHours(0, 0, 0, 0);
                 return d.getTime() === tomorrowTime;
             });
 
-            const upcomingAppointments = allAppts.filter((a: any) => {
+            const upcomingAppointments = allAppts.filter((a) => {
                 const d = new Date(a.date);
                 d.setHours(0, 0, 0, 0);
                 return d.getTime() > tomorrowTime;
             });
 
-            const todayRemaining = todayAppointments.filter((a: any) =>
+            const todayRemaining = todayAppointments.filter((a) =>
                 !a.isTicked && !a.isDeleted && a.status !== 'Completed' && a.status !== 'Cancelled'
             );
 
             setStats({
                 patients: allPatients.length,
-                messages: allMessages.filter((m: any) => m.status === 'Unread').length,
+                messages: allMessages.filter((m) => m.status === 'Unread').length,
                 todayApts: todayRemaining.length,
                 tomorrowApts: tomorrowAppointments.length,
                 upcomingApts: upcomingAppointments.length,
-                treatments: treatmentsRes.data.length,
-                todayCollection: financialRes.data.todayCollection
+                treatments: (treatmentsRes.data as TreatmentLite[]).length,
+                todayCollection: financialStats.todayCollection
             });
 
             // Calculate Recent Activity (merge appointments and messages)
             const combinedActivity = [
-                ...allAppts.map((a: any) => ({
+                ...allAppts.map((a) => ({
                     ...a,
                     type: 'appointment',
                     timeStamp: (a.status === 'Completed' && a.completedAt) ? new Date(a.completedAt) : new Date(a.createdAt)
                 })),
-                ...allMessages.map((m: any) => ({ ...m, type: 'message', timeStamp: new Date(m.createdAt) }))
-            ].sort((a, b) => b.timeStamp - a.timeStamp).slice(0, 5);
+                ...allMessages.map((m) => ({ ...m, type: 'message', timeStamp: new Date(m.createdAt) }))
+            ].sort((a, b) => b.timeStamp.getTime() - a.timeStamp.getTime()).slice(0, 5) as ActivityItem[];
             setRecentActivity(combinedActivity);
 
             // Calculate Queue Status (today's unticked appointments)
             const untickedQueue = todayAppointments
-                .filter((a: any) => !a.isTicked && !a.isDeleted)
-                .sort((a: any, b: any) => a.time.localeCompare(b.time));
+                .filter((a) => !a.isTicked && !a.isDeleted)
+                .sort((a, b) => a.time.localeCompare(b.time));
             setQueue(untickedQueue);
 
         } catch (error) {
@@ -186,13 +208,24 @@ export default function DashboardOverview() {
 
     return (
         <div className="space-y-4 sm:space-y-10">
-            <h1 className="text-2xl sm:text-3xl text-center sm:text-left font-black text-gray-900">Clinic Overview</h1>
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl sm:text-3xl text-center sm:text-left font-black text-slate-900 tracking-tight">Clinic Overview</h1>
+                    <p className="text-slate-600 text-sm sm:text-base font-medium text-center sm:text-left">
+                        Daily operations snapshot: patients, inquiries, queue, and revenue.
+                    </p>
+                </div>
+                <div className="bg-white border border-slate-200 rounded-2xl px-4 py-2 text-center sm:text-right">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Today&apos;s collection</div>
+                    <div className="text-xl font-black text-slate-900">₹{stats.todayCollection}</div>
+                </div>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6">
                 {statCards.map((stat, idx) => {
                     const Icon = stat.icon;
                     let href = '#';
-                    if (stat.label === 'Total Patients') href = '/patients';
+                    if (stat.label === 'Total Patients') href = '/dashboard/patients';
                     else if (stat.label === 'New Messages') href = '/dashboard/messages';
                     else if (stat.isAptCard) href = '/dashboard/schedules';
 
@@ -210,7 +243,7 @@ export default function DashboardOverview() {
                             className="block group cursor-pointer"
                             onClick={handleClick}
                         >
-                            <div className="bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition h-full">
+                            <div className="bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition h-full">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition`}>
                                         <Icon className="text-2xl" />
@@ -236,7 +269,7 @@ export default function DashboardOverview() {
                                         <span className="text-3xl font-black text-gray-900">{stat.value}</span>
                                     )}
                                 </div>
-                                <h3 className="text-gray-500 font-bold uppercase tracking-wider text-[10px]">{stat.label}</h3>
+                                <h3 className="text-slate-600 font-black uppercase tracking-widest text-[10px]">{stat.label}</h3>
                             </div>
                         </Link>
                     );
@@ -254,7 +287,7 @@ export default function DashboardOverview() {
 
             <WeeklyPlanner />
 
-            <div className="grid lg:grid-cols-2 gap-8 mt-8">
+            <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 mt-6 sm:mt-8">
                 {/* Recent Activity */}
                 <div className="bg-white p-4 sm:p-4 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
                     <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2">
@@ -272,14 +305,14 @@ export default function DashboardOverview() {
                                         <p className="text-sm font-bold text-gray-800">
                                             {act.type === 'appointment' ? (
                                                 <>
-                                                    Appt: <Link href={`/patients/${act.patientId?._id}`} className="hover:text-blue-600 hover:underline transition-colors">{act.patientId?.name || 'New Patient'}</Link>
+                                                    Appt: <Link href={`/patients/${(typeof act.patientId === 'string' ? act.patientId : act.patientId?._id) || ''}`} className="hover:text-blue-600 hover:underline transition-colors">{(typeof act.patientId === 'string' ? 'Patient' : act.patientId?.name) || 'New Patient'}</Link>
                                                 </>
                                             ) : (
                                                 `Message from ${act.name}`
                                             )}
                                         </p>
                                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                                            {act.type === 'appointment' ? parseAppointmentReason(act.reason).treatmentName : 'New Inquire'} • {new Date(act.timeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {act.type === 'appointment' ? parseAppointmentReason(act.reason).treatmentName : 'New Inquiry'} • {act.timeStamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </p>
                                     </div>
                                 </div>
@@ -294,7 +327,7 @@ export default function DashboardOverview() {
                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
                     <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                        Today's Queue
+                        Today&apos;s Queue
                     </h2>
                     <div className="space-y-4">
                         {queue.length > 0 ? (
@@ -321,7 +354,7 @@ export default function DashboardOverview() {
                         ) : (
                             <div className="text-emerald-600/50 bg-emerald-50/50 rounded-3xl text-center py-16 px-10 border-2 border-dashed border-emerald-100">
                                 <p className="font-black uppercase tracking-[0.2em] mb-1">Queue Clear</p>
-                                <p className="text-xs font-medium">All of today's appointments are either completed or scheduled for later.</p>
+                                <p className="text-xs font-medium">All of today&apos;s appointments are either completed or scheduled for later.</p>
                             </div>
                         )}
                     </div>

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch, FaTimes, FaCheck, FaImage, FaGripVertical } from 'react-icons/fa';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Blog {
     _id: string;
@@ -27,6 +28,7 @@ export default function AdminBlogsPage() {
     const [blogs, setBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
     const [blocks, setBlocks] = useState<ContentBlock[]>([
@@ -88,7 +90,7 @@ export default function AdminBlogsPage() {
                             .map(li => li.innerText)
                             .join('\n');
                     }
-                    result.push({ id: Math.random().toString(), type: type as any, content });
+                    result.push({ id: Math.random().toString(), type: type as ContentBlock['type'], content });
                 }
             }
         });
@@ -194,9 +196,24 @@ export default function AdminBlogsPage() {
         setBlocks(newBlocks);
     };
 
-    const filteredBlogs = blogs.filter(blog =>
-        blog.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const displayedBlogs = useMemo(() => {
+        const q = searchTerm.trim().toLowerCase();
+        const base = statusFilter === 'all' ? blogs : blogs.filter(b => b.status === statusFilter);
+        if (!q) return base;
+        return base.filter(b => {
+            const title = (b.title || '').toLowerCase();
+            const author = (b.author || '').toLowerCase();
+            const slug = (b.slug || '').toLowerCase();
+            const tags = (b.tags || []).join(' ').toLowerCase();
+            return title.includes(q) || author.includes(q) || slug.includes(q) || tags.includes(q);
+        });
+    }, [blogs, searchTerm, statusFilter]);
+
+    const counts = useMemo(() => {
+        const published = blogs.filter(b => b.status === 'published').length;
+        const draft = blogs.filter(b => b.status === 'draft').length;
+        return { published, draft, total: blogs.length };
+    }, [blogs]);
 
     return (
         <div className="space-y-4 sm:space-y-8 overflow-y-auto">
@@ -215,26 +232,49 @@ export default function AdminBlogsPage() {
             </div>
 
             <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-50 flex items-center gap-4">
+                <div className="p-4 sm:p-6 border-b border-gray-50 flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4">
                     <div className="relative flex-grow">
                         <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Search blogs by title..."
+                            placeholder="Search title, slug, author, tags..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-100 focus:border-blue-500 outline-none font-bold text-sm"
                         />
                     </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <div className="px-4 py-2 rounded-2xl bg-gray-50 border border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-600">
+                            Total <span className="text-gray-900">{counts.total}</span>
+                        </div>
+                        <div className="px-4 py-2 rounded-2xl bg-green-50 border border-green-100 text-[10px] font-black uppercase tracking-widest text-green-700">
+                            Published <span className="text-green-900">{counts.published}</span>
+                        </div>
+                        <div className="px-4 py-2 rounded-2xl bg-yellow-50 border border-yellow-100 text-[10px] font-black uppercase tracking-widest text-yellow-700">
+                            Draft <span className="text-yellow-900">{counts.draft}</span>
+                        </div>
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value as 'all' | 'draft' | 'published')}
+                            className="px-4 py-2 rounded-2xl bg-gray-50 border border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-800 outline-none cursor-pointer"
+                        >
+                            <option value="all">All</option>
+                            <option value="published">Published</option>
+                            <option value="draft">Draft</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                {/* Desktop table */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-gray-50/50">
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Blog Details</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Blog</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Slug</th>
                                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date Created</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Tags</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Created</th>
                                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -246,19 +286,21 @@ export default function AdminBlogsPage() {
                                             <div className="h-4 bg-gray-100 rounded w-1/2 mb-2"></div>
                                             <div className="h-3 bg-gray-50 rounded w-1/4"></div>
                                         </td>
+                                        <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-32"></div></td>
                                         <td className="px-6 py-4"><div className="h-6 bg-gray-100 rounded-full w-20"></div></td>
+                                        <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-44"></div></td>
                                         <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-24"></div></td>
                                         <td className="px-6 py-4"></td>
                                     </tr>
                                 ))
-                            ) : filteredBlogs.length > 0 ? (
-                                filteredBlogs.map((blog) => (
+                            ) : displayedBlogs.length > 0 ? (
+                                displayedBlogs.map((blog) => (
                                     <tr key={blog._id} className="hover:bg-blue-50/30 transition-colors group">
                                         <td className="px-6 py-6">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
                                                     {blog.imageUrl ? (
-                                                        <img src={blog.imageUrl} alt="" className="w-full h-full object-cover" />
+                                                        <Image src={blog.imageUrl} alt="" width={48} height={48} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-xl">🦷</div>
                                                     )}
@@ -270,12 +312,29 @@ export default function AdminBlogsPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
+                                            <div className="text-xs font-black text-gray-700">{blog.slug}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${blog.status === 'published'
                                                 ? 'bg-green-100 text-green-700'
                                                 : 'bg-yellow-100 text-yellow-700'
                                                 }`}>
                                                 {blog.status}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex flex-wrap gap-1">
+                                                {(blog.tags || []).slice(0, 3).map((t) => (
+                                                    <span key={t} className="px-2 py-1 rounded-full bg-blue-50 text-blue-700 text-[9px] font-black uppercase tracking-widest border border-blue-100">
+                                                        {t}
+                                                    </span>
+                                                ))}
+                                                {(blog.tags || []).length > 3 && (
+                                                    <span className="px-2 py-1 rounded-full bg-gray-50 text-gray-600 text-[9px] font-black uppercase tracking-widest border border-gray-100">
+                                                        +{(blog.tags || []).length - 3}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="text-xs font-bold text-gray-600">
@@ -312,7 +371,7 @@ export default function AdminBlogsPage() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-20 text-center">
+                                    <td colSpan={6} className="px-6 py-20 text-center">
                                         <div className="flex flex-col items-center gap-4">
                                             <p className="text-gray-400 font-bold">No blogs found. Start by creating your first article!</p>
                                             <button
@@ -336,6 +395,76 @@ export default function AdminBlogsPage() {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile cards */}
+                <div className="md:hidden p-4 space-y-3">
+                    {loading ? (
+                        <div className="py-16 text-center text-gray-400 font-bold">Loading…</div>
+                    ) : displayedBlogs.length > 0 ? (
+                        displayedBlogs.map((blog) => (
+                            <div key={blog._id} className="bg-white rounded-3xl border border-gray-100 shadow-sm p-4">
+                                <div className="flex items-start gap-4">
+                                    <div className="w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
+                                        {blog.imageUrl ? (
+                                            <Image src={blog.imageUrl} alt="" width={56} height={56} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-xl">🦷</div>
+                                        )}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="font-black text-gray-900 text-sm leading-snug line-clamp-2">{blog.title}</div>
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">{blog.author}</div>
+                                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${blog.status === 'published'
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-yellow-100 text-yellow-700'
+                                                }`}>
+                                                {blog.status}
+                                            </span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                                {new Date(blog.createdAt).toLocaleDateString('en-GB')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-3 flex flex-wrap gap-1">
+                                    {(blog.tags || []).slice(0, 6).map((t) => (
+                                        <span key={t} className="px-2 py-1 rounded-full bg-blue-50 text-blue-700 text-[9px] font-black uppercase tracking-widest border border-blue-100">
+                                            {t}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <div className="mt-4 grid grid-cols-3 gap-2">
+                                    <Link
+                                        href={`/blogs/${blog.slug}`}
+                                        target="_blank"
+                                        className="flex items-center justify-center gap-2 bg-blue-50 text-blue-700 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border border-blue-100"
+                                    >
+                                        <FaEye /> View
+                                    </Link>
+                                    <button
+                                        onClick={() => handleOpenModal(blog)}
+                                        className="flex items-center justify-center gap-2 bg-indigo-50 text-indigo-700 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border border-indigo-100"
+                                    >
+                                        <FaEdit /> Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(blog._id)}
+                                        className="flex items-center justify-center gap-2 bg-rose-50 text-rose-700 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border border-rose-100"
+                                    >
+                                        <FaTrash /> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="px-6 py-20 text-center">
+                            <p className="text-gray-400 font-bold">No blogs found.</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -420,7 +549,7 @@ export default function AdminBlogsPage() {
                                     </div>
                                     {formData.imageUrl && (
                                         <div className="w-14 h-14 rounded-2xl overflow-hidden border border-gray-100 shrink-0">
-                                            <img src={formData.imageUrl} alt="" className="w-full h-full object-cover" />
+                                            <Image src={formData.imageUrl} alt="" width={56} height={56} className="w-full h-full object-cover" />
                                         </div>
                                     )}
                                 </div>

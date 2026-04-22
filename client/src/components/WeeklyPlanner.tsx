@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCalendarDay, FaUser, FaClock, FaChevronLeft, FaChevronRight, FaPlus, FaCheckSquare, FaSquare, FaHistory } from 'react-icons/fa';
+import { FaCalendarDay, FaChevronLeft, FaChevronRight, FaPlus, FaCheckSquare, FaSquare, FaHistory } from 'react-icons/fa';
 import { parseDateTime } from '@/utils/dateUtils';
+import { parseAppointmentReason } from '@/utils/appointmentUtils';
 import QuickScheduler from './QuickScheduler';
 
 interface Patient {
@@ -63,8 +64,6 @@ export default function WeeklyPlanner() {
     useEffect(() => {
         fetchData();
     }, []);
-
-    const days = ['Today', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     const getWeekDays = (start: Date) => {
         const result = [];
@@ -202,6 +201,10 @@ export default function WeeklyPlanner() {
                 {weekDays.map((day) => {
                     const dayAppointments = getAppointmentsForDay(day.date);
                     const isExpanded = expandedDate === day.date.toISOString();
+                    const completedCount = dayAppointments.filter(a => a.isTicked || a.status === 'Completed').length;
+                    const operatingCount = dayAppointments.filter(a => a.status === 'Operating').length;
+                    const pendingCount = dayAppointments.length - completedCount - operatingCount;
+
                     return (
                         <div
                             key={day.date.toISOString()}
@@ -216,15 +219,31 @@ export default function WeeklyPlanner() {
                                     <span className={`text-[10px] md:text-xs font-black uppercase tracking-widest ${day.isToday ? 'text-blue-600' : 'text-gray-400'}`}>
                                         {day.name}
                                     </span>
-                                    {!isExpanded && (
-                                        <span className="md:hidden text-[9px] font-bold text-gray-400">
-                                            {dayAppointments.length} Appts
-                                        </span>
-                                    )}
+                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest md:hidden">
+                                        {dayAppointments.length} total
+                                    </span>
                                 </div>
                                 <span className={`text-[10px] md:text-xs font-bold px-2 py-0.5 md:py-1 rounded-lg ${day.isToday ? 'bg-blue-600 text-white' : 'bg-white text-gray-500'}`}>
                                     {day.date.getDate()}
                                 </span>
+                            </div>
+
+                            {/* Day summary (always visible) */}
+                            <div className="m-2 md:mt-0 flex flex-wrap items-center gap-2">
+                                <span className="px-2 py-1 rounded-xl bg-white text-[9px] font-black uppercase tracking-widest text-gray-600 border border-gray-100 whitespace-nowrap">
+                                    Total: {dayAppointments.length}
+                                </span>
+                                <span className="px-2 py-1 rounded-xl bg-blue-50 text-[9px] font-black uppercase tracking-widest text-blue-700 border border-blue-100 whitespace-nowrap">
+                                    Scheduled: {pendingCount}
+                                </span>
+                                <span className="px-2 py-1 rounded-xl bg-emerald-50 text-[9px] font-black uppercase tracking-widest text-emerald-700 border border-emerald-100 whitespace-nowrap">
+                                    Done: {completedCount}
+                                </span>
+                                {operatingCount > 0 && (
+                                    <span className="px-2 py-1 rounded-xl bg-indigo-50 text-[9px] font-black uppercase tracking-widest text-indigo-700 border border-indigo-100 whitespace-nowrap">
+                                        Operating: {operatingCount}
+                                    </span>
+                                )}
                             </div>
 
                             <div className={`flex flex-col gap-3 flex-grow mt-3 md:mt-0 overflow-y-auto max-h-[400px] scrollbar-hide ${isExpanded ? 'block' : 'hidden md:flex'}`}>
@@ -233,28 +252,32 @@ export default function WeeklyPlanner() {
                                         const expired = isPastTime(app.date, app.time);
                                         const done = app.isTicked || (app.status === 'Completed');
                                         const operating = app.status === 'Operating';
+                                        const treatmentName = parseAppointmentReason(app.reason).treatmentName;
+                                        const payment = app.paymentStatus || 'None';
+                                        const displayStatus = (app.status === 'Scheduled' && expired && !done && !operating) ? 'Delayed' : app.status;
+
                                         return (
                                             <div
                                                 key={app._id}
                                                 onClick={(e) => e.stopPropagation()}
                                                 className={`p-3 rounded-2xl shadow-sm border transition-all ${operating
-                                                    ? 'bg-blue-600 border-blue-400 shadow-blue-200/50 shadow-lg scale-[1.02] z-10'
+                                                    ? 'bg-indigo-600 border-indigo-400 shadow-indigo-200/40 shadow-lg scale-[1.01] z-10'
                                                     : done
-                                                        ? 'bg-gray-100/50 grayscale opacity-60 border-transparent'
-                                                        : 'bg-white border-gray-100 hover:shadow-md hover:border-blue-200 border-l-4 border-l-blue-500'
+                                                        ? 'bg-white/40 opacity-60 border-gray-100'
+                                                        : displayStatus === 'Delayed'
+                                                            ? 'bg-amber-50 border-amber-200'
+                                                            : 'bg-white border-gray-100 hover:shadow-md hover:border-blue-200'
                                                     }`}
                                             >
                                                 <div className="flex flex-col gap-1">
-                                                    <div className="flex items-center justify-between gap-2">
+                                                    <div className="flex flex-col items-center justify-between gap-2">
                                                         <div className="flex items-center gap-1.5 shrink-0">
-                                                            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-lg uppercase tracking-tight ${operating ? 'bg-white text-blue-600 shadow-sm' : 'bg-blue-50 text-blue-600'}`}>
+                                                            <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg uppercase tracking-tight ${operating ? 'bg-white text-indigo-700 shadow-sm' : displayStatus === 'Delayed' ? 'bg-amber-100 text-amber-700' : 'bg-blue-50 text-blue-700'}`}>
                                                                 {app.time}
                                                             </span>
-                                                            {operating && (
-                                                                <span className="text-[8px] font-black text-white bg-blue-400/30 border border-white/20 px-1.5 py-0.5 rounded-lg uppercase tracking-widest animate-pulse">
-                                                                    Operating
-                                                                </span>
-                                                            )}
+                                                            <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-lg uppercase tracking-widest ${operating ? 'bg-white/15 text-white border border-white/20' : done ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : displayStatus === 'Delayed' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-slate-50 text-slate-600 border border-slate-100'}`}>
+                                                                {operating ? 'Operating' : done ? 'Done' : displayStatus === 'Delayed' ? 'Delayed' : 'Scheduled'}
+                                                            </span>
                                                         </div>
                                                         <div className="flex items-center gap-1 shrink-0">
                                                             {!done && !operating && (
@@ -274,20 +297,28 @@ export default function WeeklyPlanner() {
                                                             </button>
                                                         </div>
                                                     </div>
+                                                    <div className="flex flex-col items-center justify-between gap-2 bg-blue-50 shadow-inner rounded-lg p-2">
                                                     <Link
                                                         href={`/dashboard/schedules?highlight=${app._id}`}
                                                         className={`text-xs font-black truncate hover:underline transition-all ${operating ? 'text-white' : done ? 'text-gray-500' : 'text-gray-800 hover:text-blue-600'}`}
                                                     >
                                                         {app.patientId?.name || 'Unknown'}
                                                     </Link>
-                                                    <div className={`text-[9px] font-bold uppercase tracking-wider truncate ${operating ? 'text-blue-100' : 'text-gray-400'}`}>
-                                                        {app.reason}
+                                                    <div className={`text-[9px] font-black uppercase tracking-wider truncate ${operating ? 'text-indigo-100' : 'text-slate-500'}`}>
+                                                        {treatmentName}
                                                     </div>
-                                                    {expired && !app.isTicked && app.status !== 'Operating' && (
-                                                        <div className="text-[8px] font-black text-red-400 uppercase tracking-tighter mt-1 animate-pulse">
-                                                            Time Passed
-                                                        </div>
-                                                    )}
+                                                    </div>
+                                                    <div className="mt-1 flex flex-col items-center justify-between gap-2">
+                                                        <span className={`text-[9px] font-black uppercase tracking-widest ${operating ? 'text-indigo-100' : 'text-slate-500'}`}>
+                                                            {payment === 'Paid' ? 'Paid' : payment === 'Pending' ? 'Pending' : 'None'}
+                                                            {typeof app.amount === 'number' && app.amount > 0 ? ` • ₹${app.amount}` : ''}
+                                                        </span>
+                                                        {expired && !done && !operating && (
+                                                            <span className="text-[8px] font-black text-rose-500 uppercase tracking-widest">
+                                                                Time passed
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         );
@@ -295,7 +326,7 @@ export default function WeeklyPlanner() {
                                 ) : (
                                     <div className="flex-grow flex items-center justify-center py-4 md:py-6">
                                         <div className="text-[10px] text-gray-300 font-black uppercase tracking-[0.2em] border-2 border-dashed border-gray-100 px-4 py-8 rounded-2xl w-full text-center">
-                                            Free
+                                            No appointments
                                         </div>
                                     </div>
                                 )}
@@ -327,6 +358,6 @@ export default function WeeklyPlanner() {
                 onSuccess={fetchData}
                 appointmentId={editingAppointmentId}
             />
-        </div >
+        </div>
     );
 }

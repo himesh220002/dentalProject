@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { FaCalendarPlus, FaClock, FaUser, FaCheckCircle, FaTrash, FaNotesMedical, FaChevronDown, FaWhatsapp, FaEdit } from 'react-icons/fa';
+import { FaCalendarPlus, FaClock, FaUser, FaTrash, FaNotesMedical, FaChevronDown, FaWhatsapp, FaEdit, FaSearch, FaFilter } from 'react-icons/fa';
 import { useClinic } from '@/context/ClinicContext';
 import Link from 'next/link';
 import QuickScheduler from '@/components/QuickScheduler';
@@ -32,7 +32,6 @@ interface Appointment {
 function DashboardSchedulesContent() {
     const searchParams = useSearchParams();
     const highlightId = searchParams?.get('highlight');
-    const highlightedRef = useRef<HTMLTableRowElement | HTMLDivElement | null>(null);
     const { clinicData } = useClinic();
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
@@ -40,6 +39,10 @@ function DashboardSchedulesContent() {
     const [editingAppointmentId, setEditingAppointmentId] = useState<string | undefined>(undefined);
     const [shouldSkipWhatsApp, setShouldSkipWhatsApp] = useState(false);
     const [waClicked, setWaClicked] = useState<Record<string, boolean>>({});
+    const [query, setQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState<'all' | 'Scheduled' | 'Operating' | 'Completed' | 'Delayed'>('all');
+    const [paymentFilter, setPaymentFilter] = useState<'all' | 'Paid' | 'Pending' | 'None'>('all');
+    const [dateFilter, setDateFilter] = useState<'today' | 'tomorrow' | 'week' | 'all'>('today');
 
     useEffect(() => {
         // Load clicked states from localStorage
@@ -97,6 +100,44 @@ function DashboardSchedulesContent() {
         return true;
     });
 
+    const displayedAppointments = filteredAppointments.filter((apt) => {
+        const q = query.trim().toLowerCase();
+        const patientName = apt.patientId?.name?.toLowerCase() || '';
+        const phone = (apt.patientId?.contact || '').toLowerCase();
+        const reason = (parseAppointmentReason(apt.reason).treatmentName || '').toLowerCase();
+
+        // Date filter
+        const d = new Date(apt.date);
+        d.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        const weekEnd = new Date(today);
+        weekEnd.setDate(today.getDate() + 7);
+
+        const inDate =
+            dateFilter === 'all' ? true :
+                dateFilter === 'today' ? d.getTime() === today.getTime() :
+                    dateFilter === 'tomorrow' ? d.getTime() === tomorrow.getTime() :
+                        (d.getTime() >= today.getTime() && d.getTime() < weekEnd.getTime());
+
+        if (!inDate) return false;
+
+        // Status filter (Delayed is derived)
+        const expired = isPastTime(apt.date, apt.time);
+        const displayStatus = (apt.status === 'Scheduled' && expired) ? 'Delayed' : apt.status;
+        if (statusFilter !== 'all' && displayStatus !== statusFilter) return false;
+
+        // Payment filter
+        const payment = (apt.paymentStatus || 'None') as 'Paid' | 'Pending' | 'None';
+        if (paymentFilter !== 'all' && payment !== paymentFilter) return false;
+
+        // Search
+        if (!q) return true;
+        return patientName.includes(q) || phone.includes(q) || reason.includes(q) || apt.time.toLowerCase().includes(q);
+    });
+
     const updateAppointment = async (id: string, updates: Partial<Appointment>) => {
         try {
             await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${id}`, updates);
@@ -134,9 +175,9 @@ function DashboardSchedulesContent() {
         setEditingAppointmentId(undefined);
     };
 
-    const isPastTime = (appDate: string, appTime: string) => {
+    function isPastTime(appDate: string, appTime: string) {
         return new Date() > parseDateTime(appDate, appTime);
-    };
+    }
 
     if (loading) return (
         <div className="flex items-center justify-center h-64">
@@ -145,91 +186,170 @@ function DashboardSchedulesContent() {
     );
 
     return (
-        <div className="space-y-2 sm:space-y-8">
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
-                <h1 className="text-xl sm:text-3xl font-black text-gray-900">Appointment Schedules</h1>
+        <div className="space-y-4 sm:space-y-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between sm:items-end">
+                <div>
+                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Schedules</h1>
+                    <p className="text-slate-600 text-sm sm:text-base font-medium">Manage today’s queue, payments, and follow-ups.</p>
+                </div>
                 <button
                     onClick={() => {
                         setShouldSkipWhatsApp(false);
                         setIsSchedulerOpen(true);
                     }}
-                    className="bg-blue-600 hover:bg-blue-700 text-xs text-white px-4 sm:px-8 py-2 sm:py-3 rounded-2xl font-black shadow-lg transition active:scale-95 flex items-center gap-2"
+                    className="bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm text-white px-5 sm:px-8 py-3 rounded-2xl font-black shadow-lg transition active:scale-95 flex items-center gap-2 w-fit"
                 >
                     <FaCalendarPlus /> Add Appointment
                 </button>
             </div>
 
-            <div className="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-gray-100">
-                <div className="overflow-x-auto hidden 2xl:block">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+            <div className="bg-white rounded-[2.5rem] shadow-sm overflow-hidden border border-slate-200">
+                {/* Filters */}
+                <div className="p-4 sm:p-6 border-b border-slate-100 bg-white">
+                    <div className="flex flex-col lg:flex-row gap-3 lg:items-center">
+                        <div className="relative flex-1">
+                            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                            <input
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                placeholder="Search patient, phone, treatment, time…"
+                                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-300 font-semibold text-slate-800 placeholder:text-slate-400"
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:w-[720px]">
+                            <div className="relative">
+                                <FaFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                <select
+                                    value={dateFilter}
+                                    onChange={(e) => setDateFilter(e.target.value as 'today' | 'tomorrow' | 'week' | 'all')}
+                                    className="appearance-none w-full pl-11 pr-10 py-3 rounded-2xl bg-slate-50 border border-slate-200 font-black text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-300 cursor-pointer"
+                                >
+                                    <option value="today">Today</option>
+                                    <option value="tomorrow">Tomorrow</option>
+                                    <option value="week">Next 7 days</option>
+                                    <option value="all">All</option>
+                                </select>
+                            </div>
+                            <div className="relative">
+                                <FaFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                <select
+                                    value={statusFilter}
+                                    onChange={(e) => setStatusFilter(e.target.value as 'all' | 'Scheduled' | 'Operating' | 'Completed' | 'Delayed')}
+                                    className="appearance-none w-full pl-11 pr-10 py-3 rounded-2xl bg-slate-50 border border-slate-200 font-black text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-300 cursor-pointer"
+                                >
+                                    <option value="all">All status</option>
+                                    <option value="Scheduled">Scheduled</option>
+                                    <option value="Delayed">Delayed</option>
+                                    <option value="Operating">Operating</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                            <div className="relative">
+                                <FaFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                <select
+                                    value={paymentFilter}
+                                    onChange={(e) => setPaymentFilter(e.target.value as 'all' | 'Paid' | 'Pending' | 'None')}
+                                    className="appearance-none w-full pl-11 pr-10 py-3 rounded-2xl bg-slate-50 border border-slate-200 font-black text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-300 cursor-pointer"
+                                >
+                                    <option value="all">All payments</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="None">None</option>
+                                </select>
+                            </div>
+                            <div className="rounded-2xl bg-white border border-slate-200 px-4 py-3 flex items-center justify-between">
+                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Showing</div>
+                                <div className="text-sm font-black text-slate-900">{displayedAppointments.length}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Desktop table (md+) */}
+                <div className="hidden md:block overflow-x-auto">
+                    <table className="min-w-[1200px] w-full divide-y divide-slate-200">
+                        <thead className="bg-slate-50">
                             <tr>
-                                <th className="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Rx</th>
-                                <th className="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Time & Date</th>
-                                <th className="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Patient</th>
-                                <th className="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Reason</th>
-                                <th className="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Payment</th>
-                                <th className="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
-                                <th className="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Actions</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Rx</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Time</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Date</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Patient</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Phone</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Treatment</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Amount</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Payment</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Status</th>
+                                <th className="px-6 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {filteredAppointments.map((apt) => {
+                        <tbody className="divide-y divide-slate-100">
+                            {displayedAppointments.map((apt) => {
                                 const expired = isPastTime(apt.date, apt.time);
-                                const isReadyForPayment = (apt.status === 'Completed' || apt.isTicked) && apt.paymentStatus !== 'Paid';
+                                const displayStatus = (apt.status === 'Scheduled' && expired) ? 'Delayed' : apt.status;
 
                                 return (
                                     <tr
                                         key={apt._id}
                                         id={`apt-${apt._id}`}
-                                        className={`transition-colors ${apt._id === highlightId ? 'bg-blue-50/80' : 'hover:bg-gray-50/50'}`}
+                                        className={`transition-colors ${apt._id === highlightId ? 'bg-blue-50/80' : 'hover:bg-blue-50/30'}`}
                                     >
-                                        <td className="px-8 py-6 whitespace-nowrap">
+                                        <td className="px-6 py-5 whitespace-nowrap">
                                             <Link
                                                 href={`/patients/${apt.patientId?._id}`}
-                                                className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-100"
+                                                className="w-10 h-10 bg-emerald-50 text-emerald-700 rounded-xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-100"
                                                 title="View Clinical History / Add Prescription"
                                             >
                                                 <FaNotesMedical size={18} />
                                             </Link>
                                         </td>
-                                        <td className="px-8 py-6 whitespace-nowrap">
+                                        <td className="px-6 py-5 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
                                                 <div className={`p-2 rounded-lg ${expired ? 'bg-gray-100 text-gray-400' : 'bg-blue-100 text-blue-600'}`}>
                                                     <FaClock />
                                                 </div>
-                                                <div>
-                                                    <div className="font-black text-gray-900">{apt.time}</div>
-                                                    <div className="text-xs font-bold text-gray-400">{new Date(apt.date).toLocaleDateString()}</div>
-                                                </div>
+                                                <div className="font-black text-slate-900">{apt.time}</div>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6 whitespace-nowrap">
+                                        <td className="px-6 py-5 whitespace-nowrap">
+                                            <div className="text-sm font-black text-slate-900">
+                                                {new Date(apt.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
                                                     <FaUser size={12} />
                                                 </div>
                                                 <Link
                                                     href={`/patients/${apt.patientId?._id}`}
-                                                    className="font-bold text-gray-800 hover:text-blue-600 hover:underline transition-all"
+                                                    className="font-black text-slate-900 hover:text-blue-700 hover:underline transition-all"
                                                 >
                                                     {apt.patientId?.name || 'N/A'}
                                                 </Link>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6">
-                                            <div className="text-sm font-medium text-gray-600 max-w-xs truncate">
+                                        <td className="px-6 py-5 whitespace-nowrap">
+                                            <div className="text-sm font-black text-slate-900 tracking-wide">
+                                                {apt.patientId?.contact || '—'}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            <div className="text-sm font-semibold text-slate-700 max-w-[260px] truncate">
                                                 {parseAppointmentReason(apt.reason).treatmentName}
                                             </div>
-                                            {apt.amount && <div className="text-[10px] font-black text-blue-600 mt-0.5">₹{apt.amount}</div>}
                                         </td>
-                                        <td className="px-8 py-6 whitespace-nowrap">
+                                        <td className="px-6 py-5 whitespace-nowrap">
+                                            <div className="text-sm font-black text-slate-900">
+                                                {typeof apt.amount === 'number' && apt.amount > 0 ? `₹${apt.amount}` : '—'}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5 whitespace-nowrap">
                                             <div className="relative group w-36">
                                                 <select
                                                     value={apt.paymentStatus}
                                                     onChange={(e) => {
                                                         const val = e.target.value;
-                                                        const updates: any = { paymentStatus: val };
+                                                        const updates: Partial<Appointment> = { paymentStatus: val };
                                                         if (val === 'Paid') {
                                                             updates.status = 'Completed';
                                                             updates.isTicked = true;
@@ -252,17 +372,16 @@ function DashboardSchedulesContent() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6 whitespace-nowrap">
+                                        <td className="px-6 py-5 whitespace-nowrap">
                                             <div className="relative group w-32">
                                                 {(() => {
-                                                    const displayStatus = (apt.status === 'Scheduled' && expired) ? 'Delayed' : apt.status;
                                                     return (
                                                         <>
                                                             <select
                                                                 value={displayStatus}
                                                                 onChange={(e) => {
                                                                     const val = e.target.value;
-                                                                    const updates: any = {
+                                                                    const updates: Partial<Appointment> = {
                                                                         status: val,
                                                                         isTicked: val === 'Completed'
                                                                     };
@@ -294,8 +413,8 @@ function DashboardSchedulesContent() {
                                                 })()}
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6 whitespace-nowrap">
-                                            <div className="flex gap-2">
+                                        <td className="px-6 py-5 whitespace-nowrap text-right">
+                                            <div className="inline-flex gap-2">
                                                 {/* WhatsApp Reminder Button */}
                                                 <button
                                                     onClick={() => {
@@ -354,8 +473,8 @@ function DashboardSchedulesContent() {
                 </div>
 
                 {/* Mobile View (Cards) */}
-                <div className="2xl:hidden p-4 space-y-4">
-                    {filteredAppointments.map((apt) => (
+                <div className="md:hidden p-4 space-y-4">
+                    {displayedAppointments.map((apt) => (
                         <MobileAppointmentCard
                             key={apt._id}
                             apt={apt}
@@ -369,8 +488,8 @@ function DashboardSchedulesContent() {
                     ))}
                 </div>
 
-                {filteredAppointments.length === 0 && (
-                    <div className="text-center py-20 text-gray-400 italic font-medium">
+                {displayedAppointments.length === 0 && (
+                    <div className="text-center py-20 text-slate-500 italic font-semibold">
                         No appointments found.
                     </div>
                 )}
