@@ -44,7 +44,7 @@ export default function AppointmentSearchInline() {
         <div className="w-full relative z-40 group/search">
             {/* Slimmer Search Bar Container */}
             {/* <div className="bg-white/40 backdrop-blur-3xl border border-white/40 shadow-[0_20px_60px_rgba(0,0,0,0.08)] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[3rem] p-0.5 sm:p-1 transition-all duration-500 group-focus-within/search:shadow-[0_30px_80px_rgba(59,130,246,0.12)]"> */}
-            <div className="bg-white/95 backdrop-blur-md rounded-[1.5rem] sm:rounded-[2.5rem] md:rounded-[2.8rem] p-1">
+            <div className="bg-white/95 backdrop-blur-md rounded-[1.5rem] sm:rounded-[2.5rem] md:rounded-[2.8rem] p-1 border-3 border-gray-500/40">
                 <form onSubmit={handleSearch} className="flex items-center gap-1 sm:gap-1.5">
                     {/* Name Input Group */}
                     <div className="hidden 2xl:block relative flex-1 w-full group/input">
@@ -69,7 +69,7 @@ export default function AppointmentSearchInline() {
                     <div className="hidden md:block w-px h-6 bg-gray-100 mx-1"></div>
 
                     {/* Contact Input Group */}
-                    <div className=" w-full group/input">
+                    <div className=" w-full flex-1 group/input">
                         <div className="relative flex items-center h-10 sm:h-11 bg-gray-50/30 md:bg-transparent rounded-xl md:rounded-none">
                             <div className="absolute left-4 text-blue-500/40 group-focus-within/input:text-blue-600 transition-colors">
                                 <FaPhone size={12} />
