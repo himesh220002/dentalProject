@@ -280,72 +280,7 @@ export default function Navbar() {
 
                 {/* Mobile Menu */}
                 {isOpen && (
-                    <div className="xl:hidden max-h-[calc(100vh-80px)] overflow-y-auto bg-gradient-to-b from-gray-300/90 to-blue-300/90 border-t border-gray-100 p-4 pt-12 pb-32 space-y-4 animate-in slide-in-from-top duration-300">
-                        {/* Mobile Language Switcher - Inside Menu */}
-                        <div className="px-2 pb-2 border-b border-gray-50">
-                            <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-blue-600 p-2 rounded-lg">
-                                        <FaLanguage className="text-white text-xl" />
-                                    </div>
-                                </div>
-                                <div className="flex bg-white p-1 rounded-xl shadow-inner border border-blue-100">
-                                    <button
-                                        onClick={() => {
-                                            if (language !== 'en') toggleLanguage();
-                                            setIsOpen(false);
-                                        }}
-                                        className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${language === 'en' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400 hover:text-blue-600'}`}
-                                    >
-                                        ENGLISH
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            if (language !== 'hi') toggleLanguage();
-                                            setIsOpen(false);
-                                        }}
-                                        className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${language === 'hi' ? 'bg-blue-600 text-white shadow-md font-serif' : 'text-gray-400 hover:text-blue-600'}`}
-                                    >
-                                        हिन्दी
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {navLinks.map((link) => (
-                            <div key={link.name} className="space-y-1 text-left">
-                                <Link
-                                    href={link.href}
-                                    onClick={(e) => {
-                                        if (link.protected && !isUnlocked) {
-                                            handleProtectedClick(e, link.href);
-                                        } else {
-                                            setIsOpen(false);
-                                        }
-                                    }}
-                                    className={`flex justify-between items-center px-4 py-3 rounded-xl text-base font-bold transition ${pathname === link.href || (link.name === t.dashboard && pathname.startsWith('/temppath'))
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-600 hover:bg-blue-50'
-                                        }`}
-                                >
-                                    <span>{link.name}</span>
-                                    {link.protected && (
-                                        isUnlocked ? <FaLockOpen size={14} className="text-green-500" /> : <FaLock size={14} className="text-gray-400" />
-                                    )}
-                                </Link>
-                                {link.protected && isUnlocked && (
-                                    <div className="px-4 py-2 flex justify-between items-center bg-gray-50 rounded-xl mx-2">
-                                        <div className="text-xs font-mono text-blue-600 font-bold">Locks in {timeLeft}</div>
-                                        <button
-                                            onClick={handleLock}
-                                            className="text-rose-600 font-black text-xs uppercase"
-                                        >
-                                            {t.lockDashboard}
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                    <div className="xl:hidden max-h-[calc(100vh-80px)] overflow-y-auto bg-gradient-to-b from-gray-300/90 to-blue-300/90 border-t border-gray-100 p-4 pt-6 pb-32 space-y-4 animate-in slide-in-from-top duration-300">
 
                         {/* Mobile Auth Section */}
                         {session ? (
@@ -437,7 +372,75 @@ export default function Navbar() {
                                 </Link>
                             </div>
                         )}
+
+                        {navLinks.map((link) => (
+                            <div key={link.name} className="space-y-1 text-left">
+                                <Link
+                                    href={link.href}
+                                    onClick={(e) => {
+                                        if (link.protected && !isUnlocked) {
+                                            handleProtectedClick(e, link.href);
+                                        } else {
+                                            setIsOpen(false);
+                                        }
+                                    }}
+                                    className={`flex justify-between items-center px-4 py-3 rounded-xl text-base font-bold transition ${pathname === link.href || (link.name === t.dashboard && pathname.startsWith('/temppath'))
+                                        ? 'bg-blue-600 text-white'
+                                        : 'text-gray-600 hover:bg-blue-50'
+                                        }`}
+                                >
+                                    <span>{link.name}</span>
+                                    {link.protected && (
+                                        isUnlocked ? <FaLockOpen size={14} className="text-green-500" /> : <FaLock size={14} className="text-gray-400" />
+                                    )}
+                                </Link>
+                                {link.protected && isUnlocked && (
+                                    <div className="px-4 py-2 flex justify-between items-center bg-gray-50 rounded-xl mx-2">
+                                        <div className="text-xs font-mono text-blue-600 font-bold">Locks in {timeLeft}</div>
+                                        <button
+                                            onClick={handleLock}
+                                            className="text-rose-600 font-black text-xs uppercase"
+                                        >
+                                            {t.lockDashboard}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+
+
+                        {/* Mobile Language Switcher - Inside Menu */}
+                        <div className="px-2 pb-2 border-b border-gray-50">
+                            <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-blue-600 p-2 rounded-lg">
+                                        <FaLanguage className="text-white text-xl" />
+                                    </div>
+                                </div>
+                                <div className="flex bg-white p-1 rounded-xl shadow-inner border border-blue-100">
+                                    <button
+                                        onClick={() => {
+                                            if (language !== 'en') toggleLanguage();
+                                            setIsOpen(false);
+                                        }}
+                                        className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${language === 'en' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400 hover:text-blue-600'}`}
+                                    >
+                                        ENGLISH
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            if (language !== 'hi') toggleLanguage();
+                                            setIsOpen(false);
+                                        }}
+                                        className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${language === 'hi' ? 'bg-blue-600 text-white shadow-md font-serif' : 'text-gray-400 hover:text-blue-600'}`}
+                                    >
+                                        हिन्दी
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 )}
             </nav>
 
