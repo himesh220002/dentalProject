@@ -37,6 +37,9 @@ export default function HomeHero() {
                 {/* Decorative Blobs */}
                 <div className="absolute top-10 right-10 w-48 h-48 sm:w-96 sm:h-96 bg-blue-500/15 rounded-full blur-[60px] sm:blur-[100px]"></div>
                 <div className="absolute bottom-10 left-1/4 w-32 h-32 sm:w-64 sm:h-64 bg-cyan-400/10 rounded-full blur-[40px] sm:blur-[80px]"></div>
+
+                {/* Bottom Smooth Transition Gradient */}
+                <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#080a5c] to-transparent"></div>
             </div>
 
             {/* Content Layer */}

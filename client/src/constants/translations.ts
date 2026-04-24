@@ -33,6 +33,17 @@ export const translations = {
         visitUs: 'Visit Our Clinic',
         quickContact: 'Quick Contact',
         urgentQueries: 'Call for urgent queries',
+        actionTiles: {
+            bookAppointment: 'Book Appointment',
+            bookAppointmentSub: 'Quick & easy online scheduling for your convenience.',
+            bookAppointmentBtn: 'Schedule Now',
+            meetDentists: 'Meet Our Dentists',
+            meetDentistsSub: 'Expert care from our specialized and friendly dental team.',
+            meetDentistsBtn: 'Introduce Me',
+            patientStories: 'Patient Stories',
+            patientStoriesSub: 'Discover the transformations and smiles we\'ve created.',
+            patientStoriesBtn: 'View Gallery'
+        },
 
         // Treatments Page
         allCategories: 'All Categories',
@@ -236,6 +247,17 @@ export const translations = {
         visitUs: 'हमारे क्लिनिक आएं',
         quickContact: 'त्वरित संपर्क',
         urgentQueries: 'तत्काल पूछताछ के लिए कॉल करें',
+        actionTiles: {
+            bookAppointment: 'अपॉइंटमेंट बुक करें',
+            bookAppointmentSub: 'आपकी सुविधा के लिए त्वरित और आसान ऑनलाइन शेड्यूलिंग।',
+            bookAppointmentBtn: 'अभी शेड्यूल करें',
+            meetDentists: 'हमारे डॉक्टरों से मिलें',
+            meetDentistsSub: 'हमारी विशेषज्ञ और मित्रवत दंत टीम से विशेषज्ञ देखभाल।',
+            meetDentistsBtn: 'परिचय दें',
+            patientStories: 'मरीजों की कहानियाँ',
+            patientStoriesSub: 'हमारे द्वारा बनाई गई मुस्कान और बदलावों को देखें।',
+            patientStoriesBtn: 'गैलरी देखें'
+        },
 
         // Treatments Page
         allCategories: 'सभी श्रेणियां',

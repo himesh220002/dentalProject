@@ -162,12 +162,12 @@ export default function Home() {
     }, []);
 
     return (
-        <div className=" mx-auto space-y-20 md:space-y-32 overflow-x-hidden">
-            {/* Hero Section - Elite Landing */}
-            <HomeHero />
-
-            {/* Quick Access Tiles */}
-            <ActionTiles />
+        <div className=" mx-auto space-y-20 md:space-y-22 overflow-x-hidden">
+            {/* Hero & Action Tiles - Seamless Group */}
+            <div className="flex flex-col">
+                <HomeHero />
+                <ActionTiles />
+            </div>
 
             {/* Trust & Expertise Section */}
             <TrustSection />
@@ -266,21 +266,21 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto space-y-10">
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                         <div className="space-y-6">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl xl:text-5xl font-black leading-tight">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl text-center sm:text-left xl:text-5xl font-black leading-tight">
                                 {language === 'hi' ? (
                                     <>एक स्वस्थ मुस्कान स्वस्थ जीवन का <br /> <span className="text-blue-300">द्वार</span> है।</>
                                 ) : (
                                     <>A healthy smile is the <br /> <span className="text-blue-300">gateway</span> to a healthy life.</>
                                 )}
                             </h2>
-                            <p className="text-gray-400 text-sm md:text-xl font-medium max-w-2xl leading-relaxed">
+                            <p className="text-gray-400 text-sm md:text-xl text-center sm:text-left font-medium max-w-2xl leading-relaxed">
                                 {language === 'hi'
                                     ? '"हमारे क्लिनिक में, हम केवल दांत नहीं ठीक करते; हम आत्मविश्वास जगाते हैं। हमने अपने क्लिनिक को एक सुरक्षित, स्वागत योग्य स्थान के रूप में तैयार किया है जहां आप सहज महसूस कर सकें।"'
                                     : '"At our clinic, we don\'t just fix teeth; we build confidence. We\'ve designed our practice to be a safe, welcoming space where you can feel at ease."'
                                 }
                             </p>
                         </div>
-                        <div className="shrink-0 flex items-center gap-6">
+                        <div className="shrink-0 flex items-center gap-6 justify-center sm:justify-start mt-4 sm:mt-0">
                             <div className="w-20 h-20 bg-blue-700 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/20">
                                 <FaUserMd size={40} className="text-white" />
                             </div>
@@ -296,8 +296,8 @@ export default function Home() {
                     <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6 sm:gap-12 pt-6 sm:pt-12 border-t border-white/10">
                         {defaultHighlights.map((defaultHighlights, idx) => (
                             <div key={idx} className="space-y-4">
-                                <h3 className="text-lg md:text-xl font-black">{defaultHighlights.title}</h3>
-                                <p className="text-gray-300 leading-relaxed font-medium text-sm md:text-base">{defaultHighlights.description}</p>
+                                <h3 className="text-lg md:text-xl text-center sm:text-start font-black">{defaultHighlights.title}</h3>
+                                <p className="text-gray-300 text-center sm:text-start leading-relaxed font-medium text-sm md:text-base">{defaultHighlights.description}</p>
                             </div>
                         ))}
                     </div>

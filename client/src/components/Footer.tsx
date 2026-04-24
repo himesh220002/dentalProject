@@ -33,7 +33,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     {/* Brand Section */}
                     <div className="space-y-6">
-                        <Link href="/" className="flex items-center space-x-2 group">
+                        <Link href="/" className="flex items-center justify-center md:justify-start space-x-2 group">
                             <div className="bg-blue-600 p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <FaTooth className="text-white text-xl" />
                             </div>
@@ -41,14 +41,14 @@ export default function Footer() {
                                 {name.split(' ')[0]} <span className="text-blue-500 font-medium">{name.split(' ').slice(1).join(' ')}</span>
                             </span>
                         </Link>
-                        <p className="text-gray-400 text-sm leading-relaxed font-medium">
+                        <p className="text-gray-400 text-sm text-center md:text-start leading-relaxed font-medium">
                             {tagline}
                         </p>
                     </div>
 
                     {/* Navigation */}
                     <div>
-                        <h4 className="text-sm font-black uppercase tracking-[0.2em] text-blue-500 mb-8">Quick Navigation</h4>
+                        <h4 className="text-sm font-black uppercase tracking-[0.2em] text-blue-500 mb-8 text-center md:text-start">Quick Navigation</h4>
                         <ul className="space-y-4">
                             {[
                                 { name: 'Home', href: '/' },
@@ -63,7 +63,7 @@ export default function Footer() {
                                 <li key={link.name}>
                                     <Link
                                         href={link.href}
-                                        className="text-gray-400 hover:text-white transition-colors duration-300 flex items-center gap-2 group"
+                                        className="text-gray-400 hover:text-white transition-colors duration-300 flex items-center justify-center md:justify-start gap-2 group"
                                     >
                                         <span className="w-1.5 h-1.5 rounded-full bg-blue-600 scale-0 group-hover:scale-100 transition-transform" />
                                         <span className="font-bold text-sm tracking-wide">{link.name}</span>
@@ -75,8 +75,8 @@ export default function Footer() {
 
                     {/* Contact Info */}
                     <div>
-                        <h4 className="text-sm font-black uppercase tracking-[0.2em] text-blue-500 mb-8">Get In Touch</h4>
-                        <ul className="space-y-6">
+                        <h4 className="text-sm font-black text-center md:text-start uppercase tracking-[0.2em] text-blue-500 mb-8">Get In Touch</h4>
+                        <ul className="space-y-6 flex items-center sm:items-start justify-center md:justify-start flex-col">
                             <li className="flex items-start gap-4 group">
                                 <div className="bg-slate-900 p-2.5 rounded-lg text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                                     <FaMapMarkerAlt size={14} />
@@ -102,8 +102,8 @@ export default function Footer() {
 
                     {/* Socials */}
                     <div>
-                        <h4 className="text-sm font-black uppercase tracking-[0.2em] text-blue-500 mb-8">Follow Our Journey</h4>
-                        <div className="flex gap-4">
+                        <h4 className="text-sm font-black uppercase text-center md:text-start tracking-[0.2em] text-blue-500 mb-8">Follow Our Journey</h4>
+                        <div className="flex justify-center md:justify-start gap-4">
                             {socialPlatforms.map((social, i) => (
                                 <a
                                     key={i}
@@ -120,7 +120,7 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between text-center lg:text-start items-center gap-4">
                     <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">
                         &copy; {new Date().getFullYear()} {name}. Engineered for Excellence.
                     </p>
