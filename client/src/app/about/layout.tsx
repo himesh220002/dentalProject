@@ -8,7 +8,7 @@ export async function generateMetadata(): Promise<Metadata> {
         const normalizedApiBaseUrl = API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}/api`;
         const response = await axios.get(`${normalizedApiBaseUrl}/handover/active`);
         const clinic = response.data.jsondata;
-        const clinicName = clinic.clinicName || 'Dr. Tooth Dental Clinic';
+        const clinicName = clinic.clinicName || 'Dr. Tooth Dental';
         const city = clinic.address?.city || 'Katihar';
 
         return {

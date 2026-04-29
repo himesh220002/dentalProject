@@ -267,7 +267,7 @@ function DashboardSchedulesContent() {
 
                 {/* Desktop table (md+) */}
                 <div className="hidden md:block overflow-x-auto">
-                    <table className="min-w-[1200px] w-full divide-y divide-slate-200">
+                    <table className="min-w-7xl w-full divide-y divide-slate-200">
                         <thead className="bg-slate-50">
                             <tr>
                                 <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Rx</th>
@@ -418,7 +418,7 @@ function DashboardSchedulesContent() {
                                                 {/* WhatsApp Reminder Button */}
                                                 <button
                                                     onClick={() => {
-                                                        const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
+                                                        const clinicName = clinicData?.clinicName || "Dr. Tooth Dental";
                                                         const mapsLink = (clinicData?.address?.latitude && clinicData?.address?.longitude)
                                                             ? `https://www.google.com/maps/search/?api=1&query=${clinicData.address.latitude},${clinicData.address.longitude}`
                                                             : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicName + " " + (clinicData?.address?.city || ""))}`;

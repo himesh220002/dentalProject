@@ -60,7 +60,7 @@ export default function TrustSection() {
                         ) : (
                             <img
                                 src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=2070&auto=format&fit=crop"
-                                alt="Precision Dental Care and Advanced Equipment at Dr. Tooth Dental Clinic Katihar"
+                                alt="Precision Dental Care and Advanced Equipment at Dr. Tooth Dental Katihar"
                                 className="rounded-[1.5rem] sm:rounded-[2.5rem] w-full h-[300px] sm:h-[400px] lg:h-[450px] object-cover"
                             />
                         )}

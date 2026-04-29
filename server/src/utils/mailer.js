@@ -37,7 +37,7 @@ const sendAppointmentEmail = async (patientEmail, patientName, appointmentDetail
     const htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
             <div style="background-color: #2563eb; color: white; padding: 24px; text-align: center;">
-                <h1 style="margin: 0; font-size: 24px;">Dr. Tooth Dental Clinic</h1>
+                <h1 style="margin: 0; font-size: 24px;">Dr. Tooth Dental</h1>
             </div>
             <div style="padding: 24px; color: #1e293b;">
                 <h2 style="color: #1e40af;">Hello ${patientName},</h2>
@@ -54,17 +54,17 @@ const sendAppointmentEmail = async (patientEmail, patientName, appointmentDetail
                     <p>Please arrive 10 minutes prior to your scheduled time. If you need to change your appointment, please call us directly.</p>
                 </div>
                 <div style="margin-top: 24px; font-size: 14px; color: #64748b;">
-                    <p>Thank you for choosing Dr. Tooth Dental Clinic.</p>
+                    <p>Thank you for choosing Dr. Tooth Dental.</p>
                 </div>
             </div>
             <div style="background-color: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #94a3b8;">
-                &copy; 2026 Dr. Tooth Dental Clinic. All rights reserved.
+                &copy; 2026 Dr. Tooth Dental. All rights reserved.
             </div>
         </div>
     `;
 
     const data = {
-        from: `Dr. Tooth Dental Clinic <mailgun@${DOMAIN}>`,
+        from: `Dr. Tooth Dental <mailgun@${DOMAIN}>`,
         to: [patientEmail],
         subject: isReschedule ? 'Appointment Rescheduled - Dr. Tooth' : 'Appointment Fixed - Dr. Tooth',
         html: htmlContent

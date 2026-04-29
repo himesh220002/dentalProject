@@ -159,7 +159,7 @@ export function AboutPageSkeleton() {
 
 export function TreatmentsPageSkeleton() {
     return (
-        <div className="max-w-[1400px] mx-auto px-6 py-12 space-y-12 mt-20">
+        <div className="max-w-7xl mx-auto px-6 py-12 space-y-12 mt-20">
             <div className="text-center space-y-4">
                 <Skeleton variant="text" className="h-12 w-64 mx-auto" />
                 <Skeleton variant="text" className="h-4 w-96 mx-auto" />

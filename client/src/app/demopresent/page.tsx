@@ -218,7 +218,7 @@ export default function DemoPresent() {
                     <p>The total digital lifecycle: from first click to clinical recovery and financial settlement.</p>
                 </div>
                 <div className="diagram-container">
-                    <div className="mermaid w-full max-w-[1200px] mx-auto">
+                    <div className="mermaid w-full max-w-7xl mx-auto">
                         {`graph TD
                         %% Booking Phase
                         subgraph Booking ["1. Booking & Scheduling"]
@@ -274,7 +274,7 @@ export default function DemoPresent() {
                     <p>Tech-wise process flow: Direct synchronization between frontend controllers and backend persistence.</p>
                 </div>
                 <div className="diagram-container">
-                    <div className="mermaid w-full max-w-[1200px] mx-auto">
+                    <div className="mermaid w-full max-w-7xl mx-auto">
                         {`graph TD
                         %% Controllers & Methods
                         subgraph Frontend ["Client-Side (React/Next.js)"]
@@ -461,7 +461,7 @@ export default function DemoPresent() {
             </section>
 
             <footer className="text-center p-16 text-[#94a3b8] text-[0.8rem] border-t border-[rgba(255,255,255,0.1)]">
-                © 2026 Dr. Tooth Dental Clinic | Built for Excellence | Powered by Next.js & Express
+                © 2026 Dr. Tooth Dental | Built for Excellence | Powered by Next.js & Express
             </footer>
         </div>
     );

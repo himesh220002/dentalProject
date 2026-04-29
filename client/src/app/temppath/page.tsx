@@ -13,7 +13,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
 export default function TempClinicForm() {
     const { refreshClinicData } = useClinic();
     const [formData, setFormData] = useState({
-        clinicName: 'Dr. Tooth Dental Clinic',
+        clinicName: 'Dr. Tooth Dental',
         doctorName: 'Dr. Tooth',
         tagline: "Your Smile's Guardian",
         email: 'care@drToothdental.in',
@@ -72,7 +72,7 @@ export default function TempClinicForm() {
             { title: 'Sterile Environment', description: 'Class B Autoclave sterilization protocols.' }
         ],
         seo: {
-            metaTitle: 'Best Dental Clinic in Katihar | Dr. Tooth Dental Clinic',
+            metaTitle: 'Best Dental Clinic in Katihar | Dr. Tooth Dental',
             metaDescription: 'Expert dental care by Dr. Tooth. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
             keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist'
         },
@@ -370,7 +370,7 @@ export default function TempClinicForm() {
         <ProtectedRoute>
             <div className="min-h-screen bg-[#f8fafc] py-8 px-0 sm:px-6 lg:px-8">
                 {/* Unified Header */}
-                <div className="max-w-[1600px] mx-auto mb-8 flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 gap-4">
+                <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 gap-4">
                     <div className="flex items-center gap-4">
                         <div className="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200">
                             <FaTooth className="text-white text-2xl" />
@@ -400,7 +400,7 @@ export default function TempClinicForm() {
                 </div>
 
                 {/* Main Content Area */}
-                <div className="max-w-[1600px] mx-auto space-y-12 pb-20">
+                <div className="max-w-7xl mx-auto space-y-12 pb-20">
                     {/* Section 1: Version Control & Persistence */}
                     <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
                         <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden lg:min-w-[400px]">

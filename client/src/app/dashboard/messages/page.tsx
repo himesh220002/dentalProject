@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, Fragment } from 'react';
 import axios from 'axios';
 import { FaEnvelopeOpen, FaPhone, FaClock, FaCheckCircle, FaCalendarPlus, FaEnvelope, FaSearch, FaFilter } from 'react-icons/fa';
 import QuickScheduler from '@/components/QuickScheduler';
@@ -18,6 +18,62 @@ interface Message {
     createdAt: string;
 }
 
+const FormattedMessage = ({ text, isExpanded }: { text: string; isExpanded: boolean }) => {
+    if (!isExpanded) {
+        return <span>{text}</span>;
+    }
+
+    const lines = text.split('\n');
+    return (
+        <div className="space-y-2 py-1">
+            {lines.map((line, i) => {
+                const trimmedLine = line.trim();
+                if (!trimmedLine) return <div key={i} className="h-1" />;
+
+                // Check for "Key: Value" or "*Key:* Value"
+                // Support patterns like: Treatment: *Dental Fillings* or *Date:* 2026-04-21
+                const match = trimmedLine.match(/^(\*?)(.*?)(\*?):\s*(.*)$/);
+                if (match) {
+                    const label = match[2].trim();
+                    const value = match[4].trim();
+
+                    const formattedValue = value.split(/(\*.*?\*)/g).map((part, j) => {
+                        if (part.startsWith('*') && part.endsWith('*')) {
+                            return <strong key={j} className="font-black text-slate-900">{part.slice(1, -1)}</strong>;
+                        }
+                        return part;
+                    });
+
+                    return (
+                        <div key={i} className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-3 text-[13px]">
+                            <div className="font-black text-slate-400 uppercase tracking-[0.1em] text-[9px] min-w-[90px] shrink-0">
+                                {label}
+                            </div>
+                            <div className="text-slate-800 font-semibold leading-tight">
+                                {formattedValue}
+                            </div>
+                        </div>
+                    );
+                }
+
+                // Generic line with bold parsing
+                const formattedLine = trimmedLine.split(/(\*.*?\*)/g).map((part, j) => {
+                    if (part.startsWith('*') && part.endsWith('*')) {
+                        return <strong key={j} className="font-black text-slate-900">{part.slice(1, -1)}</strong>;
+                    }
+                    return part;
+                });
+
+                return (
+                    <p key={i} className="text-[13px] text-slate-700 leading-relaxed font-medium">
+                        {formattedLine}
+                    </p>
+                );
+            })}
+        </div>
+    );
+};
+
 export default function DashboardMessages() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(true);
@@ -31,6 +87,14 @@ export default function DashboardMessages() {
     const [schedulerInquiry, setSchedulerInquiry] = useState('');
     const [schedulerAppointmentId, setSchedulerAppointmentId] = useState('');
     const [visibleCount, setVisibleCount] = useState(10);
+    const [expandedMessages, setExpandedMessages] = useState<Record<string, boolean>>({});
+
+    const toggleMessage = (id: string) => {
+        setExpandedMessages(prev => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
+    };
 
     const fetchMessages = async () => {
         try {
@@ -139,13 +203,13 @@ export default function DashboardMessages() {
                         <table className="min-w-[1100px] w-full">
                             <thead className="bg-slate-50">
                                 <tr>
-                                    <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">From</th>
-                                    <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Phone</th>
-                                    <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Email</th>
-                                    <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Status</th>
-                                    <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Received</th>
-                                    <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Message</th>
-                                    <th className="px-6 py-5 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</th>
+                                    <th className="px-4 py-5 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">From</th>
+                                    <th className="px-4 py-5 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">Phone</th>
+                                    <th className="px-4 py-5 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">Email</th>
+                                    <th className="px-4 py-5 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">Message</th>
+                                    <th className="px-4 py-5 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">Status</th>
+                                    <th className="px-4 py-5 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">Received</th>
+                                    <th className="px-4 py-5 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -157,66 +221,104 @@ export default function DashboardMessages() {
                                                 ? 'bg-blue-50 border-blue-200 text-blue-800'
                                                 : 'bg-slate-50 border-slate-200 text-slate-600';
 
+                                    const isExpanded = !!expandedMessages[msg._id];
+
                                     return (
-                                        <tr key={msg._id} className="hover:bg-blue-50/30 transition">
-                                            <td className="px-6 py-5">
-                                                <div className="font-black text-slate-900">{msg.name}</div>
-                                                {msg.patientType === 'prev' && (
-                                                    <div className="mt-1 inline-flex items-center px-2 py-0.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black uppercase tracking-widest">
-                                                        Prev patient
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-5">
-                                                <a href={`tel:${msg.phone}`} className="font-black text-slate-900 hover:text-blue-700 transition inline-flex items-center gap-2">
-                                                    <FaPhone className="text-slate-400" /> {msg.phone}
-                                                </a>
-                                            </td>
-                                            <td className="px-6 py-5">
-                                                {msg.email ? (
-                                                    <a href={`mailto:${msg.email}`} className="font-semibold text-slate-700 hover:text-blue-700 transition inline-flex items-center gap-2">
-                                                        <FaEnvelope className="text-slate-400" /> {msg.email}
-                                                    </a>
-                                                ) : (
-                                                    <span className="text-slate-400 font-semibold">—</span>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-5">
-                                                <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest ${statusPill}`}>
-                                                    {msg.status === 'Scheduled' ? <FaCheckCircle /> : <span className="w-2 h-2 rounded-full bg-current opacity-40" />}
-                                                    {msg.status}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-5">
-                                                <div className="text-sm font-black text-slate-900 inline-flex items-center gap-2">
-                                                    <FaClock className="text-slate-400" />
-                                                    {new Date(msg.createdAt).toLocaleString()}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-5">
-                                                <div className="text-sm text-slate-700 font-medium max-w-[420px] line-clamp-2">
-                                                    {msg.message}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-5 text-right">
-                                                <div className="inline-flex items-center gap-2">
-                                                    {msg.status === 'Unread' && (
-                                                        <button
-                                                            onClick={() => markAsRead(msg._id)}
-                                                            className="px-4 py-2 rounded-xl bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition shadow-sm"
-                                                        >
-                                                            Mark read
-                                                        </button>
+                                        <Fragment key={msg._id}>
+                                            <tr className={`hover:bg-blue-50/30 transition group/row ${isExpanded ? 'bg-blue-50/20' : ''}`}>
+                                                <td className="px-4 py-5">
+                                                    <div className="font-black text-sm text-slate-900">{msg.name}</div>
+                                                    {msg.patientType === 'prev' && (
+                                                        <div className="mt-1 inline-flex items-center px-2 py-0.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black uppercase tracking-widest">
+                                                            Prev patient
+                                                        </div>
                                                     )}
-                                                    <button
-                                                        onClick={() => handleCreateAppointment(msg.name, msg.phone, msg.email, msg._id, msg.message, msg.appointmentId)}
-                                                        className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition shadow-sm"
-                                                    >
-                                                        {msg.status === 'Scheduled' ? 'Reschedule' : 'Create appt'}
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td className="px-4 py-5">
+                                                    <a href={`tel:${msg.phone}`} className="font-black text-slate-900 text-sm hover:text-blue-700 transition inline-flex items-center gap-2">
+                                                        <FaPhone className="text-slate-400" /> {msg.phone}
+                                                    </a>
+                                                </td>
+                                                <td className="px-4 py-5">
+                                                    {msg.email ? (
+                                                        <a href={`mailto:${msg.email}`} className="font-semibold text-slate-700 text-sm hover:text-blue-700 max-w-[200px] transition flex items-start gap-2 group/email">
+                                                            <FaEnvelope className="text-slate-400 mt-1 shrink-0 group-hover/email:text-blue-500 transition-colors" />
+                                                            <span className="break-all whitespace-normal leading-tight">{msg.email}</span>
+                                                        </a>
+                                                    ) : (
+                                                        <span className="text-slate-400 font-semibold">—</span>
+                                                    )}
+                                                </td>
+                                                <td
+                                                    className="px-4 py-5 cursor-pointer group/msg"
+                                                    onClick={() => toggleMessage(msg._id)}
+                                                    title="Click to expand/collapse message"
+                                                >
+                                                    <div className="text-sm text-slate-700 text-sm font-medium max-w-[200px] line-clamp-2">
+                                                        {msg.message}
+                                                    </div>
+                                                    <div className="mt-1 text-[10px] text-blue-500 font-black uppercase tracking-widest opacity-0 group-hover/msg:opacity-100 transition-opacity">
+                                                        {isExpanded ? 'Click to collapse' : 'Click to read more'}
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-5">
+                                                    <span className={`inline-flex items-center text-sm gap-2 px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest ${statusPill}`}>
+                                                        {msg.status === 'Scheduled' ? <FaCheckCircle /> : <span className="w-2 h-2 rounded-full bg-current opacity-40" />}
+                                                        {msg.status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-5">
+                                                    <div className="text-sm font-black text-slate-900 inline-flex items-center gap-2">
+                                                        <FaClock className="text-slate-400" />
+                                                        {new Date(msg.createdAt).toLocaleString()}
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-5 text-right">
+                                                    <div className="inline-flex items-center gap-2">
+                                                        {msg.status === 'Unread' && (
+                                                            <button
+                                                                onClick={() => markAsRead(msg._id)}
+                                                                className="px-4 py-2 rounded-xl bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition shadow-sm"
+                                                            >
+                                                                Mark read
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            onClick={() => handleCreateAppointment(msg.name, msg.phone, msg.email, msg._id, msg.message, msg.appointmentId)}
+                                                            className={`px-4 py-2 rounded-xl bg-emerald-600 text-white font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition shadow-sm  ${msg.status === 'Scheduled' ? 'bg-blue-600 hover:bg-blue-700' : msg.status === 'Unread' ? 'bg-emerald-400 hover:bg-emerald-500' : 'bg-emerald-600 hover:bg-emerald-700'}`}
+                                                        >
+                                                            {msg.status === 'Scheduled' ? 'Reschedule' : 'Create appt +'}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {isExpanded && (
+                                                <tr className="bg-blue-50/10 border-b border-slate-100">
+                                                    <td colSpan={7} className="px-6 py-8">
+                                                        <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200/50 max-w-[550px] mx-auto lg:mx-0">
+                                                            <div className="flex items-center gap-4 mb-4 pb-2 border-b border-slate-100">
+                                                                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-xl">
+                                                                    <FaEnvelopeOpen />
+                                                                </div>
+                                                                <div>
+                                                                    <h4 className="text-slate-900 font-black text-sm uppercase tracking-[0.15em]">Patient Inquiry Details</h4>
+                                                                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-0.5">From: {msg.name}</p>
+                                                                </div>
+                                                            </div>
+                                                            <FormattedMessage text={msg.message} isExpanded={true} />
+                                                            <div className="mt-8 flex justify-end">
+                                                                <button
+                                                                    onClick={() => toggleMessage(msg._id)}
+                                                                    className="px-4 py-1.5 rounded-xl border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+                                                                >
+                                                                    Collapse Inquiry
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </Fragment>
                                     );
                                 })}
                             </tbody>
@@ -271,8 +373,16 @@ export default function DashboardMessages() {
                                 )}
                             </div>
 
-                            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 leading-relaxed break-words">
-                                {msg.message}
+                            <div
+                                onClick={() => toggleMessage(msg._id)}
+                                className={`mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 leading-relaxed break-words cursor-pointer transition-all duration-300 ${expandedMessages[msg._id] ? 'ring-2 ring-blue-500/20 bg-white' : 'line-clamp-3'}`}
+                            >
+                                <FormattedMessage text={msg.message} isExpanded={!!expandedMessages[msg._id]} />
+                                {!expandedMessages[msg._id] && msg.message.length > 100 && (
+                                    <div className="mt-2 text-[10px] text-blue-600 font-black uppercase tracking-widest">
+                                        Tap to expand
+                                    </div>
+                                )}
                             </div>
 
                             <div className="mt-3 flex gap-2">
@@ -294,23 +404,23 @@ export default function DashboardMessages() {
                         </div>
                     ))}
 
-                {filtered.length > visibleCount && (
-                    <div className="flex justify-center pt-4">
-                        <button
-                            onClick={() => setVisibleCount(prev => prev + 10)}
-                            className="bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-sm transition-all shadow-lg hover:shadow-blue-200"
-                        >
-                            Read More Messages
-                        </button>
-                    </div>
-                )}
+                    {filtered.length > visibleCount && (
+                        <div className="flex justify-center pt-4">
+                            <button
+                                onClick={() => setVisibleCount(prev => prev + 10)}
+                                className="bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-sm transition-all shadow-lg hover:shadow-blue-200"
+                            >
+                                Read More Messages
+                            </button>
+                        </div>
+                    )}
 
-                {filtered.length === 0 && (
-                    <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200 text-gray-400">
-                        <FaEnvelopeOpen className="text-5xl mx-auto mb-4 opacity-20" />
-                        <p className="text-xl font-bold">No messages found</p>
-                    </div>
-                )}
+                    {filtered.length === 0 && (
+                        <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200 text-gray-400">
+                            <FaEnvelopeOpen className="text-5xl mx-auto mb-4 opacity-20" />
+                            <p className="text-xl font-bold">No messages found</p>
+                        </div>
+                    )}
                 </div>
             </div>
 

@@ -7,7 +7,7 @@ import { useClinic } from '../../context/ClinicContext';
 export default function TermsOfService() {
     const { clinicData, language } = useClinic();
 
-    const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental Clinic';
+    const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental';
     const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}` : 'Bihar, India';
     const city = clinicData?.address.city || 'Katihar';
 

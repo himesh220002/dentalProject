@@ -1,9 +1,9 @@
-# Dr. Tooth Dental Clinic - Technical Architecture
+# Dr. Tooth Dental - Technical Architecture
 
 A state-of-the-art, full-stack dental clinic management platform designed to bridge the gap between patients and modern dental care through a data-driven, visually engaging experience.
 
 ## Overview
-**Dr. Tooth Dental Clinic** is a comprehensive dental ecosystem that combines advanced patient management with real-time clinic operations. 
+**Dr. Tooth Dental** is a comprehensive dental ecosystem that combines advanced patient management with real-time clinic operations. 
 
 - **Purpose**: Connecting patients and clinics through a modern web platform that prioritizes patient comfort, transparency, and operational efficiency.
 - **Vision**: To modernize the dental experience using real-time synchronization and proactive communication.

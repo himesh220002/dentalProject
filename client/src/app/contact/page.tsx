@@ -382,7 +382,7 @@ function ContactContent() {
             const selectedTreat = treatments.find(t => t.name === formData.requestedTreatment);
             const amountVal = selectedTreat ? parseFloat(selectedTreat.price.replace(/\D/g, '')) : 0;
 
-            const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
+            const clinicName = clinicData?.clinicName || "Dr. Tooth Dental";
             const enthusiasticMessage = `Hi *${clinicName}*! 👋 I just booked an appointment through your website. I’m looking forward to getting my smile checked! 🦷\n\n*Details:*\nTreatment: *${formData.requestedTreatment}*\n📅 *Date:* ${formData.requestedDate}\n⏰ *Time:* ${formData.requestedTime}\n👤 *Name:* ${formData.name}\n\nSee you soon!`;
 
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, {
@@ -1076,7 +1076,7 @@ function ContactContent() {
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
                             className="rounded-2xl"
-                            title="Dr Tooth Dental Clinic Location"
+                            title="Dr Tooth Dental Location"
                         ></iframe>
                     </div>
 
@@ -1087,7 +1087,7 @@ function ContactContent() {
                                 e.preventDefault();
                                 // Manual submission for general inquiry
                                 const clinicPhone = staffPhone.replace(/\D/g, '');
-                                const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
+                                const clinicName = clinicData?.clinicName || "Dr. Tooth Dental";
                                 const messageText = language === 'hi'
                                     ? `नमस्ते *${clinicName}*, मैं *${formData.name}* हूँ।\nमेरा संदेश:- \n\n${formData.message}\n\n*संपर्क:* ${formData.phone}`
                                     : `Hello *${clinicName}*, I'm *${formData.name}*.\nMy message:- \n\n${formData.message}\n\n*Contact:* ${formData.phone}`;

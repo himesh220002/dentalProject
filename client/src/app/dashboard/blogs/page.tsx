@@ -38,7 +38,7 @@ export default function AdminBlogsPage() {
     const [isDragging, setIsDragging] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
-        author: 'Dr. Tooth Dental Clinic',
+        author: 'Dr. Tooth Dental',
         status: 'published',
         tags: '',
         imageUrl: ''
@@ -119,7 +119,7 @@ export default function AdminBlogsPage() {
             setEditingBlog(null);
             setFormData({
                 title: '',
-                author: 'Dr. Tooth Dental Clinic',
+                author: 'Dr. Tooth Dental',
                 status: 'published',
                 tags: '',
                 imageUrl: ''

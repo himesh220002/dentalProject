@@ -87,7 +87,7 @@ app.use('/api/handover', handoverRoutes);
 app.use('/api/blogs', blogRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Dr. Tooth Dental Clinic Server is Running [Build: 2026-02-28 18:15]');
+    res.send('Dr. Tooth Dental Server is Running [Build: 2026-02-28 18:15]');
 });
 
 const PORT = process.env.PORT || 5000;

@@ -7,7 +7,7 @@ import { useClinic } from '../../context/ClinicContext';
 export default function PrivacyPolicy() {
     const { clinicData, language } = useClinic();
 
-    const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental Clinic';
+    const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental';
     const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}` : 'Bihar, India';
     const phone = clinicData?.phone || '+91 98765 43210';
     const email = clinicData?.email || 'care@drToothdental.in';

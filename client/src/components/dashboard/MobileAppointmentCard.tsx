@@ -61,7 +61,7 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
         localStorage.setItem(`wa_clicked_${apt._id}`, 'true');
         setIsWABlinking(false);
 
-        const clinicName = clinicData?.clinicName || "Dr. Tooth Dental Clinic";
+        const clinicName = clinicData?.clinicName || "Dr. Tooth Dental";
         const mapsLink = (clinicData?.address?.latitude && clinicData?.address?.longitude)
             ? `https://www.google.com/maps/search/?api=1&query=${clinicData.address.latitude},${clinicData.address.longitude}`
             : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicName + " " + (clinicData?.address?.city || ""))}`;

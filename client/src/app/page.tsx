@@ -224,7 +224,7 @@ export default function Home() {
                         src="/images/2307.i105.031.S.m005.c13.isometric biotechnology.jpg"
                         fill
                         className="object-cover opacity-[0.8]"
-                        alt="Dr. Tooth Dental Clinic - Advanced Biotechnology Background"
+                        alt="Dr. Tooth Dental - Advanced Biotechnology Background"
                         priority
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-slate-50/70 via-white/10 to-blue-50/30"></div>

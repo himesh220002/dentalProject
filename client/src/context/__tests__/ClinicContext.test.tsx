@@ -35,7 +35,7 @@ describe('ClinicContext', () => {
             </ClinicProvider>
         );
 
-        expect(screen.getByTestId('clinic-name')).toHaveTextContent('Dr. Tooth Dental Clinic');
+        expect(screen.getByTestId('clinic-name')).toHaveTextContent('Dr. Tooth Dental');
         expect(screen.getByTestId('language')).toHaveTextContent('en');
 
         const button = screen.getByText('Toggle Language');
@@ -81,7 +81,7 @@ describe('ClinicContext', () => {
         await waitFor(() => {
             expect(screen.getByTestId('error')).toHaveTextContent('API Error');
         });
-        expect(screen.getByTestId('clinic-name')).toHaveTextContent('Dr. Tooth Dental Clinic');
+        expect(screen.getByTestId('clinic-name')).toHaveTextContent('Dr. Tooth Dental');
         expect(screen.getByTestId('loading')).toHaveTextContent('Loaded');
     });
 });

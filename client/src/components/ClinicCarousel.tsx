@@ -72,7 +72,7 @@ export default function ClinicCarousel() {
                 >
                     <img
                         src={img.url}
-                        alt={`${img.title} - Dental Care at Dr. Tooth Dental Clinic Katihar`}
+                        alt={`${img.title} - Dental Care at Dr. Tooth Dental Katihar`}
                         className="w-full h-full object-cover transition-transform duration-[10000ms] group-hover:scale-110"
                     />
                     {/* Overlay */}

@@ -66,7 +66,7 @@ global.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url');
 
 describe('Home Page Component', () => {
     const mockClinicData = {
-        clinicName: 'Dr. Tooth Dental Clinic',
+        clinicName: 'Dr. Tooth Dental',
         doctorName: 'Dr. John Smith',
         consultants: [
             { name: 'Dr. John Smith', role: 'Chief Dental Surgeon', info: 'Expert', experience: '15' }

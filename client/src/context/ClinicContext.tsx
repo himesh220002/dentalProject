@@ -52,7 +52,7 @@ interface ClinicData {
 }
 
 const DEFAULT_CLINIC_DATA: ClinicData = {
-    clinicName: 'Dr. Tooth Dental Clinic',
+    clinicName: 'Dr. Tooth Dental',
     doctorName: 'Dr. Tooth',
     tagline: "Your Smile's Guardian",
     email: 'care@drToothdental.in',
@@ -111,7 +111,7 @@ const DEFAULT_CLINIC_DATA: ClinicData = {
         { title: 'Sterile Environment', description: 'Class B Autoclave sterilization protocols.' }
     ],
     seo: {
-        metaTitle: 'Best Dental Clinic in Katihar | Dr. Tooth Dental Clinic',
+        metaTitle: 'Best Dental Clinic in Katihar | Dr. Tooth Dental',
         metaDescription: 'Expert dental care by Dr. Tooth. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
         keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist'
     },
