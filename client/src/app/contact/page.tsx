@@ -471,13 +471,13 @@ function ContactContent() {
     };
 
     return (
-        <div className="relative px-4 py-2 sm:py-8 lg:py-10 sm:px-20 xl:px-40  mx-auto space-y-8 sm:space-y-14 overflow-x-hidden">
+        <div className="relative px-4 py-2 sm:py-8 lg:py-10 sm:px-20 xl:px-40  mx-auto space-y-8 sm:space-y-8 overflow-x-hidden">
 
 
 
-            <div className="block text-center space-y-4">
+            <div className="block text-center space-y-2">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">{t.getIntouch}</h1>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-xs text-gray-600 max-w-2xl mx-auto">
                     {t.contactHeroSub}
                 </p>
                 {isAutoBookingEnabled && (
@@ -489,7 +489,7 @@ function ContactContent() {
             </div>
 
             <div className=" grid lg:grid-cols-3 gap-12">
-                <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
+                <div className="fixed inset-0 -z-10">
                     <img
                         src="/images/sciencehanddrawnbg.jpg"
                         className="w-full h-full object-cover opacity-[0.4]"
@@ -660,10 +660,10 @@ function ContactContent() {
                                                                 key={t._id}
                                                                 type="button"
                                                                 onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: t.name }))}
-                                                                className={`p-2 sm:p-4 lg:py-8 rounded-2xl border-2 shadow-inner transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-200' : 'border-gray-50 bg-gradient-to-b from-purple-100/50 to-blue-100/50 backdrop-blur-sm hover:bg-gray-100'}`}
+                                                                className={`p-2 sm:p-3 rounded-2xl border-2 shadow-inner transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-200' : 'border-gray-50 bg-gradient-to-b from-purple-100/50 to-blue-100/50 backdrop-blur-sm hover:bg-gray-100'}`}
                                                             >
                                                                 <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
-                                                                <span className="text-[12px] md:text-[15px] font-black uppercase text-center leading-tight">
+                                                                <span className="text-[10px] font-black uppercase text-center leading-tight">
                                                                     {(translations[language] as any).treatmentNames?.[t.name] || t.name}
                                                                 </span>
                                                             </button>
