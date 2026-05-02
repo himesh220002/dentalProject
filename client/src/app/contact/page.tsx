@@ -564,25 +564,7 @@ function ContactContent() {
                             )}
                         </div>
 
-                        {isAutoBookingEnabled && (
-                            <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Booking summary</div>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                                    <div className="rounded-xl bg-gray-100 border shadow-inner border-slate-200 px-3 py-2">
-                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Treatment</div>
-                                        <div className="font-black text-slate-900 ">{formData.requestedTreatment || 'Not selected'}</div>
-                                    </div>
-                                    <div className="rounded-xl bg-gray-100 shadow-inner border border-slate-200 px-3 py-2">
-                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Date</div>
-                                        <div className="font-black text-slate-900">{formData.requestedDate || 'Not selected'}</div>
-                                    </div>
-                                    <div className="rounded-xl bg-gray-100 shadow-inner border border-slate-200 px-3 py-2">
-                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Time</div>
-                                        <div className="font-black text-slate-900">{formData.requestedTime ? formatSlot(formData.requestedTime) : 'Not selected'}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+
 
                         {status.message && (
                             <div className={`mb-6 p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
@@ -907,6 +889,26 @@ function ContactContent() {
 
                                         </div>
                                     </>
+                                )}
+
+                                {isAutoBookingEnabled && (
+                                    <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Booking summary</div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                                            <div className="rounded-xl bg-gray-100 border shadow-inner border-slate-200 px-3 py-2">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Treatment</div>
+                                                <div className="font-black text-slate-900 ">{formData.requestedTreatment || 'Not selected'}</div>
+                                            </div>
+                                            <div className="rounded-xl bg-gray-100 shadow-inner border border-slate-200 px-3 py-2">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Date</div>
+                                                <div className="font-black text-slate-900">{formData.requestedDate || 'Not selected'}</div>
+                                            </div>
+                                            <div className="rounded-xl bg-gray-100 shadow-inner border border-slate-200 px-3 py-2">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Time</div>
+                                                <div className="font-black text-slate-900">{formData.requestedTime ? formatSlot(formData.requestedTime) : 'Not selected'}</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 )}
                             </form>
                         )}
