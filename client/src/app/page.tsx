@@ -376,13 +376,13 @@ export default function Home() {
 
             {/* Elite CTA Strip */}
             <section className="pb-12 sm:pb-20 overflow-hidden relative">
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 sm:p-16 md:p-24 mx-1 sm:mx-5 xl:mx-20 2xl:mx-40 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(15,23,42,0.45)] relative overflow-hidden group">
+                <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 md:p-16 mx-1 sm:mx-5 xl:mx-20 2xl:mx-40 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(15,23,42,0.45)] relative overflow-hidden group">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-44 -mt-44 blur-[100px] transition-all duration-700"></div>
                     <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-500/15 rounded-full -mr-40 -mb-40 blur-[80px]"></div>
 
                     <div className="relative z-10 space-y-6 sm:space-y-8">
-                        <h2 className="text-3xl sm:text-5xl md:text-6xl font-black leading-tight max-w-4xl mx-auto tracking-tight">
+                        <h2 className="text-2xl sm:text-4xl md:text-6xl font-black leading-tight max-w-4xl mx-auto tracking-tight">
                             {translations[language].homeCTA.title1} <br />
                             <span className="bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">
                                 {translations[language].homeCTA.title2}
