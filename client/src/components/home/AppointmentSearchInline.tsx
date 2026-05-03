@@ -6,15 +6,14 @@ import { FaSearch, FaCalendarAlt, FaPhone, FaUser, FaChevronRight, FaTimes, FaMa
 import Link from 'next/link';
 
 export default function AppointmentSearchInline() {
-    const [contact, setContact] = useState('');
-    const [namePrefix, setNamePrefix] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [appointments, setAppointments] = useState<any[] | null>(null);
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (contact.length < 10) return;
+        if (searchTerm.trim().length < 4) return;
 
         setLoading(true);
         setError(null);
@@ -23,8 +22,7 @@ export default function AppointmentSearchInline() {
         try {
             const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
             const res = await axios.post(`${backendUrl}/api/appointments/public-check`, {
-                contact,
-                namePrefix
+                searchTerm: searchTerm.trim()
             });
             setAppointments(res.data);
         } catch (err: any) {
@@ -41,58 +39,32 @@ export default function AppointmentSearchInline() {
     };
 
     return (
-        <div className="w-full relative z-40 group/search">
+        <div className="w-[400px] relative z-40 group/search">
             {/* Slimmer Search Bar Container */}
-            {/* <div className="bg-white/40 backdrop-blur-3xl border border-white/40 shadow-[0_20px_60px_rgba(0,0,0,0.08)] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[3rem] p-0.5 sm:p-1 transition-all duration-500 group-focus-within/search:shadow-[0_30px_80px_rgba(59,130,246,0.12)]"> */}
             <div className="bg-white/95 backdrop-blur-md rounded-[1.5rem] sm:rounded-[2.5rem] md:rounded-[2.8rem] p-1 border-3 border-gray-500/40">
                 <form onSubmit={handleSearch} className="flex items-center gap-1 sm:gap-1.5">
-                    {/* Name Input Group */}
-                    <div className="hidden 2xl:block relative flex-1 w-full group/input">
-                        <div className="flex items-center h-10 sm:h-11 bg-gray-50/30 md:bg-transparent rounded-xl md:rounded-none">
-                            <div className="absolute left-4 text-blue-500/40 group-focus-within/input:text-blue-600 transition-colors">
-                                <FaUser size={12} />
-                            </div>
-                            <input
-                                type="text"
-                                value={namePrefix}
-                                onChange={(e) => setNamePrefix(e.target.value)}
-                                placeholder="Patient Name"
-                                className="w-full bg-transparent pl-11 pr-4 h-full font-bold text-gray-900 placeholder:text-gray-300 outline-none text-[11px] sm:text-xs"
-                            />
-                            <div className="absolute right-4 hidden sm:block opacity-0 group-hover/input:opacity-100 transition-opacity">
-                                <span className="text-[10px] font-black text-blue-200 uppercase tracking-widest">Optional</span>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Minimal Divider */}
-                    <div className="hidden md:block w-px h-6 bg-gray-100 mx-1"></div>
-
-                    {/* Contact Input Group */}
+                    {/* Search Input Group */}
                     <div className=" w-full flex-1 group/input">
                         <div className="relative flex items-center h-10 sm:h-11 bg-gray-50/30 md:bg-transparent rounded-xl md:rounded-none">
                             <div className="absolute left-4 text-blue-500/40 group-focus-within/input:text-blue-600 transition-colors">
-                                <FaPhone size={12} />
+                                <FaSearch size={12} />
                             </div>
                             <input
                                 type="text"
-                                value={contact}
-                                onChange={(e) => setContact(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                placeholder="Search Appointment by Phone Number"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Search by Phone Number or Booking ID"
                                 className="w-full bg-transparent pl-11 pr-4 h-full font-bold text-gray-900 placeholder:text-gray-300 outline-none text-[11px] sm:text-xs"
                             />
-                            {contact.length === 10 && (
-                                <div className="absolute right-3 text-emerald-400">
-                                    <FaCalendarAlt size={9} />
-                                </div>
-                            )}
+
                         </div>
                     </div>
 
                     {/* Compact Search Button */}
                     <button
                         type="submit"
-                        disabled={loading || contact.length < 10}
+                        disabled={loading || searchTerm.trim().length < 4}
                         className={`w-auto px-4 sm:px-8 h-10 sm:h-11 rounded-[1.5rem] sm:rounded-[2.5rem] md:rounded-[2rem] font-black text-white shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 relative overflow-hidden group/btn ${loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-blue-600 hover:shadow-blue-500/20'
                             }`}
                     >
@@ -166,8 +138,8 @@ export default function AppointmentSearchInline() {
                                                                 <FaCalendarAlt className="text-blue-500" size={10} />
                                                                 {apt.time}
                                                             </span>
-                                                            <span className="inline-block px-1.5 py-0.5 bg-blue-50 text-blue-500 rounded uppercase text-[7px] tracking-widest">
-                                                                Confirmed
+                                                            <span className="inline-block px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded uppercase text-[7px] tracking-widest font-black border border-blue-100">
+                                                                {apt.bookingId || 'APT-Legacy'}
                                                             </span>
                                                         </div>
                                                     </div>

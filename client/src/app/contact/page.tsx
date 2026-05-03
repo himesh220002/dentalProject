@@ -9,6 +9,37 @@ import { useClinic } from '../../context/ClinicContext';
 import { translations } from '../../constants/translations';
 import TreatmentIcon from '../../components/TreatmentIcon';
 
+const formatSlot = (time24: string) => {
+    if (!time24) return '';
+    const [hour, min] = time24.split(':').map(Number);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${min.toString().padStart(2, '0')} ${period}`;
+};
+
+const BookingSummary = ({ formData, language, t, blinking = true }: any) => (
+    <div className="mb-6 rounded-3xl border border-blue-100 bg-blue-50/30 p-5 sm:p-6 backdrop-blur-sm">
+        <div className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-3 flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            Booking summary
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+            <div key={`treatment-${formData.requestedTreatment}`} className={`rounded-2xl border shadow-sm border-white/50 px-4 py-3 transition-all duration-500 ${formData.requestedTreatment ? 'bg-blue-100/60 shadow-blue-100/50 ' + (blinking ? 'animate-blink-blue' : '') : 'bg-gray-50/50'}`}>
+                <div className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Treatment</div>
+                <div className="font-black text-gray-900 truncate">{formData.requestedTreatment || 'Not selected'}</div>
+            </div>
+            <div key={`date-${formData.requestedDate}`} className={`rounded-2xl border shadow-sm border-white/50 px-4 py-3 transition-all duration-500 ${formData.requestedDate ? 'bg-blue-100/60 shadow-blue-100/50 ' + (blinking ? 'animate-blink-blue' : '') : 'bg-gray-50/50'}`}>
+                <div className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Date</div>
+                <div className="font-black text-gray-900">{formData.requestedDate || 'Not selected'}</div>
+            </div>
+            <div key={`time-${formData.requestedTime}`} className={`rounded-2xl border shadow-sm border-white/50 px-4 py-3 transition-all duration-500 ${formData.requestedTime ? 'bg-blue-100/60 shadow-blue-100/50 ' + (blinking ? 'animate-blink-blue' : '') : 'bg-gray-50/50'}`}>
+                <div className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Time</div>
+                <div className="font-black text-gray-900">{formData.requestedTime ? formatSlot(formData.requestedTime) : 'Not selected'}</div>
+            </div>
+        </div>
+    </div>
+);
+
 function ContactContent() {
     const { clinicData, language } = useClinic();
     const t = translations[language];
@@ -52,13 +83,24 @@ function ContactContent() {
     const [editingAptId, setEditingAptId] = useState<string | null>(null);
     const [editData, setEditData] = useState({ date: '', time: '' });
     const [savingEdit, setSavingEdit] = useState(false);
+    const [confirmedBookingId, setConfirmedBookingId] = useState<string | null>(null);
 
-    const formatSlot = (time24: string) => {
-        const [h, m] = time24.split(':').map(Number);
-        const period = h >= 12 ? 'PM' : 'AM';
-        const hour12 = h % 12 === 0 ? 12 : h % 12;
-        return `${hour12}:${String(m).padStart(2, '0')} ${period}`;
-    };
+    // Automatic Step Tracking for Progress Bar
+    useEffect(() => {
+        if (!isAutoBookingEnabled) return;
+
+        let step = 1;
+        if (formData.name && formData.phone.length === 10) {
+            step = 2;
+            if (formData.requestedTreatment) {
+                step = 3;
+                if (formData.requestedDate && formData.requestedTime) {
+                    // All fields filled
+                }
+            }
+        }
+        setCurrentStep(step);
+    }, [formData.name, formData.phone, formData.requestedTreatment, formData.requestedDate, formData.requestedTime, isAutoBookingEnabled]);
 
     useEffect(() => {
         const fetchTreatments = async () => {
@@ -248,13 +290,14 @@ function ContactContent() {
         if (treatment) {
             setFormData(prev => ({
                 ...prev,
+                requestedTreatment: treatment,
                 message: t.placeholderMsg.replace('...', treatment.toUpperCase())
             }));
             // Clean up the URL to prevent repeating on refresh
             const newUrl = window.location.pathname;
             router.replace(newUrl, { scroll: false });
         }
-    }, [searchParams, router, language]);
+    }, [searchParams, router, language, t.placeholderMsg]);
 
     const suggestions = treatments.map((t, idx) => {
         const colors = [
@@ -361,19 +404,6 @@ function ContactContent() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        // If auto-booking is enabled and we're not on the last step, just move forward
-        if (isAutoBookingEnabled && currentStep < 3) {
-            if (currentStep === 1) {
-                if (!formData.name || formData.phone.length !== 10) return;
-                setCurrentStep(2);
-            } else if (currentStep === 2) {
-                if (!formData.requestedTreatment) return;
-                setCurrentStep(3);
-            }
-            return;
-        }
-
         setSubmitting(true);
         setStatus({ type: '', message: '' });
 
@@ -395,6 +425,9 @@ function ContactContent() {
 
             const isAutomatedSuccess = res.data?.isAutomated;
             const appointmentId = res.data?.appointmentId;
+            const bId = res.data?.bookingId;
+
+            if (bId) setConfirmedBookingId(bId);
 
             // --- LOCAL STORAGE TRACKING FOR GUESTS ---
             if (isAutomatedSuccess && appointmentId) {
@@ -430,9 +463,6 @@ function ContactContent() {
             const finalWhatsappLink = `https://wa.me/${clinicPhone}?text=${encodedMessage}`;
 
             // Redirect after a short delay (Only if automated or if user explicitly needs WA)
-            // The user requested NO wa message for general message. 
-            // So we only open it if it's automated? Or if they didn't specify?
-            // "it does not need open wa message for general message"
             if (isAutomatedSuccess) {
                 setTimeout(() => {
                     window.open(finalWhatsappLink, '_blank');
@@ -445,30 +475,33 @@ function ContactContent() {
                     setTimeout(() => {
                         window.open(staffWhatsappUrl, '_blank');
                     }, 2000);
-
-                    setFormData({ name: '', phone: '', email: '', message: '', requestedTreatment: '', requestedDate: '', requestedTime: '' });
-                    setCurrentStep(1);
-                }, 1500);
+                }, 3000);
             } else {
-                // For non-automated manual request, we SHOULD open WhatsApp as per user feedback
                 setTimeout(() => {
                     window.open(finalWhatsappLink, '_blank');
-                    setFormData({ name: '', phone: '', email: '', message: '', requestedTreatment: '', requestedDate: '', requestedTime: '' });
-                    setCurrentStep(1);
-                }, 1500);
+                }, 3000);
             }
 
         } catch (error) {
             setStatus({
                 type: 'error',
                 message: language === 'hi'
-                    ? t.failedTryAgain + ' ' + (error as any).response?.data?.message || ''
-                    : t.failedTryAgain + ' ' + (error as any).response?.data?.message || ''
+                    ? t.failedTryAgain + ' ' + ((error as any).response?.data?.message || '')
+                    : t.failedTryAgain + ' ' + ((error as any).response?.data?.message || '')
             });
         } finally {
             setSubmitting(false);
         }
     };
+
+    const handleBookAnother = () => {
+        setFormData({ name: '', phone: '', email: '', message: '', requestedTreatment: '', requestedDate: '', requestedTime: '' });
+        setCurrentStep(1);
+        setStatus({ type: '', message: '' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+
 
     return (
         <div className="relative px-4 py-2 sm:py-8 lg:py-10 sm:px-20 xl:px-40  mx-auto space-y-8 sm:space-y-8 overflow-x-hidden">
@@ -566,351 +599,386 @@ function ContactContent() {
 
 
 
-                        {status.message && (
-                            <div className={`mb-6 p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
-                                {status.message}
-                            </div>
-                        )}
-
-                        {configLoading ? (
-                            <div className="space-y-6 animate-pulse p-4">
-                                <div className="h-4 bg-gray-100 rounded-full w-1/4 mb-8"></div>
-                                <div className="grid sm:grid-cols-2 gap-6">
-                                    <div className="h-14 bg-gray-50 rounded-2xl"></div>
-                                    <div className="h-14 bg-gray-50 rounded-2xl"></div>
+                        {status.type === 'success' ? (
+                            <div className="space-y-8 animate-in zoom-in duration-500 py-4">
+                                <div className="text-center space-y-4">
+                                    <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-4xl animate-bounce">
+                                        <FaCheckCircle />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="flex flex-col items-center gap-2 justify-center text-lg font-black text-gray-800"><FaWhatsapp className="text-emerald-500 text-xl shrink-0 mt-0.5" /> {t.bookingConfirmed}</h3>
+                                        <p className="text-sm text-gray-500 font-bold uppercase tracking-widest">{t.detailsSaved}</p>
+                                    </div>
                                 </div>
-                                <div className="h-32 bg-gray-50 rounded-2xl"></div>
-                                <div className="h-14 bg-blue-100 rounded-2xl w-full"></div>
+
+                                <div className="bg-slate-50 rounded-[2rem] border border-slate-100 overflow-hidden shadow-inner">
+                                    <div className="bg-slate-900 text-white px-8 py-4 flex justify-between items-center">
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Confirmed Booking Details</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest bg-blue-500 px-3 py-1 rounded-full">
+                                            #{confirmedBookingId || 'APT-GENERATING'}
+                                        </span>
+                                    </div>
+                                    <div className="p-8 space-y-6">
+                                        <div className="grid sm:grid-cols-2 gap-8">
+                                            <div className="space-y-1">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Patient Name</div>
+                                                <div className="text-lg font-black text-slate-800">{formData.name}</div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Phone Number</div>
+                                                <div className="text-lg font-black text-slate-800">{formData.phone}</div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Treatment</div>
+                                                <div className="text-lg font-black text-blue-600">{formData.requestedTreatment}</div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Appointment Slot</div>
+                                                <div className="text-lg font-black text-slate-800">
+                                                    {formData.requestedDate ? new Date(formData.requestedDate).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+                                                    <span className="mx-2 text-slate-300">|</span>
+                                                    {formData.requestedTime ? formatSlot(formData.requestedTime) : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-4 border-t border-slate-200">
+                                            <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 flex items-start gap-3">
+                                                <div className="text-[11px] font-medium text-slate-600 leading-relaxed">
+                                                    {language === 'hi'
+                                                        ? "कृपया अपने अकाउंट में लॉगिन करके अधिक जानकारी के लिए अपना इनबॉक्स देखें।"
+                                                        : "Please login your account to check your inbox for further details and clinic directions."}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <button
+                                        onClick={handleBookAnother}
+                                        className="w-full py-5 bg-emerald-600 text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all active:scale-95 shadow-xl shadow-emerald-100 flex items-center justify-center gap-3"
+                                    >
+                                        <FaCheckCircle /> {t.bookAnother}
+                                    </button>
+                                    <button
+                                        onClick={() => router.push('/')}
+                                        className="w-full py-4 bg-gray-100 text-gray-600 rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-gray-200 transition-all text-xs"
+                                    >
+                                        Back to Home
+                                    </button>
+                                </div>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                {isAutoBookingEnabled ? (
-                                    <>
-                                        {/* STEP 1: PERSONAL DETAILS */}
-                                        {currentStep === 1 && (
-                                            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                                                <div className="grid sm:grid-cols-2 gap-6">
-                                                    <div className="space-y-2">
-                                                        <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">{t.formName}</label>
-                                                        <input
-                                                            type="text" id="name" value={formData.name} onChange={handleChange} required
-                                                            className="w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
-                                                            placeholder={t.namePlaceholder}
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1 flex items-center gap-2">
-                                                            {t.formPhone} <FaWhatsapp className="text-emerald-500" />
-                                                        </label>
-                                                        <input
-                                                            type="tel" id="phone" value={formData.phone} required
-                                                            onChange={(e) => {
-                                                                const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                                                setFormData(prev => ({ ...prev, phone: val }));
-                                                            }}
-                                                            className={`w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 font-bold outline-none transition-all ${formData.phone.length === 10 ? 'border-emerald-100 text-emerald-600' : 'border-transparent focus:border-blue-500'}`}
-                                                            placeholder="10 digit number"
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">{t.emailOptional}</label>
-                                                    <input
-                                                        type="email" id="email" value={formData.email} onChange={handleChange}
-                                                        className="w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
-                                                        placeholder={t.emailPlaceholder}
-                                                    />
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => formData.name && formData.phone.length === 10 && setCurrentStep(2)}
-                                                    disabled={!formData.name || formData.phone.length !== 10}
-                                                    className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
-                                                >
-                                                    {t.chooseTreatment} <FaChevronRight />
-                                                </button>
-                                            </div>
-                                        )}
+                            <>
+                                {isAutoBookingEnabled && <BookingSummary formData={formData} language={language} t={t} />}
 
-                                        {/* STEP 2: CHOOSE TREATMENT */}
-                                        {currentStep === 2 && (
-                                            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                                                <div className="max-h-[520px] overflow-y-auto pr-1 custom-scrollbar">
-                                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                                        {treatments.map((t) => (
-                                                            <button
-                                                                key={t._id}
-                                                                type="button"
-                                                                onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: t.name }))}
-                                                                className={`p-2 sm:p-3 rounded-2xl border-2 shadow-inner transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-200' : 'border-gray-50 bg-gradient-to-b from-purple-100/50 to-blue-100/50 backdrop-blur-sm hover:bg-gray-100'}`}
-                                                            >
-                                                                <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
-                                                                <span className="text-[10px] font-black uppercase text-center leading-tight">
-                                                                    {(translations[language] as any).treatmentNames?.[t.name] || t.name}
-                                                                </span>
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-2 sm:gap-4 mt-2">
-                                                    <button
-                                                        type="button" onClick={() => setCurrentStep(1)}
-                                                        className="w-1/4 sm:w-1/3 py-3 sm:py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-1 sm:gap-2"
-                                                    >
-                                                        <FaChevronLeft className="text-[10px]" /> Back
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => formData.requestedTreatment && setCurrentStep(3)}
-                                                        disabled={!formData.requestedTreatment}
-                                                        className="flex-1 py-3 sm:py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50"
-                                                    >
-                                                        <span className="sm:inline">{t.selectSlot}</span>
-                                                        <FaChevronRight className="text-[10px]" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
+                                {status.message && (
+                                    <div className={`mb-6 p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
+                                        {status.message}
+                                    </div>
+                                )}
 
-                                        {/* STEP 3: SELECT DATE & TIME */}
-                                        {currentStep === 3 && (
-                                            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                                                <div className="space-y-4">
-                                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.availableDates}</label>
-                                                    <div className="flex flex-wrap gap-2 overflow-x-auto pb-3 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-                                                        {suggestedDates.map((item) => (
-                                                            <button
-                                                                key={item.dateStr}
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    setFormData(prev => ({ ...prev, requestedDate: item.dateStr, requestedTime: '' }));
-                                                                    fetchAvailableTimes(item.dateStr);
-                                                                }}
-                                                                className={`flex-shrink-0 w-24 p-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 cursor-pointer ${formData.requestedDate === item.dateStr ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gray-50'}`}
-                                                            >
-                                                                <span className="text-[10px] font-black text-blue-600">{item.display.split(' ')[0]}</span>
-                                                                <span className="text-sm font-black text-gray-800">{item.display.split(' ')[1]}</span>
-                                                                <span className="text-[8px] font-bold text-gray-400">{item.display.split(' ')[2]}</span>
-                                                                <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${item.count < 6 ? 'bg-emerald-100 text-emerald-700' : item.count < 8 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>
-                                                                    {item.count < 6 ? t.flexible : item.count < 8 ? t.steady : t.busy}
-                                                                </span>
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                {formData.requestedDate && (
-                                                    <div className="space-y-4 pt-4 border-t border-gray-100">
-                                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.availableSlots}</label>
-                                                        {loadingTimes ? (
-                                                            <div className="flex items-center gap-2 text-blue-600 font-bold text-xs"><div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div> {t.fetchingSlots}</div>
-                                                        ) : availableTimes.length > 0 ? (
-                                                            <div className="grid grid-cols-4 gap-2">
-                                                                {availableTimes.map(time => {
-                                                                    const isToday = formData.requestedDate === new Date().toISOString().split('T')[0];
-                                                                    let isPassed = false;
-                                                                    if (isToday) {
-                                                                        const [slotHour, slotMin] = time.split(':').map(Number);
-                                                                        const now = new Date();
-                                                                        const currentHour = now.getHours();
-                                                                        const currentMin = now.getMinutes();
-                                                                        if (slotHour < currentHour || (slotHour === currentHour && slotMin <= currentMin)) {
-                                                                            isPassed = true;
-                                                                        }
-                                                                    }
-
-                                                                    return (
-                                                                        <button
-                                                                            key={time}
-                                                                            type="button"
-                                                                            disabled={isPassed}
-                                                                            onClick={() => setFormData(prev => ({ ...prev, requestedTime: time }))}
-                                                                            className={`py-3 rounded-xl border-2 font-black text-xs transition-all ${formData.requestedTime === time
-                                                                                ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                                                                                : isPassed
-                                                                                    ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
-                                                                                    : 'border-gray-50 bg-gray-50 text-gray-600 hover:bg-gray-100'
-                                                                                }`}
-                                                                        >
-                                                                            {formatSlot(time)}
-                                                                        </button>
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        ) : (
-                                                            <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-xs font-bold border border-rose-100">{t.noSlots}</div>
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                                <div className="flex gap-2 sm:gap-4 pt-4">
-                                                    <button
-                                                        type="button" onClick={() => setCurrentStep(2)}
-                                                        className="w-1/4 sm:w-1/3 py-3 sm:py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-1 sm:gap-2"
-                                                    >
-                                                        <FaChevronLeft className="text-[10px]" /> Back
-                                                    </button>
-                                                    <button
-                                                        type="submit"
-                                                        disabled={submitting || !formData.requestedTime}
-                                                        className="flex-1 py-3 sm:py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 px-2"
-                                                    >
-                                                        <span className="sm:inline">{submitting ? t.confirming : (formData.phone.length === 10 ? t.bookApt : t.completeForm)}</span>
-                                                        <FaCheckCircle className="text-[10px] flex-shrink-0" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </>
+                                {configLoading ? (
+                                    <div className="space-y-6 animate-pulse p-4">
+                                        <div className="h-4 bg-gray-100 rounded-full w-1/4 mb-8"></div>
+                                        <div className="grid sm:grid-cols-2 gap-6">
+                                            <div className="h-14 bg-gray-50 rounded-2xl"></div>
+                                            <div className="h-14 bg-gray-50 rounded-2xl"></div>
+                                        </div>
+                                        <div className="h-32 bg-gray-50 rounded-2xl"></div>
+                                        <div className="h-14 bg-blue-100 rounded-2xl w-full"></div>
+                                    </div>
                                 ) : (
-                                    <>
-                                        <div className="grid md:grid-cols-2 gap-6">
-                                            <div className="space-y-2 text-left">
-                                                <label htmlFor="name" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
-                                                    {t.formName}
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    id="name"
-                                                    value={formData.name}
-                                                    onChange={handleChange}
-                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
-                                                    placeholder={t.yourNamePlaceholder}
-                                                    required
-                                                />
-                                            </div>
-                                            <div className="space-y-2 text-left">
-                                                <label htmlFor="phone" className="text-sm font-semibold text-gray-700 h-8 flex items-end justify-start gap-2">
-                                                    <span>{t.formPhone} </span><FaWhatsapp className="text-green-500 text-xl" />
-                                                    {formData.phone.length > 0 && formData.phone.length < 10 && (
-                                                        <span className="text-red-500 text-[10px] animate-pulse">{t.phoneRequired}: {formData.phone.length}/10</span>
-                                                    )}
-                                                </label>
-                                                <input
-                                                    type="tel"
-                                                    id="phone"
-                                                    value={formData.phone}
-                                                    onChange={(e) => {
-                                                        const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                                        setFormData(prev => ({ ...prev, phone: val }));
-                                                    }}
-                                                    className={`w-full px-4 py-3 rounded-xl border-2 font-bold outline-none transition-all ${formData.phone.length === 10
-                                                        ? 'border-green-200 focus:border-green-500 text-green-600'
-                                                        : formData.phone.length > 0
-                                                            ? 'border-red-100 focus:border-red-400 text-red-600'
-                                                            : 'border-gray-200 focus:border-blue-500'
-                                                        }`}
-                                                    placeholder={t.waPlaceholder}
-                                                    required
-                                                />
-                                            </div>
-                                            <div className="md:col-span-2 space-y-2 text-left">
-                                                <label htmlFor="email" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
-                                                    {language === 'hi' ? 'ईमेल आईडी' : 'Email Address'} <span className="ml-2 text-gray-400 font-normal text-[10px] uppercase tracking-widest">(Optional)</span>
-                                                </label>
-                                                <input
-                                                    type="email"
-                                                    id="email"
-                                                    value={(formData as any).email || ''}
-                                                    onChange={handleChange}
-                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
-                                                    placeholder={t.yourEmailPlaceholder}
-                                                />
-                                            </div>
-                                            <div className="md:col-span-2 space-y-4">
-                                                <div className="space-y-2 text-left">
-                                                    <label htmlFor="message" className="text-sm font-semibold text-gray-700 flex justify-between items-center">
-                                                        <span>{t.formMessage}</span>
-                                                        <span className="text-gray-400 font-normal text-xs uppercase tracking-widest italic">Optional Selection</span>
-                                                    </label>
+                                    <form onSubmit={handleSubmit} className="space-y-10">
+                                        {isAutoBookingEnabled ? (
+                                            <div className="space-y-4 sm:space-y-6 divide-y divide-gray-50">
 
-                                                    <div className="flex flex-wrap gap-2 mb-3">
-                                                        {suggestions.map((s) => (
-                                                            <button
-                                                                key={s.value}
-                                                                type="button"
-                                                                onClick={() => handleSuggestionClick(s.label)}
-                                                                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 transform active:scale-90 ${s.color}`}
-                                                            >
-                                                                + {s.label}
-                                                            </button>
-                                                        ))}
+
+                                                {/* SECTION 1: CHOOSE TREATMENT */}
+                                                <div className="space-y-6">
+                                                    <div className="flex items-center gap-3 mb-2">
+                                                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-sm">1</div>
+                                                        <h3 className="text-sm font-black uppercase tracking-widest text-gray-800">Choose Treatment</h3>
                                                     </div>
+                                                    <div className="max-h-[520px] overflow-y-auto pr-1 custom-scrollbar">
+                                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                                            {treatments.map((t) => (
+                                                                <button
+                                                                    key={t._id}
+                                                                    type="button"
+                                                                    onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: prev.requestedTreatment === t.name ? '' : t.name }))}
+                                                                    className={`p-2 sm:p-3 rounded-2xl border-2 shadow-inner transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-200' : 'border-gray-50 bg-gradient-to-b from-purple-100/50 to-blue-100/50 backdrop-blur-sm hover:bg-gray-100'}`}
+                                                                >
+                                                                    <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
+                                                                    <span className="text-[10px] font-black uppercase text-center leading-tight">
+                                                                        {(translations[language] as any).treatmentNames?.[t.name] || t.name}
+                                                                    </span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                                    <div className="space-y-2">
-                                                        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest pl-1 mb-1">
-                                                            {t.smartSuggestions}
-                                                        </p>
-                                                        <div className="flex flex-wrap gap-2 mb-4">
+                                                {/* SECTION 2: SELECT DATE & TIME */}
+                                                <div className="space-y-6">
+                                                    <div className="flex items-center gap-3 mb-2">
+                                                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-sm">2</div>
+                                                        <h3 className="text-sm font-black uppercase tracking-widest text-gray-800">Select Date & Time</h3>
+                                                    </div>
+                                                    <div className="space-y-4">
+                                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.availableDates}</label>
+                                                        <div className="flex flex-wrap gap-2 overflow-x-auto pb-3 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
                                                             {suggestedDates.map((item) => (
                                                                 <button
                                                                     key={item.dateStr}
                                                                     type="button"
-                                                                    onClick={() => handleDateSuggestion(item)}
-                                                                    className={`px-3 py-2 rounded-2xl flex flex-col items-center border shadow-sm transition-all transform active:scale-95 ${item.count < 6 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
-                                                                        item.count < 8 ? 'bg-amber-50 border-amber-200 text-amber-700' :
-                                                                            'bg-rose-50 border-rose-200 text-rose-700'
-                                                                        }`}
+                                                                    onClick={() => {
+                                                                        const isDeselecting = formData.requestedDate === item.dateStr;
+                                                                        setFormData(prev => ({ ...prev, requestedDate: isDeselecting ? '' : item.dateStr, requestedTime: '' }));
+                                                                        if (!isDeselecting) {
+                                                                            fetchAvailableTimes(item.dateStr);
+                                                                        } else {
+                                                                            setAvailableTimes([]);
+                                                                        }
+                                                                    }}
+                                                                    className={`flex-shrink-0 w-24 p-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 cursor-pointer ${formData.requestedDate === item.dateStr ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gray-50'}`}
                                                                 >
-                                                                    <span className="text-[10px] font-black uppercase tracking-tighter leading-none mb-1">{item.display}</span>
-                                                                    <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${item.count < 6 ? 'bg-emerald-100' :
-                                                                        item.count < 8 ? 'bg-amber-100' :
-                                                                            'bg-rose-100'
-                                                                        }`}>
-                                                                        {item.count < 6 ? t.flexible :
-                                                                            item.count < 8 ? t.steady :
-                                                                                t.busy}
+                                                                    <span className="text-[10px] font-black text-blue-600">{item.display.split(' ')[0]}</span>
+                                                                    <span className="text-sm font-black text-gray-800">{item.display.split(' ')[1]}</span>
+                                                                    <span className="text-[8px] font-bold text-gray-400">{item.display.split(' ')[2]}</span>
+                                                                    <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${item.count < 6 ? 'bg-emerald-100 text-emerald-700' : item.count < 8 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>
+                                                                        {item.count < 6 ? t.flexible : item.count < 8 ? t.steady : t.busy}
                                                                     </span>
                                                                 </button>
                                                             ))}
                                                         </div>
                                                     </div>
 
-                                                    <textarea
-                                                        id="message"
-                                                        rows={4}
-                                                        value={formData.message}
-                                                        onChange={handleChange}
-                                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                                                        placeholder={t.placeholderMsg}
-                                                        required
-                                                    ></textarea>
+                                                    {formData.requestedDate && (
+                                                        <div className="space-y-4 pt-4 border-t border-gray-100">
+                                                            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.availableSlots}</label>
+                                                            {loadingTimes ? (
+                                                                <div className="flex items-center gap-2 text-blue-600 font-bold text-xs"><div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div> {t.fetchingSlots}</div>
+                                                            ) : availableTimes.length > 0 ? (
+                                                                <div className="grid grid-cols-4 gap-2">
+                                                                    {availableTimes.map(time => {
+                                                                        const isToday = formData.requestedDate === new Date().toISOString().split('T')[0];
+                                                                        let isPassed = false;
+                                                                        if (isToday) {
+                                                                            const [slotHour, slotMin] = time.split(':').map(Number);
+                                                                            const now = new Date();
+                                                                            const currentHour = now.getHours();
+                                                                            const currentMin = now.getMinutes();
+                                                                            if (slotHour < currentHour || (slotHour === currentHour && slotMin <= currentMin)) {
+                                                                                isPassed = true;
+                                                                            }
+                                                                        }
+
+                                                                        return (
+                                                                            <button
+                                                                                key={time}
+                                                                                type="button"
+                                                                                disabled={isPassed}
+                                                                                onClick={() => setFormData(prev => ({ ...prev, requestedTime: prev.requestedTime === time ? '' : time }))}
+                                                                                className={`py-3 rounded-xl border-2 font-black text-xs transition-all ${formData.requestedTime === time
+                                                                                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                                                                                    : isPassed
+                                                                                        ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
+                                                                                        : 'border-gray-50 bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                                                                    }`}
+                                                                            >
+                                                                                {formatSlot(time)}
+                                                                            </button>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            ) : (
+                                                                <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-xs font-bold border border-rose-100">{t.noSlots}</div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                {/* SECTION 3: PERSONAL DETAILS */}
+                                                <div className="space-y-2 pt-2">
+                                                    <div className="flex items-center gap-3 mb-2">
+                                                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-sm">3</div>
+                                                        <h3 className="text-sm font-black uppercase tracking-widest text-gray-800">Personal Details</h3>
+                                                    </div>
+                                                    <div className="grid sm:grid-cols-2 gap-6">
+                                                        <div className="space-y-2">
+                                                            <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">{t.formName}</label>
+                                                            <input
+                                                                type="text" id="name" value={formData.name} onChange={handleChange} required
+                                                                className="w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all "
+                                                                placeholder={t.namePlaceholder}
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1 flex items-center gap-2">
+                                                                {t.formPhone} <FaWhatsapp className="text-emerald-500" />
+                                                            </label>
+                                                            <input
+                                                                type="tel" id="phone" value={formData.phone} required
+                                                                onChange={(e) => {
+                                                                    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                                                    setFormData(prev => ({ ...prev, phone: val }));
+                                                                }}
+                                                                className={`w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 font-bold outline-none transition-all ${formData.phone.length === 10 ? 'border-emerald-100 text-emerald-600' : 'border-transparent focus:border-blue-500'}`}
+                                                                placeholder="10 digit number"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">{t.emailOptional}</label>
+                                                        <input
+                                                            type="email" id="email" value={formData.email} onChange={handleChange}
+                                                            className="w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
+                                                            placeholder={t.emailPlaceholder}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-10">
+                                                    <button
+                                                        type="submit"
+                                                        disabled={submitting || !formData.requestedTime || !formData.name || formData.phone.length !== 10}
+                                                        className="w-full py-5 bg-emerald-600 text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
+                                                    >
+                                                        {submitting ? t.confirming : t.bookApt}
+                                                        <FaCheckCircle className="text-xl" />
+                                                    </button>
                                                 </div>
                                             </div>
-                                            <div className="md:col-span-2">
-                                                <button
-                                                    type="submit"
-                                                    disabled={submitting}
-                                                    className={`w-full ${submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center gap-2`}
-                                                >
-                                                    <FaPaperPlane /> {submitting ? t.submitting : t.send}
-                                                </button>
-                                            </div>
+                                        ) : (
+                                            <div className="grid md:grid-cols-2 gap-6">
+                                                <div className="space-y-2 text-left">
+                                                    <label htmlFor="name" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
+                                                        {t.formName}
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="name"
+                                                        value={formData.name}
+                                                        onChange={handleChange}
+                                                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
+                                                        placeholder={t.yourNamePlaceholder}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="space-y-2 text-left">
+                                                    <label htmlFor="phone" className="text-sm font-semibold text-gray-700 h-8 flex items-end justify-start gap-2">
+                                                        <span>{t.formPhone} </span><FaWhatsapp className="text-green-500 text-xl" />
+                                                        {formData.phone.length > 0 && formData.phone.length < 10 && (
+                                                            <span className="text-red-500 text-[10px] animate-pulse">{t.phoneRequired}: {formData.phone.length}/10</span>
+                                                        )}
+                                                    </label>
+                                                    <input
+                                                        type="tel"
+                                                        id="phone"
+                                                        value={formData.phone}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                                            setFormData(prev => ({ ...prev, phone: val }));
+                                                        }}
+                                                        className={`w-full px-4 py-3 rounded-xl border-2 font-bold outline-none transition-all ${formData.phone.length === 10
+                                                            ? 'border-green-200 focus:border-green-500 text-green-600'
+                                                            : formData.phone.length > 0
+                                                                ? 'border-red-100 focus:border-red-400 text-red-600'
+                                                                : 'border-gray-200 focus:border-blue-500'
+                                                            }`}
+                                                        placeholder={t.waPlaceholder}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-2 space-y-2 text-left">
+                                                    <label htmlFor="email" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
+                                                        {language === 'hi' ? 'ईमेल आईडी' : 'Email Address'} <span className="ml-2 text-gray-400 font-normal text-[10px] uppercase tracking-widest">(Optional)</span>
+                                                    </label>
+                                                    <input
+                                                        type="email"
+                                                        id="email"
+                                                        value={(formData as any).email || ''}
+                                                        onChange={handleChange}
+                                                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
+                                                        placeholder={t.yourEmailPlaceholder}
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-2 space-y-4">
+                                                    <div className="space-y-2 text-left">
+                                                        <label htmlFor="message" className="text-sm font-semibold text-gray-700 flex justify-between items-center">
+                                                            <span>{t.formMessage}</span>
+                                                            <span className="text-gray-400 font-normal text-xs uppercase tracking-widest italic">Optional Selection</span>
+                                                        </label>
 
-                                        </div>
-                                    </>
-                                )}
+                                                        <div className="flex flex-wrap gap-2 mb-3">
+                                                            {suggestions.map((s) => (
+                                                                <button
+                                                                    key={s.value}
+                                                                    type="button"
+                                                                    onClick={() => handleSuggestionClick(s.label)}
+                                                                    className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 transform active:scale-90 ${s.color}`}
+                                                                >
+                                                                    + {s.label}
+                                                                </button>
+                                                            ))}
+                                                        </div>
 
-                                {isAutoBookingEnabled && (
-                                    <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Booking summary</div>
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                                            <div className="rounded-xl bg-gray-100 border shadow-inner border-slate-200 px-3 py-2">
-                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Treatment</div>
-                                                <div className="font-black text-slate-900 ">{formData.requestedTreatment || 'Not selected'}</div>
+                                                        <div className="space-y-2">
+                                                            <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest pl-1 mb-1">
+                                                                {t.smartSuggestions}
+                                                            </p>
+                                                            <div className="flex flex-wrap gap-2 mb-4">
+                                                                {suggestedDates.map((item) => (
+                                                                    <button
+                                                                        key={item.dateStr}
+                                                                        type="button"
+                                                                        onClick={() => handleDateSuggestion(item)}
+                                                                        className={`px-3 py-2 rounded-2xl flex flex-col items-center border shadow-sm transition-all transform active:scale-95 ${item.count < 6 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
+                                                                            item.count < 8 ? 'bg-amber-50 border-amber-200 text-amber-700' :
+                                                                                'bg-rose-50 border-rose-200 text-rose-700'
+                                                                            }`}
+                                                                    >
+                                                                        <span className="text-[10px] font-black uppercase tracking-tighter leading-none mb-1">{item.display}</span>
+                                                                        <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${item.count < 6 ? 'bg-emerald-100' :
+                                                                            item.count < 8 ? 'bg-amber-100' :
+                                                                                'bg-rose-100'
+                                                                            }`}>
+                                                                            {item.count < 6 ? t.flexible :
+                                                                                item.count < 8 ? t.steady :
+                                                                                    t.busy}
+                                                                        </span>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
+                                                        <textarea
+                                                            id="message"
+                                                            rows={4}
+                                                            value={formData.message}
+                                                            onChange={handleChange}
+                                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                                                            placeholder={t.placeholderMsg}
+                                                            required
+                                                        ></textarea>
+                                                    </div>
+                                                </div>
+                                                <div className="md:col-span-2">
+                                                    <button
+                                                        type="submit"
+                                                        disabled={submitting}
+                                                        className={`w-full ${submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center gap-2`}
+                                                    >
+                                                        <FaPaperPlane /> {submitting ? t.submitting : t.send}
+                                                    </button>
+                                                </div>
+
                                             </div>
-                                            <div className="rounded-xl bg-gray-100 shadow-inner border border-slate-200 px-3 py-2">
-                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Date</div>
-                                                <div className="font-black text-slate-900">{formData.requestedDate || 'Not selected'}</div>
-                                            </div>
-                                            <div className="rounded-xl bg-gray-100 shadow-inner border border-slate-200 px-3 py-2">
-                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Time</div>
-                                                <div className="font-black text-slate-900">{formData.requestedTime ? formatSlot(formData.requestedTime) : 'Not selected'}</div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        )}
+                                    </form>
                                 )}
-                            </form>
+                            </>
                         )}
                     </div>
 

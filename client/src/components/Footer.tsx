@@ -120,11 +120,11 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between text-center lg:text-start items-center gap-4">
+                <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row  text-center lg:text-start items-center gap-4 md:gap-10">
                     <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                        &copy; {new Date().getFullYear()} {name}. Engineered for Excellence.
+                        &copy; {new Date().getFullYear()} {name}. Engineered for Excellence. <a href="https://myweb-nine-tawny.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-500 text-[10px] font-bold uppercase tracking-widest transition-colors">Digitally Empowered by CypherTech</a>
                     </p>
-                    <div className="flex gap-8">
+                    <div className="flex gap-6">
                         <Link href="/privacy" className="text-gray-600 hover:text-gray-400 text-[10px] font-bold uppercase tracking-widest transition-colors">Privacy Policy</Link>
                         <Link href="/terms" className="text-gray-600 hover:text-gray-400 text-[10px] font-bold uppercase tracking-widest transition-colors">Terms of Service</Link>
                     </div>

@@ -90,7 +90,12 @@ const MobileAppointmentCard = ({ apt, isPastTime, updateAppointment, handleResch
                     </div>
                     <div>
                         <div className="font-black text-gray-900 text-lg">{apt.time}</div>
-                        <div className="text-xs font-bold text-gray-400">{new Date(apt.date).toLocaleDateString()}</div>
+                        <div className="text-xs font-bold text-gray-400 flex items-center gap-2">
+                            {new Date(apt.date).toLocaleDateString()}
+                            <span className="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-100 uppercase tracking-tighter font-black">
+                                {apt.bookingId || 'N/A'}
+                            </span>
+                        </div>
                     </div>
                 </div>
 

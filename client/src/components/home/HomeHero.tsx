@@ -44,7 +44,7 @@ export default function HomeHero() {
 
             {/* Content Layer */}
             <div className="relative z-10 px-6 sm:px-12 md:px-20 w-full py-12 sm:py-12 text-white">
-                <div className="mb-10 sm:mb-14 max-w-3xl mx-auto">
+                <div className="mb-10 sm:mb-14 max-w-7xl mx-auto flex justify-end">
                     <AppointmentSearchInline />
                 </div>
                 <div className="max-w-4xl space-y-6 sm:space-y-10">
@@ -54,7 +54,7 @@ export default function HomeHero() {
                             {clinicYears}+ {language === 'hi' ? `${city} में वर्षों की सफलता` : `Years of Success in ${city}`}
                         </div>
 
-                        <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-[1.1] sm:leading-[0.95] tracking-tight">
+                        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] sm:leading-[0.95] tracking-tight">
                             <span className="sr-only">{clinicName} - Best Dentist in {city}, Bihar</span>
                             {language === 'hi' ? 'आपकी मुस्कान,' : 'Your Smile,'} <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-200">{language === 'hi' ? 'हमारा दायित्व।' : 'Our Commitment.'}</span>

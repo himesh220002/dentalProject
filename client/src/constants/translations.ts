@@ -69,6 +69,7 @@ export const translations = {
         confirming: 'Confirming...',
         bookApt: 'Book Appointment',
         completeForm: 'Complete Form',
+        viewSelectedTreatment: 'View Selected Treatment',
         phoneRequired: 'Required',
         enterWA: 'Enter WhatsApp Number',
         emailOptional: 'Email Address (Optional)',
@@ -101,7 +102,7 @@ export const translations = {
         confirmCancel: 'Are you sure you want to cancel this appointment?',
         cancelSuccess: 'Appointment cancelled successfully.',
         updateSuccess: 'Appointment updated successfully!',
-        bookingConfirmed: 'Your appointment is confirmed! Sending details to WhatsApp...',
+        bookingConfirmed: 'Your appointment is confirmed!',
         detailsSaved: 'Details saved! Redirecting you to WhatsApp...',
         failedTryAgain: 'Failed. Please try again.',
         discuss: 'I would like to discuss',
@@ -116,6 +117,7 @@ export const translations = {
         generalNamePlaceholder: 'Name',
         generalPhonePlaceholder: 'Phone',
         generalEmailPlaceholder: 'Email',
+        bookAnother: 'Book Another',
 
         // About Page
         aboutHero: {
@@ -282,6 +284,7 @@ export const translations = {
         noSlots: 'इस दिन कोई खाली स्लॉट नहीं है। कृपया दूसरी तारीख चुनें।',
         confirming: 'पुष्टि कर रहे हैं...',
         bookApt: 'अपॉइंटमेंट बुक करें',
+        viewSelectedTreatment: 'चुने गए उपचार देखें',
         completeForm: 'फॉर्म पूरा करें',
         phoneRequired: 'अनिवार्य',
         enterWA: 'व्हाट्सएप नंबर दर्ज करें',
@@ -330,6 +333,7 @@ export const translations = {
         generalNamePlaceholder: 'नाम',
         generalPhonePlaceholder: 'फोन',
         generalEmailPlaceholder: 'ईमेल',
+        bookAnother: 'एक और बुक करें',
 
         // About Page
         aboutHero: {

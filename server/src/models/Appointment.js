@@ -50,6 +50,10 @@ const appointmentSchema = new mongoose.Schema({
     completedAt: {
         type: Date
     },
+    bookingId: {
+        type: String,
+        unique: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

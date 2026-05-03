@@ -27,6 +27,7 @@ interface Appointment {
     paymentStatus?: string;
     markedPaidAt?: string;
     isDeleted?: boolean;
+    bookingId?: string;
 }
 
 function DashboardSchedulesContent() {
@@ -42,7 +43,7 @@ function DashboardSchedulesContent() {
     const [query, setQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | 'Scheduled' | 'Operating' | 'Completed' | 'Delayed'>('all');
     const [paymentFilter, setPaymentFilter] = useState<'all' | 'Paid' | 'Pending' | 'None'>('all');
-    const [dateFilter, setDateFilter] = useState<'today' | 'tomorrow' | 'week' | 'all'>('today');
+    const [dateFilter, setDateFilter] = useState<'today' | 'tomorrow' | 'week' | 'all'>('week');
 
     useEffect(() => {
         // Load clicked states from localStorage
@@ -135,7 +136,8 @@ function DashboardSchedulesContent() {
 
         // Search
         if (!q) return true;
-        return patientName.includes(q) || phone.includes(q) || reason.includes(q) || apt.time.toLowerCase().includes(q);
+        const bId = (apt.bookingId || '').toLowerCase();
+        return bId.includes(q) || patientName.includes(q) || phone.includes(q) || reason.includes(q) || apt.time.toLowerCase().includes(q);
     });
 
     const updateAppointment = async (id: string, updates: Partial<Appointment>) => {
@@ -226,7 +228,7 @@ function DashboardSchedulesContent() {
                                 >
                                     <option value="today">Today</option>
                                     <option value="tomorrow">Tomorrow</option>
-                                    <option value="week">Next 7 days</option>
+                                    <option value="week">This week</option>
                                     <option value="all">All</option>
                                 </select>
                             </div>
@@ -271,6 +273,7 @@ function DashboardSchedulesContent() {
                         <thead className="bg-slate-50">
                             <tr>
                                 <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Rx</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">ID</th>
                                 <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Time</th>
                                 <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Date</th>
                                 <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Patient</th>
@@ -301,6 +304,14 @@ function DashboardSchedulesContent() {
                                             >
                                                 <FaNotesMedical size={18} />
                                             </Link>
+                                        </td>
+                                        <td className="px-6 py-5 whitespace-nowrap">
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.1em]">Ref ID</span>
+                                                <div className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 inline-block uppercase tracking-tighter">
+                                                    {apt.bookingId || 'Legacy'}
+                                                </div>
+                                            </div>
                                         </td>
                                         <td className="px-6 py-5 whitespace-nowrap">
                                             <div className="flex items-center gap-3">

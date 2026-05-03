@@ -243,19 +243,19 @@ export default function DashboardPatients() {
                     </div>
 
                     {/* Desktop table */}
-                    <div className="hidden md:block bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-sm">
+                    <div className="hidden md:block bg-white border border-slate-200 rounded-[1.5rem] overflow-hidden shadow-sm">
                         <div className="overflow-x-auto">
                             <table className="min-w-[1100px] w-full">
                                 <thead className="bg-slate-50">
                                     <tr>
-                                        <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Name</th>
-                                        <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Age</th>
-                                        <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Gender</th>
-                                        <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Phone</th>
-                                        <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Area</th>
-                                        <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Last Visit</th>
-                                        <th className="px-6 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Next Appt</th>
-                                        <th className="px-6 py-5 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</th>
+                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Name</th>
+                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Age</th>
+                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Gender</th>
+                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Phone</th>
+                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Area</th>
+                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Last Visit</th>
+                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Next Appt</th>
+                                        <th className="px-3 py-3 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
@@ -268,29 +268,29 @@ export default function DashboardPatients() {
 
                                         return (
                                             <tr key={p._id} className="hover:bg-blue-50/30 transition">
-                                                <td className="px-6 py-5">
+                                                <td className="px-3 py-3">
                                                     <div className="font-black text-slate-900">{p.name}</div>
                                                     <div className="text-[11px] font-semibold text-slate-500">{p.email || '—'}</div>
                                                 </td>
-                                                <td className="px-6 py-5 text-sm font-black text-slate-900">{p.age ?? '—'}</td>
-                                                <td className="px-6 py-5 text-sm font-black text-slate-900">{p.gender && p.gender !== '-__-' ? p.gender : 'N/A'}</td>
-                                                <td className="px-6 py-5 text-sm font-black text-slate-900 tracking-wide">{p.contact}</td>
-                                                <td className="px-6 py-5">
+                                                <td className="px-3 py-3 text-sm font-black text-slate-900">{p.age ?? '—'}</td>
+                                                <td className="px-3 py-3 text-sm font-black text-slate-900">{p.gender && p.gender !== '-__-' ? p.gender : 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm font-black text-slate-900 tracking-wide">{p.contact}</td>
+                                                <td className="px-3 py-3">
                                                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-black text-slate-700">
                                                         <FaMapMarkerAlt className="text-slate-400" /> {area}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-5">
+                                                <td className="px-3 py-3">
                                                     <div className="text-sm font-black text-slate-900">{lastDate ? lastDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '—'}</div>
-                                                    <div className="text-[11px] font-semibold text-slate-600 max-w-[240px] truncate">{lastReason}</div>
+                                                    <div className="text-[11px] text-wrap font-semibold text-slate-600 max-w-[140px] truncate">{lastReason}</div>
                                                 </td>
-                                                <td className="px-6 py-5">
+                                                <td className="px-3 py-3">
                                                     <div className="text-sm font-black text-slate-900">
                                                         {nextDate ? `${nextDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} • ${p.nextAppointment?.time}` : '—'}
                                                     </div>
-                                                    <div className="text-[11px] font-semibold text-slate-600 max-w-[240px] truncate">{nextReason}</div>
+                                                    <div className="text-[11px] text-wrap font-semibold text-slate-600 max-w-[140px] truncate">{nextReason}</div>
                                                 </td>
-                                                <td className="px-6 py-5 text-right">
+                                                <td className="px-3 py-3 text-center">
                                                     <div className="inline-flex items-center gap-2">
                                                         <button
                                                             onClick={() => openScheduler(p)}

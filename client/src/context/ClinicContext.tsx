@@ -52,11 +52,11 @@ interface ClinicData {
 }
 
 const DEFAULT_CLINIC_DATA: ClinicData = {
-    clinicName: 'Dr. Tooth Dental',
-    doctorName: 'Dr. Tooth',
+    clinicName: 'Tooth Dental',
+    doctorName: 'Dr. Tooth kumar',
     tagline: "Your Smile's Guardian",
     email: 'care@drToothdental.in',
-    phone: '+91 90000 00000',
+    phone: '+91 9471283523',
     staffPhone: '+91 8105542318',
     establishedYear: '2014',
     clinicExperience: '10+',

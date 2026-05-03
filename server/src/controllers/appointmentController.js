@@ -5,10 +5,19 @@ const TreatmentRecord = require('../models/TreatmentRecord');
 const Config = require('../models/Config');
 const { sendAppointmentEmail } = require('../utils/mailer');
 
+const generateBookingId = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let id = '';
+    for (let i = 0; i < 6; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return `APT-${id}`;
+};
+
 // Get all appointments
 exports.getAllAppointments = async (req, res) => {
     try {
-        const appointments = await Appointment.find().populate('patientId', 'name contact');
+        const appointments = await Appointment.find({ isDeleted: { $ne: true } }).populate('patientId', 'name contact');
         res.status(200).json(appointments);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -33,7 +42,10 @@ exports.createAppointment = async (req, res) => {
         console.log('Step 0: Validating payload...', req.body);
         const contactId = req.body.contactId;
         console.log('Step 1: Saving initial appointment record...');
-        const newAppointment = new Appointment(req.body);
+        const newAppointment = new Appointment({
+            ...req.body,
+            bookingId: generateBookingId()
+        });
         const savedAppointment = await newAppointment.save();
         console.log('✔ Step 1 PASSED: Record saved with ID', savedAppointment._id);
 
@@ -291,7 +303,7 @@ exports.getAppointmentStats = async (req, res) => {
 // Get appointments for a specific patient
 exports.getAppointmentsByPatientId = async (req, res) => {
     try {
-        const appointments = await Appointment.find({ patientId: req.params.patientId })
+        const appointments = await Appointment.find({ patientId: req.params.patientId, isDeleted: { $ne: true } })
             .populate('patientId', 'name contact')
             .sort({ date: 1, time: 1 });
         res.status(200).json(appointments);
@@ -309,23 +321,8 @@ exports.deleteAppointment = async (req, res) => {
             return res.status(404).json({ message: 'Appointment not found' });
         }
 
-        // --- 3 HOUR RULE: Prevent cancellation if appointment is within 3 hours ---
-        const aptDateTime = new Date(appointment.date);
-        // Combine date and time if necessary. Assuming appointment.time is "HH:mm" (24h)
-        const [hours, minutes] = appointment.time.split(':').map(Number);
-        aptDateTime.setHours(hours, minutes, 0, 0);
-
-        const now = new Date();
-        const diffInMs = aptDateTime.getTime() - now.getTime();
-        const diffInHours = diffInMs / (1000 * 60 * 60);
-
-        // If it's a future appointment but within 3 hours, reject.
-        // Also reject if it's already in the past (handled by isHardDeleteEligible check anyway, but good to be explicit)
-        if (diffInHours < 3 && appointment.status !== 'Completed' && appointment.status !== 'Operating') {
-            return res.status(400).json({
-                message: 'Appointments cannot be cancelled within 3 hours of the scheduled time. Please contact the clinic for urgent changes.'
-            });
-        }
+        // --- CLINIC OVERRIDE ---
+        // Removed the 3-hour rule to allow clinic staff to manage schedules freely.
 
         const isHardDeleteEligible = !['Operating', 'Completed'].includes(appointment.status);
 
@@ -456,7 +453,8 @@ exports.getAppointmentDensity = async (req, res) => {
         const [appointments, config] = await Promise.all([
             Appointment.find({
                 date: { $gte: start, $lt: end },
-                status: { $ne: 'Cancelled' }
+                status: { $ne: 'Cancelled' },
+                isDeleted: { $ne: true }
             }, 'date time'),
             Config.findOne({ key: 'clinic_closures' })
         ]);
@@ -494,72 +492,66 @@ exports.getAppointmentDensity = async (req, res) => {
 
 // Public: Check appointment status without login
 exports.publicCheckAppointment = async (req, res) => {
-    const { contact, namePrefix } = req.body;
+    const { searchTerm } = req.body;
 
     try {
-        if (!contact || contact.length < 10) {
-            return res.status(400).json({ message: 'Valid contact number is required.' });
+        if (!searchTerm || searchTerm.trim().length < 4) {
+            return res.status(400).json({ message: 'Please provide a valid phone number or booking ID.' });
         }
 
-        const cleanContact = contact.replace(/\D/g, '').slice(-10);
+        const query = searchTerm.trim();
+        let appointments = [];
 
-        // Find patient(s) matching contact
-        const patients = await Patient.find({
-            contact: new RegExp(cleanContact + '$')
-        });
+        // MODE 1: Search by Booking ID (e.g. APT-8W0IPT)
+        if (query.toUpperCase().startsWith('APT-')) {
+            appointments = await Appointment.find({
+                bookingId: query.toUpperCase(),
+                isDeleted: { $ne: true }
+            }).populate('patientId', 'name');
+        } 
+        // MODE 2: Search by Phone Number
+        else {
+            const cleanContact = query.replace(/\D/g, '').slice(-10);
+            if (cleanContact.length < 10) {
+                return res.status(400).json({ message: 'Please enter a valid 10-digit phone number or a full booking ID.' });
+            }
 
-        if (patients.length === 0) {
-            return res.status(404).json({ message: 'No records found for this contact.' });
+            const patients = await Patient.find({
+                contact: new RegExp(cleanContact + '$')
+            });
+
+            if (patients.length === 0) {
+                return res.status(404).json({ message: 'No patient record found for this number.' });
+            }
+
+            const patientIds = patients.map(p => p._id);
+            appointments = await Appointment.find({
+                patientId: { $in: patientIds },
+                status: 'Scheduled',
+                isTicked: false,
+                isDeleted: { $ne: true }
+            }).populate('patientId', 'name');
         }
-
-        // Filter by name if prefix provided (Flexible matching)
-        const targetPatients = namePrefix
-            ? patients.filter(p => {
-                const searchName = namePrefix.toLowerCase();
-                const patientName = p.name.toLowerCase();
-
-                // If short search term, stick to strict prefix
-                if (searchName.length < 3) return patientName.startsWith(searchName);
-
-                // For terms >= 3 chars, any 3-char sequence match triggers a result
-                for (let i = 0; i <= searchName.length - 3; i++) {
-                    const sequence = searchName.substring(i, i + 3);
-                    if (patientName.includes(sequence)) return true;
-                }
-                return false;
-            })
-            : patients;
-
-        if (targetPatients.length === 0) {
-            return res.status(404).json({ message: 'Patient name does not match record.' });
-        }
-
-        const patientIds = targetPatients.map(p => p._id);
-
-        // Find upcoming appointments
-        const appointments = await Appointment.find({
-            patientId: { $in: patientIds },
-            status: 'Scheduled',
-            isTicked: false
-        }).sort({ date: 1, time: 1 });
 
         if (appointments.length === 0) {
             return res.status(404).json({ message: 'No upcoming appointments found.' });
         }
 
-        // Sanitize data (only return basic info)
+        // Sanitize data
         const sanitizedApts = appointments.map(apt => {
-            const p = targetPatients.find(tp => String(tp._id) === String(apt.patientId));
+            const p = apt.patientId;
             return {
                 _id: apt._id,
                 date: apt.date,
                 time: apt.time,
                 status: apt.status,
+                bookingId: apt.bookingId,
                 patientName: (p?.name || 'Patient').replace(/.(?=.{2})/g, '*') // Mask name for privacy
             };
         });
 
         res.status(200).json(sanitizedApts);
+
     } catch (error) {
         console.error('Error in public check appointment:', error);
         res.status(500).json({ message: 'Server error' });
