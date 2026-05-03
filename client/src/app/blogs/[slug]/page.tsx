@@ -114,7 +114,15 @@ export default function BlogDetailPage() {
     return (
         <div className="min-h-screen bg-gray-50/50 pb-20">
             {/* Navigation Header */}
-            <div className="bg-white/90 border-b border-gray-100 sticky top-20 z-40 backdrop-blur-xl transition-all duration-300">
+            <div className="bg-white/90 border-b border-gray-100 sticky top-17 z-40 backdrop-blur-xl transition-all duration-300">
+
+                {/* Reading Progress Bar */}
+                <div className="absolute bottom-0 left-0 h-[3px] bg-blue-600 transition-all duration-150 ease-out z-50" style={{ width: `${scrollProgress}%` }}></div>
+            </div>
+
+
+
+            <article className="max-w-7xl mx-auto px-4 md:px-0 pt-16">
                 <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
                     <Link href="/blogs" className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-all group font-black uppercase text-[10px] tracking-widest">
                         <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
@@ -162,11 +170,6 @@ export default function BlogDetailPage() {
                         </div>
                     </div>
                 </div>
-                {/* Reading Progress Bar */}
-                <div className="absolute bottom-0 left-0 h-[3px] bg-blue-600 transition-all duration-150 ease-out z-50" style={{ width: `${scrollProgress}%` }}></div>
-            </div>
-
-            <article className="max-w-4xl mx-auto px-4 md:px-0 pt-16">
                 {/* Meta Header */}
                 <div className="text-center mb-16 px-4">
                     <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
@@ -176,7 +179,7 @@ export default function BlogDetailPage() {
                             </span>
                         ))}
                     </div>
-                    <h1 className="text-3xl sm:text-5xl md:text-7xl font-black text-gray-900 mb-10 leading-[1.05] tracking-tighter">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-10 leading-[1.05] tracking-tighter">
                         {blog.title}
                     </h1>
                     <div className="flex flex-wrap items-center justify-center gap-y-4 gap-x-8 text-gray-400 text-[10px] sm:text-xs font-black uppercase tracking-widest">
@@ -198,7 +201,7 @@ export default function BlogDetailPage() {
                 {/* Featured Image */}
                 {blog.imageUrl && (
                     <div className="mb-20 rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-500/10 border-4 sm:border-8 border-white group">
-                        <img src={blog.imageUrl} alt={blog.title} className="w-full h-auto group-hover:scale-105 transition-transform duration-1000" />
+                        <img src={blog.imageUrl} alt={blog.title} className="w-full h-auto max-h-[600px] object-cover group-hover:scale-105 transition-transform duration-1000" />
                     </div>
                 )}
 
@@ -209,7 +212,7 @@ export default function BlogDetailPage() {
                 />
 
                 {/* Author Bio Section */}
-                <div className="mt-24 p-8 sm:p-12 bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/50 flex flex-col md:flex-row items-center gap-10">
+                <div className="mt-24 max-w-5xl mx-auto p-8 sm:p-12 bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/50 flex flex-col md:flex-row items-center gap-10">
                     <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-blue-50 p-2 overflow-hidden shrink-0 shadow-inner">
                         <img src="/images/rendering-anime-doctor-job.jpg" alt="Author" className="w-full h-full object-cover rounded-full shadow-lg" />
                     </div>
