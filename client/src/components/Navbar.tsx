@@ -11,6 +11,7 @@ import { useClinic } from '../context/ClinicContext';
 import { translations } from '../constants/translations';
 import { parseDateTime } from '../utils/dateUtils';
 import { parseAppointmentReason } from '../utils/appointmentUtils';
+import Image from 'next/image';
 
 export default function Navbar() {
     const { clinicData, language, toggleLanguage } = useClinic();
@@ -130,12 +131,13 @@ export default function Navbar() {
     return (
         <>
             <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 lg:z-51 shadow-sm border-b border-gray-100">
-                <div className="max-w-7xl xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16 items-center">
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-2 group">
-                            <div className="bg-blue-600 p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                                <FaTooth className="text-white text-2xl" />
+                            <div className="rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                {/* <FaTooth className="text-white text-2xl" /> */}
+                                <Image src="/images/toothlogo.png" alt="Logo" width={50} height={50} className="w-10 h-10 object-cover object-center rounded-xl" />
                             </div>
                             <span className="text-2xl font-black text-blue-900 tracking-tight">
                                 {(() => {
