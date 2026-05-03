@@ -233,9 +233,10 @@ function ContactContent() {
                 localStorage.setItem('drtooth_guest_bookings', JSON.stringify(newIds));
             }
             setStatus({
-                type: 'success',
+                type: 'info',
                 message: language === 'hi' ? 'अपॉइंटमेंट सफलतापूर्वक रद्द कर दिया गया।' : 'Appointment cancelled successfully.'
             });
+            setTimeout(() => setStatus({ type: '', message: '' }), 5000);
         } catch (err) {
             console.error('Error cancelling booking:', err);
         }
@@ -674,7 +675,11 @@ function ContactContent() {
                                 {isAutoBookingEnabled && <BookingSummary formData={formData} language={language} t={t} />}
 
                                 {status.message && (
-                                    <div className={`mb-6 p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
+                                    <div className={`mb-6 p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${
+                                        status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 
+                                        status.type === 'info' ? 'bg-blue-50 text-blue-700 border border-blue-100' : 
+                                        'bg-rose-50 text-rose-700 border border-rose-100'
+                                    }`}>
                                         {status.message}
                                     </div>
                                 )}
