@@ -43,7 +43,7 @@ export default function About() {
     const consultantExpLabel = language === 'hi' ? 'का अनुभव' : 'Experience';
 
     return (
-        <div className=" max-w-7xl mx-auto space-y-14 sm:space-y-16 sm:pt-4 lg:pt-0 overflow-x-clip">
+        <div className=" max-w-7xl mx-auto space-y-14 sm:space-y-16 sm:pt-4 lg:pt-10 overflow-x-clip">
             {/* Hero Section - Refined */}
             <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">
@@ -51,7 +51,7 @@ export default function About() {
                         <FaCertificate className="text-blue-600" />
                         {t.aboutHero.excellence}
                     </div>
-                    <h1 className="text-4xl sm:text-5xl xl:text-7xl font-black text-gray-900 leading-[1.05] tracking-tight">
+                    <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-gray-900 leading-[1.05] tracking-tight">
                         {t.aboutHero.meet} {useClinic().isLoading ? <Skeleton variant="text" className="inline-block w-48 h-12" /> : <span className="bg-gradient-to-r from-blue-800 via-blue-600 to-purple-800 bg-clip-text text-transparent">{doctorName}</span>}, {t.aboutHero.guardian}
                     </h1>
                     <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-medium max-w-xl">

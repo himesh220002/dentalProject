@@ -44,7 +44,7 @@ export default function HomeHero() {
 
             {/* Content Layer */}
             <div className="relative z-10 px-6 sm:px-12 md:px-20 w-full py-12 sm:py-12 text-white">
-                <div className="mb-10 sm:mb-14 max-w-7xl mx-auto flex justify-end">
+                <div className="mb-10 max-w-7xl mx-auto flex justify-end">
                     <AppointmentSearchInline />
                 </div>
                 <div className="max-w-4xl space-y-6 sm:space-y-10">
