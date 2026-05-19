@@ -1,6 +1,7 @@
 require('dotenv').config();
 console.log('Current directory:', process.cwd());
 console.log('MONGO_URI from env:', process.env.MONGO_URI);
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -12,9 +13,16 @@ const https = require('https');
 const app = express();
 const server = http.createServer(app);
 
-// Keep-alive mechanism to prevent Render from sleeping
+// --- Keep-alive toggle flag ---
+let active_render = process.env.ACTIVE_RENDER === 'true'; // set in .env or manually
+
+// --- Keep-alive mechanism ---
 const keepAlive = (url) => {
-    setInterval(() => {
+    const interval = setInterval(() => {
+        if (!active_render) {
+            console.log('Keep-alive disabled, skipping ping...');
+            return;
+        }
         try {
             console.log(`Pinging server at ${url} to keep it alive...`);
             https.get(url, (res) => {
@@ -25,12 +33,19 @@ const keepAlive = (url) => {
         } catch (error) {
             console.error('Keep-alive error:', error.message);
         }
-    }, 5 * 60 * 1000); // 5 minutes
+    }, 5 * 60 * 1000); // every 5 minutes
+
+    return interval;
 };
 
-// Middleware
+// --- Middleware ---
 app.use(cors({
-    origin: ["http://localhost:3000", "http://localhost:5173", "https://dental-project-zeta.vercel.app", process.env.FRONTEND_URL].filter(Boolean),
+    origin: [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://dental-project-zeta.vercel.app",
+        process.env.FRONTEND_URL
+    ].filter(Boolean),
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -39,32 +54,35 @@ app.options(/.*/, cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Socket.io Setup
+// --- Socket.io Setup ---
 const io = new Server(server, {
     cors: {
-        origin: [process.env.FRONTEND_URL, "http://localhost:3000", "http://localhost:5173", "https://dental-project-zeta.vercel.app"].filter(Boolean), // Allow frontend connection
+        origin: [
+            process.env.FRONTEND_URL,
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "https://dental-project-zeta.vercel.app"
+        ].filter(Boolean),
         methods: ["GET", "POST"]
     }
 });
-
 app.set('socketio', io);
 
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
-
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
     });
 });
 
-// Database Connection
+// --- Database Connection ---
 if (process.env.NODE_ENV !== 'test') {
     mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/dental-clinic')
         .then(() => console.log('MongoDB connected'))
         .catch(err => console.log('MongoDB connection error:', err));
 }
 
-// Routes
+// --- Routes ---
 const treatmentRoutes = require('./routes/treatmentRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
@@ -92,47 +110,23 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// if (require.main === module) {
-//     server.listen(PORT, () => {
-//         console.log(`Server running on port ${PORT}`);
+// --- Server Startup ---
+if (require.main === module) {
+    server.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
 
-//         // Start keep-alive if RENDER_EXTERNAL_URL is available
-//         const externalUrl = process.env.RENDER_EXTERNAL_URL;
-//         if (externalUrl) {
-//             keepAlive(externalUrl);
-//             console.log(`Keep-alive started for: ${externalUrl}`);
-//         } else {
-//             console.log('Keep-alive not started: RENDER_EXTERNAL_URL not found (likely local environment).');
-//         }
-
-//         // Initialize Daily Scheduler
-//         initSchedules();
-//     });
-// }
-
-// Flag to control keep-alive
-let active_render = process.env.ACTIVE_RENDER === 'false'; // read from env or set manually
-
-// Keep-alive mechanism
-const keepAlive = (url) => {
-    const interval = setInterval(() => {
-        if (!active_render) {
-            console.log('Keep-alive disabled, skipping ping...');
-            return;
+        // Start keep-alive if RENDER_EXTERNAL_URL is available
+        const externalUrl = process.env.RENDER_EXTERNAL_URL;
+        if (externalUrl) {
+            keepAlive(externalUrl);
+            console.log(`Keep-alive initialized for: ${externalUrl} (active_render=${active_render})`);
+        } else {
+            console.log('Keep-alive not started: RENDER_EXTERNAL_URL not found.');
         }
-        try {
-            console.log(`Pinging server at ${url} to keep it alive...`);
-            https.get(url, (res) => {
-                console.log(`Ping response: ${res.statusCode}`);
-            }).on('error', (err) => {
-                console.error('Keep-alive ping error:', err.message);
-            });
-        } catch (error) {
-            console.error('Keep-alive error:', error.message);
-        }
-    }, 5 * 60 * 1000); // 5 minutes
 
-    return interval;
-};
+        // Initialize Daily Scheduler
+        initSchedules();
+    });
+}
 
 module.exports = { app, server };
