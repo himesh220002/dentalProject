@@ -1,0 +1,26 @@
+name: Test Runner
+
+on:
+  push:
+    branches: [ master ]   # or main, depending on your default branch
+
+jobs:
+  test:
+    runs-on: self-hosted   # uses your runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Print environment
+        run: echo "Runner is working on $HOSTNAME"
+
+      - name: Node.js setup
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
