@@ -1,6 +1,16 @@
-require('dotenv').config();
+const maskMongoUri = (uri) => {
+    if (!uri) return 'None';
+    return uri.replace(
+        /^(mongodb\+srv:\/\/|mongodb:\/\/)([^:]+):([^@]+)@/,
+        (match, protocol, username, password) => {
+            return `${protocol}${username}:********@`;
+        }
+    );
+};
+
+require('dotenv').config({ override: true });
 console.log('Current directory:', process.cwd());
-console.log('MONGO_URI from env:', process.env.MONGO_URI);
+console.log('MONGO_URI from env:', maskMongoUri(process.env.MONGO_URI));
 
 const express = require('express');
 const http = require('http');
@@ -13,17 +23,19 @@ const https = require('https');
 const app = express();
 const server = http.createServer(app);
 
-// --- Keep-alive toggle flag ---
-let active_render = process.env.ACTIVE_RENDER === 'true'; // set in .env or manually
-
 // --- Keep-alive mechanism ---
 const keepAlive = (url) => {
-    const interval = setInterval(() => {
-        if (!active_render) {
-            console.log('Keep-alive disabled, skipping ping...');
-            return;
-        }
+    const interval = setInterval(async () => {
         try {
+            const Config = require('./models/Config');
+            const activeRenderConfig = await Config.findOne({ key: 'active_render' });
+            const isActive = activeRenderConfig ? activeRenderConfig.value === 'true' : (process.env.ACTIVE_RENDER === 'true');
+
+            if (!isActive) {
+                console.log('Keep-alive disabled, skipping ping...');
+                return;
+            }
+
             console.log(`Pinging server at ${url} to keep it alive...`);
             https.get(url, (res) => {
                 console.log(`Ping response: ${res.statusCode}`);
@@ -31,7 +43,7 @@ const keepAlive = (url) => {
                 console.error('Keep-alive ping error:', err.message);
             });
         } catch (error) {
-            console.error('Keep-alive error:', error.message);
+            console.error('Keep-alive error in interval:', error.message);
         }
     }, 5 * 60 * 1000); // every 5 minutes
 
@@ -105,6 +117,7 @@ app.use('/api/handover', handoverRoutes);
 app.use('/api/blogs', blogRoutes);
 
 app.get('/', (req, res) => {
+    console.log('📬 [Server Status Check] Keep-alive / health ping received!');
     res.send('Dr. Tooth Dental Server is Running [Build: 2026-02-28 18:15]');
 });
 
@@ -115,13 +128,14 @@ if (require.main === module) {
     server.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
 
-        // Start keep-alive if RENDER_EXTERNAL_URL is available
+        // Start keep-alive if RENDER_EXTERNAL_URL is available and we are on production/global side
         const externalUrl = process.env.RENDER_EXTERNAL_URL;
-        if (externalUrl) {
+        const isLocal = !process.env.RENDER && (!process.env.NODE_ENV || process.env.NODE_ENV === 'development' || (externalUrl && (externalUrl.includes('localhost') || externalUrl.includes('127.0.0.1'))));
+        if (externalUrl && !isLocal) {
             keepAlive(externalUrl);
-            console.log(`Keep-alive initialized for: ${externalUrl} (active_render=${active_render})`);
+            console.log(`Keep-alive initialized for: ${externalUrl}`);
         } else {
-            console.log('Keep-alive not started: RENDER_EXTERNAL_URL not found.');
+            console.log('Keep-alive not started: local environment detected.');
         }
 
         // Initialize Daily Scheduler

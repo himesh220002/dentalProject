@@ -53,4 +53,27 @@ describe('Config API & Admin Settings', () => {
         // This depends on env vars, but we expect it to try and return a status
         expect([200, 500]).toContain(res.status);
     });
+
+    it('should get and update arbitrary config keys like active_render', async () => {
+        // 1. Get non-existent key should return 404
+        const notFoundRes = await request(app).get('/api/config/active_render');
+        expect(notFoundRes.status).toBe(404);
+
+        // 2. Put key value
+        const updateRes = await request(app)
+            .put('/api/config/active_render')
+            .send({ value: 'true' });
+        expect(updateRes.status).toBe(200);
+        expect(updateRes.body.config.value).toBe('true');
+
+        // 3. Get key value now should return 200
+        const getRes = await request(app).get('/api/config/active_render');
+        expect(getRes.status).toBe(200);
+        expect(getRes.body.value).toBe('true');
+    });
+
+    it('should trigger a manual keep-alive ping', async () => {
+        const res = await request(app).post('/api/config/keep-alive/ping');
+        expect([200, 500]).toContain(res.status); // Depending on network / test env configuration
+    });
 });

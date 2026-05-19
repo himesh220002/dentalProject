@@ -12,6 +12,8 @@ export default function SettingsPage() {
         confirm: ''
     });
     const [automatedBooking, setAutomatedBooking] = useState(false);
+    const [activeRender, setActiveRender] = useState(false);
+    const [pinging, setPinging] = useState(false);
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState({ type: '', message: '' });
 
@@ -21,10 +23,28 @@ export default function SettingsPage() {
     useState(() => {
         const fetchConfig = async () => {
             try {
-                const res = await axios.get(`${API_BASE_URL}/config/automated_booking`);
-                setAutomatedBooking(res.data?.value === 'true');
+                const res = await axios.get(`${API_BASE_URL}/config/automated_booking`, {
+                    validateStatus: (status) => status === 200 || status === 404
+                });
+                if (res.status === 200) {
+                    setAutomatedBooking(res.data?.value === 'true');
+                } else {
+                    setAutomatedBooking(false);
+                }
             } catch (err) {
                 console.error('Error fetching automated booking config:', err);
+            }
+            try {
+                const res = await axios.get(`${API_BASE_URL}/config/active_render`, {
+                    validateStatus: (status) => status === 200 || status === 404
+                });
+                if (res.status === 200) {
+                    setActiveRender(res.data?.value === 'true');
+                } else {
+                    setActiveRender(false);
+                }
+            } catch (err) {
+                console.error('Error fetching active render config:', err);
             }
         };
         fetchConfig();
@@ -41,6 +61,36 @@ export default function SettingsPage() {
         } catch (err) {
             setAutomatedBooking(!newState); // revert
             setStatus({ type: 'error', message: 'Failed to update automation setting.' });
+        }
+    };
+
+    const handleToggleKeepAlive = async () => {
+        const newState = !activeRender;
+        setActiveRender(newState);
+        try {
+            await axios.put(`${API_BASE_URL}/config/active_render`, {
+                value: newState ? 'true' : 'false'
+            });
+            setStatus({ type: 'success', message: `Server Keep-Alive ${newState ? 'Enabled' : 'Disabled'} Successfully!` });
+        } catch (err) {
+            setActiveRender(!newState); // revert
+            setStatus({ type: 'error', message: 'Failed to update keep-alive setting.' });
+        }
+    };
+
+    const handleTriggerManualPing = async () => {
+        setPinging(true);
+        setStatus({ type: '', message: '' });
+        try {
+            const res = await axios.post(`${API_BASE_URL}/config/keep-alive/ping`);
+            setStatus({ type: 'success', message: res.data?.message || 'Manual Keep-Alive Ping Executed Successfully!' });
+        } catch (err: any) {
+            setStatus({
+                type: 'error',
+                message: err.response?.data?.message || 'Failed to trigger manual keep-alive ping.'
+            });
+        } finally {
+            setPinging(false);
         }
     };
 
@@ -142,6 +192,40 @@ export default function SettingsPage() {
                         <p className="mt-4 text-[11px] text-gray-400 font-bold leading-relaxed lowercase italic bg-blue-50/50 p-4 rounded-xl border border-blue-100/30">
                             When enabled, patients can book appointments directly from the contact page with instant confirmation. Disable this to revert to manual message inquiries.
                         </p>
+                    </div>
+
+                    {/* Server Keep-Alive Control */}
+                    <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+                        <div className="flex flex-col sm:flex-row items-end sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
+                                    <FaDatabase />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-black text-gray-900">System Operations</h2>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest leading-none mt-1">Render Keep-Alive Ping</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleToggleKeepAlive}
+                                className={`relative w-14 h-7 rounded-full transition-colors duration-200 focus:outline-none ${activeRender ? 'bg-indigo-600' : 'bg-slate-200'}`}
+                            >
+                                <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${activeRender ? 'translate-x-7' : ''}`} />
+                            </button>
+                        </div>
+                        <p className="mt-4 text-[11px] text-gray-400 font-bold leading-relaxed lowercase italic bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/30">
+                            When enabled, the server will ping itself every 5 minutes to prevent sleep cycles on free hosting plans like Render. Disable this to stop automatic keep-alive pinging.
+                        </p>
+                        <div className="mt-4 pt-4 border-t border-indigo-50 flex items-center justify-between gap-4">
+                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Execute Manual Operation</span>
+                            <button
+                                onClick={handleTriggerManualPing}
+                                disabled={pinging}
+                                className="px-4 py-2 bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-600 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all disabled:opacity-50"
+                            >
+                                {pinging ? 'Pinging Server...' : 'Trigger Ping Now'}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Change Admin Password */}

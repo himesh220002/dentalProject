@@ -1,9 +1,19 @@
-require('dotenv').config();
+const maskMongoUri = (uri) => {
+    if (!uri) return 'None';
+    return uri.replace(
+        /^(mongodb\+srv:\/\/|mongodb:\/\/)([^:]+):([^@]+)@/,
+        (match, protocol, username, password) => {
+            return `${protocol}${username}:********@`;
+        }
+    );
+};
+
+require('dotenv').config({ override: true });
 const mongoose = require('mongoose');
 
 const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/dental-clinic';
 
-console.log('Attempting to connect to MongoDB at:', uri);
+console.log('Attempting to connect to MongoDB at:', maskMongoUri(uri));
 
 mongoose.connect(uri)
     .then(() => {

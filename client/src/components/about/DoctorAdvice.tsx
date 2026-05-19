@@ -56,7 +56,7 @@ export default function DoctorAdvice() {
                     <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-blue-600 text-white rounded-full font-black tracking-[0.2em] text-[10px] uppercase shadow-lg shadow-blue-500/20">
                         <FaLightbulb /> {t.aboutAdvice.title}
                     </div>
-                    <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black text-gray-900 leading-[1.1] tracking-tight">
+                    <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-[1.1] tracking-tight">
                         {doctorName}{language === 'hi' ? ' की' : "'s"} {language === 'hi' ? 'सलाह' : 'Advice'} <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">{t.aboutAdvice.thoughts}</span>
                     </h2>

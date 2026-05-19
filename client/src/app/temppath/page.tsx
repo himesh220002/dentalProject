@@ -10,75 +10,77 @@ import Link from 'next/link';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
     (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
 
+const DEFAULT_CLINIC_DATA = {
+    clinicName: 'Dr. Tooth Dental',
+    doctorName: 'Dr. Tooth',
+    tagline: "Your Smile's Guardian",
+    email: 'care@drToothdental.in',
+    phone: '+91 90000 00000',
+    staffPhone: '+91 8105542318',
+    establishedYear: '2014',
+    clinicExperience: '10+',
+    expertise: 'Restorative Dentistry, Oral Surgery, Orthodontics, Cosmetic Dentistry',
+    visitPolicy: 'Prior Appointment Recommended. Walk-ins subject to availability.',
+    happyCustomers: '5000+',
+    successRate: '99.9',
+    address: {
+        street: 'Dental Clinic Road, Near Market',
+        city: 'Katihar',
+        state: 'Bihar',
+        zip: '854105',
+        latitude: '25.555613',
+        longitude: '87.556440'
+    },
+    socialLinks: {
+        facebook: 'https://www.facebook.com/',
+        twitter: 'https://x.com/tweeter?lang=en',
+        linkedin: 'https://www.linkedin.com/',
+        instagram: 'https://www.instagram.com/'
+    },
+    timings: {
+        monday: '09:00 AM - 08:00 PM',
+        tuesday: '09:00 AM - 08:00 PM',
+        wednesday: '09:00 AM - 08:00 PM',
+        thursday: '09:00 AM - 08:00 PM',
+        friday: '09:00 AM - 08:00 PM',
+        saturday: '09:00 AM - 06:00 PM',
+        sunday: 'Closed'
+    },
+    certifications: 'Best Dentist Award 2022, Certified Implantologist, Member of IDA',
+    consultants: [
+        { name: 'Dr. Tooth', role: 'Chief Surgeon', info: 'BDS, MDS', experience: '12 Years' },
+        { name: 'Dr. nefario', role: 'Orthodontist', info: 'Expert in Braces & Aligners', experience: '8 Years' }
+    ],
+    treatments: [
+        { name: 'General Consultation', price: '300', description: 'General consultation for any other dental issues.', whyNeed: 'Comprehensive checkup and professional advice.', image: 'https://www.shutterstock.com/image-vector/dentist-examining-female-patient-modern-600nw-2747564801.jpg', icon: 'FaMedkit' },
+        { name: 'Scaling & Cleaning', price: '800', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1674775372064-8c75d3f8c757?q=80&w=687' },
+        { name: 'Dental Fillings', price: '1000', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1694345215004-837b089f620d?q=80&w=1929' },
+        { name: 'Tooth Extraction', price: '500', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1626736985932-c0df2ae07a2e?q=80&w=1631' },
+        { name: 'Root Canal Treatment', price: '3500', description: 'Treatment details provided by clinic.', image: 'https://www.smilecentre.in/assets/images/treatments/root-canal-procedure.jpg' },
+        { name: 'Dental Implants', price: '25000', description: 'Treatment details provided by clinic.', image: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Dental-implant-illustration.jpg' },
+        { name: 'Teeth Whitening', price: '5000', description: 'Treatment details provided by clinic.', image: 'https://www.smilecentre.in/assets/images/treatments/tooth-whitening.jpg' },
+        { name: 'Orthodontic Braces', price: '15000', description: 'Treatment details provided by clinic.', image: 'https://smilecreations.in/wp-content/uploads/2023/11/understanding-metal-braces.jpg' },
+        { name: 'Crowns & Bridges', price: '3500', description: 'Treatment details provided by clinic.', image: 'https://www.cyprusfamilydental.com/wp-content/uploads/2022/12/Depositphotos_274172422_L.jpg' },
+        { name: "Kid's Dentistry", price: '500', description: 'Treatment details provided by clinic.', image: 'https://www.dratuljajoo.com/wp-content/uploads/2018/09/kids-dentistry.jpg' },
+        { name: 'Full Mouth X-Ray', price: '500', description: 'Treatment details provided by clinic.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjXnsLV9glWBJ77_38thCOxDEeWWN0sqTD3A&s' }
+    ],
+    highlights: [
+        { title: 'Advanced Technology', description: 'Intraoral scanners & 3D imaging for precise diagnosis.' },
+        { title: 'Pain-free Dentistry', description: 'Modern anesthesia & laser treatments for comfort.' },
+        { title: 'Sterile Environment', description: 'Class B Autoclave sterilization protocols.' }
+    ],
+    seo: {
+        metaTitle: 'Best Dental Clinic in Katihar | Dr. Tooth Dental',
+        metaDescription: 'Expert dental care by Dr. Tooth. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
+        keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist'
+    },
+    lunchTime: '01:00 PM - 02:00 PM',
+    isActive: false
+};
+
 export default function TempClinicForm() {
     const { refreshClinicData } = useClinic();
-    const [formData, setFormData] = useState({
-        clinicName: 'Dr. Tooth Dental',
-        doctorName: 'Dr. Tooth',
-        tagline: "Your Smile's Guardian",
-        email: 'care@drToothdental.in',
-        phone: '+91 90000 00000',
-        staffPhone: '+91 8105542318',
-        establishedYear: '2014',
-        clinicExperience: '10+',
-        expertise: 'Restorative Dentistry, Oral Surgery, Orthodontics, Cosmetic Dentistry',
-        visitPolicy: 'Prior Appointment Recommended. Walk-ins subject to availability.',
-        happyCustomers: '5000+',
-        successRate: '99.9',
-        address: {
-            street: 'Dental Clinic Road, Near Market',
-            city: 'Katihar',
-            state: 'Bihar',
-            zip: '854105',
-            latitude: '25.555613',
-            longitude: '87.556440'
-        },
-        socialLinks: {
-            facebook: 'https://www.facebook.com/',
-            twitter: 'https://x.com/tweeter?lang=en',
-            linkedin: 'https://www.linkedin.com/',
-            instagram: 'https://www.instagram.com/'
-        },
-        timings: {
-            monday: '09:00 AM - 08:00 PM',
-            tuesday: '09:00 AM - 08:00 PM',
-            wednesday: '09:00 AM - 08:00 PM',
-            thursday: '09:00 AM - 08:00 PM',
-            friday: '09:00 AM - 08:00 PM',
-            saturday: '09:00 AM - 06:00 PM',
-            sunday: 'Closed'
-        },
-        certifications: 'Best Dentist Award 2022, Certified Implantologist, Member of IDA',
-        consultants: [
-            { name: 'Dr. Tooth', role: 'Chief Surgeon', info: 'BDS, MDS', experience: '12 Years' },
-            { name: 'Dr. nefario', role: 'Orthodontist', info: 'Expert in Braces & Aligners', experience: '8 Years' }
-        ],
-        treatments: [
-            { name: 'General Consultation', price: '300', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1758691461916-dc7894eb8f94?q=80&w=1632' },
-            { name: 'Scaling & Cleaning', price: '800', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1674775372064-8c75d3f8c757?q=80&w=687' },
-            { name: 'Dental Fillings', price: '1000', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1694345215004-837b089f620d?q=80&w=1929' },
-            { name: 'Tooth Extraction', price: '500', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1626736985932-c0df2ae07a2e?q=80&w=1631' },
-            { name: 'Root Canal Treatment', price: '3500', description: 'Treatment details provided by clinic.', image: 'https://www.smilecentre.in/assets/images/treatments/root-canal-procedure.jpg' },
-            { name: 'Dental Implants', price: '25000', description: 'Treatment details provided by clinic.', image: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Dental-implant-illustration.jpg' },
-            { name: 'Teeth Whitening', price: '5000', description: 'Treatment details provided by clinic.', image: 'https://www.smilecentre.in/assets/images/treatments/tooth-whitening.jpg' },
-            { name: 'Orthodontic Braces', price: '15000', description: 'Treatment details provided by clinic.', image: 'https://smilecreations.in/wp-content/uploads/2023/11/understanding-metal-braces.jpg' },
-            { name: 'Crowns & Bridges', price: '3500', description: 'Treatment details provided by clinic.', image: 'https://www.cyprusfamilydental.com/wp-content/uploads/2022/12/Depositphotos_274172422_L.jpg' },
-            { name: "Kid's Dentistry", price: '500', description: 'Treatment details provided by clinic.', image: 'https://www.dratuljajoo.com/wp-content/uploads/2018/09/kids-dentistry.jpg' },
-            { name: 'Full Mouth X-Ray', price: '500', description: 'Treatment details provided by clinic.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjXnsLV9glWBJ77_38thCOxDEeWWN0sqTD3A&s' }
-        ],
-        highlights: [
-            { title: 'Advanced Technology', description: 'Intraoral scanners & 3D imaging for precise diagnosis.' },
-            { title: 'Pain-free Dentistry', description: 'Modern anesthesia & laser treatments for comfort.' },
-            { title: 'Sterile Environment', description: 'Class B Autoclave sterilization protocols.' }
-        ],
-        seo: {
-            metaTitle: 'Best Dental Clinic in Katihar | Dr. Tooth Dental',
-            metaDescription: 'Expert dental care by Dr. Tooth. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
-            keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist'
-        },
-        lunchTime: '01:00 PM - 02:00 PM',
-        isActive: false
-    });
+    const [formData, setFormData] = useState(() => JSON.parse(JSON.stringify(DEFAULT_CLINIC_DATA)));
 
     const [jsonOutput, setJsonOutput] = useState('');
     const [copied, setCopied] = useState(false);
@@ -281,6 +283,13 @@ export default function TempClinicForm() {
             const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
             setHistory(historyRes.data);
             await refreshClinicData();
+
+            // Automatically find and load the active version data into the form fields
+            const activeItem = historyRes.data.find((h: any) => h.handoverformId === handoverformId);
+            if (activeItem) {
+                loadFromHistory(activeItem);
+            }
+
             setSaveStatus(`Version ${handoverformId} activated successfully!`);
             setTimeout(() => setSaveStatus(''), 5000);
         } catch (error) {
@@ -298,7 +307,15 @@ export default function TempClinicForm() {
             const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
             setHistory(historyRes.data);
             await refreshClinicData();
-            setSaveStatus('Handover deactivated. Reverting to default site data.');
+
+            // Automatically revert the editing form back to the hardcoded default data
+            const cleanDefault = JSON.parse(JSON.stringify(DEFAULT_CLINIC_DATA));
+            setFormData(cleanDefault);
+            setHandoverId('handover_v1');
+            setJsonOutput(JSON.stringify(cleanDefault, null, 4));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            setSaveStatus('Handover deactivated. Reverted form and live site to default.');
             setTimeout(() => setSaveStatus(''), 5000);
         } catch (error) {
             console.error('Deactivation error:', error);
@@ -401,6 +418,54 @@ export default function TempClinicForm() {
 
                 {/* Main Content Area */}
                 <div className="max-w-7xl mx-auto space-y-12 pb-20">
+                    {/* System Vocabulary Guide Panel */}
+                    <div className="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl border border-slate-800 space-y-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg">
+                                <FaLightbulb size={20} />
+                            </div>
+                            <div>
+                                <h2 className="text-sm font-black uppercase tracking-widest">Dashboard System Guide</h2>
+                                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">Understand how your live site data and versioning works</p>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800/80">
+                            <div className="space-y-2 bg-slate-950/45 p-5 rounded-2xl border border-slate-800/50">
+                                <div className="flex items-center gap-2">
+                                    <span className="flex h-2.5 w-2.5 relative">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                                    </span>
+                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-green-400">Active / Live Site</h3>
+                                </div>
+                                <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                                    The configuration currently <strong>serving your public website</strong>. Only one version can be "Live" at a time. Active configurations override the default fallback.
+                                </p>
+                            </div>
+                            
+                            <div className="space-y-2 bg-slate-950/45 p-5 rounded-2xl border border-slate-800/50">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-blue-400 font-bold text-sm">✍️</span>
+                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-blue-400">Currently Editing</h3>
+                                </div>
+                                <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                                    The values loaded in the form fields below. You can load any previous version from History to edit it. Clicking <strong>Save Draft</strong> saves your progress.
+                                </p>
+                            </div>
+                            
+                            <div className="space-y-2 bg-slate-950/45 p-5 rounded-2xl border border-slate-800/50">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-amber-400 font-bold text-sm">📦</span>
+                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-amber-400">Default (Hardcoded)</h3>
+                                </div>
+                                <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                                    The built-in <strong>failsafe configuration</strong> in your source code. If no version in History is active, the website falls back to this default layout.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Section 1: Version Control & Persistence */}
                     <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
                         <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden lg:min-w-[400px]">
@@ -465,52 +530,55 @@ export default function TempClinicForm() {
                                 <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 rounded-full text-slate-500">{history.length} Saved</span>
                             </div>
 
-                            <div className="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar">
+                            <div className="flex-grow overflow-y-auto p-2 space-y-2 custom-scrollbar">
                                 {history.length > 0 ? [...history].reverse().map((item) => (
-                                    <div key={item._id} className={`p-4 rounded-2xl border transition-all group relative ${item.isActive ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-slate-50 border-slate-100'}`}>
-                                        <div className="flex flex-col gap-0.5">
+                                    <div key={item._id} className={`flex justify-between items-center p-2 rounded-2xl border transition-all group relative ${item.isActive ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-slate-50 border-slate-100'}`}>
+                                        <div className="flex gap-2 items-center">
                                             <div className="flex items-center gap-2">
                                                 <span className={`font-black text-[10px] truncate max-w-[140px] ${item.isActive ? 'text-blue-700' : 'text-slate-600'}`}>
                                                     {item.handoverformId}
                                                 </span>
-                                                {item.isActive && <span className="text-[7px] font-black uppercase bg-blue-600 text-white px-1.5 py-0.5 rounded-full tracking-tighter">Active</span>}
+                                                {/* {item.isActive && <span className="text-[7px] font-black uppercase bg-blue-600 text-white px-1.5 py-0.5 rounded-full tracking-tighter">Active</span>} */}
                                             </div>
                                             <span className="text-[8px] text-slate-400 font-bold uppercase">{new Date(item.updatedAt).toLocaleDateString()}</span>
                                         </div>
 
-                                        <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-100/50">
+                                        <div className="flex items-center w-fit gap-4 border-t border-slate-100/50">
                                             {!item.isActive && (
                                                 <button
                                                     onClick={() => activateVersion(item.handoverformId)}
-                                                    className="p-1.5 h-8 bg-white text-blue-600 rounded-lg shadow-sm hover:bg-blue-600 hover:text-white transition-all border border-blue-100 flex-1 flex justify-center items-center"
+                                                    className="p-1.5 h-10 w-10 bg-white text-blue-600 rounded-lg shadow-sm hover:bg-blue-600 hover:text-white transition-all border border-blue-100 flex-1 flex justify-center items-center cursor-pointer"
                                                     title="Go Live"
                                                 >
-                                                    <FaGlobe size={12} />
+                                                    <FaGlobe size={20} />
                                                 </button>
                                             )}
+
                                             {item.isActive && (
                                                 <button
                                                     onClick={() => deactivateVersion()}
-                                                    className="p-1.5 h-8 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-slate-900 transition-all flex-1 flex justify-center items-center"
+                                                    className="p-1.5 h-10 w-10 bg-green-500 text-white rounded-lg shadow-sm hover:bg-slate-900 transition-all flex-1 flex justify-center items-center cursor-pointer"
                                                     title="Revert to Default"
                                                 >
-                                                    <FaGlobe size={12} />
+                                                    <FaGlobe size={20} />
                                                 </button>
                                             )}
-                                            <button
-                                                onClick={() => loadFromHistory(item)}
-                                                className="p-1.5 h-8 bg-white text-indigo-600 rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white transition-all border border-indigo-100 flex-1 flex justify-center items-center"
-                                                title="Load Draft"
-                                            >
-                                                <FaEdit size={12} />
-                                            </button>
-                                            <button
-                                                onClick={() => deleteFromHistory(item.handoverformId)}
-                                                className="p-1.5 h-8 bg-white text-rose-500 rounded-lg shadow-sm hover:bg-rose-500 hover:text-white transition-all border border-rose-100 flex-1 flex justify-center items-center"
-                                                title="Delete"
-                                            >
-                                                <FaTrash size={12} />
-                                            </button>
+                                            <div className="flex items-center gap-1.5">
+                                                <button
+                                                    onClick={() => loadFromHistory(item)}
+                                                    className="p-1.5 h-8 w-20 bg-white text-indigo-600 rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white transition-all border border-indigo-100 flex-1 flex justify-center items-center"
+                                                    title="Load Draft"
+                                                >
+                                                    <FaEdit size={12} />
+                                                </button>
+                                                <button
+                                                    onClick={() => deleteFromHistory(item.handoverformId)}
+                                                    className="p-1.5 h-8 w-20 bg-white text-rose-500 rounded-lg shadow-sm hover:bg-rose-500 hover:text-white transition-all border border-rose-100 flex-1 flex justify-center items-center"
+                                                    title="Delete"
+                                                >
+                                                    <FaTrash size={12} />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 )) : (
@@ -525,6 +593,31 @@ export default function TempClinicForm() {
 
                     {/* Section 2: Clinic Content & Configuration */}
                     <div className="space-y-12">
+                        {/* Dynamic Form Editing Mode Banner */}
+                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-slate-100 p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Currently Editing Draft Version</p>
+                                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                                    <span className="text-blue-600 font-bold">✍️</span> {handoverId}
+                                </h3>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {history.find(h => h.isActive)?.handoverformId === handoverId ? (
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full font-black text-[10px] uppercase tracking-wider border border-green-200">
+                                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                                        Active on Live Site
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 rounded-full font-black text-[10px] uppercase tracking-wider border border-amber-200">
+                                        ⚠️ Inactive Draft Copy
+                                    </span>
+                                )}
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 text-slate-600 rounded-full font-black text-[10px] uppercase tracking-wider border border-slate-200">
+                                    📍 Edits will modify `{handoverId}`
+                                </span>
+                            </div>
+                        </div>
+
                         {/* Status Alert */}
                         {saveStatus && (
                             <div className={`p-4 rounded-2xl font-bold text-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 ${saveStatus.includes('Error') ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-green-50 text-green-600 border border-green-100'

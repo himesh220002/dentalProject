@@ -44,7 +44,7 @@ export default function ActionTiles() {
             {/* Background Bridge Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-blue-500/10 blur-[120px] -z-10 -mt-20"></div>
 
-            <div className="max-w-7xl mx-auto -mt-3 sm:-mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            <div className="max-w-7xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {isLoading ? (
                     [...Array(3)].map((_, i) => (
                         <ActionTileSkeleton key={i} />

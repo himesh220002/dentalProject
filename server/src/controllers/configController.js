@@ -192,3 +192,32 @@ exports.updateConfig = async (req, res) => {
         res.status(500).json({ message: 'Error updating config', error: error.message });
     }
 };
+
+exports.triggerManualPing = async (req, res) => {
+    try {
+        const DOMAIN = process.env.RENDER_EXTERNAL_URL || 'http://localhost:' + (process.env.PORT || 5000);
+        
+        console.log(`[Manual Ping] Sending request to: ${DOMAIN}`);
+        
+        const httpLib = DOMAIN.startsWith('https') ? require('https') : require('http');
+        
+        httpLib.get(DOMAIN, (pingRes) => {
+            console.log(`[Manual Ping] Response: ${pingRes.statusCode}`);
+            res.status(200).json({
+                success: true,
+                message: `Keep-alive manual ping triggered successfully. Response status: ${pingRes.statusCode}`
+            });
+        }).on('error', (err) => {
+            console.error(`[Manual Ping] Error: ${err.message}`);
+            res.status(500).json({
+                success: false,
+                message: `Manual ping failed: ${err.message}`
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: `Server error: ${error.message}`
+        });
+    }
+};

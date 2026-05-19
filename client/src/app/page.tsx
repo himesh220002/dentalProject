@@ -217,7 +217,7 @@ export default function Home() {
             </section>
 
             {/* Meet Our Team - New Dynamic Section with High-tech Pattern */}
-            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] sm:rounded-[4rem] group mx-2 sm:mx-5 xl:mx-20 2xl:mx-40 border border-slate-200/60">
+            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] group mx-2 sm:mx-5 xl:mx-20 2xl:mx-40 border border-slate-200/60">
                 {/* Immersive Lab Background */}
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
                     <NextImage
@@ -262,7 +262,7 @@ export default function Home() {
             </section>
 
             {/* Why Patients Trust - Preview Section with refined layout */}
-            <section className="bg-gradient-to-br from-slate-900 to-slate-800 mx-auto md:mx-10 xl:mx-20 2xl:mx-40 px-6 sm:px-12 lg:px-16 py-10 sm:py-20 sm:rounded-[2.5rem] lg:rounded-[4rem] text-white overflow-hidden relative">
+            <section className="bg-gradient-to-br from-slate-900 to-slate-800 mx-auto md:mx-10 xl:mx-20 2xl:mx-40 px-6 sm:px-12 lg:px-16 py-10 sm:py-20 sm:rounded-[1rem] lg:rounded-[1rem] text-white overflow-hidden relative">
                 <div className="max-w-7xl mx-auto space-y-10">
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                         <div className="space-y-6">

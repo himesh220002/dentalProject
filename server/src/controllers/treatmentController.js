@@ -105,7 +105,7 @@ const seedTreatments = async (req, res) => {
                 description: 'General consultation for any other dental issues.',
                 whyNeed: 'Comprehensive checkup and professional advice.',
                 price: '300',
-                image: 'https://images.unsplash.com/photo-1758691461916-dc7894eb8f94?q=80&w=1632',
+                image: 'https://www.shutterstock.com/image-vector/dentist-examining-female-patient-modern-600nw-2747564801.jpg',
                 icon: 'FaMedkit'
             },
         ];

@@ -184,7 +184,7 @@ export default function About() {
             </div>
 
             {/* Our Values / Mission Refined */}
-            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-10 xl:mb-20 rounded-[2rem] lg:rounded-[3rem] xl:rounded-[5rem] overflow-hidden relative mx-2 sm:mx-4">
+            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-10 xl:mb-20 rounded-md overflow-hidden relative mx-2 sm:mx-4">
                 <div className="max-w-5xl mx-auto space-y-5 sm:space-y-20">
                     <div className="text-center space-y-4 sm:space-y-6">
                         <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-white leading-tight">{t.aboutValues.title}</h2>
@@ -192,34 +192,34 @@ export default function About() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-12 text-white">
-                        <div className="text-center sm:text-left flex flex-col items-center sm:items-start space-y-6 group">
+                        <div className="text-center sm:text-left flex flex-col items-center sm:items-center space-y-6 group">
                             <div className="w-20 h-20 bg-blue-600/20 border border-blue-500/30 rounded-3xl flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
                                 <FaUserMd size={32} />
                             </div>
                             <h3 className="text-2xl font-black">{t.aboutValues.expertCare}</h3>
-                            <p className="text-gray-400 leading-relaxed font-medium">
+                            <p className="text-gray-400 text-center leading-relaxed font-medium">
                                 {language === 'hi'
                                     ? `${doctorName} आपको आपकी आवश्यकताओं के अनुसार सर्वोत्तम संभव उपचार प्रदान करने के लिए दंत विज्ञान में नवीनतम के साथ अपडेट रहते हैं।`
                                     : `${doctorName} stays updated with the latest in dental science to provide the best possible treatments tailored to your needs.`}
                             </p>
                         </div>
-                        <div className="text-center sm:text-left flex flex-col items-center sm:items-start space-y-6 group">
+                        <div className="text-center sm:text-left flex flex-col items-center sm:items-center space-y-6 group">
                             <div className="w-20 h-20 bg-teal-600/20 border border-teal-500/30 rounded-3xl flex items-center justify-center text-teal-500 group-hover:bg-teal-600 group-hover:text-white transition-all duration-500">
                                 <FaSmile size={32} />
                             </div>
                             <h3 className="text-2xl font-black">{t.aboutValues.painlessPath}</h3>
-                            <p className="text-gray-400 leading-relaxed font-medium">
+                            <p className="text-gray-400 text-center leading-relaxed font-medium">
                                 {language === 'hi'
                                     ? 'हम यह सुनिश्चित करने के लिए अत्याधुनिक आधुनिक तकनीकों का उपयोग करते हैं कि आपकी यात्रा यथासंभव आरामदायक, तेज और दर्द रहित हो।'
                                     : 'We use cutting-edge modern techniques to ensure your visit is as comfortable, fast, and pain-free as possible.'}
                             </p>
                         </div>
-                        <div className="text-center sm:text-left flex flex-col items-center sm:items-start space-y-6 group">
+                        <div className="text-center sm:text-left flex flex-col items-center sm:items-center space-y-6 group">
                             <div className="w-20 h-20 bg-purple-600/20 border border-purple-500/30 rounded-3xl flex items-center justify-center text-purple-500 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
                                 <FaAward size={32} />
                             </div>
                             <h3 className="text-2xl font-black">{t.aboutValues.goldStandard}</h3>
-                            <p className="text-gray-400 leading-relaxed font-medium">
+                            <p className="text-gray-400 text-center leading-relaxed font-medium">
                                 {language === 'hi'
                                     ? 'पूर्ण स्वच्छता हमारी प्राथमिकता है। हम आपकी पूर्ण सुरक्षा के लिए अति-कठिन अंतरराष्ट्रीय नसबंदी प्रोटोकॉल का पालन करते हैं।'
                                     : 'Absolute hygiene is our priority. We follow ultra-strict international sterilization protocols for your complete safety.'}
