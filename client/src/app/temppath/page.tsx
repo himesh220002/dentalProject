@@ -193,7 +193,7 @@ export default function TempClinicForm() {
 
     const loadFromHistory = (item: any) => {
         const loadedData = item.jsondata;
-        setFormData(prev => ({
+        setFormData((prev: any) => ({
             ...prev,
             ...loadedData,
             address: {
@@ -222,7 +222,7 @@ export default function TempClinicForm() {
         const { name, value } = e.target;
         if (name.includes('.')) {
             const [parent, child] = name.split('.');
-            setFormData(prev => ({
+            setFormData((prev: any) => ({
                 ...prev,
                 [parent]: {
                     ...(prev[parent as keyof typeof prev] as any),
@@ -230,7 +230,7 @@ export default function TempClinicForm() {
                 }
             }));
         } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
+            setFormData((prev: any) => ({ ...prev, [name]: value }));
         }
     };
 
@@ -238,7 +238,7 @@ export default function TempClinicForm() {
         const newList = [...formData[listName]];
         // @ts-ignore
         newList[index][field] = value;
-        setFormData(prev => ({ ...prev, [listName]: newList }));
+        setFormData((prev: any) => ({ ...prev, [listName]: newList }));
     };
 
     const addListItem = (listName: 'treatments' | 'consultants' | 'highlights') => {
@@ -247,16 +247,16 @@ export default function TempClinicForm() {
         else if (listName === 'consultants') newItem = { name: '', role: '', info: '', experience: '' };
         else newItem = { title: '', description: '' };
 
-        setFormData(prev => ({
+        setFormData((prev: any) => ({
             ...prev,
             [listName]: [...prev[listName], newItem]
         }));
     };
 
     const removeListItem = (listName: 'treatments' | 'consultants' | 'highlights', index: number) => {
-        setFormData(prev => ({
+        setFormData((prev: any) => ({
             ...prev,
-            [listName]: prev[listName].filter((_, i) => i !== index)
+            [listName]: prev[listName].filter((_: any, i: number) => i !== index)
         }));
     };
 
@@ -677,7 +677,7 @@ export default function TempClinicForm() {
                                 </button>
                             </div>
                             <div className="space-y-4">
-                                {formData.consultants.map((c, i) => (
+                                {formData.consultants.map((c: any, i: number) => (
                                     <div key={i} className="p-6 bg-gray-50 rounded-2xl border border-gray-100 space-y-4 relative group">
                                         <button onClick={() => removeListItem('consultants', i)} className="absolute top-4 right-4 p-2 text-rose-500 hover:bg-rose-100 rounded-lg transition-all"><FaTrash /></button>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -715,7 +715,7 @@ export default function TempClinicForm() {
                                 </button>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {formData.treatments.map((t, i) => (
+                                {formData.treatments.map((t: any, i: number) => (
                                     <div key={i} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4 relative group">
                                         <button onClick={() => removeListItem('treatments', i)} className="absolute top-4 right-4 p-2 text-rose-500 hover:bg-rose-100 rounded-lg transition-all"><FaTrash size={14} /></button>
                                         <div className="space-y-4">
@@ -778,7 +778,7 @@ export default function TempClinicForm() {
                                 </button>
                             </div>
                             <div className="space-y-4">
-                                {formData.highlights.map((h, i) => (
+                                {formData.highlights.map((h: any, i: number) => (
                                     <div key={i} className="flex flex-col sm:flex-row gap-3 bg-gray-50 p-4 rounded-2xl relative group border border-gray-100">
                                         <button onClick={() => removeListItem('highlights', i)} className="absolute top-2 right-2 p-1 text-rose-400 hover:text-rose-600 transition-opacity"><FaTrash size={12} /></button>
                                         <input type="text" placeholder="Title (e.g. Modern Lab)" value={h.title} onChange={(e) => handleListChange('highlights', i, 'title', e.target.value)} className="flex-1 px-4 py-2 rounded-xl bg-white border-none focus:ring-2 focus:ring-yellow-500 font-bold text-sm" />
