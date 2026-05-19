@@ -92,22 +92,47 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-if (require.main === module) {
-    server.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+// if (require.main === module) {
+//     server.listen(PORT, () => {
+//         console.log(`Server running on port ${PORT}`);
 
-        // Start keep-alive if RENDER_EXTERNAL_URL is available
-        const externalUrl = process.env.RENDER_EXTERNAL_URL;
-        if (externalUrl) {
-            keepAlive(externalUrl);
-            console.log(`Keep-alive started for: ${externalUrl}`);
-        } else {
-            console.log('Keep-alive not started: RENDER_EXTERNAL_URL not found (likely local environment).');
+//         // Start keep-alive if RENDER_EXTERNAL_URL is available
+//         const externalUrl = process.env.RENDER_EXTERNAL_URL;
+//         if (externalUrl) {
+//             keepAlive(externalUrl);
+//             console.log(`Keep-alive started for: ${externalUrl}`);
+//         } else {
+//             console.log('Keep-alive not started: RENDER_EXTERNAL_URL not found (likely local environment).');
+//         }
+
+//         // Initialize Daily Scheduler
+//         initSchedules();
+//     });
+// }
+
+// Flag to control keep-alive
+let active_render = process.env.ACTIVE_RENDER === 'false'; // read from env or set manually
+
+// Keep-alive mechanism
+const keepAlive = (url) => {
+    const interval = setInterval(() => {
+        if (!active_render) {
+            console.log('Keep-alive disabled, skipping ping...');
+            return;
         }
+        try {
+            console.log(`Pinging server at ${url} to keep it alive...`);
+            https.get(url, (res) => {
+                console.log(`Ping response: ${res.statusCode}`);
+            }).on('error', (err) => {
+                console.error('Keep-alive ping error:', err.message);
+            });
+        } catch (error) {
+            console.error('Keep-alive error:', error.message);
+        }
+    }, 5 * 60 * 1000); // 5 minutes
 
-        // Initialize Daily Scheduler
-        initSchedules();
-    });
-}
+    return interval;
+};
 
 module.exports = { app, server };
