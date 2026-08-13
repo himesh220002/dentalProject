@@ -13,7 +13,7 @@ export default function MyBookingsPage() {
     const [actionLoading, setActionLoading] = useState<string | null>(null);
 
     const fetchBookings = async () => {
-        const storedIds = JSON.parse(localStorage.getItem('drtooth_guest_bookings') || '[]');
+        const storedIds = JSON.parse(localStorage.getItem('toothop_guest_bookings') || '[]');
         if (storedIds.length === 0) {
             setBookings([]);
             setLoading(false);
@@ -48,9 +48,9 @@ export default function MyBookingsPage() {
 
             // Success: Remove from local state and localStorage if it was a hard delete
             setBookings(prev => prev.filter(b => b._id !== id));
-            const storedIds = JSON.parse(localStorage.getItem('drtooth_guest_bookings') || '[]');
+            const storedIds = JSON.parse(localStorage.getItem('toothop_guest_bookings') || '[]');
             const updatedIds = storedIds.filter((sid: string) => sid !== id);
-            localStorage.setItem('drtooth_guest_bookings', JSON.stringify(updatedIds));
+            localStorage.setItem('toothop_guest_bookings', JSON.stringify(updatedIds));
 
             alert('Appointment cancelled successfully.');
         } catch (err: any) {

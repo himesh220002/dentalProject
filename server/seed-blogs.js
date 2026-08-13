@@ -14,7 +14,7 @@ const seedBlogs = async () => {
         {
             title: 'Modern RCT: A Painless Solution',
             content: '<h2>Is Root Canal Treatment Painful?</h2><p>There is a common myth that RCT is extremely painful. However, with modern anesthesia and advanced techniques, the procedure is as comfortable as getting a filling.</p><h3>When do you need an RCT?</h3><p>An RCT is necessary when the pulp inside your tooth becomes infected due to deep decay or injury. It saves your natural tooth and prevents the need for extraction.</p>',
-            author: 'Dr. Tooth Clinic',
+            author: 'ToothOp Clinic',
             status: 'published',
             tags: ['RCT', 'Treatments', 'Painless'],
             imageUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=2074'

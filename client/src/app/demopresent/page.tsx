@@ -116,7 +116,7 @@ export default function DemoPresent() {
             <section className="hero">
                 <div className="animate-fade-in">
                     <div className="badge-247">Integrated Architecture 2.0</div>
-                    <h1>Dr. Tooth Dental</h1>
+                    <h1>ToothOp</h1>
                     <p>The Future of Precision Practice Management. A unified ecosystem connecting patients, doctors, and data seamlessly.</p>
                 </div>
             </section>
@@ -337,7 +337,7 @@ export default function DemoPresent() {
                         <div className="comp-item">Manual WhatsApp messaging loop</div>
                     </div>
                     <div className="comp-box comp-new">
-                        <span className="comp-title" style={{ color: '#10b981' }}>Dr. Tooth Automation</span>
+                        <span className="comp-title" style={{ color: '#10b981' }}>ToothOp Automation</span>
                         <div className="comp-item">✅ Digital Patient SSOT (Instant Access)</div>
                         <div className="comp-item">✅ Real-time Socket.io Appointment Notifications</div>
                         <div className="comp-item">✅ Automated Data-driven Financial Analytics</div>
@@ -355,11 +355,11 @@ export default function DemoPresent() {
                 <div className="faq-grid">
                     <div className="faq-item">
                         <div className="faq-q"><span>❓</span> If I have staff, why need a website?</div>
-                        <div className="faq-a">Staff sleep; your website doesn't. 70% of dental searches happen after 6 PM. If a patient finds a manual search form that "waits for a callback," they leave. Dr. Tooth provides instant authentication and real-time booking, securing the patient before they click your competitor.</div>
+                        <div className="faq-a">Staff sleep; your website doesn't. 70% of dental searches happen after 6 PM. If a patient finds a manual search form that "waits for a callback," they leave. ToothOp provides instant authentication and real-time booking, securing the patient before they click your competitor.</div>
                     </div>
                     <div className="faq-item">
                         <div className="faq-q"><span>❓</span> Is a Google Form not enough?</div>
-                        <div className="faq-a">Google Forms are data silos. They don't check doctor availability, they don't sync with medical history, and they don't send automated WhatsApp care instructions. Dr. Tooth is an SSOT (Single Source of Truth) where booking, billing, and treatment history live in one pulse.</div>
+                        <div className="faq-a">Google Forms are data silos. They don't check doctor availability, they don't sync with medical history, and they don't send automated WhatsApp care instructions. ToothOp is an SSOT (Single Source of Truth) where booking, billing, and treatment history live in one pulse.</div>
                     </div>
                     <div className="faq-item">
                         <div className="faq-q"><span>❓</span> How does this help the Doctors?</div>
@@ -461,7 +461,7 @@ export default function DemoPresent() {
             </section>
 
             <footer className="text-center p-16 text-[#94a3b8] text-[0.8rem] border-t border-[rgba(255,255,255,0.1)]">
-                © 2026 Dr. Tooth Dental | Built for Excellence | Powered by Next.js & Express
+                © 2026 ToothOp | Built for Excellence | Powered by Next.js & Express
             </footer>
         </div>
     );

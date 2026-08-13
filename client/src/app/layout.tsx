@@ -26,8 +26,8 @@ export async function generateMetadata() {
         const clinic = response.data.jsondata;
         const seo = clinic.seo;
 
-        const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || 'https://drtoothdental.in';
-        const clinicName = clinic.clinicName || 'Dr. Tooth Dental';
+        const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || 'https://toothopdental.in';
+        const clinicName = clinic.clinicName || 'ToothOp';
         const city = clinic.address?.city || 'Katihar';
         return {
             title: seo.metaTitle || `${clinicName} | Best Dentist in ${city}, Bihar`,
@@ -77,7 +77,7 @@ export async function generateMetadata() {
         };
     } catch {
         return {
-            title: 'Dr. Tooth Dental | Best Dentist in Katihar',
+            title: 'ToothOp | Best Dentist in Katihar',
             description: 'Professional Dental Care with Years of Experience',
         };
     }
@@ -103,10 +103,10 @@ export default async function RootLayout({
         console.error("Failed to fetch clinic data for layout JSON-LD");
     }
 
-    const clinicName = clinicData?.clinicName || "Dr. Tooth Dental";
+    const clinicName = clinicData?.clinicName || "ToothOp";
     const address = clinicData?.address || { street: "Dental Clinic Road", city: "Katihar", state: "Bihar", zip: "854105" };
     const phone = clinicData?.phone || "+919876543210";
-    const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || "https://drtoothdental.in";
+    const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || "https://toothopdental.in";
 
     return (
         <html lang="en">

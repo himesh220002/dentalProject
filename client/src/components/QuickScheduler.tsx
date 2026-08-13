@@ -402,7 +402,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
 
             if (whatsappPatient && !skipWhatsApp) {
                 const patientPhone = whatsappPatient.contact;
-                const clinicName = clinicData?.clinicName || "Dr. Tooth Dental";
+                const clinicName = clinicData?.clinicName || "ToothOp";
                 const clinicAddress = clinicData?.address;
                 const fullAddress = clinicAddress
                     ? `${clinicAddress.street}, ${clinicAddress.city}, ${clinicAddress.state} - ${clinicAddress.zip}`

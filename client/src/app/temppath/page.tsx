@@ -11,8 +11,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
     (process.env.NEXT_PUBLIC_BACKEND_URL ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api` : 'http://localhost:5000/api');
 
 const DEFAULT_CLINIC_DATA = {
-    clinicName: 'Dr. Tooth Dental',
-    doctorName: 'Dr. Tooth',
+    clinicName: 'ToothOp',
+    doctorName: 'ToothOp',
     tagline: "Your Smile's Guardian",
     email: 'care@drToothdental.in',
     phone: '+91 90000 00000',
@@ -48,7 +48,7 @@ const DEFAULT_CLINIC_DATA = {
     },
     certifications: 'Best Dentist Award 2022, Certified Implantologist, Member of IDA',
     consultants: [
-        { name: 'Dr. Tooth', role: 'Chief Surgeon', info: 'BDS, MDS', experience: '12 Years' },
+        { name: 'ToothOp', role: 'Chief Surgeon', info: 'BDS, MDS', experience: '12 Years' },
         { name: 'Dr. nefario', role: 'Orthodontist', info: 'Expert in Braces & Aligners', experience: '8 Years' }
     ],
     treatments: [
@@ -70,8 +70,8 @@ const DEFAULT_CLINIC_DATA = {
         { title: 'Sterile Environment', description: 'Class B Autoclave sterilization protocols.' }
     ],
     seo: {
-        metaTitle: 'Best Dental Clinic in Katihar | Dr. Tooth Dental',
-        metaDescription: 'Expert dental care by Dr. Tooth. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
+        metaTitle: 'Best Dental Clinic in Katihar | ToothOp',
+        metaDescription: 'Expert dental care by ToothOp. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
         keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist'
     },
     lunchTime: '01:00 PM - 02:00 PM',
@@ -116,7 +116,7 @@ export default function TempClinicForm() {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        if (password === 'drtooth2026') {
+        if (password === 'toothop2026') {
             const expiry = Date.now() + 2 * 60 * 60 * 1000; // 2 hours
             localStorage.setItem('handover_authorized', 'true');
             localStorage.setItem('handover_expiry', expiry.toString());

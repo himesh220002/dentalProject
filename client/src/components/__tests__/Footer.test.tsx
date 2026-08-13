@@ -6,8 +6,8 @@ import { describe, it, expect, vi } from 'vitest';
 vi.mock('@/context/ClinicContext', () => ({
     useClinic: () => ({
         clinicData: {
-            clinicName: 'Dr. Tooth Dental',
-            email: 'care@drtoothdental.in',
+            clinicName: 'ToothOp',
+            email: 'care@toothopdental.in',
             phone: '+91 90000 00000',
             socialLinks: {
                 facebook: '#',
@@ -36,11 +36,11 @@ vi.mock('@/context/ClinicContext', () => ({
 describe('Footer Component', () => {
     it('renders the clinic name correctly', () => {
         render(<Footer />);
-        expect(screen.getByText(/Dr. Tooth Dental/i)).toBeInTheDocument();
+        expect(screen.getByText(/ToothOp/i)).toBeInTheDocument();
     });
 
     it('displays the contact email', () => {
         render(<Footer />);
-        expect(screen.getByText(/care@drtoothdental.in/i)).toBeInTheDocument();
+        expect(screen.getByText(/care@toothopdental.in/i)).toBeInTheDocument();
     });
 });

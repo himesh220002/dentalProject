@@ -52,12 +52,12 @@ interface ClinicData {
 }
 
 const DEFAULT_CLINIC_DATA: ClinicData = {
-    clinicName: 'Tooth Dental',
-    doctorName: 'Dr. Tooth kumar',
+    clinicName: 'ToothOp',
+    doctorName: 'ToothOp kumar',
     tagline: "Your Smile's Guardian",
     email: 'care@drToothdental.in',
-    phone: '+91 9471283523',
-    staffPhone: '+91 8105542318',
+    phone: '+91 9876543210',
+    staffPhone: '+91 9876543210',
     establishedYear: '2014',
     clinicExperience: '10',
     expertise: 'Restorative Dentistry, Oral Surgery, Orthodontics, Cosmetic Dentistry',
@@ -89,21 +89,21 @@ const DEFAULT_CLINIC_DATA: ClinicData = {
     },
     certifications: 'Best Dentist Award 2022, Certified Implantologist, Member of IDA',
     consultants: [
-        { name: 'Dr. Tooth', role: 'Chief Surgeon', info: 'BDS, MDS', experience: '12 Years' },
+        { name: 'ToothOp', role: 'Chief Surgeon', info: 'BDS, MDS', experience: '12 Years' },
         { name: 'Dr. nefario', role: 'Orthodontist', info: 'Expert in Braces & Aligners', experience: '8 Years' }
     ],
     treatments: [
-        { name: 'General Consultation', price: '300', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1758691461916-dc7894eb8f94?q=80&w=1632' },
-        { name: 'Scaling & Cleaning', price: '800', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1674775372064-8c75d3f8c757?q=80&w=687' },
-        { name: 'Dental Fillings', price: '1000', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1694345215004-837b089f620d?q=80&w=1929' },
-        { name: 'Tooth Extraction', price: '500', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1626736985932-c0df2ae07a2e?q=80&w=1631' },
-        { name: 'Root Canal Treatment', price: '3500', description: 'Treatment details provided by clinic.', image: 'https://www.smilecentre.in/assets/images/treatments/root-canal-procedure.jpg' },
-        { name: 'Dental Implants', price: '25000', description: 'Treatment details provided by clinic.', image: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Dental-implant-illustration.jpg' },
-        { name: 'Teeth Whitening', price: '5000', description: 'Treatment details provided by clinic.', image: 'https://www.smilecentre.in/assets/images/treatments/tooth-whitening.jpg' },
-        { name: 'Orthodontic Braces', price: '15000', description: 'Treatment details provided by clinic.', image: 'https://smilecreations.in/wp-content/uploads/2023/11/understanding-metal-braces.jpg' },
-        { name: 'Crowns & Bridges', price: '3500', description: 'Treatment details provided by clinic.', image: 'https://www.cyprusfamilydental.com/wp-content/uploads/2022/12/Depositphotos_274172422_L.jpg' },
-        { name: "Kid's Dentistry", price: '500', description: 'Treatment details provided by clinic.', image: 'https://www.dratuljajoo.com/wp-content/uploads/2018/09/kids-dentistry.jpg' },
-        { name: 'Full Mouth X-Ray', price: '500', description: 'Treatment details provided by clinic.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjXnsLV9glWBJ77_38thCOxDEeWWN0sqTD3A&s' }
+        { name: 'General Consultation', price: '300', description: 'Initial dental check‑up where the dentist examines teeth, gums, and oral health, provides diagnosis, and recommends treatment options.', image: 'images/dentalconsult.webp' },
+        { name: 'Scaling & Cleaning', price: '800', description: 'Professional removal of plaque, tartar, and stains from teeth surfaces and gum line to prevent cavities and gum disease.', image: 'https://images.unsplash.com/photo-1674775372064-8c75d3f8c757?q=80&w=687' },
+        { name: 'Dental Fillings', price: '1000', description: 'White composite material used to restore decayed or damaged teeth, preserving natural tooth structure.', image: 'https://images.unsplash.com/photo-1694345215004-837b089f620d?q=80&w=1929' },
+        { name: 'Tooth Extraction', price: '500', description: 'Removal of damaged or infected tooth when it cannot be saved by other dental treatments.', image: 'https://images.unsplash.com/photo-1626736985932-c0df2ae07a2e?q=80&w=1631' },
+        { name: 'Root Canal Treatment', price: '3500', description: 'Removes infected tooth pulp and seals the canal to save the tooth from extraction and further infection.', image: 'https://www.smilecentre.in/assets/images/treatments/root-canal-procedure.jpg' },
+        { name: 'Dental Implants', price: '25000', description: 'Artificial tooth roots used to replace missing teeth, providing stable and long‑lasting support for crowns or dentures.', image: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Dental-implant-illustration.jpg' },
+        { name: 'Teeth Whitening', price: '5000', description: 'Professional bleaching process to lighten discolored teeth and improve smile appearance without damaging tooth structure.', image: 'https://www.smilecentre.in/assets/images/treatments/tooth-whitening.jpg' },
+        { name: 'Orthodontic Braces', price: '15000', description: 'Metal, ceramic, or clear aligners used to straighten teeth and correct bite issues for improved function and aesthetics.', image: 'https://smilecreations.in/wp-content/uploads/2023/11/understanding-metal-braces.jpg' },
+        { name: 'Crowns & Bridges', price: '3500', description: 'Tooth‑shaped caps that cover damaged teeth or act as replacements for missing teeth, supported by implants or natural teeth.', image: 'https://www.cyprusfamilydental.com/wp-content/uploads/2022/12/Depositphotos_274172422_L.jpg' },
+        { name: "Kid's Dentistry", price: '500', description: 'Gentle dental care for children including check‑ups, sealants, fluoride treatments, and age‑appropriate restorative care.', image: 'https://www.dratuljajoo.com/wp-content/uploads/2018/09/kids-dentistry.jpg' },
+        { name: 'Full Mouth X-Ray', price: '500', description: 'Comprehensive X‑ray imaging of all teeth and jaw structures for detailed diagnosis of dental conditions.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjXnsLV9glWBJ77_38thCOxDEeWWN0sqTD3A&s' }
     ],
     highlights: [
         { title: 'Advanced Technology', description: 'Intraoral scanners & 3D imaging for precise diagnosis.' },
@@ -111,8 +111,8 @@ const DEFAULT_CLINIC_DATA: ClinicData = {
         { title: 'Sterile Environment', description: 'Class B Autoclave sterilization protocols.' }
     ],
     seo: {
-        metaTitle: 'Best Dental Clinic in Katihar | Dr. Tooth Dental',
-        metaDescription: 'Expert dental care by Dr. Tooth. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
+        metaTitle: 'Best Dental Clinic in Katihar | ToothOp',
+        metaDescription: 'Expert dental care by ToothOp. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
         keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist'
     },
     lunchTime: '01:00 PM - 02:00 PM'

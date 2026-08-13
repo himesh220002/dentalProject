@@ -429,7 +429,7 @@ function DashboardSchedulesContent() {
                                                 {/* WhatsApp Reminder Button */}
                                                 <button
                                                     onClick={() => {
-                                                        const clinicName = clinicData?.clinicName || "Dr. Tooth Dental";
+                                                        const clinicName = clinicData?.clinicName || "ToothOp";
                                                         const mapsLink = (clinicData?.address?.latitude && clinicData?.address?.longitude)
                                                             ? `https://www.google.com/maps/search/?api=1&query=${clinicData.address.latitude},${clinicData.address.longitude}`
                                                             : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicName + " " + (clinicData?.address?.city || ""))}`;

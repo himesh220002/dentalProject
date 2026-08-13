@@ -22,6 +22,7 @@ import { io } from 'socket.io-client';
 import { parseAppointmentReason } from '@/utils/appointmentUtils';
 import AppointmentSearchInline from '@/components/home/AppointmentSearchInline';
 import GeneralInquiryForm from '@/components/contact/GeneralInquiryForm';
+import RecentCasesGallery from '@/components/home/RecentCasesGallery';
 
 export default function Home() {
     const { data: session } = useSession();
@@ -32,7 +33,7 @@ export default function Home() {
     const [videoProgress, setVideoProgress] = useState(0);
 
     const { clinicData, language } = useClinic();
-    const doctorName = clinicData?.doctorName || 'Dr. Tooth';
+    const doctorName = clinicData?.doctorName || 'ToothOp';
     const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
     const doctorRole = chiefConsultant?.role || 'Chief Dental Surgeon';
 
@@ -173,9 +174,9 @@ export default function Home() {
             <TrustSection />
 
             {/* Featured Clinical Excellence Video - Split Layout */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 w-full py-12 lg:py-20">
+            <section className="max-w-7xl mx-auto bg-gradient-to-r from-blue-50 via-gray-100 to-transparent rounded-[3rem] px-4 sm:px-10 lg:px-16 w-full py-12 lg:py-20">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    
+
                     {/* Left Side: Premium Copy */}
                     <div className="space-y-6 text-center lg:text-left order-2 lg:order-1">
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 shadow-sm">
@@ -228,6 +229,9 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* Recent Cases Accordion Gallery */}
+            <RecentCasesGallery />
+
             {/* Meet Our Team - New Dynamic Section with High-tech Pattern */}
             <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden sm:rounded-[2.5rem] group w-full max-w-7xl mx-auto border border-slate-200/60">
                 {/* Immersive Lab Background */}
@@ -235,8 +239,8 @@ export default function Home() {
                     <NextImage
                         src="/images/2307.i105.031.S.m005.c13.isometric biotechnology.jpg"
                         fill
-                        className="object-cover opacity-[0.8]"
-                        alt="Dr. Tooth Dental - Advanced Biotechnology Background"
+                        className="object-cover opacity-[0.2]"
+                        alt="ToothOp - Advanced Biotechnology Background"
                         priority
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-slate-50/70 via-white/10 to-blue-50/30"></div>
@@ -274,18 +278,18 @@ export default function Home() {
             </section>
 
             {/* Why Patients Trust - Preview Section with refined layout */}
-            <section className="bg-gradient-to-br from-slate-900 to-slate-800 w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-10 sm:py-20 sm:rounded-[1rem] lg:rounded-[1rem] text-white overflow-hidden relative">
+            <section className="bg-gradient-to-br from-transparent via-slate-200 to-transparent w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-10 sm:py-20 sm:rounded-[1rem] lg:rounded-[1rem] text-white overflow-hidden relative">
                 <div className="w-full mx-auto space-y-10">
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                         <div className="space-y-6">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl text-center sm:text-left xl:text-5xl font-black leading-tight">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl text-gray-700 text-center sm:text-left xl:text-5xl font-black leading-tight">
                                 {language === 'hi' ? (
-                                    <>एक स्वस्थ मुस्कान स्वस्थ जीवन का <br /> <span className="text-blue-300">द्वार</span> है।</>
+                                    <>एक स्वस्थ मुस्कान स्वस्थ जीवन का <br /> <span className="text-blue-500">द्वार</span> है।</>
                                 ) : (
-                                    <>A healthy smile is the <br /> <span className="text-blue-300">gateway</span> to a healthy life.</>
+                                    <>A healthy smile is the <br /> <span className="text-blue-500">gateway</span> to a healthy life.</>
                                 )}
                             </h2>
-                            <p className="text-gray-400 text-sm md:text-xl text-center sm:text-left font-medium max-w-2xl leading-relaxed">
+                            <p className="text-gray-500 text-sm md:text-xl text-center sm:text-left font-medium max-w-2xl leading-relaxed">
                                 {language === 'hi'
                                     ? '"हमारे क्लिनिक में, हम केवल दांत नहीं ठीक करते; हम आत्मविश्वास जगाते हैं। हमने अपने क्लिनिक को एक सुरक्षित, स्वागत योग्य स्थान के रूप में तैयार किया है जहां आप सहज महसूस कर सकें।"'
                                     : '"At our clinic, we don\'t just fix teeth; we build confidence. We\'ve designed our practice to be a safe, welcoming space where you can feel at ease."'
@@ -297,8 +301,8 @@ export default function Home() {
                                 <FaUserMd size={40} className="text-white" />
                             </div>
                             <div>
-                                <h4 className="text-xl font-black">{doctorName}</h4>
-                                <p className="text-blue-300 font-bold uppercase tracking-widest text-xs">
+                                <h4 className="text-xl text-gray-600 font-black">{doctorName}</h4>
+                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs">
                                     {language === 'hi' ? 'मुख्य दंत शल्य चिकित्सक' : doctorRole}
                                 </p>
                             </div>
@@ -308,8 +312,8 @@ export default function Home() {
                     <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6 sm:gap-12 pt-6 sm:pt-12 border-t border-white/10">
                         {defaultHighlights.map((defaultHighlights, idx) => (
                             <div key={idx} className="space-y-4">
-                                <h3 className="text-lg md:text-xl text-center sm:text-start font-black">{defaultHighlights.title}</h3>
-                                <p className="text-gray-300 text-center sm:text-start leading-relaxed font-medium text-sm md:text-base">{defaultHighlights.description}</p>
+                                <h3 className="text-lg md:text-xl text-center sm:text-start text-gray-600 font-black">{defaultHighlights.title}</h3>
+                                <p className="text-gray-500 text-center sm:text-start leading-relaxed font-medium text-sm md:text-base">{defaultHighlights.description}</p>
                             </div>
                         ))}
                     </div>
@@ -387,7 +391,7 @@ export default function Home() {
             }
 
             {/* Elite CTA Strip */}
-            <section className="pb-12 sm:pb-20 overflow-hidden relative w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+            <section className="pt-6 pb-12 sm:pb-20 overflow-hidden relative w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 rounded-[2rem]">
                 <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 md:p-16 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(15,23,42,0.45)] relative overflow-hidden group">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-44 -mt-44 blur-[100px] transition-all duration-700"></div>

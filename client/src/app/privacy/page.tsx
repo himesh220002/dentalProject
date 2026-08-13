@@ -7,7 +7,7 @@ import { useClinic } from '../../context/ClinicContext';
 export default function PrivacyPolicy() {
     const { clinicData, language } = useClinic();
 
-    const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental';
+    const clinicName = clinicData?.clinicName || 'ToothOp';
     const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}` : 'Bihar, India';
     const phone = clinicData?.phone || '+91 98765 43210';
     const email = clinicData?.email || 'care@drToothdental.in';
@@ -146,7 +146,7 @@ export default function PrivacyPolicy() {
                     <div className="mt-6 space-y-3 font-medium">
                         <p className="flex flex-col sm:flex-row sm:justify-between border-b border-white/10 pb-2 italic">
                             <span className="text-gray-500">{t.officerName}</span>
-                            <span>{clinicData?.doctorName || 'Dr. Tooth'}</span>
+                            <span>{clinicData?.doctorName || 'ToothOp'}</span>
                         </p>
                         <p className="flex flex-col sm:flex-row sm:justify-between border-b border-white/10 pb-2 italic">
                             <span className="text-gray-500">{t.officerAddress}</span>

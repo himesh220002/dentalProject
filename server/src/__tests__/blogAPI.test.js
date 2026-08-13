@@ -7,7 +7,7 @@ describe('Blog API & CRUD Logic', () => {
         const blogData = {
             title: 'Modern Dental Care 2026',
             content: 'Content about modern dental care.',
-            author: 'Dr. Tooth',
+            author: 'ToothOp',
             status: 'published'
         };
 

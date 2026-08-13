@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { FaTooth, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
+import Image from 'next/image';
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
 import { useClinic } from '../context/ClinicContext';
 import { ensureAbsoluteUrl } from '../utils/urlHelper';
 
@@ -9,11 +10,11 @@ export default function Footer() {
     const { clinicData, isLoading } = useClinic();
 
     // Fallback data if context is loading or fails
-    const name = clinicData?.clinicName || 'Dr. Tooth Dental';
+    const name = clinicData?.clinicName || 'ToothOp';
     const tagline = clinicData?.tagline || 'Providing world-class dental care since 2014.';
     const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}` : 'Dental Clinic Road, Katihar, Bihar - 854105';
     const phone = clinicData?.phone || '+91 98765 43210';
-    const email = clinicData?.email || 'care@drToothdental.in';
+    const email = clinicData?.email || 'care@toothop.com';
 
     const socialPlatforms = [
         { icon: <FaFacebookF />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.facebook || 'https://www.facebook.com/'), color: 'hover:bg-[#1877F2]' },
@@ -33,15 +34,15 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     {/* Brand Section */}
                     <div className="space-y-6">
-                        <Link href="/" className="flex items-center justify-center md:justify-start space-x-2 group">
-                            <div className="bg-blue-600 p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                                <FaTooth className="text-white text-xl" />
+                        <Link href="/" className="flex flex-col items-center justify-center md:justify-start group">
+                            <div className="rounded-2xl transition-transform duration-300 group-hover:scale-105">
+                                <Image src="/images/toothlogo.png" alt="Logo" width={600} height={600} className="w-26 h-26 object-cover object-center rounded-xl bg-white p-0.5" />
                             </div>
-                            <span className="text-xl font-black tracking-tight">
+                            <span className="text-2xl font-serif font-black tracking-tight">
                                 {name.split(' ')[0]} <span className="text-blue-500 font-medium">{name.split(' ').slice(1).join(' ')}</span>
                             </span>
                         </Link>
-                        <p className="text-gray-400 text-sm text-center md:text-start leading-relaxed font-medium">
+                        <p className="text-gray-400 text-sm text-center leading-relaxed font-medium">
                             {tagline}
                         </p>
                     </div>

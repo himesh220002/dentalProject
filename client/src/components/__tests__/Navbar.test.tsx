@@ -20,7 +20,7 @@ const mockUseClinic = vi.mocked(useClinic);
 
 describe('Navbar Component', () => {
     const mockClinicData = {
-        clinicName: 'Dr. Tooth Dental',
+        clinicName: 'ToothOp',
         language: 'en',
     };
 
@@ -42,7 +42,7 @@ describe('Navbar Component', () => {
 
         // Logo text is split across elements
         expect(screen.getByText((content, element) => {
-            return element?.tagName.toLowerCase() === 'span' && content.includes('Tooth Dental');
+            return element?.tagName.toLowerCase() === 'span' && content.includes('ToothOp');
         })).toBeInTheDocument();
 
         expect(screen.getByText('Home')).toBeInTheDocument();

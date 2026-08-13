@@ -17,8 +17,8 @@ export default function About() {
 
     const t = translations[language as keyof typeof translations];
 
-    const doctorName = clinicData?.doctorName || 'Dr. Tooth';
-    const clinicName = clinicData?.clinicName || 'Dr. Tooth Dental';
+    const doctorName = clinicData?.doctorName || 'ToothOp';
+    const clinicName = clinicData?.clinicName || 'ToothOp';
     const clinicExperience = formatExperience(clinicData?.clinicExperience || '10');
     const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
     const doctorExperience = chiefConsultant?.experience || '12 Years';

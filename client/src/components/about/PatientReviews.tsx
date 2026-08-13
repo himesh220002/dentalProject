@@ -10,7 +10,7 @@ export default function PatientReviews() {
     const t = translations[language as keyof typeof translations];
 
     const reviews = useMemo(() => {
-        const clinicName = clinicData?.clinicName || 'Dr. Tooth';
+        const clinicName = clinicData?.clinicName || 'ToothOp';
         const data = {
             en: [
                 {

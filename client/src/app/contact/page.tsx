@@ -189,7 +189,7 @@ function ContactContent() {
             }
 
             // 2. If guest or if logged-in list is empty, also check localStorage for local bookings
-            const storedIds = localStorage.getItem('drtooth_guest_bookings');
+            const storedIds = localStorage.getItem('toothop_guest_bookings');
             if (storedIds) {
                 const ids = JSON.parse(storedIds);
                 if (ids.length > 0) {
@@ -226,11 +226,11 @@ function ContactContent() {
             // Update local state
             setGuestAppointments(prev => prev.filter(a => a._id !== id));
             // Update localStorage
-            const storedIds = localStorage.getItem('drtooth_guest_bookings');
+            const storedIds = localStorage.getItem('toothop_guest_bookings');
             if (storedIds) {
                 const ids = JSON.parse(storedIds);
                 const newIds = ids.filter((sid: string) => sid !== id);
-                localStorage.setItem('drtooth_guest_bookings', JSON.stringify(newIds));
+                localStorage.setItem('toothop_guest_bookings', JSON.stringify(newIds));
             }
             setStatus({
                 type: 'info',
@@ -413,7 +413,7 @@ function ContactContent() {
             const selectedTreat = treatments.find(t => t.name === formData.requestedTreatment);
             const amountVal = selectedTreat ? parseFloat(selectedTreat.price.replace(/\D/g, '')) : 0;
 
-            const clinicName = clinicData?.clinicName || "Dr. Tooth Dental";
+            const clinicName = clinicData?.clinicName || "ToothOp";
             const enthusiasticMessage = `Hi *${clinicName}*! 👋 I just booked an appointment through your website. I’m looking forward to getting my smile checked! 🦷\n\n*Details:*\nTreatment: *${formData.requestedTreatment}*\n📅 *Date:* ${formData.requestedDate}\n⏰ *Time:* ${formData.requestedTime}\n👤 *Name:* ${formData.name}\n\nSee you soon!`;
 
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, {
@@ -432,10 +432,10 @@ function ContactContent() {
 
             // --- LOCAL STORAGE TRACKING FOR GUESTS ---
             if (isAutomatedSuccess && appointmentId) {
-                const existingBookings = JSON.parse(localStorage.getItem('drtooth_guest_bookings') || '[]');
+                const existingBookings = JSON.parse(localStorage.getItem('toothop_guest_bookings') || '[]');
                 if (!existingBookings.includes(appointmentId)) {
                     existingBookings.push(appointmentId);
-                    localStorage.setItem('drtooth_guest_bookings', JSON.stringify(existingBookings));
+                    localStorage.setItem('toothop_guest_bookings', JSON.stringify(existingBookings));
                 }
                 fetchAllRecentBookings(); // Refresh the list
             }
@@ -675,11 +675,10 @@ function ContactContent() {
                                 {isAutoBookingEnabled && <BookingSummary formData={formData} language={language} t={t} />}
 
                                 {status.message && (
-                                    <div className={`mb-6 p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${
-                                        status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 
-                                        status.type === 'info' ? 'bg-blue-50 text-blue-700 border border-blue-100' : 
-                                        'bg-rose-50 text-rose-700 border border-rose-100'
-                                    }`}>
+                                    <div className={`mb-6 p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
+                                            status.type === 'info' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
+                                                'bg-rose-50 text-rose-700 border border-rose-100'
+                                        }`}>
                                         {status.message}
                                     </div>
                                 )}
@@ -1151,7 +1150,7 @@ function ContactContent() {
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
                             className="rounded-2xl"
-                            title="Dr Tooth Dental Location"
+                            title="ToothOp Location"
                         ></iframe>
                     </div>
 
@@ -1162,7 +1161,7 @@ function ContactContent() {
                                 e.preventDefault();
                                 // Manual submission for general inquiry
                                 const clinicPhone = staffPhone.replace(/\D/g, '');
-                                const clinicName = clinicData?.clinicName || "Dr. Tooth Dental";
+                                const clinicName = clinicData?.clinicName || "ToothOp";
                                 const messageText = language === 'hi'
                                     ? `नमस्ते *${clinicName}*, मैं *${formData.name}* हूँ।\nमेरा संदेश:- \n\n${formData.message}\n\n*संपर्क:* ${formData.phone}`
                                     : `Hello *${clinicName}*, I'm *${formData.name}*.\nMy message:- \n\n${formData.message}\n\n*Contact:* ${formData.phone}`;

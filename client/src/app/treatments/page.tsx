@@ -168,7 +168,8 @@ export default function Treatments() {
                     return (
                         <div
                             key={item._id}
-                            className={`group relative bg-white rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all duration-500 border-2 ${theme.border} overflow-hidden hover:-translate-y-2`}
+                            onClick={() => router.push(`/treatments/${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`)}
+                            className={`group cursor-pointer relative bg-white rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all duration-500 border-2 ${theme.border} overflow-hidden hover:-translate-y-2`}
                         >
                             {/* Decorative Background Pattern */}
                             <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${theme.gradient} opacity-10 rounded-bl-full transform translate-x-10 -translate-y-10 group-hover:scale-110 transition-transform duration-700`}></div>
@@ -216,8 +217,11 @@ export default function Treatments() {
                                         <span className={`text-md sm:text-2xl font-black ${theme.icon}`}>{item.price}</span>
                                     </div>
                                     <button
-                                        onClick={() => handleBookNow(item.name)}
-                                        className={`py-4 px-8 rounded-2xl text-white font-bold text-sm shadow-lg ${theme.gradient.replace('to-', 'hover:to-')} ${theme.btn} transform active:scale-95 transition-all duration-300`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleBookNow(item.name);
+                                        }}
+                                        className={`py-3 px-4 sm:px-6 rounded-2xl text-white font-bold text-xs sm:text-sm shadow-lg ${theme.gradient.replace('to-', 'hover:to-')} ${theme.btn} transform active:scale-95 transition-all duration-300 relative cursor-crosshair z-20`}
                                     >
                                         {t.bookNow}
                                     </button>

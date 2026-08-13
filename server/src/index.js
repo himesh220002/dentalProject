@@ -118,7 +118,7 @@ app.use('/api/blogs', blogRoutes);
 
 app.get('/', (req, res) => {
     console.log('📬 [Server Status Check] Keep-alive / health ping received!');
-    res.send('Dr. Tooth Dental Server is Running [Build: 2026-02-28 18:15]');
+    res.send('ToothOp Server is Running [Build: 2026-02-28 18:15]');
 });
 
 const PORT = process.env.PORT || 5000;

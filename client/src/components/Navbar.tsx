@@ -15,7 +15,7 @@ export default function Navbar() {
     const { clinicData, language, toggleLanguage } = useClinic();
     const t = translations[language];
     const { user, logout, isLoading } = useAuth();
-    
+
     const [isOpen, setIsOpen] = useState(false);
     const [isLockModalOpen, setIsLockModalOpen] = useState(false);
     const [isUnlocked, setIsUnlocked] = useState(false);
@@ -134,9 +134,9 @@ export default function Navbar() {
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-3 group">
                             <div className="rounded-2xl transition-transform duration-300">
-                                <Image src="/images/toothlogo.png" alt="Logo" width={40} height={40} className="w-10 h-10 object-cover object-center rounded-xl" />
+                                <Image src="/images/toothlogo.png" alt="Logo" width={600} height={600} className="w-16 h-16 object-cover object-center rounded-xl border-white p-0.5" />
                             </div>
-                            <span className="text-2xl font-serif font-black text-gray-900 tracking-tight">
+                            <span className="text-4xl font-serif font-black text-gray-600 tracking-tight">
                                 {(() => {
                                     const name = clinicData?.clinicName || 'Tooth';
                                     const parts = name.split(' ');

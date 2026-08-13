@@ -17,7 +17,7 @@ const blogSchema = new mongoose.Schema({
     },
     author: {
         type: String,
-        default: 'Dr. Tooth Dental'
+        default: 'ToothOp'
     },
     status: {
         type: String,

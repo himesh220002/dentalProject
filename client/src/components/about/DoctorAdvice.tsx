@@ -43,7 +43,7 @@ const tipsData = {
 export default function DoctorAdvice() {
     const { clinicData, language } = useClinic();
     const t = translations[language as keyof typeof translations];
-    const doctorName = clinicData?.doctorName || 'Dr. Tooth';
+    const doctorName = clinicData?.doctorName || 'ToothOp';
     const tips = tipsData[language as keyof typeof tipsData] || tipsData.en;
 
     return (
