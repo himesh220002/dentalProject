@@ -331,7 +331,7 @@ export default function PatientsPage() {
                                                                                 <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-400 flex-shrink-0">
                                                                                     <FaMapMarkerAlt size={12} />
                                                                                 </div>
-                                                                                <span className="mt-1.5 leading-relaxed">{patient.address === '-__-' ? 'Permanent address not recorded' : patient.address}</span>
+                                                                                <span className="mt-1.5 leading-relaxed">{patient.address === '' ? 'Permanent address not recorded' : patient.address}</span>
                                                                             </div>
                                                                         </div>
                                                                     </div>

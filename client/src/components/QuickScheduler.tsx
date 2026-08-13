@@ -346,8 +346,8 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     ...newPatientData,
                     age: Number(newPatientData.age) || 0,
                     addedByAdmin: true,
-                    gender: '-__-',
-                    address: '-__-',
+                    gender: '',
+                    address: '',
                     medicalHistory: []
                 });
                 currentPatientId = patientRes.data._id;
@@ -462,8 +462,8 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                 contact: initialSearch,
                 email: initialEmail || '',
                 age: 0,
-                gender: '-__-',
-                address: '-__-',
+                gender: '',
+                address: '',
                 medicalHistory: []
             });
             const newPatient = res.data;

@@ -36,7 +36,7 @@ export default function Footer() {
                     <div className="space-y-6">
                         <Link href="/" className="flex flex-col items-center justify-center md:justify-start group">
                             <div className="rounded-2xl transition-transform duration-300 group-hover:scale-105">
-                                <Image src="/images/toothlogo.png" alt="Logo" width={600} height={600} className="w-26 h-26 object-cover object-center rounded-xl bg-white p-0.5" />
+                                <Image src="/images/brand-logo.png" alt="Logo" width={600} height={600} className="w-26 h-26 object-cover object-center rounded-xl bg-white p-0.5" />
                             </div>
                             <span className="text-2xl font-serif font-black tracking-tight">
                                 {name.split(' ')[0]} <span className="text-blue-500 font-medium">{name.split(' ').slice(1).join(' ')}</span>

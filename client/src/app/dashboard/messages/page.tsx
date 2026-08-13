@@ -169,7 +169,7 @@ export default function DashboardMessages() {
                 </div>
             </div>
 
-            <div className="bg-white border border-slate-200/80 rounded-[2rem] sm:rounded-[2.5rem] p-4 sm:p-6 shadow-sm">
+            <div className="bg-white border border-slate-200/80 rounded-[1rem] p-1 shadow-sm">
                 <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4">
                     <div className="relative flex-1">
                         <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />

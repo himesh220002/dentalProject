@@ -101,7 +101,7 @@ export default function CustomerInsightsModal({ isOpen, onClose, patients, appoi
 
         patients.forEach((p) => {
             // Skip patients without a valid address
-            if (!p.address || p.address === '-__-' || p.address.trim() === '') {
+            if (!p.address || p.address === '' || p.address.trim() === '') {
                 missing += 1;
                 return;
             }

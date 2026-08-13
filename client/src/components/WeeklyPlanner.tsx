@@ -147,7 +147,7 @@ export default function WeeklyPlanner() {
     );
 
     return (
-        <div className="bg-white p-4 sm:p-6 md:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-gray-100">
+        <div className="bg-white p-4 sm:p-6 rounded-[1rem] shadow-sm border border-gray-100">
             {/* Header with Collections */}
             <div className="flex flex-col xl:flex-row justify-between items-start lg:items-center mb-8 gap-6">
                 <div className="flex justify-center items-center w-full lg:w-auto">
@@ -197,7 +197,7 @@ export default function WeeklyPlanner() {
                     </div>
                 </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-2 overflow-x-hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2 overflow-x-hidden">
                 {weekDays.map((day) => {
                     const dayAppointments = getAppointmentsForDay(day.date);
                     const isExpanded = expandedDate === day.date.toISOString();
@@ -298,15 +298,15 @@ export default function WeeklyPlanner() {
                                                         </div>
                                                     </div>
                                                     <div className="flex flex-col items-center justify-between gap-2 bg-blue-50 shadow-inner rounded-lg p-2 min-w-0 w-full">
-                                                    <Link
-                                                        href={`/dashboard/schedules?highlight=${app._id}`}
-                                                        className={`text-xs font-black truncate hover:underline transition-all max-w-full ${operating ? 'text-blue-600' : done ? 'text-gray-500' : 'text-gray-800 hover:text-blue-600'}`}
-                                                    >
-                                                        {app.patientId?.name || 'Unknown'}
-                                                    </Link>
-                                                    <div className={`text-[9px] max-w-full font-black uppercase tracking-wider truncate ${operating ? 'text-indigo-500' : 'text-slate-500'}`}>
-                                                        {treatmentName}
-                                                    </div>
+                                                        <Link
+                                                            href={`/dashboard/schedules?highlight=${app._id}`}
+                                                            className={`text-xs font-black truncate hover:underline transition-all max-w-full ${operating ? 'text-blue-600' : done ? 'text-gray-500' : 'text-gray-800 hover:text-blue-600'}`}
+                                                        >
+                                                            {app.patientId?.name || 'Unknown'}
+                                                        </Link>
+                                                        <div className={`text-[9px] max-w-full font-black uppercase tracking-wider truncate ${operating ? 'text-indigo-500' : 'text-slate-500'}`}>
+                                                            {treatmentName}
+                                                        </div>
                                                     </div>
                                                     <div className="mt-1 flex flex-col items-center justify-between gap-2">
                                                         <span className={`text-[9px] font-black uppercase tracking-widest ${operating ? 'text-indigo-100' : 'text-slate-500'}`}>

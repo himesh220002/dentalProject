@@ -134,7 +134,7 @@ export default function Navbar() {
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-3 group">
                             <div className="rounded-2xl transition-transform duration-300">
-                                <Image src="/images/toothlogo.png" alt="Logo" width={600} height={600} className="w-16 h-16 object-cover object-center rounded-xl border-white p-0.5" />
+                                <Image src="/images/brand-logo.png" alt="Logo" width={600} height={600} className="w-16 h-16 object-cover object-center rounded-xl border-white p-0.5" />
                             </div>
                             <span className="text-4xl font-serif font-black text-gray-600 tracking-tight">
                                 {(() => {

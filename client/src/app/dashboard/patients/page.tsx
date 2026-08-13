@@ -129,7 +129,7 @@ export default function DashboardPatients() {
                     </div>
                 </div>
 
-                <div className="bg-white border border-slate-200/80 rounded-[2rem] sm:rounded-[2.5rem] p-4 sm:p-6 shadow-sm">
+                <div className="bg-white border border-slate-200/80 rounded-[1rem] p-1 shadow-sm">
                     <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
                         <div className="w-full lg:w-auto">
                             <AddPatientForm onPatientAdded={fetchPatients} />
@@ -172,15 +172,15 @@ export default function DashboardPatients() {
                     {/* Mobile cards */}
                     <div className="md:hidden space-y-3">
                         {sorted.map((p) => {
-                            const area = (p.address || '').split(/[,\s]/).filter(Boolean)[0] || '—';
+                            const area = (p.address || '').split(/[,\s]/).filter(Boolean)[0] || '';
                             const next = p.nextAppointment?.date
                                 ? `${new Date(p.nextAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} • ${p.nextAppointment.time}`
-                                : '—';
-                            const nextReason = p.nextAppointment?.reason ? parseAppointmentReason(p.nextAppointment.reason).treatmentName : '—';
+                                : '';
+                            const nextReason = p.nextAppointment?.reason ? parseAppointmentReason(p.nextAppointment.reason).treatmentName : '';
                             const last = p.lastTreatment?.date
                                 ? new Date(p.lastTreatment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
-                                : '—';
-                            const lastReason = p.lastTreatment?.treatmentName ? parseAppointmentReason(p.lastTreatment.treatmentName).treatmentName : '—';
+                                : '';
+                            const lastReason = p.lastTreatment?.treatmentName ? parseAppointmentReason(p.lastTreatment.treatmentName).treatmentName : '';
 
                             return (
                                 <div key={p._id} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
@@ -190,7 +190,7 @@ export default function DashboardPatients() {
                                             <div className="text-[11px] font-black text-slate-500 uppercase tracking-widest mt-1 flex flex-wrap items-center gap-2">
                                                 <span>{p.age}Y</span>
                                                 <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                                                <span>{p.gender && p.gender !== '-__-' ? p.gender : 'N/A'}</span>
+                                                <span>{p.gender && p.gender !== '' ? p.gender : 'N/A'}</span>
                                                 <span className="w-1 h-1 rounded-full bg-slate-300"></span>
                                                 <span className="inline-flex items-center gap-1.5"><FaMapMarkerAlt className="text-[10px]" /> {area}</span>
                                             </div>
@@ -246,49 +246,53 @@ export default function DashboardPatients() {
                     <div className="hidden md:block bg-white border border-slate-200 rounded-[1.5rem] overflow-hidden shadow-sm">
                         <div className="overflow-x-auto">
                             <table className="min-w-[1100px] w-full">
-                                <thead className="bg-slate-50">
+                                <thead className="bg-blue-200">
                                     <tr>
-                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Name</th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Age</th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Gender</th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Phone</th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Area</th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Last Visit</th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest">Next Appt</th>
-                                        <th className="px-3 py-3 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</th>
+                                        <th className="px-3 py-4 text-center text-[10px] font-black text-slate-700 uppercase tracking-widest">Name</th>
+                                        <th className="px-3 py-4 text-center text-[10px] font-black text-slate-700 uppercase tracking-widest">Age</th>
+                                        <th className="px-3 py-4 text-center text-[10px] font-black text-slate-700 uppercase tracking-widest">Gender</th>
+                                        <th className="px-3 py-4 text-center text-[10px] font-black text-slate-700 uppercase tracking-widest">Phone</th>
+                                        <th className="px-3 py-4 text-center text-[10px] font-black text-slate-700 uppercase tracking-widest">Area</th>
+                                        <th className="px-3 py-4 text-center text-[10px] font-black text-slate-700 uppercase tracking-widest">Last Visit</th>
+                                        <th className="px-3 py-4 text-center text-[10px] font-black text-slate-700 uppercase tracking-widest">Next Appt</th>
+                                        <th className="px-3 py-4 text-center text-[10px] font-black text-slate-700 uppercase tracking-widest">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
                                     {sorted.map((p) => {
-                                        const area = (p.address || '').split(/[,\s]/).filter(Boolean)[0] || '—';
+                                        const area = (p.address || '').split(/[,\s]/).filter(Boolean)[0] || '';
                                         const lastDate = p.lastTreatment?.date ? new Date(p.lastTreatment.date) : null;
                                         const nextDate = p.nextAppointment?.date ? new Date(p.nextAppointment.date) : null;
-                                        const lastReason = p.lastTreatment?.treatmentName ? parseAppointmentReason(p.lastTreatment.treatmentName).treatmentName : '—';
-                                        const nextReason = p.nextAppointment?.reason ? parseAppointmentReason(p.nextAppointment.reason).treatmentName : '—';
+                                        const lastReason = p.lastTreatment?.treatmentName ? parseAppointmentReason(p.lastTreatment.treatmentName).treatmentName : '';
+                                        const nextReason = p.nextAppointment?.reason ? parseAppointmentReason(p.nextAppointment.reason).treatmentName : '';
 
                                         return (
-                                            <tr key={p._id} className="hover:bg-blue-50/30 transition">
+                                            <tr key={p._id} className="hover:bg-blue-100/30 transition">
                                                 <td className="px-3 py-3">
-                                                    <div className="font-black text-slate-900">{p.name}</div>
-                                                    <div className="text-[11px] font-semibold text-slate-500">{p.email || '—'}</div>
+                                                    <div className="text-center text-slate-900">{p.name}</div>
+                                                    <div className="text-[11px] text-center text-slate-500">{p.email || ''}</div>
                                                 </td>
-                                                <td className="px-3 py-3 text-sm font-black text-slate-900">{p.age ?? '—'}</td>
-                                                <td className="px-3 py-3 text-sm font-black text-slate-900">{p.gender && p.gender !== '-__-' ? p.gender : 'N/A'}</td>
-                                                <td className="px-3 py-3 text-sm font-black text-slate-900 tracking-wide">{p.contact}</td>
-                                                <td className="px-3 py-3">
+                                                <td className="px-3 py-3 text-center text-sm text-slate-900">{p.age ?? ''}</td>
+                                                <td className="px-3 py-3 text-center text-sm text-slate-900">{p.gender && p.gender !== '' ? p.gender : 'N/A'}</td>
+                                                <td className="px-3 py-3 text-center text-sm text-slate-900 tracking-wide">{p.contact}</td>
+                                                <td className="px-3 py-3 text-center">
                                                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-black text-slate-700">
                                                         <FaMapMarkerAlt className="text-slate-400" /> {area}
                                                     </span>
                                                 </td>
-                                                <td className="px-3 py-3">
-                                                    <div className="text-sm font-black text-slate-900">{lastDate ? lastDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '—'}</div>
-                                                    <div className="text-[11px] text-wrap font-semibold text-slate-600 max-w-[140px] truncate">{lastReason}</div>
-                                                </td>
-                                                <td className="px-3 py-3">
-                                                    <div className="text-sm font-black text-slate-900">
-                                                        {nextDate ? `${nextDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} • ${p.nextAppointment?.time}` : '—'}
+                                                <td className="px-3 py-3 text-center">
+                                                    <div className='flex flex-col items-center'>
+                                                        <div className="text-sm text-slate-900">{lastDate ? lastDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : ''}</div>
+                                                        <div className="text-[11px] text-wrap text-slate-600 max-w-[140px] truncate">{lastReason}</div>
                                                     </div>
-                                                    <div className="text-[11px] text-wrap font-semibold text-slate-600 max-w-[140px] truncate">{nextReason}</div>
+                                                </td>
+                                                <td className="px-3 py-3 text-center">
+                                                    <div className='flex flex-col items-center'>
+                                                        <div className="text-sm text-slate-900">
+                                                            {nextDate ? `${nextDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} • ${p.nextAppointment?.time}` : ''}
+                                                        </div>
+                                                        <div className="text-[11px] text-wrap font-semibold text-slate-600 max-w-[140px] truncate">{nextReason}</div>
+                                                    </div>
                                                 </td>
                                                 <td className="px-3 py-3 text-center">
                                                     <div className="inline-flex items-center gap-2">

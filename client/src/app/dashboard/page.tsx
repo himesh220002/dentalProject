@@ -202,7 +202,7 @@ export default function DashboardOverview() {
     ];
 
     const renderStatCards = () => (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3 sm:gap-6">
             {statCards.map((stat, idx) => {
                 const Icon = stat.icon;
                 let href = '#';
@@ -224,7 +224,7 @@ export default function DashboardOverview() {
                         className="block group cursor-pointer"
                         onClick={handleClick}
                     >
-                        <div className="bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition h-full">
+                        <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition h-full">
                             <div className="flex items-center justify-between mb-4">
                                 <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition`}>
                                     <Icon className="text-2xl" />
@@ -317,7 +317,7 @@ export default function DashboardOverview() {
 
             <WeeklyPlanner />
 
-            <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 mt-6 sm:mt-8">
+            <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 mt-6 sm:mt-8">
                 {/* Recent Activity */}
                 <div className="bg-white p-4 sm:p-4 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
                     <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2">

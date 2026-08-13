@@ -147,8 +147,8 @@ exports.updateProfile = async (req, res) => {
                 name: name || user.name,
                 email: user.email,
                 age: age || 0,
-                gender: gender || '-__-',
-                contact: contact || '-__-',
+                gender: gender || '',
+                contact: contact || '',
                 addedByAdmin: false,
                 userId: user._id
             });
@@ -331,7 +331,7 @@ exports.register = async (req, res) => {
         await user.save();
 
         const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
-        
+
         res.status(201).json({ token, user: { _id: user._id, email: user.email, name: user.name, role: user.role, patientId: user.patientId } });
     } catch (error) {
         console.error('Error in register:', error);
@@ -360,8 +360,8 @@ exports.login = async (req, res) => {
             isTicked: false
         });
 
-        res.status(200).json({ 
-            token, 
+        res.status(200).json({
+            token,
             user: { _id: user._id, email: user.email, name: user.name, role: user.role, patientId: user.patientId },
             hasUpcomingAppointment: !!upcomingAppointment
         });

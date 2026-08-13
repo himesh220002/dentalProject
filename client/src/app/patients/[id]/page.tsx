@@ -85,8 +85,8 @@ export default function PatientProfile() {
         try {
             const dataToSave = {
                 ...editedPatient,
-                gender: editedPatient.gender || '-__-',
-                address: editedPatient.address?.trim() || '-__-'
+                gender: editedPatient.gender || '',
+                address: editedPatient.address?.trim() || ''
             };
             const res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/patients/${id}`, dataToSave);
             setPatient(res.data);
@@ -279,11 +279,11 @@ export default function PatientProfile() {
                                                 <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-none mb-2">Gender</p>
                                                 {isEditing ? (
                                                     <select
-                                                        value={editedPatient?.gender || '-__-'}
+                                                        value={editedPatient?.gender || ''}
                                                         onChange={(e) => setEditedPatient(prev => prev ? { ...prev, gender: e.target.value } : null)}
                                                         className="text-lg font-black text-gray-800 bg-white border-2 border-gray-100 rounded-xl px-3 py-1 focus:border-blue-500 focus:outline-none w-full uppercase"
                                                     >
-                                                        <option value="-__-">-__-</option>
+                                                        <option value="N/A">-</option>
                                                         <option value="Male">MALE</option>
                                                         <option value="Female">FEMALE</option>
                                                     </select>
@@ -359,7 +359,7 @@ export default function PatientProfile() {
                                                         className="text-base font-bold text-gray-700 leading-relaxed bg-white border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-blue-500 focus:outline-none w-full"
                                                     />
                                                 ) : (
-                                                    <p className="text-sm sm:text-base font-bold text-gray-700 leading-relaxed italic pr-2">{patient.address === '-__-' ? 'Permanent address not on file' : patient.address}</p>
+                                                    <p className="text-sm sm:text-base font-bold text-gray-700 leading-relaxed italic pr-2">{patient.address === '' ? 'Permanent address not on file' : patient.address}</p>
                                                 )}
                                             </div>
                                         </div>

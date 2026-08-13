@@ -26,7 +26,7 @@ exports.submitContact = async (req, res) => {
         let existingPatient = await Patient.findOne({ contact: phone });
 
         // If phone not found, check by email if provided
-        if (!existingPatient && email && email !== '-__-') {
+        if (!existingPatient && email && email !== '') {
             existingPatient = await Patient.findOne({ email: email.toLowerCase() });
         }
 
@@ -36,10 +36,10 @@ exports.submitContact = async (req, res) => {
             const newPatient = new Patient({
                 name,
                 contact: phone,
-                email: email || '-__-',
+                email: email || '',
                 age: 0,
-                gender: '-__-',
-                address: '-__-',
+                gender: '',
+                address: '',
                 medicalHistory: [],
                 addedByAdmin: false
             });

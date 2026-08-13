@@ -7,7 +7,7 @@ import { FaUserPlus, FaTimes, FaCheck, FaInfoCircle, FaUser, FaCalendarAlt, FaVe
 const AddPatientForm = ({ onPatientAdded }: { onPatientAdded: () => void }) => {
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
-    const [gender, setGender] = useState('-__-');
+    const [gender, setGender] = useState('');
     const [contact, setContact] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
@@ -25,7 +25,7 @@ const AddPatientForm = ({ onPatientAdded }: { onPatientAdded: () => void }) => {
                 gender,
                 contact,
                 email: email.trim().toLowerCase() || undefined,
-                address: address.trim() || '-__-',
+                address: address.trim() || '',
                 medicalHistory: medicalHistory.split(',').map(item => item.trim()),
                 addedByAdmin: true
             });
@@ -33,7 +33,7 @@ const AddPatientForm = ({ onPatientAdded }: { onPatientAdded: () => void }) => {
 
             setName('');
             setAge('');
-            setGender('-__-');
+            setGender('');
             setContact('');
             setEmail('');
             setAddress('');

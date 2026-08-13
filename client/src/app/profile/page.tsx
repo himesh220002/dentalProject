@@ -82,9 +82,9 @@ export default function ProfilePage() {
                 setFormData({
                     name: res.data.patient.name || '',
                     age: res.data.patient.age || 0,
-                    gender: res.data.patient.gender || '-__-',
+                    gender: res.data.patient.gender || '',
                     address: res.data.patient.address || '',
-                    contact: res.data.patient.contact === '-__-' ? '' : (res.data.patient.contact || ''),
+                    contact: res.data.patient.contact === '' ? '' : (res.data.patient.contact || ''),
                     alternateContact: res.data.patient.alternateContact || ''
                 });
 
@@ -141,7 +141,7 @@ export default function ProfilePage() {
     const [formData, setFormData] = useState({
         name: '',
         age: 0,
-        gender: '-__-',
+        gender: '',
         address: '',
         contact: '',
         alternateContact: ''
@@ -162,9 +162,9 @@ export default function ProfilePage() {
                     setFormData({
                         name: userData.patientId.name || '',
                         age: userData.patientId.age || 0,
-                        gender: userData.patientId.gender || '-__-',
+                        gender: userData.patientId.gender || '',
                         address: userData.patientId.address || '',
-                        contact: userData.patientId.contact === '-__-' ? '' : (userData.patientId.contact || ''),
+                        contact: userData.patientId.contact === '' ? '' : (userData.patientId.contact || ''),
                         alternateContact: userData.patientId.alternateContact || ''
                     });
                 }
@@ -252,9 +252,9 @@ export default function ProfilePage() {
                 setFormData({
                     name: res.data.patient.name || '',
                     age: res.data.patient.age || 0,
-                    gender: res.data.patient.gender || '-__-',
+                    gender: res.data.patient.gender || '',
                     address: res.data.patient.address || '',
-                    contact: res.data.patient.contact === '-__-' ? '' : (res.data.patient.contact || ''),
+                    contact: res.data.patient.contact === '' ? '' : (res.data.patient.contact || ''),
                     alternateContact: res.data.patient.alternateContact || ''
                 });
             }
@@ -437,7 +437,7 @@ export default function ProfilePage() {
                                             className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white px-4 py-3 rounded-xl font-bold transition-all outline-none appearance-none cursor-pointer"
                                             required
                                         >
-                                            <option value="-__-">Select Gender</option>
+                                            <option value="-">Select Gender</option>
                                             <option value="Male">Male</option>
                                             <option value="Female">Female</option>
                                             <option value="Other">Other</option>
