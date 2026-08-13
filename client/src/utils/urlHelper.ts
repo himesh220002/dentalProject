@@ -31,7 +31,7 @@ export const ensureAbsoluteUrl = (url: string | undefined): string => {
  * Avoids double suffixes like '11++'.
  */
 export const formatExperience = (exp: string | undefined): string => {
-    if (!exp) return '10+';
+    if (!exp) return '10';
 
     // Extract numbers only to prevent symbols like '++'
     const match = exp.match(/\d+/);
@@ -41,5 +41,5 @@ export const formatExperience = (exp: string | undefined): string => {
 
     // Fallback if no digits found, but ensure it's not empty
     const trimmed = exp.trim();
-    return trimmed ? (trimmed.endsWith('+') ? trimmed : `${trimmed}+`) : '10+';
+    return trimmed ? (trimmed.endsWith('+') ? trimmed : `${trimmed}`) : '10';
 };

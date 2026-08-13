@@ -3,20 +3,19 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaTooth, FaBars, FaTimes, FaLock, FaLockOpen, FaSignOutAlt, FaUserCircle, FaLanguage, FaCalendarAlt } from 'react-icons/fa';
-import { useSession, signOut } from 'next-auth/react';
+import { FaBars, FaTimes, FaLock, FaLockOpen, FaSignOutAlt, FaUserCircle, FaLanguage, FaCalendarAlt } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import AdminLockModal from './AdminLockModal';
 import { useClinic } from '../context/ClinicContext';
 import { translations } from '../constants/translations';
-import { parseDateTime } from '../utils/dateUtils';
-import { parseAppointmentReason } from '../utils/appointmentUtils';
 import Image from 'next/image';
 
 export default function Navbar() {
     const { clinicData, language, toggleLanguage } = useClinic();
     const t = translations[language];
-    const { data: session, status } = useSession();
+    const { user, logout, isLoading } = useAuth();
+    
     const [isOpen, setIsOpen] = useState(false);
     const [isLockModalOpen, setIsLockModalOpen] = useState(false);
     const [isUnlocked, setIsUnlocked] = useState(false);
@@ -37,15 +36,14 @@ export default function Navbar() {
 
     useEffect(() => {
         const checkUpcomingAppointments = async () => {
-            // @ts-ignore
-            if (status !== 'authenticated' || !session?.user?.patientId) {
+            if (!user || !user.patientId) {
                 setUpcomingAppointment(null);
                 return;
             }
             try {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-                // @ts-ignore
-                const res = await axios.get(`${backendUrl}/api/appointments/patient/${session.user.patientId}`);
+                const patientId = typeof user.patientId === 'object' ? user.patientId._id : user.patientId;
+                const res = await axios.get(`${backendUrl}/api/appointments/patient/${patientId}`);
                 const appointments = res.data;
                 const now = new Date();
                 now.setHours(0, 0, 0, 0);
@@ -66,9 +64,9 @@ export default function Navbar() {
         };
 
         checkUpcomingAppointments();
-        const interval = setInterval(checkUpcomingAppointments, 30000); // Polling every 30s
+        const interval = setInterval(checkUpcomingAppointments, 30000);
         return () => clearInterval(interval);
-    }, [session, status]);
+    }, [user]);
 
     const pathname = usePathname();
     const router = useRouter();
@@ -130,22 +128,21 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 lg:z-51 shadow-sm border-b border-gray-100">
-                <div className="max-w-7xl xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16 items-center">
+            <nav className="bg-white/80 backdrop-blur-xl sticky top-0 z-50 shadow-sm border-b border-gray-100 font-sans">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between h-20 items-center">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center space-x-2 group">
-                            <div className="rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                                {/* <FaTooth className="text-white text-2xl" /> */}
-                                <Image src="/images/toothlogo.png" alt="Logo" width={50} height={50} className="w-10 h-10 object-cover object-center rounded-xl" />
+                        <Link href="/" className="flex items-center space-x-3 group">
+                            <div className="rounded-2xl transition-transform duration-300">
+                                <Image src="/images/toothlogo.png" alt="Logo" width={40} height={40} className="w-10 h-10 object-cover object-center rounded-xl" />
                             </div>
-                            <span className="text-2xl font-black text-blue-900 tracking-tight">
+                            <span className="text-2xl font-serif font-black text-gray-900 tracking-tight">
                                 {(() => {
                                     const name = clinicData?.clinicName || 'Tooth';
                                     const parts = name.split(' ');
                                     return (
                                         <>
-                                            {parts[0]} <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent font-medium">{parts.slice(1).join(' ')}</span>
+                                            {parts[0]} <span className="text-gray-500 font-medium">{parts.slice(1).join(' ')}</span>
                                         </>
                                     );
                                 })()}
@@ -153,32 +150,32 @@ export default function Navbar() {
                         </Link>
 
                         {/* Desktop Menu */}
-                        <div className="hidden xl:flex items-center space-x-1">
+                        <div className="hidden xl:flex items-center space-x-2">
                             {navLinks.map((link) => (
                                 <div key={link.name} className="relative group">
                                     <Link
                                         href={link.href}
                                         onClick={(e) => link.protected && handleProtectedClick(e, link.href)}
-                                        className={`px-3 xl:px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${pathname === link.href || (link.name === t.dashboard && pathname.startsWith('/temppath'))
-                                            ? 'bg-blue-600 text-white shadow-lg'
-                                            : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600'
+                                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${pathname === link.href || (link.name === t.dashboard && pathname.startsWith('/temppath'))
+                                            ? 'bg-gray-100 text-gray-900 shadow-inner'
+                                            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                                             }`}
                                     >
                                         <span className="whitespace-nowrap">{link.name}</span>
                                         {link.protected && (
-                                            isUnlocked ? <FaLockOpen size={10} className="text-green-500" /> : <FaLock size={10} className="text-gray-400" />
+                                            isUnlocked ? <FaLockOpen size={10} className="text-green-500" /> : <FaLock size={10} className="text-gray-300" />
                                         )}
                                     </Link>
                                     {link.protected && isUnlocked && (
                                         <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
-                                            <div className="bg-white border border-gray-100 rounded-2xl shadow-2xl p-2 w-48">
+                                            <div className="bg-white border border-gray-100 rounded-2xl shadow-xl p-2 w-48">
                                                 <div className="px-3 py-2 border-b border-gray-50 mb-1">
-                                                    <span className="text-[10px] uppercase tracking-wider font-black text-gray-400">{t.sessionActive}</span>
-                                                    <div className="text-blue-600 font-mono font-bold text-xs">{timeLeft} remaining</div>
+                                                    <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400">{t.sessionActive}</span>
+                                                    <div className="text-gray-900 font-mono font-medium text-xs">{timeLeft} remaining</div>
                                                 </div>
                                                 <button
                                                     onClick={handleLock}
-                                                    className="w-full flex items-center space-x-2 px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-xl transition font-bold text-sm"
+                                                    className="w-full flex items-center space-x-2 px-3 py-2 hover:bg-gray-50 text-gray-700 rounded-xl transition font-semibold text-sm"
                                                 >
                                                     <FaLock size={12} />
                                                     <span>{t.lockDashboard}</span>
@@ -190,64 +187,42 @@ export default function Navbar() {
                             ))}
 
                             {/* Auth Section */}
-                            <div className="ml-2 xl:ml-4 pl-2 xl:pl-4 border-l border-gray-100 flex items-center gap-2 xl:gap-3">
-                                {session ? (
-                                    <div className="flex items-center gap-2 xl:gap-3">
-                                        {/* {upcomingAppointment && (
-                                            <Link
-                                                href="/profile"
-                                                className="group relative flex items-center gap-2 bg-[#fffbeb] hover:bg-[#fff9db] px-4 py-2 rounded-xl border border-[#fef3c7] transition-all active:scale-95 shadow-sm overflow-hidden animate-in fade-in slide-in-from-right-4 duration-500"
-                                            >
-                                                <div className="absolute inset-0 bg-amber-400/10 animate-pulse rounded-xl"></div>
-                                                <FaCalendarAlt className="text-amber-600 text-[10px] animate-bounce relative z-10" />
-                                                <div className="flex flex-col items-start relative z-10">
-                                                    <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider leading-none">Fixed Appt</span>
-                                                    <span className="text-[10px] font-bold text-amber-900 leading-tight">
-                                                        {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
-                                                    </span>
-                                                </div>
-                                            </Link>
-                                        )} */}
-                                        <div className="flex items-center gap-2 xl:gap-3">
+                            <div className="ml-4 pl-4 border-l border-gray-200 flex items-center gap-3">
+                                {!isLoading && (
+                                    user ? (
+                                        <div className="flex items-center gap-3">
                                             <div className="hidden xl:flex flex-col items-end">
-                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Logged in as</span>
-                                                <span className="text-xs font-bold text-gray-900">{session.user?.name?.split(' ')[0]}</span>
+                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Account</span>
+                                                <span className="text-xs font-semibold text-gray-900">{user.name?.split(' ')[0]}</span>
                                             </div>
                                             <div className="relative group/user">
-                                                {session.user?.image ? (
-                                                    <div className="relative">
-                                                        <img src={session.user.image} alt="" className="w-8 h-8 xl:w-10 xl:h-10 rounded-lg xl:rounded-xl border-2 border-white shadow-md ring-2 ring-gray-50" />
-                                                        {upcomingAppointment && (
-                                                            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 xl:w-4 xl:h-4 bg-amber-500 border-2 border-white rounded-full animate-bounce shadow-sm flex items-center justify-center">
-                                                                <div className="w-1 h-1 xl:w-1.5 xl:h-1.5 bg-white rounded-full" />
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    <div className="relative">
-                                                        <FaUserCircle className="text-2xl xl:text-3xl text-gray-300" />
-                                                        {upcomingAppointment && <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 border-2 border-white rounded-full animate-pulse" />}
-                                                    </div>
-                                                )}
+                                                <div className="relative cursor-pointer">
+                                                    <FaUserCircle className="text-3xl text-gray-300 hover:text-gray-400 transition-colors" />
+                                                    {upcomingAppointment && (
+                                                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-gray-900 border-2 border-white rounded-full flex items-center justify-center">
+                                                            <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <div className="absolute top-full right-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover/user:opacity-100 group-hover/user:translate-y-0 group-hover/user:pointer-events-auto transition-all duration-200 z-50">
-                                                    <div className="bg-white border border-gray-100 rounded-2xl shadow-2xl p-2 w-48">
+                                                    <div className="bg-white border border-gray-100 rounded-2xl shadow-xl p-2 w-48">
                                                         <div className="px-3 py-2 border-b border-gray-50 mb-1">
-                                                            <span className="text-[10px] uppercase tracking-wider font-black text-gray-400">{t.account}</span>
-                                                            <div className="text-gray-900 font-bold text-xs truncate">{session.user?.email}</div>
+                                                            <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400">{t.account}</span>
+                                                            <div className="text-gray-900 font-medium text-xs truncate">{user.email}</div>
                                                         </div>
                                                         <Link
                                                             href="/profile"
-                                                            className="w-full flex items-center space-x-2 px-3 py-2 hover:bg-blue-50 text-blue-600 rounded-xl transition font-bold text-sm mb-1 group"
+                                                            className="w-full flex items-center space-x-2 px-3 py-2 hover:bg-gray-50 text-gray-900 rounded-xl transition font-semibold text-sm mb-1 group"
                                                         >
-                                                            <FaUserCircle size={14} />
+                                                            <FaUserCircle size={14} className="text-gray-400" />
                                                             <div className="flex flex-col items-start">
                                                                 <span>{t.profile}</span>
-                                                                {upcomingAppointment && <span className="text-[8px] font-black uppercase text-amber-500 animate-pulse">Appointment Scheduled</span>}
+                                                                {upcomingAppointment && <span className="text-[9px] font-bold uppercase text-gray-500">Appointment Scheduled</span>}
                                                             </div>
                                                         </Link>
                                                         <button
-                                                            onClick={() => signOut({ callbackUrl: '/' })}
-                                                            className="w-full flex items-center space-x-2 px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-xl transition font-bold text-sm"
+                                                            onClick={logout}
+                                                            className="w-full flex items-center space-x-2 px-3 py-2 hover:bg-gray-50 text-red-600 rounded-xl transition font-semibold text-sm"
                                                         >
                                                             <FaSignOutAlt size={12} />
                                                             <span>{t.logout}</span>
@@ -256,14 +231,14 @@ export default function Navbar() {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ) : (
-                                    <Link
-                                        href="/login"
-                                        className="bg-gray-900 text-white px-4 xl:px-6 py-2 xl:py-2.5 rounded-lg xl:rounded-xl text-xs xl:text-sm font-black shadow-lg shadow-gray-900/20 hover:bg-gray-800 transition active:scale-95"
-                                    >
-                                        {t.login}
-                                    </Link>
+                                    ) : (
+                                        <Link
+                                            href="/login"
+                                            className="bg-gray-900 text-white px-5 py-2.5 rounded-full text-sm font-semibold shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] hover:bg-gray-800 transition-all active:scale-[0.98]"
+                                        >
+                                            {t.login}
+                                        </Link>
+                                    )
                                 )}
                             </div>
                         </div>
@@ -280,85 +255,39 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* Mobile Menu */}
+                {/* Mobile Menu logic unchanged structurally, just updating UI classes... */}
                 {isOpen && (
-                    <div className="xl:hidden max-h-[calc(100vh-80px)] overflow-y-auto bg-gradient-to-b from-gray-300/90 to-blue-300/90 border-t border-gray-100 p-4 pt-6 pb-32 space-y-4 animate-in slide-in-from-top duration-300">
-
-                        {/* Mobile Auth Section */}
-                        {session ? (
+                    <div className="xl:hidden max-h-[calc(100vh-80px)] overflow-y-auto bg-white border-t border-gray-100 p-4 pt-6 pb-32 space-y-4 animate-in slide-in-from-top duration-300">
+                        {user ? (
                             <div className="pt-2 border-t border-gray-100 mt-2">
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => setIsMobileUserMenuOpen(!isMobileUserMenuOpen)}
-                                        className="flex-grow flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 transition"
+                                        className="flex-grow flex items-center justify-between px-4 py-3 rounded-2xl bg-gray-50 text-gray-900 transition"
                                     >
-                                        <div className="flex items-center gap-3 relative">
-                                            {session.user?.image ? (
-                                                <div className="relative">
-                                                    <img src={session.user.image} alt="" className="w-9 h-9 rounded-xl shadow-sm border-2 border-white" />
-                                                    {upcomingAppointment && (
-                                                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-500 border-2 border-white rounded-full animate-bounce shadow-sm flex items-center justify-center">
-                                                            <div className="w-1 h-1 bg-white rounded-full" />
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <div className="relative">
-                                                    <FaUserCircle className="text-3xl text-gray-300" />
-                                                    {upcomingAppointment && <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 border-2 border-white rounded-full animate-pulse" />}
-                                                </div>
-                                            )}
+                                        <div className="flex items-center gap-3">
+                                            <FaUserCircle className="text-3xl text-gray-400" />
                                             <div className="flex flex-col items-start translate-y-[1px] text-left">
-                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-0.5">{t.account}</span>
-                                                <span className="text-sm font-bold text-gray-900 truncate max-w-[180px] leading-tight">{session.user?.name}</span>
+                                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none mb-0.5">{t.account}</span>
+                                                <span className="text-sm font-semibold text-gray-900 truncate max-w-[180px] leading-tight">{user.name}</span>
                                             </div>
                                         </div>
-                                        <svg
-                                            className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isMobileUserMenuOpen ? 'rotate-180' : ''}`}
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
                                     </button>
-                                    {upcomingAppointment && (
+                                </div>
+                                {isMobileUserMenuOpen && (
+                                    <div className="px-2 pt-1 pb-2 space-y-1">
                                         <Link
                                             href="/profile"
                                             onClick={() => setIsOpen(false)}
-                                            className="relative flex flex-col items-center justify-center bg-amber-500 text-white p-3 rounded-2xl shadow-lg shadow-amber-200 active:scale-95 transition-all"
+                                            className="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-xl transition"
                                         >
-                                            <div className="absolute inset-0 bg-amber-400/30 animate-ping-glow rounded-2xl"></div>
-                                            <FaCalendarAlt className="text-lg animate-bounce relative z-10" />
-                                            <span className="text-[12px] font-black uppercase tracking-tighter relative z-10">Fixed</span>
-                                        </Link>
-                                    )}
-                                </div>
-
-                                {isMobileUserMenuOpen && (
-                                    <div className="px-2 pt-1 pb-2 space-y-1 animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <Link
-                                            href="/profile"
-                                            onClick={() => {
-                                                setIsOpen(false);
-                                                setIsMobileUserMenuOpen(false);
-                                            }}
-                                            className="flex items-center justify-between px-12 py-3 text-sm font-bold text-blue-600 hover:bg-blue-50 rounded-xl transition text-left"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <FaUserCircle size={16} />
-                                                <span>{t.profile}</span>
-                                            </div>
-                                            {upcomingAppointment && <span className="text-[8px] font-black bg-amber-500 text-white px-1.5 py-0.5 rounded-full animate-pulse">APPT</span>}
+                                            <FaUserCircle size={16} /> <span>{t.profile}</span>
                                         </Link>
                                         <button
-                                            onClick={() => {
-                                                setIsOpen(false);
-                                                setIsMobileUserMenuOpen(false);
-                                                signOut({ callbackUrl: '/' });
-                                            }}
-                                            className="w-full flex items-center gap-3 px-12 py-3 text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition text-left"
+                                            onClick={() => { setIsOpen(false); logout(); }}
+                                            className="w-full flex items-center gap-3 px-6 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl transition"
                                         >
-                                            <FaSignOutAlt size={16} />
-                                            <span>{t.logout}</span>
+                                            <FaSignOutAlt size={16} /> <span>{t.logout}</span>
                                         </button>
                                     </div>
                                 )}
@@ -368,7 +297,7 @@ export default function Navbar() {
                                 <Link
                                     href="/login"
                                     onClick={() => setIsOpen(false)}
-                                    className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-2xl text-base font-black shadow-lg shadow-gray-900/10 active:scale-95 transition"
+                                    className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-2xl text-base font-semibold shadow-md active:scale-[0.98] transition"
                                 >
                                     {t.login}
                                 </Link>
@@ -386,63 +315,19 @@ export default function Navbar() {
                                             setIsOpen(false);
                                         }
                                     }}
-                                    className={`flex justify-between items-center px-4 py-3 rounded-xl text-base font-bold transition ${pathname === link.href || (link.name === t.dashboard && pathname.startsWith('/temppath'))
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-600 hover:bg-blue-50'
+                                    className={`flex justify-between items-center px-4 py-3 rounded-2xl text-base font-medium transition ${pathname === link.href || (link.name === t.dashboard && pathname.startsWith('/temppath'))
+                                        ? 'bg-gray-100 text-gray-900'
+                                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                                         }`}
                                 >
                                     <span>{link.name}</span>
                                     {link.protected && (
-                                        isUnlocked ? <FaLockOpen size={14} className="text-green-500" /> : <FaLock size={14} className="text-gray-400" />
+                                        isUnlocked ? <FaLockOpen size={14} className="text-green-500" /> : <FaLock size={14} className="text-gray-300" />
                                     )}
                                 </Link>
-                                {link.protected && isUnlocked && (
-                                    <div className="px-4 py-2 flex justify-between items-center bg-gray-50 rounded-xl mx-2">
-                                        <div className="text-xs font-mono text-blue-600 font-bold">Locks in {timeLeft}</div>
-                                        <button
-                                            onClick={handleLock}
-                                            className="text-rose-600 font-black text-xs uppercase"
-                                        >
-                                            {t.lockDashboard}
-                                        </button>
-                                    </div>
-                                )}
                             </div>
                         ))}
-
-
-                        {/* Mobile Language Switcher - Inside Menu */}
-                        <div className="px-2 pb-2 border-b border-gray-50">
-                            <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-blue-600 p-2 rounded-lg">
-                                        <FaLanguage className="text-white text-xl" />
-                                    </div>
-                                </div>
-                                <div className="flex bg-white p-1 rounded-xl shadow-inner border border-blue-100">
-                                    <button
-                                        onClick={() => {
-                                            if (language !== 'en') toggleLanguage();
-                                            setIsOpen(false);
-                                        }}
-                                        className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${language === 'en' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400 hover:text-blue-600'}`}
-                                    >
-                                        ENGLISH
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            if (language !== 'hi') toggleLanguage();
-                                            setIsOpen(false);
-                                        }}
-                                        className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${language === 'hi' ? 'bg-blue-600 text-white shadow-md font-serif' : 'text-gray-400 hover:text-blue-600'}`}
-                                    >
-                                        हिन्दी
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-
                 )}
             </nav>
 

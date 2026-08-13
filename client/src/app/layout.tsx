@@ -31,7 +31,7 @@ export async function generateMetadata() {
         const city = clinic.address?.city || 'Katihar';
         return {
             title: seo.metaTitle || `${clinicName} | Best Dentist in ${city}, Bihar`,
-            description: seo.metaDescription || `Experience professional dental care at ${clinicName}, ${city}. Specializing in painless treatments, implants, and orthodontic care with ${clinic.clinicExperience || '10+'}+ years of expertise.`,
+            description: seo.metaDescription || `Experience professional dental care at ${clinicName}, ${city}. Specializing in painless treatments, implants, and orthodontic care with ${clinic.clinicExperience || '10'} years of expertise.`,
             keywords: seo.keywords || `dental clinic ${city}, best dentist in ${city}, ${clinicName} ${city}, dental implants Bihar, painless dentistry, dental surgery ${city}`,
             openGraph: {
                 title: seo.metaTitle || `${clinicName} | Expert Dental Care in ${city}`,
@@ -110,7 +110,7 @@ export default async function RootLayout({
 
     return (
         <html lang="en">
-            <body className="flex flex-col min-h-screen bg-gradient-to-b from-blue-800/30 via-white to-purple-800/30 text-gray-900">
+            <body className="flex flex-col min-h-screen bg-[#fcfcfc] text-gray-900 font-sans antialiased">
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{

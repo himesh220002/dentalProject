@@ -18,7 +18,7 @@ const DEFAULT_CLINIC_DATA = {
     phone: '+91 90000 00000',
     staffPhone: '+91 8105542318',
     establishedYear: '2014',
-    clinicExperience: '10+',
+    clinicExperience: '10',
     expertise: 'Restorative Dentistry, Oral Surgery, Orthodontics, Cosmetic Dentistry',
     visitPolicy: 'Prior Appointment Recommended. Walk-ins subject to availability.',
     happyCustomers: '5000+',
@@ -429,7 +429,7 @@ export default function TempClinicForm() {
                                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">Understand how your live site data and versioning works</p>
                             </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800/80">
                             <div className="space-y-2 bg-slate-950/45 p-5 rounded-2xl border border-slate-800/50">
                                 <div className="flex items-center gap-2">
@@ -443,7 +443,7 @@ export default function TempClinicForm() {
                                     The configuration currently <strong>serving your public website</strong>. Only one version can be "Live" at a time. Active configurations override the default fallback.
                                 </p>
                             </div>
-                            
+
                             <div className="space-y-2 bg-slate-950/45 p-5 rounded-2xl border border-slate-800/50">
                                 <div className="flex items-center gap-2">
                                     <span className="text-blue-400 font-bold text-sm">✍️</span>
@@ -453,7 +453,7 @@ export default function TempClinicForm() {
                                     The values loaded in the form fields below. You can load any previous version from History to edit it. Clicking <strong>Save Draft</strong> saves your progress.
                                 </p>
                             </div>
-                            
+
                             <div className="space-y-2 bg-slate-950/45 p-5 rounded-2xl border border-slate-800/50">
                                 <div className="flex items-center gap-2">
                                     <span className="text-amber-400 font-bold text-sm">📦</span>

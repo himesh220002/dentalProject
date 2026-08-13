@@ -39,7 +39,7 @@ export default function AppointmentSearchInline() {
     };
 
     return (
-        <div className="w-[400px] relative z-40 group/search">
+        <div className="w-full relative z-40 group/search">
             {/* Slimmer Search Bar Container */}
             <div className="bg-white/95 backdrop-blur-md rounded-[1.5rem] sm:rounded-[2.5rem] md:rounded-[2.8rem] p-1 border-3 border-gray-500/40">
                 <form onSubmit={handleSearch} className="flex items-center gap-1 sm:gap-1.5">

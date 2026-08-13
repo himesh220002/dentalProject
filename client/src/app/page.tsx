@@ -11,7 +11,7 @@ import HomeHero from '@/components/home/HomeHero';
 import ActionTiles from '@/components/home/ActionTiles';
 import TrustSection from '@/components/home/TrustSection';
 import PatientReviews from '@/components/about/PatientReviews';
-import { useSession } from 'next-auth/react';
+import { useSession } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaUserMd, FaArrowRight, FaCalendarAlt } from 'react-icons/fa';
@@ -172,52 +172,64 @@ export default function Home() {
             {/* Trust & Expertise Section */}
             <TrustSection />
 
-            {/* Featured Clinical Excellence Video - Immersive Preview */}
-            <section className="px-4 sm:px-10 lg:px-16">
-                <div className="max-w-[1000px] mx-auto overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] sm:rounded-[4rem] shadow-2xl border-4 border-white bg-gray-900 group relative aspect-video">
-                    {!isVideoLoaded && (
-                        <div className="absolute inset-0 bg-gray-800 animate-pulse flex items-center justify-center">
-                            <div className="flex flex-col items-center gap-4">
-                                <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
-                                <div className="text-center">
-                                    <p className="text-blue-400 font-black text-[10px] uppercase tracking-widest">Optimizing Clinical Showcase...</p>
-                                    <p className="text-blue-300/50 text-[8px] font-bold mt-1 uppercase tracking-tighter">
-                                        Loading: {Math.round(videoProgress)}%
-                                    </p>
-                                </div>
-                            </div>
+            {/* Featured Clinical Excellence Video - Split Layout */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 w-full py-12 lg:py-20">
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                    
+                    {/* Left Side: Premium Copy */}
+                    <div className="space-y-6 text-center lg:text-left order-2 lg:order-1">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 shadow-sm">
+                            <span className="text-xs font-bold text-blue-600 tracking-wide uppercase">Patient Experience</span>
                         </div>
-                    )}
-                    <video
-                        key={videoBlobUrl || 'placeholder'}
-                        className={`w-full h-full object-cover pointer-events-none scale-105 group-hover:scale-110 transition-all duration-[5s] ${isVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="auto"
-                        poster="/images/video-poster.png"
-                    >
-                        {videoBlobUrl ? (
-                            <source src={videoBlobUrl} type="video/mp4" />
-                        ) : (
-                            <source src="/video/dentist video1.mp4#t=604,710" type="video/mp4" />
-                        )}
-                        Your browser does not support the video tag.
-                    </video>
-                    {/* Immersive Glass Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent pointer-events-none"></div>
-                    <div className="absolute bottom-10 left-10 hidden md:block">
-                        <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-3xl">
-                            <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Featured Showcase</p>
-                            <h3 className="text-white text-lg font-black uppercase tracking-tight">Clinical Excellence in Action</h3>
+                        <h2 className="text-4xl sm:text-5xl font-serif font-black text-gray-900 leading-tight">
+                            Compassionate Care, <br />
+                            <span className="text-gray-500">Every Step of the Way.</span>
+                        </h2>
+                        <p className="text-lg text-gray-500 font-medium leading-relaxed max-w-lg mx-auto lg:mx-0">
+                            From the moment you step into our clinic, your comfort is our absolute priority. We blend state-of-the-art dental technology with a gentle, human touch to ensure every treatment is as painless and stress-free as possible.
+                        </p>
+                        <p className="text-base text-gray-500 font-medium leading-relaxed max-w-lg mx-auto lg:mx-0">
+                            Our team takes the time to listen, clearly explain your options, and support you throughout your entire dental journey, so you always leave with a confident smile.
+                        </p>
+                    </div>
+
+                    {/* Right Side: Video */}
+                    <div className="order-1 lg:order-2 w-full">
+                        <div className="overflow-hidden rounded-[2rem] sm:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 bg-white group relative aspect-[4/3] sm:aspect-video lg:aspect-square xl:aspect-[4/3]">
+                            {!isVideoLoaded && (
+                                <div className="absolute inset-0 bg-gray-50 flex items-center justify-center z-20">
+                                    <div className="flex flex-col items-center gap-4">
+                                        <div className="w-12 h-12 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin"></div>
+                                        <div className="text-center">
+                                            <p className="text-gray-900 font-bold text-[10px] uppercase tracking-widest">Loading Showcase</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            <video
+                                key={videoBlobUrl || 'placeholder'}
+                                className={`w-full h-full object-cover pointer-events-none transition-opacity duration-700 ${isVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                preload="auto"
+                                poster="/images/video-poster.png"
+                            >
+                                {videoBlobUrl ? (
+                                    <source src={videoBlobUrl} type="video/mp4" />
+                                ) : (
+                                    <source src="/video/dentist video1.mp4#t=604,710" type="video/mp4" />
+                                )}
+                                Your browser does not support the video tag.
+                            </video>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Meet Our Team - New Dynamic Section with High-tech Pattern */}
-            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden rounded-[2.5rem] group mx-2 sm:mx-5 xl:mx-20 2xl:mx-40 border border-slate-200/60">
+            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden sm:rounded-[2.5rem] group w-full max-w-7xl mx-auto border border-slate-200/60">
                 {/* Immersive Lab Background */}
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
                     <NextImage
@@ -262,8 +274,8 @@ export default function Home() {
             </section>
 
             {/* Why Patients Trust - Preview Section with refined layout */}
-            <section className="bg-gradient-to-br from-slate-900 to-slate-800 mx-auto md:mx-10 xl:mx-20 2xl:mx-40 px-6 sm:px-12 lg:px-16 py-10 sm:py-20 sm:rounded-[1rem] lg:rounded-[1rem] text-white overflow-hidden relative">
-                <div className="max-w-7xl mx-auto space-y-10">
+            <section className="bg-gradient-to-br from-slate-900 to-slate-800 w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-10 sm:py-20 sm:rounded-[1rem] lg:rounded-[1rem] text-white overflow-hidden relative">
+                <div className="w-full mx-auto space-y-10">
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                         <div className="space-y-6">
                             <h2 className="text-2xl sm:text-3xl md:text-4xl text-center sm:text-left xl:text-5xl font-black leading-tight">
@@ -323,7 +335,7 @@ export default function Home() {
             </div> */}
 
             {/* Virtual Clinic Tour - Refined */}
-            <section className="space-y-12 sm:space-y-16 xl:mx-20 2xl:mx-40">
+            <section className="space-y-12 sm:space-y-16 w-full max-w-7xl mx-auto">
                 <div className="text-center space-y-3 sm:space-y-4">
                     <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-blue-900 uppercase">
                         {translations[language].homeVirtualTour.title}
@@ -341,7 +353,7 @@ export default function Home() {
             {/* Floating Appointment Notification - Circle Above LanguageToggle */}
             {
                 session?.user && upcomingAppointment && !isAptDismissed && (
-                    <div className="fixed top-70 sm:top-70 2xl:right-40 2xl:top-40  right-4 sm:right-6 z-50 group/indicator">
+                    <div className="fixed top-24 right-4 sm:right-6 z-50 group/indicator">
                         <Link
                             href="/profile"
                             onClick={() => setIsAptDismissed(true)}
@@ -375,8 +387,8 @@ export default function Home() {
             }
 
             {/* Elite CTA Strip */}
-            <section className="pb-12 sm:pb-20 overflow-hidden relative">
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 md:p-16 mx-1 sm:mx-5 xl:mx-20 2xl:mx-40 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(15,23,42,0.45)] relative overflow-hidden group">
+            <section className="pb-12 sm:pb-20 overflow-hidden relative w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+                <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 md:p-16 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(15,23,42,0.45)] relative overflow-hidden group">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-44 -mt-44 blur-[100px] transition-all duration-700"></div>
                     <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-500/15 rounded-full -mr-40 -mb-40 blur-[80px]"></div>
@@ -409,7 +421,7 @@ export default function Home() {
                 </div>
             </section>
 
-            <section className="px-4 sm:px-8 xl:px-20 2xl:px-40 pb-12 sm:pb-20">
+            <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 pb-12 sm:pb-20">
                 <GeneralInquiryForm />
             </section>
         </div>

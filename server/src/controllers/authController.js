@@ -296,3 +296,77 @@ exports.linkByPatientId = async (req, res) => {
         res.status(500).json({ message: 'Failed to link record. Please ensure the ID is correct.' });
     }
 };
+
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key_123';
+
+exports.register = async (req, res) => {
+    const { email, password, name, contact } = req.body;
+    try {
+        let user = await User.findOne({ email: email.toLowerCase() });
+        if (user) return res.status(400).json({ message: 'User already exists with this email' });
+
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
+
+        user = new User({
+            email: email.toLowerCase(),
+            passwordHash,
+            name,
+            contact
+        });
+
+        const newPatient = new Patient({
+            name,
+            email: email.toLowerCase(),
+            contact: contact || '-__-',
+            age: 0,
+            addedByAdmin: false,
+            userId: user._id
+        });
+        await newPatient.save();
+        user.patientId = newPatient._id;
+        await user.save();
+
+        const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+        
+        res.status(201).json({ token, user: { _id: user._id, email: user.email, name: user.name, role: user.role, patientId: user.patientId } });
+    } catch (error) {
+        console.error('Error in register:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+exports.login = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        let user = await User.findOne({ email: email.toLowerCase() }).populate('patientId');
+        if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+
+        if (!user.passwordHash) {
+            return res.status(400).json({ message: 'Account was created with Google. Please use Google Login or reset password (not implemented yet).' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.passwordHash);
+        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+
+        const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+
+        const upcomingAppointment = await Appointment.findOne({
+            patientId: user.patientId?._id || user.patientId,
+            status: 'Scheduled',
+            isTicked: false
+        });
+
+        res.status(200).json({ 
+            token, 
+            user: { _id: user._id, email: user.email, name: user.name, role: user.role, patientId: user.patientId },
+            hasUpcomingAppointment: !!upcomingAppointment
+        });
+    } catch (error) {
+        console.error('Error in login:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

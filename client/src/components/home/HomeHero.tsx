@@ -1,117 +1,91 @@
 'use client';
 
-import Link from 'next/link';
-import { FaPhoneAlt, FaPlus, FaCheck } from 'react-icons/fa';
-import { useClinic } from '../../context/ClinicContext';
-import { formatExperience } from '../../utils/urlHelper';
-import { translations } from '../../constants/translations';
-
+import React from 'react';
 import dynamic from 'next/dynamic';
+import { useClinic } from '../../context/ClinicContext';
+import { translations } from '../../constants/translations';
+import { FaPlay, FaCalendarCheck } from 'react-icons/fa';
+
 const AppointmentSearchInline = dynamic(() => import('./AppointmentSearchInline'), { ssr: false });
 
 export default function HomeHero() {
-    const { clinicData, language } = useClinic();
+    const { language } = useClinic();
     const t = translations[language];
 
-    const phone = clinicData?.phone || '+91 98765 43210';
-    const city = clinicData?.address.city || 'Katihar';
-    const clinicName = clinicData?.clinicName || 'Dr. Tooth';
-    const tagline = clinicData?.tagline || 'Experience gentle, precision dental care with Dr. Tooth.';
-
-    // Clinic operation years
-    const currentYear = new Date().getFullYear();
-    const estYear = clinicData ? parseInt(clinicData.establishedYear) : 2014;
-    const clinicYears = Math.max(0, currentYear - estYear);
+    const scrollToContact = () => {
+        document.getElementById('contact-form-section')?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     return (
-        <section className="px-0 md:px-6 xl:px-20 2xl:px-40 relative min-h-[550px] sm:min-h-[600px] h-[calc(100vh-50px)] overflow-hidden shadow-[0_8px_30px_-20px_rgba(15,23,42,0.5)] flex group">
-            {/* Immersive Background */}
-            <div className="absolute inset-0">
-                <img
-                    src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop"
-                    alt={`${clinicName} Clinic`}
-                    className="w-full h-full object-cover transition-transform duration-[10s] group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-blue-900/60 to-blue-900/45"></div>
-
-                {/* Decorative Blobs */}
-                <div className="absolute top-10 right-10 w-48 h-48 sm:w-96 sm:h-96 bg-blue-500/15 rounded-full blur-[60px] sm:blur-[100px]"></div>
-                <div className="absolute bottom-10 left-1/4 w-32 h-32 sm:w-64 sm:h-64 bg-cyan-400/10 rounded-full blur-[40px] sm:blur-[80px]"></div>
-
-                {/* Bottom Smooth Transition Gradient */}
-                <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#080a5c] to-transparent"></div>
-            </div>
-
-            {/* Content Layer */}
-            <div className="relative z-10 px-6 sm:px-12 md:px-20 w-full py-12 sm:py-12 text-white">
-                <div className="mb-10 max-w-7xl mx-auto flex justify-end">
-                    <AppointmentSearchInline />
-                </div>
-                <div className="max-w-4xl space-y-6 sm:space-y-10">
-                    <div className="space-y-4 sm:space-y-6">
-                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/25 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-black tracking-[0.1em] sm:tracking-[0.2em] uppercase transition-all">
-                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-400 rounded-full animate-ping"></span>
-                            {clinicYears}+ {language === 'hi' ? `${city} में वर्षों की सफलता` : `Years of Success in ${city}`}
-                        </div>
-
-                        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] sm:leading-[0.95] tracking-tight">
-                            <span className="sr-only">{clinicName} - Best Dentist in {city}, Bihar</span>
-                            {language === 'hi' ? 'आपकी मुस्कान,' : 'Your Smile,'} <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-200">{language === 'hi' ? 'हमारा दायित्व।' : 'Our Commitment.'}</span>
-                        </h1>
-
-                        <p className="text-base sm:text-xl lg:text-2xl text-slate-100/85 font-medium max-w-2xl leading-relaxed">
-                            {tagline} {language === 'hi' ? 'हम आपके आराम के लिए आधुनिक तकनीक के साथ' : 'We combine'} {formatExperience(clinicData?.clinicExperience)} {language === 'hi' ? 'वर्षों की विशेषज्ञता जोड़ते हैं।' : 'years of expertise with high-end technology for your comfort.'}
-                        </p>
+        <section className="relative min-h-[90vh] bg-[#fcfcfc] overflow-hidden flex items-center justify-center font-sans">
+            {/* Subtle Minimalist Background Patterns */}
+            <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-gray-50 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30" />
+            
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8 pt-10 pb-20">
+                
+                {/* Left Side: Typography & CTA */}
+                <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left space-y-8 lg:pr-8">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 border border-gray-200 shadow-sm animate-fadeIn">
+                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <span className="text-xs font-bold text-gray-700 tracking-wide uppercase">Accepting New Patients</span>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center">
-                        <Link
-                            href="/contact"
-                            className="w-full sm:w-auto bg-white text-slate-900 px-10 py-4 sm:px-12 sm:py-5 rounded-2xl sm:rounded-[2rem] font-black shadow-2xl hover:bg-slate-100 transition-all transform hover:-translate-y-1 active:scale-95 text-center text-sm sm:text-base"
+                    <h1 className="text-5xl sm:text-6xl xl:text-7xl font-serif font-black text-gray-900 leading-[1.1] tracking-tight">
+                        Offer your smile a <br className="hidden lg:block"/>
+                        <span className="relative">
+                            <span className="relative z-10 text-gray-900">better retainer</span>
+                            <svg className="absolute -bottom-2 left-0 w-full h-4 text-gray-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                <path d="M0 5 Q 50 10 100 5" fill="none" stroke="currentColor" strokeWidth="4" />
+                            </svg>
+                        </span>
+                    </h1>
+
+                    <p className="text-lg sm:text-xl text-gray-500 font-medium max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                        Experience advanced clinical excellence with the aesthetic tools you love, managed seamlessly by our expert team.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                        <button 
+                            onClick={scrollToContact}
+                            className="flex items-center justify-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-full text-base font-bold shadow-xl shadow-gray-900/20 hover:bg-gray-800 transition-all active:scale-[0.98]"
                         >
+                            <FaCalendarCheck />
                             {t.bookNow}
-                        </Link>
-                        <a
-                            href={`tel:${phone.replace(/\s+/g, '')}`}
-                            className="w-full sm:w-auto flex items-center justify-center gap-4 bg-slate-900/35 backdrop-blur-md border-2 border-white/20 text-white px-8 py-4 sm:px-10 sm:py-[1.125rem] rounded-2xl sm:rounded-[2rem] font-bold hover:bg-slate-800/50 transition-all group text-sm sm:text-base"
+                        </button>
+                        
+                        <button 
+                            className="flex items-center justify-center gap-2 bg-white text-gray-900 px-8 py-4 rounded-full text-base font-bold shadow-md border border-gray-100 hover:bg-gray-50 transition-all active:scale-[0.98]"
                         >
-                            <div className="bg-blue-600 p-1.5 sm:p-2 rounded-lg sm:rounded-xl group-hover:rotate-12 transition-transform shadow-lg">
-                                <FaPhoneAlt size={12} className="sm:size-[14px]" />
-                            </div>
-                            {language === 'hi' ? t.callNow : phone}
-                        </a>
-                    </div>
-
-                    {/* Trust Indicators */}
-                    <div className="pt-6 sm:pt-10 flex flex-wrap gap-4 sm:gap-8 opacity-80">
-                        <div className="flex items-center gap-2 sm:gap-3 font-black text-[10px] sm:text-sm uppercase tracking-widest">
-                            <FaCheck className="text-blue-400" /> {t.homeHero.professional}
-                        </div>
-                        <div className="flex items-center gap-2 sm:gap-3 font-black text-[10px] sm:text-sm uppercase tracking-widest">
-                            <FaCheck className="text-blue-400" /> {t.homeHero.isoCertified}
-                        </div>
-                        <div className="flex items-center gap-2 sm:gap-3 font-black text-[10px] sm:text-sm uppercase tracking-widest">
-                            <FaCheck className="text-blue-400" /> {t.homeHero.safeSterile}
-                        </div>
+                            <FaPlay className="text-xs" />
+                            View Clinic Tour
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            {/* Floating UI Elements (Desktop Only) */}
-            <div className="hidden md:block absolute right-10 xl:right-20 bottom-10 xl:bottom-20 z-10">
-                <div className="bg-slate-900/45 backdrop-blur-2xl border border-white/20 p-6 xl:p-8 rounded-[2.5rem] xl:rounded-[3rem] shadow-2xl space-y-4 max-w-[240px] xl:max-w-[280px]">
-                    <div className="flex -space-x-3 xl:-space-x-4">
-                        {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl xl:rounded-2xl border-2 xl:border-4 border-white/10 overflow-hidden shadow-lg bg-blue-900 flex items-center justify-center font-black text-xs xl:text-base text-white">
-                                {String.fromCharCode(64 + i)}
+                {/* Right Side: Appointment Search Floating Card */}
+                <div className="lg:w-1/2 w-full max-w-md relative animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+                    <div className="absolute -inset-4 bg-gray-100 rounded-[2.5rem] transform rotate-3 scale-105 opacity-50 blur-lg -z-10" />
+                    
+                    <div className="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-100 p-8 relative z-10">
+                        <div className="mb-6 flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
+                                <FaCalendarCheck className="text-blue-600" />
                             </div>
-                        ))}
-                        <div className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl xl:rounded-2xl bg-blue-700 border-2 xl:border-4 border-white/10 flex items-center justify-center shadow-lg">
-                            <FaPlus className="text-white text-xs xl:text-base" />
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900">Client-facing portal</h3>
+                                <p className="text-xs font-medium text-gray-500">Integrate with the PM tools you love.</p>
+                            </div>
+                        </div>
+                        
+                        {/* 
+                          Fix boundary constraint: the AppointmentSearchInline will now 
+                          sit cleanly within this white box without breaking layout.
+                        */}
+                        <div className="bg-[#f9fafb] rounded-2xl border border-gray-100 p-4">
+                            <AppointmentSearchInline />
                         </div>
                     </div>
-                    <p className="text-[12px] xl:text-sm font-bold text-slate-100">{t.homeHero.happyPatients}</p>
                 </div>
             </div>
         </section>

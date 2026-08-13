@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
         return {
             title: `About Our Clinic | ${clinicName} - Expert Dentist in ${city}`,
-            description: `Learn about ${clinicName}, the leading dental care provider in ${city}. With ${clinic.clinicExperience || '10+'} years of excellence, we specialize in painless dentistry and elite patient care.`,
+            description: `Learn about ${clinicName}, the leading dental care provider in ${city}. With ${clinic.clinicExperience || '10'} years of excellence, we specialize in painless dentistry and elite patient care.`,
             openGraph: {
                 title: `About ${clinicName} | Dental Excellence in ${city}`,
                 description: `Meet our team of specialists at ${clinicName}. Discover our mission for painless and professional dental care.`,

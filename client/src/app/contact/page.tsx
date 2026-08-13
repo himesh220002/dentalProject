@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { useSession } from 'next-auth/react';
+import { useSession } from '../../context/AuthContext';
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaPaperPlane, FaChevronRight, FaChevronLeft, FaCalendarCheck, FaClock, FaCheckCircle } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
 import { translations } from '../../constants/translations';
@@ -505,7 +505,7 @@ function ContactContent() {
 
 
     return (
-        <div className="relative px-4 py-2 sm:py-8 lg:py-10 sm:px-20 xl:px-40  mx-auto space-y-8 sm:space-y-8 overflow-x-hidden">
+        <div className="relative w-full max-w-7xl px-4 py-8 sm:py-12 lg:py-16 mx-auto space-y-8 sm:space-y-12 overflow-x-hidden">
 
 
 

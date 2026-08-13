@@ -43,7 +43,7 @@ export default function About() {
     const consultantExpLabel = language === 'hi' ? 'का अनुभव' : 'Experience';
 
     return (
-        <div className=" max-w-7xl mx-auto space-y-14 sm:space-y-16 sm:pt-4 lg:pt-10 overflow-x-clip">
+        <div className=" max-w-7xl mx-auto space-y-14 overflow-x-clip">
             {/* Hero Section - Refined */}
             <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">
@@ -184,11 +184,11 @@ export default function About() {
             </div>
 
             {/* Our Values / Mission Refined */}
-            <section className="bg-gray-900 py-16 sm:py-24 px-6 sm:px-12 mb-10 xl:mb-20 rounded-md overflow-hidden relative mx-2 sm:mx-4">
-                <div className="max-w-5xl mx-auto space-y-5 sm:space-y-20">
+            <section className="bg-gray-300/20 py-14 sm:py-18 px-6 sm:px-12 mb-10 xl:mb-20 rounded-[2rem] overflow-hidden relative mx-2 sm:mx-4">
+                <div className="max-w-5xl mx-auto space-y-5 sm:space-y-8">
                     <div className="text-center space-y-4 sm:space-y-6">
-                        <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-white leading-tight">{t.aboutValues.title}</h2>
-                        <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto">{t.aboutValues.subtitle}</p>
+                        <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-gray-700 leading-tight">{t.aboutValues.title}</h2>
+                        <p className="text-gray-700 text-base sm:text-lg max-w-2xl mx-auto">{t.aboutValues.subtitle}</p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-12 text-white">
@@ -196,7 +196,7 @@ export default function About() {
                             <div className="w-20 h-20 bg-blue-600/20 border border-blue-500/30 rounded-3xl flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
                                 <FaUserMd size={32} />
                             </div>
-                            <h3 className="text-2xl font-black">{t.aboutValues.expertCare}</h3>
+                            <h3 className="text-2xl text-gray-700 font-black">{t.aboutValues.expertCare}</h3>
                             <p className="text-gray-400 text-center leading-relaxed font-medium">
                                 {language === 'hi'
                                     ? `${doctorName} आपको आपकी आवश्यकताओं के अनुसार सर्वोत्तम संभव उपचार प्रदान करने के लिए दंत विज्ञान में नवीनतम के साथ अपडेट रहते हैं।`
@@ -207,7 +207,7 @@ export default function About() {
                             <div className="w-20 h-20 bg-teal-600/20 border border-teal-500/30 rounded-3xl flex items-center justify-center text-teal-500 group-hover:bg-teal-600 group-hover:text-white transition-all duration-500">
                                 <FaSmile size={32} />
                             </div>
-                            <h3 className="text-2xl font-black">{t.aboutValues.painlessPath}</h3>
+                            <h3 className="text-2xl text-gray-700 font-black">{t.aboutValues.painlessPath}</h3>
                             <p className="text-gray-400 text-center leading-relaxed font-medium">
                                 {language === 'hi'
                                     ? 'हम यह सुनिश्चित करने के लिए अत्याधुनिक आधुनिक तकनीकों का उपयोग करते हैं कि आपकी यात्रा यथासंभव आरामदायक, तेज और दर्द रहित हो।'
@@ -218,7 +218,7 @@ export default function About() {
                             <div className="w-20 h-20 bg-purple-600/20 border border-purple-500/30 rounded-3xl flex items-center justify-center text-purple-500 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
                                 <FaAward size={32} />
                             </div>
-                            <h3 className="text-2xl font-black">{t.aboutValues.goldStandard}</h3>
+                            <h3 className="text-2xl text-gray-700 font-black">{t.aboutValues.goldStandard}</h3>
                             <p className="text-gray-400 text-center leading-relaxed font-medium">
                                 {language === 'hi'
                                     ? 'पूर्ण स्वच्छता हमारी प्राथमिकता है। हम आपकी पूर्ण सुरक्षा के लिए अति-कठिन अंतरराष्ट्रीय नसबंदी प्रोटोकॉल का पालन करते हैं।'

@@ -38,7 +38,7 @@ export default function TrustSection() {
     })) || defaultFeatures;
 
     return (
-        <section className="relative py-12 sm:py-20 lg:py-24 space-y-12 sm:space-y-20 px-6 sm:px-40 overflow-hidden">
+        <section className="relative max-w-7xl mx-auto space-y-12 sm:space-y-20 px-6 sm:px-auto overflow-hidden">
             {/* Steel Fence Cross-Net Pattern Background */}
             {/* <div className="absolute inset-0 -z-20"
                 style={{

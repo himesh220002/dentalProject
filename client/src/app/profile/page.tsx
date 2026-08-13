@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '../../context/AuthContext';
 import axios from 'axios';
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCalendarAlt, FaHistory, FaCheckCircle, FaExclamationCircle, FaLock } from 'react-icons/fa';
 import SessionGuard from '@/components/SessionGuard';

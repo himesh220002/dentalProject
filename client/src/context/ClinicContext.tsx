@@ -59,7 +59,7 @@ const DEFAULT_CLINIC_DATA: ClinicData = {
     phone: '+91 9471283523',
     staffPhone: '+91 8105542318',
     establishedYear: '2014',
-    clinicExperience: '10+',
+    clinicExperience: '10',
     expertise: 'Restorative Dentistry, Oral Surgery, Orthodontics, Cosmetic Dentistry',
     visitPolicy: 'Prior Appointment Recommended. Walk-ins subject to availability.',
     happyCustomers: '5000+',

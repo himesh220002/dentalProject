@@ -128,7 +128,7 @@ export default function DemoPresent() {
                 </div>
                 <NextImage src="/images/serverarchitecture.png" alt="Architecture" width={500} height={500} className="mx-auto rounded-2xl object-contain shadow-lg" />
                 <div className="diagram-container">
-                    <div className="mermaid w-full max-w-[1000px] mx-auto">
+                    <div className="mermaid w-full max-w-7xl mx-auto">
                         {`graph TD
                         subgraph Patient_Entry ["Patient Interaction"]
                             User((Patient)) -->|Lands on| Hero[Next.js Homepage]
@@ -172,7 +172,7 @@ export default function DemoPresent() {
                 </div>
                 <NextImage src="/images/clientsidepic.png" alt="Clinic Operational Workflow" width={500} height={500} className="mx-auto rounded-2xl object-contain shadow-lg" />
                 <div className="diagram-container">
-                    <div className="mermaid w-full max-w-[1000px] mx-auto">
+                    <div className="mermaid w-full max-w-7xl mx-auto">
                         {`graph TD
                         subgraph Arrival ["Reception & Arrivals"]
                             Dashboard[Admin Dashboard] -->|Alert| NewApt[New Appointment]

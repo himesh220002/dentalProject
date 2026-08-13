@@ -8,7 +8,7 @@ export default function AchievementsGrid() {
     const stats = {
         patients: clinicData?.happyCustomers || '5,000+',
         success: (clinicData?.successRate || '99') + '%',
-        experience: (clinicData?.clinicExperience || '10') + '+',
+        experience: (clinicData?.clinicExperience || '10'),
         certifications: clinicData?.certifications ? (language === 'hi' ? 'प्रमाणित' : 'Certified') : (language === 'hi' ? 'आईडीए प्रमाणित' : 'IDA Certified')
     };
 

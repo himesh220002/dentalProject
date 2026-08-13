@@ -166,7 +166,7 @@ export default function DashboardLayout({
 
                 {/* Main Content */}
                 <main className="flex-grow p-3 sm:p-4 lg:p-8 overflow-y-auto w-full">
-                    <div className="max-w-8xl xl:max-w-none mx-auto">
+                    <div className="max-w-7xl xl:max-w-none mx-auto">
                         {children}
                     </div>
                 </main>

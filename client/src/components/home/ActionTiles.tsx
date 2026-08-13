@@ -58,10 +58,10 @@ export default function ActionTiles() {
                             ${tile.isPrimary ? 'ring-2 ring-blue-500/20' : ''}`}
                         >
                             {/* Gradient Accent */}
-                            <div className={`absolute top-0 left-0 w-full h-2 transition-all duration-500
-                            ${tile.color === 'blue' ? 'bg-gradient-to-r from-blue-600 to-blue-400' :
-                                    tile.color === 'teal' ? 'bg-gradient-to-r from-cyan-600 to-cyan-400' :
-                                        'bg-gradient-to-r from-indigo-600 to-indigo-400'}`}
+                            <div className={`absolute top-0 left-0 w-4 h-full transition-all duration-500
+                            ${tile.color === 'blue' ? 'bg-gradient-to-r from-blue-600/20 to-transparent' :
+                                    tile.color === 'teal' ? 'bg-gradient-to-r from-cyan-600/20 to-transparent' :
+                                        'bg-gradient-to-r from-indigo-600/20 to-transparent'}`}
                             />
 
                             {/* Icon Container */}

@@ -1,14 +1,14 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
 import { ClinicProvider } from '../context/ClinicContext';
+import { AuthProvider } from '../context/AuthContext';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
-        <SessionProvider>
+        <AuthProvider>
             <ClinicProvider>
                 {children}
             </ClinicProvider>
-        </SessionProvider>
+        </AuthProvider>
     );
 }

@@ -4,7 +4,10 @@ const userSchema = new mongoose.Schema({
     googleId: {
         type: String,
         unique: true,
-        required: true
+        sparse: true
+    },
+    passwordHash: {
+        type: String
     },
     email: {
         type: String,
