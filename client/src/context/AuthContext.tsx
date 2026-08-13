@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSession as useNextAuthSession, signOut as nextAuthSignOut } from 'next-auth/react';
 
 type User = {
     _id: string;
@@ -9,6 +10,7 @@ type User = {
     name: string;
     role: string;
     patientId?: any;
+    image?: string;
 };
 
 type AuthContextType = {
@@ -28,9 +30,11 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [jwtUser, setJwtUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isJwtLoading, setIsJwtLoading] = useState(true);
+
+    const nextAuthSession = useNextAuthSession();
 
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
@@ -38,28 +42,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (storedToken && storedUser) {
             setToken(storedToken);
-            setUser(JSON.parse(storedUser));
+            setJwtUser(JSON.parse(storedUser));
         }
-        setIsLoading(false);
+        setIsJwtLoading(false);
     }, []);
 
     const login = (newToken: string, userData: User) => {
         localStorage.setItem('token', newToken);
         localStorage.setItem('user', JSON.stringify(userData));
         setToken(newToken);
-        setUser(userData);
+        setJwtUser(userData);
     };
 
-    const logout = () => {
+    const logout = async () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setToken(null);
-        setUser(null);
+        setJwtUser(null);
+        
+        if (nextAuthSession.status === 'authenticated') {
+            await nextAuthSignOut({ redirect: false });
+        }
         window.location.href = '/';
     };
 
+    const unifiedUser = jwtUser || (nextAuthSession.data?.user as User) || null;
+    const isLoading = isJwtLoading || nextAuthSession.status === 'loading';
+
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+        <AuthContext.Provider value={{ user: unifiedUser, token, login, logout, isLoading }}>
             {children}
         </AuthContext.Provider>
     );
