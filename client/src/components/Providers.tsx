@@ -2,13 +2,16 @@
 
 import { ClinicProvider } from '../context/ClinicContext';
 import { AuthProvider } from '../context/AuthContext';
+import { SessionProvider } from 'next-auth/react';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
-        <AuthProvider>
-            <ClinicProvider>
-                {children}
-            </ClinicProvider>
-        </AuthProvider>
+        <SessionProvider>
+            <AuthProvider>
+                <ClinicProvider>
+                    {children}
+                </ClinicProvider>
+            </AuthProvider>
+        </SessionProvider>
     );
 }

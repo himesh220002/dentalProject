@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import Link from 'next/link';
 import axios from 'axios';
+import { signIn } from 'next-auth/react';
+import { FaGoogle } from 'react-icons/fa';
 import Image from 'next/image';
 
 export default function LoginPage() {
@@ -91,6 +93,25 @@ export default function LoginPage() {
                         )}
                     </button>
                 </form>
+
+                <div className="mt-6">
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-100"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-2 bg-white text-gray-400 font-medium text-xs uppercase tracking-widest">Or continue with</span>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => signIn('google', { callbackUrl: '/' })}
+                        className="mt-6 w-full flex items-center justify-center gap-3 bg-white text-gray-700 border border-gray-200 py-3 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-[0.98]"
+                    >
+                        <FaGoogle className="text-red-500" />
+                        Google
+                    </button>
+                </div>
 
                 <div className="mt-8 text-center text-sm font-medium text-gray-500">
                     Don't have an account?{' '}

@@ -319,14 +319,10 @@ export default function ProfilePage() {
                         <div className="flex flex-col lg:flex-row lg:items-center gap-6 sm:gap-10 relative z-10">
                             <div className="flex flex-col sm:flex-row items-center lg:items-start gap-6 sm:gap-8 flex-grow">
                                 <div className="relative group shrink-0">
-                                    {session?.user?.image ? (
-                                        <img src={session.user.image} alt="" className="w-20 h-20 sm:w-28 sm:h-28 rounded-[1.5rem] sm:rounded-[2.5rem] border-4 border-white/20 shadow-2xl transition-transform group-hover:scale-105 duration-500" />
-                                    ) : (
-                                        <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-[1.5rem] sm:rounded-[2.5rem] bg-white/10 flex items-center justify-center border-4 border-white/20 shadow-2xl transition-transform group-hover:scale-105 duration-500">
-                                            <FaUser size={32} className="text-blue-100 sm:hidden" />
-                                            <FaUser size={48} className="text-blue-100 hidden sm:block" />
-                                        </div>
-                                    )}
+                                    <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-[1.5rem] sm:rounded-[2.5rem] bg-white/10 flex items-center justify-center border-4 border-white/20 shadow-2xl transition-transform group-hover:scale-105 duration-500">
+                                        <FaUser size={32} className="text-blue-100 sm:hidden" />
+                                        <FaUser size={48} className="text-blue-100 hidden sm:block" />
+                                    </div>
                                 </div>
 
                                 <div className="space-y-3 text-center sm:text-left">

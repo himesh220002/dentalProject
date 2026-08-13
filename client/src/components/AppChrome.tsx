@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import LanguageToggle from './LanguageToggle';
+import FloatingWhatsApp from './FloatingWhatsApp';
 
 export default function AppChrome({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -16,6 +17,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
                 {children}
             </main>
             {!isDashboardRoute && <Footer />}
+            {!isDashboardRoute && <FloatingWhatsApp />}
             {!isDashboardRoute && <LanguageToggle />}
         </>
     );
