@@ -6,90 +6,28 @@ import Image from 'next/image';
 import { FaArrowRight } from 'react-icons/fa';
 
 const cases = [
-    {
-        id: 1,
-        title: 'Enhancing Patient Dental Care',
-        category: 'Routine Check-up',
-        image: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=80&w=800&auto=format&fit=crop',
-        link: '/treatments/general-dentistry'
-    },
-    {
-        id: 2,
-        title: 'Perfecting Smiles with Invisible Aligners',
-        category: 'Orthodontics',
-        image: 'https://images.unsplash.com/photo-1609840113322-a70583f106eb?q=80&w=800&auto=format&fit=crop',
-        link: '/treatments/orthodontics'
-    },
-    {
-        id: 3,
-        title: 'Painless Implant Procedures',
-        category: 'Dental Implants',
-        image: 'https://images.unsplash.com/photo-1667133295315-820bb6481730?q=80&w=800&auto=format&fit=crop',
-        link: '/treatments/dental-implants'
-    },
-    {
-        id: 4,
-        title: 'Advanced Teeth Whitening',
-        category: 'Cosmetic Dentistry',
-        image: 'https://images.unsplash.com/photo-1654373535457-383a0a4d00f9?q=80&w=800&auto=format&fit=crop',
-        link: '/treatments/teeth-whitening'
-    }
+    { id: 1, title: 'Gentle routine care', category: 'General · Prevention', image: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=80&w=800&auto=format&fit=crop', link: '/treatments/general-dentistry' },
+    { id: 2, title: 'Invisible aligners', category: 'Orthodontics', image: 'https://images.unsplash.com/photo-1609840113322-a70583f106eb?q=80&w=800&auto=format&fit=crop', link: '/treatments/orthodontics' },
+    { id: 3, title: 'Painless implants', category: 'Surgery · Implants', image: 'https://images.unsplash.com/photo-1667133295315-820bb6481730?q=80&w=800&auto=format&fit=crop', link: '/treatments/dental-implants' },
+    { id: 4, title: 'Whitening & polish', category: 'Cosmetic', image: 'https://images.unsplash.com/photo-1654373535457-383a0a4d00f9?q=80&w=800&auto=format&fit=crop', link: '/treatments/teeth-whitening' },
 ];
 
 export default function RecentCasesGallery() {
     const [hoveredIndex, setHoveredIndex] = useState<number>(0);
-
     return (
-        <section className="py-10 bg-[#fcfcfc] overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 shadow-sm mb-4">
-                        <span className="text-xs font-bold text-blue-600 tracking-wide uppercase">Know About Us</span>
+        <section className="py-10 sm:py-14 bg-[#fcfcfc] overflow-hidden">
+            <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-wrap items-end justify-between gap-4 mb-6 sm:mb-8">
+                    <div>
+                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">Selected work</div>
+                        <h2 className="text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] text-[#0a0a0b] leading-none mt-2">Recent cases <span className="font-serif italic font-normal text-neutral-400">— quietly excellent</span></h2>
                     </div>
-                    <h2 className="text-4xl sm:text-5xl font-serif font-black text-gray-900 tracking-tight">
-                        Explore Our Recent Cases
-                    </h2>
+                    <Link href="/treatments" className="hidden sm:inline-flex items-center gap-2 text-[13px] font-medium text-[#0a0a0b] hover:gap-3 transition-all">All treatments <FaArrowRight size={11} /></Link>
                 </div>
-
-                <div className="flex flex-col md:flex-row h-[500px] gap-2 md:gap-4 w-full">
-                    {cases.map((caseItem, index) => {
-                        const isActive = index === hoveredIndex;
-
-                        return (
-                            <Link
-                                href={caseItem.link}
-                                key={caseItem.id}
-                                onMouseEnter={() => setHoveredIndex(index)}
-                                className={`block relative h-full rounded-2xl overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] cursor-pointer
-                                    ${isActive ? 'md:flex-[4] flex-[2]' : 'md:flex-1 flex-1'}
-                                `}
-                            >
-                                <Image
-                                    src={caseItem.image}
-                                    alt={caseItem.title}
-                                    fill
-                                    className={`object-cover transition-transform duration-1000 ${isActive ? 'scale-105' : 'scale-100'}`}
-                                />
-
-                                {/* Gradient Overlay */}
-                                <div className={`absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-60'}`} />
-
-                                {/* Icon / Arrow (Top Right) */}
-                                <div className={`absolute top-6 right-6 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center text-blue-600 transition-all duration-500 transform ${isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                    <FaArrowRight className="-rotate-45" />
-                                </div>
-
-                                {/* Content (Bottom) */}
-                                <div className="absolute bottom-0 left-0 w-full p-6 sm:p-8 flex flex-col justify-end">
-                                    <div className={`transition-all duration-500 ease-out min-w-[280px] sm:min-w-[320px] ${isActive ? 'translate-y-0 opacity-100 delay-300' : 'translate-y-8 opacity-0 delay-0 duration-200'}`}>
-                                        <p className="text-blue-300 font-bold text-xs uppercase tracking-widest mb-2">{caseItem.category}</p>
-                                        <h3 className="text-white text-xl sm:text-2xl md:text-3xl font-bold leading-tight">
-                                            {caseItem.title}
-                                        </h3>
-                                    </div>
-                                </div>
-                            </Link>
-                        );
+                <div className="flex flex-col md:flex-row h-auto md:h-[420px] gap-3 w-full">
+                    {cases.map((c, i) => {
+                        const a = i === hoveredIndex;
+                        return <Link href={c.link} key={c.id} onMouseEnter={() => setHoveredIndex(i)} onClick={() => setHoveredIndex(i)} className={`relative rounded-[20px] overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer border border-black/5 h-[220px] md:h-full ${a ? 'md:flex-[2.6] flex-[1.2]' : 'md:flex-[0.9] flex-1'}`}><Image src={c.image} alt={c.title} fill className={`object-cover transition-transform duration-[1200ms] ${a ? 'scale-[1.04]' : 'scale-100'}`} /><div className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent ${a ? 'opacity-100' : 'opacity-70'}`} /><div className={`absolute top-4 right-4 w-8 h-8 bg-white rounded-full grid place-items-center text-[#0a0a0b] transition-all ${a ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}><FaArrowRight size={11} className="-rotate-45" /></div><div className="absolute bottom-0 left-0 w-full p-5 sm:p-6"><div className={`${a ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-90 md:opacity-0'} transition-all`}><p className="text-white/70 text-[11px] tracking-[0.14em] uppercase font-medium mb-1">{c.category}</p><h3 className="text-white text-[18px] sm:text-[20px] font-semibold tracking-[-0.02em] leading-tight">{c.title}</h3></div><div className={`md:hidden mt-1 text-white/80 text-[12px] font-medium ${a ? 'hidden' : 'block'}`}>{c.title}</div></div></Link>;
                     })}
                 </div>
             </div>

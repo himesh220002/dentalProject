@@ -7,129 +7,39 @@ import { useClinic } from '../context/ClinicContext';
 import { ensureAbsoluteUrl } from '../utils/urlHelper';
 
 export default function Footer() {
-    const { clinicData, isLoading } = useClinic();
-
-    // Fallback data if context is loading or fails
+    const { clinicData } = useClinic();
     const name = clinicData?.clinicName || 'ToothOp';
-    const tagline = clinicData?.tagline || 'Providing world-class dental care since 2014.';
+    const tagline = clinicData?.tagline || "Your Smile's Guardian";
     const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}` : 'Dental Clinic Road, Katihar, Bihar - 854105';
     const phone = clinicData?.phone || '+91 98765 43210';
     const email = clinicData?.email || 'care@toothop.com';
-
-    const socialPlatforms = [
-        { icon: <FaFacebookF />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.facebook || 'https://www.facebook.com/'), color: 'hover:bg-[#1877F2]' },
-        { icon: <FaTwitter />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.twitter || 'https://x.com/tweeter?lang=en'), color: 'hover:bg-[#1DA1F2]' },
-        { icon: <FaLinkedinIn />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.linkedin || 'https://www.linkedin.com/'), color: 'hover:bg-[#0A66C2]' },
-        { icon: <FaInstagram />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.instagram || 'https://www.instagram.com/'), color: 'hover:bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]' }
+    const socials = [
+        { icon: <FaFacebookF size={14} />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.facebook || 'https://www.facebook.com/') },
+        { icon: <FaTwitter size={14} />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.twitter || 'https://x.com/tweeter?lang=en') },
+        { icon: <FaLinkedinIn size={14} />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.linkedin || 'https://www.linkedin.com/') },
+        { icon: <FaInstagram size={14} />, href: ensureAbsoluteUrl(clinicData?.socialLinks?.instagram || 'https://www.instagram.com/') },
     ];
-
     return (
-        <footer className="bg-slate-950 text-white pt-20 pb-10 relative overflow-hidden">
-            {/* Background Decorative Elements */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50" />
-            <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-600/10 rounded-full blur-[40px]" />
-            <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-600/10 rounded-full blur-[40px]" />
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-                    {/* Brand Section */}
-                    <div className="space-y-6">
-                        <Link href="/" className="flex flex-col items-center justify-center md:justify-start group">
-                            <div className="rounded-2xl transition-transform duration-300 group-hover:scale-105">
-                                <Image src="/images/brand-logo.png" alt="Logo" width={600} height={600} className="w-26 h-26 object-cover object-center rounded-xl bg-white p-0.5" />
-                            </div>
-                            <span className="text-2xl font-serif font-black tracking-tight">
-                                {name.split(' ')[0]} <span className="text-blue-500 font-medium">{name.split(' ').slice(1).join(' ')}</span>
-                            </span>
-                        </Link>
-                        <p className="text-gray-400 text-sm text-center leading-relaxed font-medium">
-                            {tagline}
-                        </p>
-                    </div>
-
-                    {/* Navigation */}
-                    <div>
-                        <h4 className="text-sm font-black uppercase tracking-[0.2em] text-blue-500 mb-8 text-center md:text-start">Quick Navigation</h4>
-                        <ul className="space-y-4">
-                            {[
-                                { name: 'Home', href: '/' },
-                                { name: 'About Us', href: '/about' },
-                                { name: 'Treatments', href: '/treatments' },
-                                { name: 'My Bookings', href: '/my-bookings' },
-                                { name: 'Blogs', href: '/blogs' },
-                                { name: 'Contact Us', href: '/contact' },
-                                { name: 'Privacy Policy', href: '/privacy' },
-                                { name: 'Terms of Service', href: '/terms' }
-                            ].map((link) => (
-                                <li key={link.name}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-gray-400 hover:text-white transition-colors duration-300 flex items-center justify-center md:justify-start gap-2 group"
-                                    >
-                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 scale-0 group-hover:scale-100 transition-transform" />
-                                        <span className="font-bold text-sm tracking-wide">{link.name}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Contact Info */}
-                    <div>
-                        <h4 className="text-sm font-black text-center md:text-start uppercase tracking-[0.2em] text-blue-500 mb-8">Get In Touch</h4>
-                        <ul className="space-y-6 flex items-center sm:items-start justify-center md:justify-start flex-col">
-                            <li className="flex items-start gap-4 group">
-                                <div className="bg-slate-900 p-2.5 rounded-lg text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                                    <FaMapMarkerAlt size={14} />
-                                </div>
-                                <span className="text-gray-400 text-sm font-bold leading-relaxed whitespace-pre-line">
-                                    {address}
-                                </span>
-                            </li>
-                            <li className="flex items-center gap-4 group">
-                                <div className="bg-slate-900 p-2.5 rounded-lg text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                                    <FaPhoneAlt size={14} />
-                                </div>
-                                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-gray-400 hover:text-white text-sm font-black transition-colors">{phone}</a>
-                            </li>
-                            <li className="flex items-center gap-4 group">
-                                <div className="bg-slate-900 p-2.5 rounded-lg text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                                    <FaEnvelope size={14} />
-                                </div>
-                                <a href={`mailto:${email}`} className="text-gray-400 hover:text-white text-sm font-bold transition-colors">{email}</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Socials */}
-                    <div>
-                        <h4 className="text-sm font-black uppercase text-center md:text-start tracking-[0.2em] text-blue-500 mb-8">Follow Our Journey</h4>
-                        <div className="flex justify-center md:justify-start gap-4">
-                            {socialPlatforms.map((social, i) => (
-                                <a
-                                    key={i}
-                                    href={social.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={`w-11 h-11 bg-slate-900 rounded-xl flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${social.color}`}
-                                >
-                                    {social.icon}
-                                </a>
-                            ))}
+        <footer className="bg-[#0a0a0b] text-white relative overflow-hidden">
+            <div className="h-[1px] bg-white/10" />
+            <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
+                <div className="flex flex-wrap items-end justify-between gap-6 pb-8 border-b border-white/10">
+                    <div className="flex items-center gap-4">
+                        <div className="w-[48px] h-[48px] rounded-[14px] overflow-hidden bg-white p-[1px] shrink-0"><Image src="/images/brand-logo.png" alt="Logo" width={200} height={200} className="w-full h-full object-cover rounded-[13px]" /></div>
+                        <div>
+                            <div className="text-[18px] font-semibold tracking-[-0.02em] leading-none">{name.split(' ')[0]} <span className="font-normal text-white/60">{name.split(' ').slice(1).join(' ')}</span></div>
+                            <div className="text-[11px] tracking-[0.14em] uppercase font-medium text-white/50 mt-1">{tagline}</div>
                         </div>
                     </div>
+                    <Link href="/contact" className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full text-[13px] font-medium hover:bg-neutral-100 transition">Book visit →</Link>
                 </div>
-
-                {/* Bottom Bar */}
-                <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row  text-center lg:text-start items-center gap-4 md:gap-10">
-                    <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                        &copy; {new Date().getFullYear()} {name}. Engineered for Excellence. <a href="https://myweb-nine-tawny.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-500 text-[10px] font-bold uppercase tracking-widest transition-colors">Digitally Empowered by CypherTech</a>
-                    </p>
-                    <div className="flex gap-6">
-                        <Link href="/privacy" className="text-gray-600 hover:text-gray-400 text-[10px] font-bold uppercase tracking-widest transition-colors">Privacy Policy</Link>
-                        <Link href="/terms" className="text-gray-600 hover:text-gray-400 text-[10px] font-bold uppercase tracking-widest transition-colors">Terms of Service</Link>
-                    </div>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 py-10">
+                    <div><h4 className="text-[11px] tracking-[0.16em] uppercase font-medium text-white/40 mb-4">Navigate</h4><ul className="space-y-3">{[{ name: 'Home', href: '/' }, { name: 'About', href: '/about' }, { name: 'Treatments', href: '/treatments' }, { name: 'Blogs', href: '/blogs' }, { name: 'Contact', href: '/contact' }].map((l) => <li key={l.name}><Link href={l.href} className="text-[13.5px] text-white/75 hover:text-white transition">{l.name}</Link></li>)}</ul></div>
+                    <div><h4 className="text-[11px] tracking-[0.16em] uppercase font-medium text-white/40 mb-4">Information</h4><ul className="space-y-3">{[{ name: 'My bookings', href: '/my-bookings' }, { name: 'Timings', href: '/timings' }, { name: 'Privacy', href: '/privacy' }, { name: 'Terms', href: '/terms' }].map((l) => <li key={l.name}><Link href={l.href} className="text-[13.5px] text-white/75 hover:text-white transition">{l.name}</Link></li>)}</ul></div>
+                    <div className="col-span-2 lg:col-span-2"><h4 className="text-[11px] tracking-[0.16em] uppercase font-medium text-white/40 mb-4">Get in touch</h4><ul className="space-y-3"><li className="flex gap-3 text-[13.5px] text-white/70"><FaMapMarkerAlt size={12} className="mt-1 text-white/40 shrink-0" /><span className="leading-6">{address}</span></li><li className="flex gap-3 text-[13.5px]"><FaPhoneAlt size={12} className="mt-1 text-white/40 shrink-0" /><a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-white hover:text-white transition font-medium">{phone}</a></li><li className="flex gap-3 text-[13.5px]"><FaEnvelope size={12} className="mt-1 text-white/40 shrink-0" /><a href={`mailto:${email}`} className="text-white/70 hover:text-white transition">{email}</a></li></ul><div className="flex gap-2 mt-6">{socials.map((s, i) => <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 grid place-items-center text-white/70 hover:bg-white hover:text-black transition">{s.icon}</a>)}</div></div>
                 </div>
+                <div className="py-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3"><p className="text-[11px] tracking-[0.08em] font-medium text-white/40 text-center sm:text-left">© {new Date().getFullYear()} {name}. All rights reserved. · <a href="https://myweb-nine-tawny.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition underline decoration-white/20 underline-offset-4">CypherTech</a></p><div className="flex gap-5 text-[11px] tracking-[0.12em] uppercase font-medium text-white/40"><Link href="/privacy" className="hover:text-white transition">Privacy</Link><Link href="/terms" className="hover:text-white transition">Terms</Link></div></div>
+                <div className="pb-8 text-center"><p className="text-[11px] tracking-[0.14em] uppercase font-medium text-white/25">They say no one reads the footer. Now you have.</p></div>
             </div>
         </footer>
     );

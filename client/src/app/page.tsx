@@ -232,88 +232,66 @@ export default function Home() {
             {/* Recent Cases Accordion Gallery */}
             <RecentCasesGallery />
 
-            {/* Meet Our Team - New Dynamic Section with High-tech Pattern */}
-            <section className="relative py-20 px-6 sm:px-12 lg:px-16 overflow-hidden sm:rounded-[2.5rem] group w-full max-w-7xl mx-auto border border-slate-200/60">
-                {/* Immersive Lab Background */}
-                <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
-                    <NextImage
-                        src="/images/2307.i105.031.S.m005.c13.isometric biotechnology.jpg"
-                        fill
-                        className="object-cover opacity-[0.2]"
-                        alt="ToothOp - Advanced Biotechnology Background"
-                        priority
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50/70 via-white/10 to-blue-50/30"></div>
-                </div>
-
-                <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-10">
-                    <div className="space-y-4 text-center sm:text-start">
-                        <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black text-blue-900 leading-tight tracking-tight">
+            {/* Meet Our Team — approved minimal */}
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+                <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+                    <div>
+                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">The team</div>
+                        <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-none text-[#0a0a0b]">
                             {translations[language].homeSpecialists.title}
                         </h2>
-                        <p className="text-black text-sm md:text-base lg:text-xl font-medium leading-relaxed max-w-xl">
-                            {translations[language].homeSpecialists.subtitle}
-                        </p>
+                        <p className="mt-2 text-[14px] leading-6 text-neutral-600 max-w-[560px]">{translations[language].homeSpecialists.subtitle}</p>
                     </div>
+                    <Link href="/about" className="hidden sm:inline-flex items-center gap-2 text-[13px] font-medium text-[#0a0a0b] hover:gap-3 transition-all">
+                        Meet all <FaArrowRight size={11} />
+                    </Link>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {useClinic().isLoading ? (
-                        [...Array(4)].map((_, i) => <ConsultantCardSkeleton key={i} />)
-                    ) : (
-                        clinicData?.consultants.map((consultant, idx) => (
-                            <div key={idx} className="bg-white/90 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl border border-slate-200/70 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
-                                <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-6 transition-transform">
-                                    <FaUserMd size={40} className="text-blue-700" />
-                                </div>
-                                <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
-                                <p className="text-blue-700 font-bold uppercase tracking-widest text-xs mb-4">{consultant.role}</p>
-                                <div className="space-y-2">
-                                    <p className="text-gray-500 text-sm font-medium">{consultant.info}</p>
-                                    <p className="text-gray-900 text-sm font-black italic">{consultant.experience} {translations[language].homeSpecialists.experience}</p>
-                                </div>
-                            </div>
-                        ))
-                    )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                    {useClinic().isLoading
+                        ? [...Array(4)].map((_, i) => <ConsultantCardSkeleton key={i} />)
+                        : clinicData?.consultants.map((consultant, idx) => (
+                              <div key={idx} className="bg-white rounded-[20px] border border-black/5 p-6 hover:border-black/10 hover:shadow-sm transition">
+                                  <div className="w-12 h-12 rounded-full bg-[#0a0a0b] text-white grid place-items-center">
+                                      <FaUserMd size={18} />
+                                  </div>
+                                  <h3 className="mt-4 text-[16px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{consultant.name}</h3>
+                                  <p className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 mt-1">{consultant.role}</p>
+                                  <p className="text-[13px] leading-6 text-neutral-600 mt-3">{consultant.info}</p>
+                                  <p className="text-[12px] font-medium text-[#0a0a0b] mt-2">
+                                      {consultant.experience} {translations[language].homeSpecialists.experience}
+                                  </p>
+                              </div>
+                          ))}
                 </div>
             </section>
-
-            {/* Why Patients Trust - Preview Section with refined layout */}
-            <section className="bg-gradient-to-br from-transparent via-slate-200 to-transparent w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-10 sm:py-20 sm:rounded-[1rem] lg:rounded-[1rem] text-white overflow-hidden relative">
-                <div className="w-full mx-auto space-y-10">
-                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-                        <div className="space-y-6">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl text-gray-700 text-center sm:text-left xl:text-5xl font-black leading-tight">
-                                {language === 'hi' ? (
-                                    <>एक स्वस्थ मुस्कान स्वस्थ जीवन का <br /> <span className="text-blue-500">द्वार</span> है।</>
-                                ) : (
-                                    <>A healthy smile is the <br /> <span className="text-blue-500">gateway</span> to a healthy life.</>
-                                )}
+            {/* Transform — approved dark */}
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+                <div className="rounded-[24px] bg-[#0a0a0b] text-white p-6 sm:p-10 lg:p-12 overflow-hidden relative">
+                    <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5 blur-[40px]" />
+                    <div className="relative grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-center">
+                        <div>
+                            <h2 className="text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-[1.05]">
+                                A healthy smile is the <span className="font-serif italic font-normal text-white/60">gateway</span> to a healthy life.
                             </h2>
-                            <p className="text-gray-500 text-sm md:text-xl text-center sm:text-left font-medium max-w-2xl leading-relaxed">
-                                {language === 'hi'
-                                    ? '"हमारे क्लिनिक में, हम केवल दांत नहीं ठीक करते; हम आत्मविश्वास जगाते हैं। हमने अपने क्लिनिक को एक सुरक्षित, स्वागत योग्य स्थान के रूप में तैयार किया है जहां आप सहज महसूस कर सकें।"'
-                                    : '"At our clinic, we don\'t just fix teeth; we build confidence. We\'ve designed our practice to be a safe, welcoming space where you can feel at ease."'
-                                }
+                            <p className="mt-4 text-[14px] leading-7 text-white/70 max-w-[560px]">
+                                “At our clinic, we don’t just fix teeth; we build confidence. We’ve designed our practice to be a safe, welcoming space where you can feel at ease.”
                             </p>
                         </div>
-                        <div className="shrink-0 flex items-center gap-6 justify-center sm:justify-start mt-4 sm:mt-0">
-                            <div className="w-20 h-20 bg-blue-700 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/20">
-                                <FaUserMd size={40} className="text-white" />
+                        <div className="flex items-center gap-4">
+                            <div className="w-14 h-14 rounded-full bg-white text-black grid place-items-center shrink-0">
+                                <FaUserMd size={18} />
                             </div>
                             <div>
-                                <h4 className="text-xl text-gray-600 font-black">{doctorName}</h4>
-                                <p className="text-blue-500 font-bold uppercase tracking-widest text-xs">
-                                    {language === 'hi' ? 'मुख्य दंत शल्य चिकित्सक' : doctorRole}
-                                </p>
+                                <div className="text-[15px] font-medium">{doctorName}</div>
+                                <div className="text-[11px] tracking-[0.14em] uppercase font-medium text-white/60">{doctorRole}</div>
                             </div>
                         </div>
                     </div>
-
-                    <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6 sm:gap-12 pt-6 sm:pt-12 border-t border-white/10">
-                        {defaultHighlights.map((defaultHighlights, idx) => (
-                            <div key={idx} className="space-y-4">
-                                <h3 className="text-lg md:text-xl text-center sm:text-start text-gray-600 font-black">{defaultHighlights.title}</h3>
-                                <p className="text-gray-500 text-center sm:text-start leading-relaxed font-medium text-sm md:text-base">{defaultHighlights.description}</p>
+                    <div className="mt-8 pt-8 border-t border-white/10 grid md:grid-cols-3 gap-6 sm:gap-8">
+                        {defaultHighlights.map((h, idx) => (
+                            <div key={idx}>
+                                <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-white">{h.title}</h3>
+                                <p className="text-[13px] leading-6 text-white/60 mt-2">{h.description}</p>
                             </div>
                         ))}
                     </div>
@@ -338,18 +316,16 @@ export default function Home() {
                 <PatientReviews />
             </div> */}
 
-            {/* Virtual Clinic Tour - Refined */}
-            <section className="space-y-12 sm:space-y-16 w-full max-w-7xl mx-auto">
-                <div className="text-center space-y-3 sm:space-y-4">
-                    <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-blue-900 uppercase">
-                        {translations[language].homeVirtualTour.title}
-                    </h2>
-                    <div className="h-1.5 sm:h-2 w-16 sm:w-24 bg-blue-500 mx-auto rounded-full"></div>
-                    <p className="text-gray-400 font-bold tracking-widest text-xs sm:text-sm uppercase">
-                        {translations[language].homeVirtualTour.subtitle}
-                    </p>
+            {/* Virtual clinic tour — approved minimal */}
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+                <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
+                    <div>
+                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">Inside the clinic</div>
+                        <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-none text-[#0a0a0b]">{translations[language].homeVirtualTour.title}</h2>
+                        <p className="text-[13px] text-neutral-500 mt-2">{translations[language].homeVirtualTour.subtitle}</p>
+                    </div>
                 </div>
-                <div className="bg-white p-4 sm:p-8 mx-2 sm:mx-6 lg:mx-8  rounded-[2rem] sm:rounded-[4rem] shadow-2xl border border-gray-100 overflow-hidden">
+                <div className="bg-white p-3 sm:p-4 rounded-[24px] border border-black/5 shadow-sm overflow-hidden">
                     <ClinicCarousel />
                 </div>
             </section>
@@ -390,37 +366,22 @@ export default function Home() {
                 )
             }
 
-            {/* Elite CTA Strip */}
-            <section className="pt-6 pb-12 sm:pb-20 overflow-hidden relative w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 rounded-[2rem]">
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-[2.5rem] sm:rounded-[4rem] p-10 md:p-16 text-center space-y-10 sm:space-y-12 shadow-[0_40px_80px_-15px_rgba(15,23,42,0.45)] relative overflow-hidden group">
-                    {/* Decorative Elements */}
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-44 -mt-44 blur-[100px] transition-all duration-700"></div>
-                    <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-500/15 rounded-full -mr-40 -mb-40 blur-[80px]"></div>
-
-                    <div className="relative z-10 space-y-6 sm:space-y-8">
-                        <h2 className="text-2xl sm:text-4xl md:text-6xl font-black leading-tight max-w-4xl mx-auto tracking-tight">
-                            {translations[language].homeCTA.title1} <br />
-                            <span className="bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">
-                                {translations[language].homeCTA.title2}
-                            </span>
+            {/* Transform — approved minimal CTA */}
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+                <div className="rounded-[24px] bg-white border border-black/5 p-8 sm:p-10 lg:p-12 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+                    <div className="max-w-[560px]">
+                        <h2 className="text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-[1.05] text-[#0a0a0b]">
+                            {translations[language].homeCTA.title1} <span className="font-serif italic font-normal text-neutral-400">{translations[language].homeCTA.title2}</span>
                         </h2>
-                        <p className="text-blue-100 text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto font-medium opacity-90">
-                            {translations[language].homeCTA.subtitle}
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center pt-6 sm:pt-8">
-                            <Link
-                                href="/contact"
-                                className="w-full sm:w-auto bg-white text-blue-600 px-10 sm:px-16 py-4 sm:py-6 rounded-2xl sm:rounded-[2.5rem] font-black shadow-2xl hover:bg-gray-100 transition transform hover:-translate-y-2 active:scale-95 text-lg sm:text-xl"
-                            >
-                                {translations[language].homeCTA.getStarted}
-                            </Link>
-                            <Link
-                                href="/treatments"
-                                className="w-full sm:w-auto text-white border-2 border-white/30 px-8 sm:px-12 py-4 sm:py-5 rounded-2xl sm:rounded-[2.5rem] font-bold hover:bg-white/10 transition backdrop-blur-sm text-base"
-                            >
-                                {translations[language].homeCTA.viewTreatments}
-                            </Link>
-                        </div>
+                        <p className="mt-3 text-[14.5px] leading-7 text-neutral-600">{translations[language].homeCTA.subtitle}</p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                        <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-[#0a0a0b] text-white px-8 py-3.5 rounded-full text-[14px] font-medium hover:bg-black transition">
+                            {translations[language].homeCTA.getStarted} <FaArrowRight size={12} />
+                        </Link>
+                        <Link href="/treatments" className="inline-flex items-center justify-center gap-2 bg-white border border-black/10 text-[#0a0a0b] px-7 py-3.5 rounded-full text-[14px] font-medium hover:bg-neutral-50 transition">
+                            {translations[language].homeCTA.viewTreatments}
+                        </Link>
                     </div>
                 </div>
             </section>

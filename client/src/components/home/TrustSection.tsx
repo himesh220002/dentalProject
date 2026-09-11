@@ -1,138 +1,79 @@
-import { FaUserMd, FaTooth, FaSmile, FaCertificate } from 'react-icons/fa';
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
 import { useClinic } from '../../context/ClinicContext';
 import { translations } from '../../constants/translations';
 import Skeleton from '../ui/Skeleton';
 
+function CountUp({ end, suffix = '', duration = 1400 }: { end: number; suffix?: string; duration?: number }) {
+    const [v, setV] = useState(0);
+    const ref = useRef<HTMLSpanElement>(null);
+    const started = useRef(false);
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const io = new IntersectionObserver(([e]) => {
+            if (e.isIntersecting && !started.current) {
+                started.current = true;
+                const t0 = performance.now();
+                const tick = (now: number) => {
+                    const p = Math.min(1, (now - t0) / duration);
+                    const eased = 1 - Math.pow(1 - p, 3);
+                    setV(Math.round(eased * end));
+                    if (p < 1) requestAnimationFrame(tick);
+                };
+                requestAnimationFrame(tick);
+            }
+        }, { threshold: 0.35 });
+        io.observe(el);
+        return () => io.disconnect();
+    }, [end, duration]);
+    return <span ref={ref}>{v.toLocaleString('en-IN')}{suffix}</span>;
+}
+
 export default function TrustSection() {
-    const { clinicData, language } = useClinic();
+    const { clinicData, language, isLoading } = useClinic();
     const t = translations[language];
-
-    // Default features if no data
-    const defaultFeatures = [
-        {
-            icon: <FaUserMd size={28} />,
-            title: '12+ Years Expertise',
-            description: 'Decades of specialized experience in advanced dental surgery and patient diagnostics.',
-            color: 'blue'
-        },
-        {
-            icon: <FaTooth size={28} />,
-            title: 'Modern Technology',
-            description: 'Using low-radiation digital X-rays and painless laser dentistry for your safety.',
-            color: 'teal'
-        },
-        {
-            icon: <FaSmile size={28} />,
-            title: 'Patient-First Care',
-            description: 'We prioritize your comfort with a friendly staff and a stress-free environment.',
-            color: 'indigo'
-        }
-    ];
-
-    // Use highlights from clinicData if available, otherwise use defaults
-    const features = clinicData?.highlights.map((h, i) => ({
-        icon: i === 0 ? <FaUserMd size={28} /> : i === 1 ? <FaTooth size={28} /> : <FaSmile size={28} />,
-        title: h.title,
-        description: h.description,
-        color: i === 0 ? 'blue' : i === 1 ? 'teal' : 'indigo'
-    })) || defaultFeatures;
-
+    const happyNum = parseInt((clinicData?.happyCustomers || '5000+').replace(/\D/g, '')) || 5000;
+    const expNum = parseInt(clinicData?.clinicExperience || '10') || 10;
+    const successNum = parseFloat(clinicData?.successRate || '99.9') || 99.9;
+    const features = clinicData?.highlights?.length
+        ? clinicData.highlights.map((h) => ({ title: h.title, description: h.description }))
+        : [
+              { title: 'Advanced Technology', description: 'Intraoral scanners & 3D imaging for precise diagnosis.' },
+              { title: 'Pain-free Dentistry', description: 'Modern anesthesia & laser treatments for comfort.' },
+              { title: 'Sterile Environment', description: 'Class B Autoclave sterilization protocols.' },
+          ];
     return (
-        <section className="relative max-w-7xl mx-auto space-y-12 sm:space-y-20 px-6 sm:px-auto overflow-hidden">
-            {/* Steel Fence Cross-Net Pattern Background */}
-            {/* <div className="absolute inset-0 -z-20"
-                style={{
-                    backgroundImage: `
-                        radial-gradient(circle at 1px  1px, rgba(100,116,139,0.12) 1px, transparent 1px),
-                        repeating-linear-gradient(45deg, transparent 0, transparent 9px, rgba(100,116,139,0.08) 9px, rgba(100,116,139,0.08) 10px),
-                        repeating-linear-gradient(-45deg, transparent 0, transparent 9px, rgba(100,116,139,0.08) 9px, rgba(100,116,139,0.08) 10px)
-                    `,
-                    backgroundSize: '120px 120px'
-                }}
-            /> */}
-            <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-                {/* Left: Visual Content */}
-                <div className="flex-1 relative order-2 lg:order-1 w-full max-w-[500px] lg:max-w-none mx-auto lg:mx-0 mt-8 lg:mt-0">
-                    <div className="absolute -inset-4 sm:-inset-6 bg-slate-100 rounded-[2rem] sm:rounded-[3rem] -rotate-2 -z-10"></div>
-                    <div className="relative bg-white p-3 sm:p-4 rounded-[2rem] sm:rounded-[3rem] shadow-2xl">
-                        {useClinic().isLoading ? (
-                            <Skeleton variant="rect" className="rounded-[1.5rem] sm:rounded-[2.5rem] w-full h-[300px] sm:h-[400px] lg:h-[450px]" />
-                        ) : (
-                            <img
-                                src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=2070&auto=format&fit=crop"
-                                alt="Precision Dental Care and Advanced Equipment at ToothOp Katihar"
-                                className="rounded-[1.5rem] sm:rounded-[2.5rem] w-full h-[300px] sm:h-[400px] lg:h-[450px] object-cover"
-                            />
-                        )}
-                        {/* Floating Experience Badge */}
-                        {!useClinic().isLoading && (
-                            <div className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 lg:-bottom-10 lg:-right-10 bg-slate-900 text-white p-4 sm:p-6 lg:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl border-4 border-white flex items-center gap-4 sm:gap-6">
-                                <div className="bg-blue-700 p-3 sm:p-4 rounded-2xl sm:rounded-3xl text-white">
-                                    <FaCertificate size={24} className="sm:size-[32px]" />
-                                </div>
-                                <div>
-                                    <p className="text-xl sm:text-2xl lg:text-3xl font-black leading-none mb-1">{t.homeTrust.badgeSubtitle}</p>
-                                    <p className="text-[8px] sm:text-[10px] text-gray-400 font-black uppercase tracking-widest">{t.homeTrust.badgeTitle}</p>
-                                </div>
-                            </div>
-                        )}
+        <section className="relative max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-2">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-10 sm:mb-14">
+                {[
+                    { label: 'Years of care', value: <CountUp end={expNum} suffix="+" />, sub: `Since ${clinicData?.establishedYear || '2014'}` },
+                    { label: 'Happy patients', value: <CountUp end={happyNum} suffix="+" />, sub: 'Across Katihar' },
+                    { label: 'Sterile success', value: <><CountUp end={Math.floor(successNum)} />.{String(successNum).split('.')[1] || '9'}%</>, sub: 'Class-B protocols' },
+                ].map((m) => (
+                    <div key={m.label} className="rounded-2xl bg-white border border-black/5 p-5 sm:p-6">
+                        <div className="text-[28px] sm:text-[36px] font-semibold tracking-[-0.04em] leading-none text-[#0a0a0b]">{m.value}</div>
+                        <div className="text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-500 mt-2">{m.label}</div>
+                        <div className="text-[11px] text-neutral-400 mt-1 hidden sm:block">{m.sub}</div>
+                    </div>
+                ))}
+            </div>
+            <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-8 lg:gap-12 items-center">
+                <div className="relative order-2 lg:order-1">
+                    <div className="bg-white p-2 rounded-[24px] border border-black/5 shadow-[0_16px_40px_rgba(0,0,0,0.06)]">
+                        {isLoading ? <Skeleton variant="rect" className="rounded-[18px] w-full h-[360px] lg:h-[440px]" /> : <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=2070&auto=format&fit=crop" alt="Precision Dental Care at ToothOp Katihar" className="rounded-[18px] w-full h-[360px] lg:h-[440px] object-cover" />}
+                        {!isLoading && <div className="absolute -bottom-4 -right-4 sm:-bottom-5 sm:-right-5 bg-[#0a0a0b] text-white px-5 py-4 rounded-2xl shadow-xl flex items-center gap-3 border border-white/10"><div className="w-10 h-10 rounded-full bg-white text-black grid place-items-center font-bold">✓</div><div><div className="text-[18px] font-semibold leading-none">{t.homeTrust.badgeSubtitle}</div><div className="text-[10px] tracking-[0.16em] uppercase font-medium text-white/60">{t.homeTrust.badgeTitle}</div></div></div>}
                     </div>
                 </div>
-
-                {/* Right: Text Content */}
-                <div className="flex-1 space-y-8 sm:space-y-10 order-1 lg:order-2 text-center lg:text-left">
-                    <div className="space-y-4">
-                        <div className="inline-block bg-slate-100 text-slate-700 px-4 py-1 rounded-full text-[10px] sm:text-xs font-black tracking-widest uppercase">
-                            {t.homeTrust.tag}
-                        </div>
-                        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-tight">
-                            {useClinic().isLoading ? <Skeleton variant="text" className="h-16 w-3/4 mx-auto lg:mx-0" /> : (
-                                t.homeTrust.title.split('<br />').map((text: string, i: number) => (
-                                    <span key={i}>{text}{i === 0 && <br />}</span>
-                                )) || t.homeTrust.title
-                            )}
-                        </h2>
-                        {useClinic().isLoading ? (
-                            <div className="max-w-xl mx-auto lg:mx-0">
-                                <Skeleton variant="text" className="h-20" />
-                            </div>
-                        ) : (
-                            <p className="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
-                                {t.homeTrust.description}
-                            </p>
-                        )}
+                <div className="order-1 lg:order-2 space-y-6">
+                    <div>
+                        <div className="inline-flex px-3 py-1 rounded-full bg-white border border-black/5 text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-600">{t.homeTrust.tag}</div>
+                        <h2 className="mt-4 text-[30px] sm:text-[38px] lg:text-[42px] font-semibold tracking-[-0.03em] leading-[1.05] text-[#0a0a0b]">Excellence in modern<br /><span className="font-serif italic font-normal text-neutral-400">dentistry — made calm.</span></h2>
+                        <p className="mt-4 text-[14.5px] leading-7 text-neutral-600 max-w-[560px]">{t.homeTrust.description}</p>
                     </div>
-
-                    <div className="space-y-6 sm:space-y-8 max-w-xl mx-auto lg:mx-0">
-                        {useClinic().isLoading ? (
-                            [...Array(3)].map((_, i) => (
-                                <div key={i} className="flex gap-4 sm:gap-6">
-                                    <Skeleton variant="circle" className="w-14 h-14 !rounded-2xl" />
-                                    <div className="flex-1 space-y-2">
-                                        <Skeleton variant="text" className="h-6 w-1/3" />
-                                        <Skeleton variant="text" className="h-4 w-full" />
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            features.map((feature, index) => (
-                                <div key={index} className="flex gap-4 sm:gap-6 group text-left">
-                                    <div className={`w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110
-                                        ${feature.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                            feature.color === 'teal' ? 'bg-cyan-100 text-cyan-700' :
-                                                'bg-indigo-100 text-indigo-700'}`}
-                                    >
-                                        <div className="scale-90 sm:scale-100">
-                                            {feature.icon}
-                                        </div>
-                                    </div>
-                                    <div className="space-y-0.5 sm:space-y-1">
-                                        <h3 className="text-lg sm:text-xl font-black text-slate-900 group-hover:text-blue-700 transition-colors tracking-tight">{feature.title}</h3>
-                                        <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">{feature.description}</p>
-                                    </div>
-                                </div>
-                            ))
-                        )}
+                    <div className="space-y-4">
+                        {isLoading ? [...Array(3)].map((_, i) => <div key={i} className="flex gap-4"><Skeleton variant="circle" className="w-10 h-10 !rounded-xl" /><div className="flex-1 space-y-2"><Skeleton variant="text" className="h-5 w-1/3" /><Skeleton variant="text" className="h-4 w-full" /></div></div>) : features.map((f, idx) => <div key={idx} className="flex gap-4 p-4 rounded-2xl bg-white border border-black/5"><div className="w-10 h-10 rounded-xl bg-[#f5f5f3] border border-black/5 grid place-items-center shrink-0 text-sm font-bold text-neutral-700">0{idx + 1}</div><div><h3 className="text-[15px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{f.title}</h3><p className="text-[13.5px] leading-6 text-neutral-600 mt-1">{f.description}</p></div></div>)}
                     </div>
                 </div>
             </div>
