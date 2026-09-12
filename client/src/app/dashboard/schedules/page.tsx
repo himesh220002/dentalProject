@@ -3,11 +3,12 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { FaCalendarPlus, FaClock, FaUser, FaTrash, FaNotesMedical, FaChevronDown, FaWhatsapp, FaEdit, FaSearch, FaFilter } from 'react-icons/fa';
+import { FaCalendarPlus, FaClock, FaUser, FaTrash, FaNotesMedical, FaChevronDown, FaWhatsapp, FaEdit, FaSearch, FaFilter, FaCheck, FaPrint, FaFileMedical } from 'react-icons/fa';
 import { useClinic } from '@/context/ClinicContext';
 import Link from 'next/link';
 import QuickScheduler from '@/components/QuickScheduler';
 import MobileAppointmentCard from '@/components/dashboard/MobileAppointmentCard';
+import SuperfineReport from '@/components/reports/SuperfineReport';
 import { parseDateTime } from '@/utils/dateUtils';
 import { parseAppointmentReason } from '@/utils/appointmentUtils';
 
@@ -40,6 +41,10 @@ function DashboardSchedulesContent() {
     const [statusFilter, setStatusFilter] = useState<'all' | 'Scheduled' | 'Operating' | 'Completed' | 'Delayed'>('all');
     const [paymentFilter, setPaymentFilter] = useState<'all' | 'Paid' | 'Pending' | 'None'>('all');
     const [dateFilter, setDateFilter] = useState<'today' | 'tomorrow' | 'week' | 'all'>('week');
+    const [completeApt, setCompleteApt] = useState<Appointment | null>(null);
+    const [treatments, setTreatments] = useState<any[]>([]);
+    const [completeForm, setCompleteForm] = useState({ treatmentNames: [] as string[], notes: '', prescription: '', cost: '' });
+    const [reportView, setReportView] = useState<{ patient: any, record: any } | null>(null);
 
     useEffect(() => {
         const clicked: Record<string, boolean> = {};
@@ -102,6 +107,39 @@ function DashboardSchedulesContent() {
     const handleEdit = (id: string) => { setShouldSkipWhatsApp(true); setEditingAppointmentId(id); setIsSchedulerOpen(true); };
     const handleCloseScheduler = () => { setIsSchedulerOpen(false); setEditingAppointmentId(undefined); };
     function isPastTime(appDate: string, appTime: string) { return new Date() > parseDateTime(appDate, appTime); }
+
+    useEffect(() => {
+        if (!completeApt) return;
+        const fetchTreatments = async () => { try { const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/treatments`); setTreatments(res.data); } catch {} };
+        fetchTreatments();
+        const initial = parseAppointmentReason(completeApt.reason).treatmentName;
+        setCompleteForm({ treatmentNames: initial ? [initial] : [], notes: '', prescription: '', cost: completeApt.amount?.toString() || '' });
+    }, [completeApt]);
+
+    const handleCompleteStart = (apt: Appointment) => setCompleteApt(apt);
+    const handleCompleteSubmit = async () => {
+        if (!completeApt) return;
+        try {
+            const patientId = typeof completeApt.patientId === 'object' ? (completeApt.patientId as any)._id : (completeApt.patientId as any);
+            const treatmentName = completeForm.treatmentNames.join(', ') || parseAppointmentReason(completeApt.reason).treatmentName;
+            const cost = parseInt(completeForm.cost) || completeApt.amount || 0;
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/treatment-records`, { patientId, treatmentName, cost, notes: completeForm.notes, prescription: completeForm.prescription, date: new Date().toISOString() });
+            await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${completeApt._id}`, { status: 'Completed', isTicked: true, paymentStatus: completeForm.cost ? 'Pending' : completeApt.paymentStatus });
+            try { const patRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/patients/${patientId}`); setReportView({ patient: patRes.data, record: res.data }); } catch { setReportView({ patient: { _id: patientId, name: (completeApt.patientId as any)?.name || 'Patient', contact: (completeApt.patientId as any)?.contact }, record: res.data }); }
+            setCompleteApt(null); fetchAppointments();
+        } catch (e) { alert('Failed to complete treatment'); console.error(e); }
+    };
+    const handleViewReport = async (apt: Appointment) => {
+        try {
+            const patientId = typeof apt.patientId === 'object' ? (apt.patientId as any)._id : (apt.patientId as any);
+            const recRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/treatment-records/patient/${patientId}`);
+            const latest = recRes.data[0];
+            if (latest) {
+                const patRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/patients/${patientId}`);
+                setReportView({ patient: patRes.data, record: latest });
+            } else alert('No treatment record found. Complete the treatment first.');
+        } catch { alert('Failed to load report'); }
+    };
 
     if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-2 border-black/10 border-t-[#0a0a0b] rounded-full animate-spin" /></div>;
 
@@ -216,6 +254,11 @@ function DashboardSchedulesContent() {
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-right">
                                             <div className="inline-flex gap-1.5">
+                                                {displayStatus === 'Operating' ? (
+                                                    <button onClick={() => handleCompleteStart(apt)} className="w-8 h-8 rounded-full bg-[#0a0a0b] text-white grid place-items-center hover:bg-black animate-pulse" title="Complete & Document"><FaCheck size={11} /></button>
+                                                ) : displayStatus === 'Completed' ? (
+                                                    <button onClick={() => handleViewReport(apt)} className="w-8 h-8 rounded-full bg-white border border-black/5 text-neutral-700 grid place-items-center hover:bg-[#fcfcfc] hover:border-black/10" title="View Report"><FaFileMedical size={11} /></button>
+                                                ) : null}
                                                 <button onClick={() => { const clinicName = clinicData?.clinicName || "ToothOp"; const mapsLink = (clinicData?.address?.latitude && clinicData?.address?.longitude) ? `https://www.google.com/maps/search/?api=1&query=${clinicData.address.latitude},${clinicData.address.longitude}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicName + " " + (clinicData?.address?.city || ""))}`; const msg = `*Appointment Reminder* 🦷\n\nDear Patient, this is a friendly reminder for your appointment today at *${clinicName}*.\n\n*Time:* ${apt.time}\n*Location:* ${clinicData?.address?.city || 'Katihar'}, ${clinicData?.address?.state || 'Bihar'}\n*Google Maps:* ${mapsLink}\n\nSee you soon!`; const phone = apt.patientId?.contact || ''; localStorage.setItem(`wa_clicked_${apt._id}`, 'true'); setWaClicked(prev => ({ ...prev, [apt._id]: true })); window.open(`https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank'); }} className={`w-8 h-8 rounded-full grid place-items-center border transition ${new Date(apt.date).toDateString() === new Date().toDateString() && apt.status === 'Scheduled' && !waClicked[apt._id] ? 'bg-emerald-500 text-white border-emerald-400 animate-pulse' : 'bg-white border-black/5 text-emerald-600 hover:bg-emerald-50'}`} title="WhatsApp"><FaWhatsapp size={12} /></button>
                                                 <button onClick={() => handleEdit(apt._id)} className="w-8 h-8 rounded-full bg-white border border-black/5 text-neutral-700 grid place-items-center hover:bg-[#f5f5f3] transition" title="Edit"><FaEdit size={11} /></button>
                                                 <button onClick={() => handleReschedule(apt._id)} className="w-8 h-8 rounded-full bg-white border border-black/5 text-neutral-700 grid place-items-center hover:bg-[#f5f5f3] transition" title="Reschedule"><FaCalendarPlus size={11} /></button>
@@ -237,6 +280,56 @@ function DashboardSchedulesContent() {
 
                 {displayedAppointments.length === 0 && <div className="text-center py-12 text-[13px] text-neutral-500">No appointments found.</div>}
             </div>
+
+            {/* Complete & Document drawer — superfine */}
+            {completeApt && (
+                <div className="fixed inset-0 z-[90] bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-white rounded-[24px] border border-black/5 w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-xl">
+                        <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between">
+                            <div>
+                                <div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Complete Treatment</div>
+                                <div className="text-[14px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{(completeApt.patientId as any)?.name || 'Patient'} • {parseAppointmentReason(completeApt.reason).treatmentName}</div>
+                            </div>
+                            <button onClick={() => setCompleteApt(null)} className="w-8 h-8 rounded-full bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-600 hover:bg-white">✕</button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                            <div>
+                                <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Treatments Performed</label>
+                                <div className="mt-2 space-y-2">
+                                    {completeForm.treatmentNames.map((name, idx) => (
+                                        <div key={idx} className="flex gap-2">
+                                            <select value={name} onChange={e => { const v = e.target.value; setCompleteForm(prev => { const arr = [...prev.treatmentNames]; arr[idx] = v; return { ...prev, treatmentNames: arr }; }); }} className="flex-1 h-10 px-3 rounded-full bg-[#fcfcfc] border border-black/5 text-[13px] font-medium outline-none focus:bg-white">
+                                                <option value="">Select treatment</option>
+                                                {treatments.map((t: any) => <option key={t._id} value={t.name}>{t.name}</option>)}
+                                            </select>
+                                            <button type="button" onClick={() => setCompleteForm(prev => ({ ...prev, treatmentNames: prev.treatmentNames.filter((_, i) => i !== idx) }))} className="w-9 h-9 rounded-full bg-white border border-black/5 text-rose-500 grid place-items-center hover:bg-rose-50"><FaTrash size={11} /></button>
+                                        </div>
+                                    ))}
+                                    <button type="button" onClick={() => setCompleteForm(prev => ({ ...prev, treatmentNames: [...prev.treatmentNames, ''] }))} className="w-full h-9 rounded-full border border-dashed border-black/10 text-[12px] font-medium text-neutral-600 hover:bg-[#fcfcfc]">+ Add treatment</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Clinical Notes</label>
+                                <textarea value={completeForm.notes} onChange={e => setCompleteForm(prev => ({ ...prev, notes: e.target.value }))} rows={3} placeholder="Findings, procedure, follow-up..." className="mt-1 w-full p-3 rounded-2xl bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/10 outline-none text-[13px] leading-6 resize-none" />
+                            </div>
+                            <div>
+                                <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Prescription</label>
+                                <textarea value={completeForm.prescription} onChange={e => setCompleteForm(prev => ({ ...prev, prescription: e.target.value }))} rows={4} placeholder="e.g. Amoxicillin 500mg — 1 morning, 1 night for 5 days" className="mt-1 w-full p-3 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:bg-white focus:border-emerald-200 outline-none text-[13px] leading-6 resize-none" />
+                            </div>
+                            <div>
+                                <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Amount (₹)</label>
+                                <input type="number" value={completeForm.cost} onChange={e => setCompleteForm(prev => ({ ...prev, cost: e.target.value }))} placeholder="e.g. 1500" className="mt-1 w-full h-10 px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/10 outline-none text-[13px] font-medium" />
+                            </div>
+                        </div>
+                        <div className="p-4 border-t border-black/5 flex gap-2">
+                            <button onClick={() => setCompleteApt(null)} className="flex-1 h-10 rounded-full bg-white border border-black/5 text-[13px] font-medium">Cancel</button>
+                            <button onClick={handleCompleteSubmit} className="flex-1 h-10 rounded-full bg-[#0a0a0b] text-white text-[13px] font-medium hover:bg-black flex items-center justify-center gap-2"><FaCheck size={11} /> Complete & Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {reportView && <SuperfineReport patient={reportView.patient} record={reportView.record} onClose={() => setReportView(null)} />}
 
             <QuickScheduler isOpen={isSchedulerOpen} onClose={handleCloseScheduler} onSuccess={fetchAppointments} appointmentId={editingAppointmentId} skipWhatsApp={shouldSkipWhatsApp} />
         </div>

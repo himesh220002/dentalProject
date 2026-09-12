@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useSession } from '../../context/AuthContext';
 import axios from 'axios';
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCalendarAlt, FaHistory, FaCheckCircle, FaExclamationCircle, FaLock } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCalendarAlt, FaHistory, FaCheckCircle, FaExclamationCircle, FaLock, FaEye } from 'react-icons/fa';
 import SessionGuard from '@/components/SessionGuard';
 import { parseAppointmentReason, cleanNotes } from '@/utils/appointmentUtils';
 import { io } from 'socket.io-client';
+import SuperfineReport from '@/components/reports/SuperfineReport';
 
 const CLINIC_DRUGS = [
     { name: 'Lidocaine (LA)', instruction: 'Administered in-clinic for numbing' },
@@ -18,7 +19,6 @@ const CLINIC_DRUGS = [
     { name: 'Augmentin (Prophylactic)', instruction: 'Single 1.2g dose administered pre-procedure' },
     { name: 'Diclofenac Injection', instruction: 'Administered for severe swelling' }
 ];
-
 const HOME_DRUGS = [
     { name: 'Amoxicillin 500mg', instruction: '1 Morning, 1 Night (After food) for 5 days' },
     { name: 'Ibuprofen 400mg', instruction: '1 Morning, 1 Night (After food) - Take only if pain persists' },
@@ -33,18 +33,7 @@ const HOME_DRUGS = [
     { name: 'Limcee 500mg', instruction: 'Chew 1 tablet daily for 15 days' }
 ];
 
-interface Patient {
-    _id: string;
-    name: string;
-    age: number;
-    gender: string;
-    contact: string;
-    email: string;
-    address: string;
-    alternateContact: string;
-    addedByAdmin: boolean;
-    createdAt: string;
-}
+interface Patient { _id: string; name: string; age: number; gender: string; contact: string; email: string; address: string; alternateContact: string; addedByAdmin: boolean; createdAt: string; }
 
 export default function ProfilePage() {
     const { data: session } = useSession();
@@ -61,803 +50,314 @@ export default function ProfilePage() {
     const [isLinkingModalOpen, setIsLinkingModalOpen] = useState(false);
     const [linkingId, setLinkingId] = useState('');
     const [isLinking, setIsLinking] = useState(false);
+    const [reportView, setReportView] = useState<{ patient: any, record: any } | null>(null);
+    const [formData, setFormData] = useState({ name: '', age: 0, gender: '', address: '', contact: '', alternateContact: '' });
 
     const handleLinkRecord = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (!linkingId.trim()) return;
-        setIsLinking(true);
-        setError(null);
-        setSuccess(null);
-
+        setIsLinking(true); setError(null); setSuccess(null);
         try {
             const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-            const res = await axios.post(`${backendUrl}/api/auth/link-patient`, {
-                // @ts-ignore
-                userId: session?.user?.id,
-                patientRecordId: linkingId.trim()
-            });
-
+            const res = await axios.post(`${backendUrl}/api/auth/link-patient`, { // @ts-ignore
+                userId: session?.user?.id, patientRecordId: linkingId.trim() });
             if (res.data.patient) {
                 setPatient(res.data.patient);
-                setFormData({
-                    name: res.data.patient.name || '',
-                    age: res.data.patient.age || 0,
-                    gender: res.data.patient.gender || '',
-                    address: res.data.patient.address || '',
-                    contact: res.data.patient.contact === '' ? '' : (res.data.patient.contact || ''),
-                    alternateContact: res.data.patient.alternateContact || ''
-                });
-
-                // Refresh records
+                setFormData({ name: res.data.patient.name || '', age: res.data.patient.age || 0, gender: res.data.patient.gender || '', address: res.data.patient.address || '', contact: res.data.patient.contact === '' ? '' : (res.data.patient.contact || ''), alternateContact: res.data.patient.alternateContact || '' });
                 const recordsRes = await axios.get(`${backendUrl}/api/treatment-records/patient/${res.data.patient._id}`);
                 setRecords(recordsRes.data);
             }
-
-            setSuccess('Clinical records connected successfully!');
-            setIsLinkingModalOpen(false);
-            setLinkingId('');
-        } catch (err: any) {
-            console.error('Error linking record:', err);
-            setError(err.response?.data?.message || 'Failed to connect records. Please double check the ID.');
-        } finally {
-            setIsLinking(false);
-        }
+            setSuccess('Clinical records connected successfully!'); setIsLinkingModalOpen(false); setLinkingId('');
+        } catch (err: any) { setError(err.response?.data?.message || 'Failed to connect records.'); }
+        finally { setIsLinking(false); }
     };
-
-    useEffect(() => {
-        if (records.length > 0) {
-            setExpandedRecords(prev => ({
-                [records[0]._id]: true,
-                ...prev
-            }));
-        }
-    }, [records]);
-
-    const toggleExpand = (id: string) => {
-        setExpandedRecords(prev => ({
-            ...prev,
-            [id]: !prev[id]
-        }));
-    };
-
+    useEffect(() => { if (records.length > 0) setExpandedRecords(prev => ({ [records[0]._id]: true, ...prev })); }, [records]);
+    const toggleExpand = (id: string) => setExpandedRecords(prev => ({ ...prev, [id]: !prev[id] }));
     const renderPrescriptionLine = (line: string, colorClass: string) => {
         const match = line.match(/^([^-]*-?\s*)([^(\n]+)(\(.*\))?$/);
-        if (!match) return <p className={`text-sm font-bold ${colorClass} leading-relaxed`}>{line}</p>;
-
-        const prefix = match[1];
-        const medName = match[2];
-        const instructions = match[3] || "";
-
-        return (
-            <p className="text-sm font-bold leading-relaxed">
-                <span className="text-gray-400">{prefix}</span>
-                <span className={colorClass}>{medName}</span>
-                <span className="text-gray-900 font-medium">{instructions}</span>
-            </p>
-        );
+        if (!match) return <p className={`text-[13px] font-medium ${colorClass} leading-relaxed`}>{line}</p>;
+        const prefix = match[1]; const medName = match[2]; const instructions = match[3] || "";
+        return <p className="text-[13px] font-medium leading-relaxed"><span className="text-neutral-400">{prefix}</span><span className={colorClass}>{medName}</span><span className="text-[#0a0a0b]">{instructions}</span></p>;
     };
-
-    // Form states
-    const [formData, setFormData] = useState({
-        name: '',
-        age: 0,
-        gender: '',
-        address: '',
-        contact: '',
-        alternateContact: ''
-    });
-
     useEffect(() => {
         const fetchProfile = async () => {
             if (!session?.user) return;
-
             try {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
                 // @ts-ignore
                 const res = await axios.get(`${backendUrl}/api/auth/google/${session.user.id}`);
                 const userData = res.data;
-
                 if (userData.patientId) {
                     setPatient(userData.patientId);
-                    setFormData({
-                        name: userData.patientId.name || '',
-                        age: userData.patientId.age || 0,
-                        gender: userData.patientId.gender || '',
-                        address: userData.patientId.address || '',
-                        contact: userData.patientId.contact === '' ? '' : (userData.patientId.contact || ''),
-                        alternateContact: userData.patientId.alternateContact || ''
-                    });
+                    setFormData({ name: userData.patientId.name || '', age: userData.patientId.age || 0, gender: userData.patientId.gender || '', address: userData.patientId.address || '', contact: userData.patientId.contact === '' ? '' : (userData.patientId.contact || ''), alternateContact: userData.patientId.alternateContact || '' });
                 }
-            } catch (err) {
-                console.error('Error fetching profile:', err);
-                setError('Failed to load profile data.');
-            } finally {
-                setLoading(false);
-            }
+            } catch (err) { console.error('Error fetching profile:', err); setError('Failed to load profile data.'); }
+            finally { setLoading(false); }
         };
-
         fetchProfile();
     }, [session]);
-
     useEffect(() => {
         const fetchRecordsAndAppointments = async () => {
             if (!patient?._id) return;
             try {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-
-                // Fetch records
-                const recordsRes = await axios.get(`${backendUrl}/api/treatment-records/patient/${patient._id}`);
-                setRecords(recordsRes.data);
-
-                // Fetch appointments
-                const aptRes = await axios.get(`${backendUrl}/api/appointments/patient/${patient._id}`);
-                const allApts = aptRes.data;
-
-                // Find next upcoming appointment
-                const startOfToday = new Date();
-                startOfToday.setHours(0, 0, 0, 0);
-
-                const sortedApts = allApts.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-                setAllAppointments(sortedApts);
-
-                const nextApt = sortedApts.find((apt: any) => {
-                    const aptDate = new Date(apt.date);
-                    return aptDate >= startOfToday && !['Completed', 'Operating'].includes(apt.status) && !apt.isTicked;
-                });
-                setUpcomingAppointment(nextApt);
-            } catch (err) {
-                console.error('Error fetching patient data:', err);
-            }
+                const recordsRes = await axios.get(`${backendUrl}/api/treatment-records/patient/${patient._id}`); setRecords(recordsRes.data);
+                const aptRes = await axios.get(`${backendUrl}/api/appointments/patient/${patient._id}`); const allApts = aptRes.data;
+                const startOfToday = new Date(); startOfToday.setHours(0, 0, 0, 0);
+                const sortedApts = allApts.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()); setAllAppointments(sortedApts);
+                const nextApt = sortedApts.find((apt: any) => { const aptDate = new Date(apt.date); return aptDate >= startOfToday && !['Completed', 'Operating'].includes(apt.status) && !apt.isTicked; }); setUpcomingAppointment(nextApt);
+            } catch (err) { console.error('Error fetching patient data:', err); }
         };
-
         fetchRecordsAndAppointments();
-
-        // Real-time Update Listener
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
         const socket = io(backendUrl);
-
-        socket.on('newAppointment', (data) => {
-            if (data.patientId === patient?._id) {
-                fetchRecordsAndAppointments();
-            }
-        });
-
-        socket.on('updateAppointment', (data) => {
-            if (data.patientId === patient?._id) {
-                fetchRecordsAndAppointments();
-            }
-        });
-
-        return () => {
-            socket.disconnect();
-        };
+        socket.on('newAppointment', (data) => { if (data.patientId === patient?._id) fetchRecordsAndAppointments(); });
+        socket.on('updateAppointment', (data) => { if (data.patientId === patient?._id) fetchRecordsAndAppointments(); });
+        return () => { socket.disconnect(); };
     }, [patient]);
-
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSaving(true);
-        setError(null);
-        setSuccess(null);
-
+        e.preventDefault(); setSaving(true); setError(null); setSuccess(null);
         try {
             const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-            const res = await axios.put(`${backendUrl}/api/auth/update-profile`, {
-                // @ts-ignore
-                userId: session?.user?.id,
-                ...formData
-            });
-
+            const res = await axios.put(`${backendUrl}/api/auth/update-profile`, { // @ts-ignore
+                userId: session?.user?.id, ...formData });
             if (res.data.patient) {
                 setPatient(res.data.patient);
-                setFormData({
-                    name: res.data.patient.name || '',
-                    age: res.data.patient.age || 0,
-                    gender: res.data.patient.gender || '',
-                    address: res.data.patient.address || '',
-                    contact: res.data.patient.contact === '' ? '' : (res.data.patient.contact || ''),
-                    alternateContact: res.data.patient.alternateContact || ''
-                });
+                setFormData({ name: res.data.patient.name || '', age: res.data.patient.age || 0, gender: res.data.patient.gender || '', address: res.data.patient.address || '', contact: res.data.patient.contact === '' ? '' : (res.data.patient.contact || ''), alternateContact: res.data.patient.alternateContact || '' });
             }
-
-            setSuccess(res.data.message || 'Profile updated successfully!');
-            setTimeout(() => setSuccess(null), 3000);
-        } catch (err: any) {
-            console.error('Error updating profile:', err);
-            setError(err.response?.data?.message || 'Failed to update profile.');
-        } finally {
-            setSaving(false);
-        }
+            setSuccess(res.data.message || 'Profile updated successfully!'); setTimeout(() => setSuccess(null), 3000);
+        } catch (err: any) { setError(err.response?.data?.message || 'Failed to update profile.'); }
+        finally { setSaving(false); }
     };
-
     const handleCancel = async (id: string) => {
         if (!confirm('Are you sure you want to cancel this appointment?')) return;
-        setSaving(true);
-        setError(null);
+        setSaving(true); setError(null);
         try {
             const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-            await axios.delete(`${backendUrl}/api/appointments/${id}`);
-            setSuccess('Appointment cancelled successfully.');
-            // Refresh appointment list
-            if (patient?._id) {
-                const aptRes = await axios.get(`${backendUrl}/api/appointments/patient/${patient._id}`);
-                setAllAppointments(aptRes.data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()));
-            }
-        } catch (err: any) {
-            console.error('Error cancelling appointment:', err);
-            setError(err.response?.data?.message || 'Failed to cancel appointment.');
-        } finally {
-            setSaving(false);
-        }
+            await axios.delete(`${backendUrl}/api/appointments/${id}`); setSuccess('Appointment cancelled successfully.');
+            if (patient?._id) { const aptRes = await axios.get(`${backendUrl}/api/appointments/patient/${patient._id}`); setAllAppointments(aptRes.data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())); }
+        } catch (err: any) { setError(err.response?.data?.message || 'Failed to cancel appointment.'); }
+        finally { setSaving(false); }
     };
-
     const isCancellable = (date: string, time: string) => {
-        const aptDateTime = new Date(date);
-        const [hours, minutes] = time.split(':').map(Number);
-        aptDateTime.setHours(hours, minutes, 0, 0);
-        const now = new Date();
-        const diffInMs = aptDateTime.getTime() - now.getTime();
-        return (diffInMs / (1000 * 60 * 60)) >= 3;
+        const aptDateTime = new Date(date); const [hours, minutes] = time.split(':').map(Number); aptDateTime.setHours(hours, minutes, 0, 0); const now = new Date(); const diffInMs = aptDateTime.getTime() - now.getTime(); return (diffInMs / (1000 * 60 * 60)) >= 3;
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-[60vh] flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-            </div>
-        );
-    }
+    if (loading) return <div className="min-h-[60vh] bg-[#fcfcfc] flex items-center justify-center"><div className="w-8 h-8 border-2 border-black/10 border-t-[#0a0a0b] rounded-full animate-spin" /></div>;
 
     return (
         <SessionGuard>
-            <div className="max-w-7xl mx-auto sm:px-4 sm:py-10">
-                <div className="bg-white rounded-none sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100">
+            <div className="bg-[#fcfcfc] min-h-screen pb-12">
+                <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 px-6 sm:px-12 py-10 sm:py-16 text-white relative overflow-hidden">
-                        {/* Decorative Background Element */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
-
-                        <div className="flex flex-col lg:flex-row lg:items-center gap-6 sm:gap-10 relative z-10">
-                            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-6 sm:gap-8 flex-grow">
-                                <div className="relative group shrink-0">
-                                    <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-[1.5rem] sm:rounded-[2.5rem] bg-white/10 flex items-center justify-center border-4 border-white/20 shadow-2xl transition-transform group-hover:scale-105 duration-500">
-                                        <FaUser size={32} className="text-blue-100 sm:hidden" />
-                                        <FaUser size={48} className="text-blue-100 hidden sm:block" />
+                    <div className="bg-white rounded-[24px] border border-black/5 shadow-sm overflow-hidden">
+                        <div className="px-6 sm:px-8 py-6 sm:py-8 flex flex-col lg:flex-row lg:items-center gap-6">
+                            <div className="flex gap-4 flex-1 min-w-0">
+                                <span className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-700 shrink-0"><FaUser size={20} /></span>
+                                <div className="min-w-0 flex-1">
+                                    <h1 className="text-[22px] sm:text-[26px] font-semibold tracking-[-0.02em] text-[#0a0a0b] truncate">{formData.name || session?.user?.name}</h1>
+                                    <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px]">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 font-medium"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Verified Patient</span>
+                                        <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f5f5f3] border border-black/5 text-neutral-600">Patient Portal</span>
+                                        <span className="text-neutral-400">Member since {patient?.createdAt ? new Date(patient.createdAt).getFullYear() : new Date().getFullYear()}</span>
+                                        {patient?._id && <span className="font-mono text-[11px] bg-[#f5f5f3] border border-black/5 px-2 py-1 rounded-full">ID: {patient._id.slice(-8).toUpperCase()}</span>}
                                     </div>
-                                </div>
-
-                                <div className="space-y-3 text-center sm:text-left">
-                                    <div className="flex flex-col sm:flex-row flex-wrap items-center sm:items-baseline gap-x-4 gap-y-2">
-                                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tightest drop-shadow-sm">
-                                            {formData.name || session?.user?.name}
-                                        </h1>
-                                        <div className="flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-lg border border-white/10 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-blue-100">
-                                            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_8px_rgba(96,165,250,0.8)]"></div>
-                                            Verified Patient
-                                        </div>
-                                    </div>
-                                    <p className="text-blue-200/80 font-bold tracking-wide flex flex-wrap justify-center sm:justify-start items-center gap-2 text-xs sm:text-base">
-                                        <span className="bg-blue-900/40 px-2 py-0.5 rounded-md border border-white/5">Patient Portal</span>
-                                        <span className="hidden sm:inline opacity-40">•</span>
-                                        <span className="flex items-center gap-1.5">
-                                            Member since {patient?.createdAt ? new Date(patient.createdAt).getFullYear() : new Date().getFullYear()}
-                                        </span>
-                                        {patient?._id && (
-                                            <>
-                                                <span className="hidden sm:inline opacity-40">•</span>
-                                                <span className="bg-white/10 px-2 py-0.5 rounded-md border border-white/10 text-[10px] sm:text-xs">
-                                                    ID: {patient._id.slice(-8).toUpperCase()}
-                                                </span>
-                                            </>
-                                        )}
-                                    </p>
+                                    <div className="text-[11px] text-neutral-500 mt-1 truncate">{session?.user?.email}</div>
                                 </div>
                             </div>
-
-                            {/* Fixed Appointment Mini-Card in Header */}
                             {upcomingAppointment && (
-                                <div className="w-full lg:w-auto lg:ml-auto flex items-center gap-4 bg-[#fffbeb] p-3 sm:p-4 pr-6 sm:pr-8 rounded-[1.5rem] sm:rounded-2xl shadow-xl border-2 border-[#fef3c7] animate-in slide-in-from-bottom-5 lg:slide-in-from-right-10 duration-700">
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 text-amber-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner shrink-0">
-                                        <FaCalendarAlt className="animate-bounce" size={16} />
-                                    </div>
-                                    <div className="text-left min-w-0">
-                                        <p className="text-[9px] sm:text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none flex items-center gap-1 mb-1">
-                                            <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
-                                            Your Fixed Appointment
-                                        </p>
-                                        <p className="text-xs sm:text-sm font-black text-amber-900 truncate">
-                                            {parseAppointmentReason(upcomingAppointment.reason).treatmentName}
-                                        </p>
-                                        <p className="text-[10px] sm:text-xs font-bold text-amber-700/70">
-                                            {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
-                                        </p>
+                                <div className="flex items-center gap-3 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3 shrink-0">
+                                    <span className="w-9 h-9 rounded-xl bg-white border border-amber-100 text-amber-600 grid place-items-center"><FaCalendarAlt size={12} /></span>
+                                    <div>
+                                        <div className="text-[10px] tracking-[0.08em] uppercase font-medium text-amber-700">Your Fixed Appointment</div>
+                                        <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}</div>
                                     </div>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    <div className="p-8 md:p-12">
-                        {error && (
-                            <div className="mb-6 flex items-center gap-3 bg-rose-50 text-rose-600 p-4 rounded-2xl border border-rose-100 animate-in fade-in slide-in-from-top-2">
-                                <FaExclamationCircle />
-                                <span className="font-bold text-sm">{error}</span>
-                            </div>
-                        )}
+                    {/* Form */}
+                    <div className="mt-6 bg-white rounded-[24px] border border-black/5 shadow-sm p-6 sm:p-8">
+                        {error && <div className="mb-4 p-3 rounded-2xl bg-rose-50 border border-rose-100 text-rose-700 text-[13px] font-medium flex items-center gap-2"><FaExclamationCircle size={13} />{error}</div>}
+                        {success && <div className="mb-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 text-[13px] font-medium flex items-center gap-2"><FaCheckCircle size={13} />{success}</div>}
 
-                        {success && (
-                            <div className="mb-6 flex items-center gap-3 bg-emerald-50 text-emerald-600 p-4 rounded-2xl border border-emerald-100 animate-in fade-in slide-in-from-top-2">
-                                <FaCheckCircle />
-                                <span className="font-bold text-sm">{success}</span>
-                            </div>
-                        )}
-
-                        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* Personal Info */}
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                                    <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
-                                        <FaUser size={14} />
+                        <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <h2 className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Personal Information</h2>
+                                <div>
+                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Full Name</label>
+                                    <input value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Your full name" required className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" />
+                                </div>
+                                <div>
+                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Age</label>
+                                    <div className="relative mt-1">
+                                        <input type="number" value={formData.age} onChange={e => setFormData({ ...formData, age: parseInt(e.target.value) || 0 })} placeholder="Your age" required className="w-full h-[44px] px-4 pr-12 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" />
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] tracking-[0.08em] uppercase font-medium text-neutral-400">Years</span>
                                     </div>
-                                    Personal Information
-                                </h2>
-
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-xs font-black text-gray-400 border-b-2 border-blue-600 uppercase tracking-widest mb-2">Full Name</label>
-                                        <input
-                                            type="text"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white px-4 py-3 rounded-xl font-bold transition-all outline-none"
-                                            placeholder="Your full name"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Age</label>
-                                        <div className="relative">
-                                            <input
-                                                type="number"
-                                                value={formData.age}
-                                                onChange={(e) => setFormData({ ...formData, age: parseInt(e.target.value) || 0 })}
-                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white px-4 py-3 rounded-xl font-bold transition-all outline-none"
-                                                placeholder="Your age"
-                                                required
-                                            />
-                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs uppercase tracking-widest pointer-events-none">Years</span>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Gender</label>
-                                        <select
-                                            value={formData.gender}
-                                            onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white px-4 py-3 rounded-xl font-bold transition-all outline-none appearance-none cursor-pointer"
-                                            required
-                                        >
-                                            <option value="-">Select Gender</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Email Address</label>
-                                        <div className="w-full bg-gray-100 border-2 border-dashed border-gray-200 px-4 py-3 rounded-xl font-bold text-gray-500 flex items-center gap-3 cursor-not-allowed">
-                                            <FaEnvelope className="text-gray-300" />
-                                            {session?.user?.email}
-                                        </div>
-                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Gender</label>
+                                    <select value={formData.gender} onChange={e => setFormData({ ...formData, gender: e.target.value })} required className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium">
+                                        <option value="">Select Gender</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Email</label>
+                                    <div className="mt-1 h-[44px] px-4 rounded-full bg-[#f5f5f3] border border-black/5 flex items-center gap-2 text-[13px] text-neutral-500"><FaEnvelope size={12} className="text-neutral-400" />{session?.user?.email}</div>
                                 </div>
                             </div>
 
-                            {/* Contact Info */}
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                                    <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
-                                        <FaPhone size={14} />
-                                    </div>
-                                    Contact & Location
-                                </h2>
-
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Primary Contact</label>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <FaPhone className="text-gray-400" />
-                                            </div>
-                                            <input
-                                                type="text"
-                                                value={formData.contact}
-                                                onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white pl-10 pr-4 py-3 rounded-xl font-bold transition-all outline-none"
-                                                placeholder="Your primary phone number"
-                                                required
-                                            />
-                                        </div>
-                                        {patient?.contact === '-__-' && (
-                                            <p className="text-[10px] text-blue-500 font-bold mt-1 animate-pulse">
-                                                Please add your primary contact to link your records securely.
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Alternate Contact</label>
-                                        <input
-                                            type="text"
-                                            value={formData.alternateContact}
-                                            onChange={(e) => setFormData({ ...formData, alternateContact: e.target.value })}
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white px-4 py-3 rounded-xl font-bold transition-all outline-none"
-                                            placeholder="Emergency/Alternate number"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Residential Address</label>
-                                        <textarea
-                                            rows={3}
-                                            value={formData.address}
-                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white px-4 py-3 rounded-xl font-bold transition-all outline-none resize-none"
-                                            placeholder="Your full address"
-                                        />
-                                    </div>
+                            <div className="space-y-4">
+                                <h2 className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Contact & Location</h2>
+                                <div>
+                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Primary Contact</label>
+                                    <input value={formData.contact} onChange={e => setFormData({ ...formData, contact: e.target.value })} placeholder="Your primary phone number" required className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" />
+                                </div>
+                                <div>
+                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Alternate Contact</label>
+                                    <input value={formData.alternateContact} onChange={e => setFormData({ ...formData, alternateContact: e.target.value })} placeholder="Emergency/Alternate number" className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" />
+                                </div>
+                                <div>
+                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Residential Address</label>
+                                    <textarea rows={3} value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} placeholder="Your full address" className="mt-1 w-full p-4 rounded-[20px] bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium resize-none" />
                                 </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="md:col-span-2 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
-                                <div className="text-sm text-gray-400 font-medium">
-                                    Your information is used only for clinical purposes and is never shared.
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={saving}
-                                    className={`w-full md:w-auto px-10 py-4 rounded-2xl font-black text-white shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 ${saving ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/20'
-                                        }`}
-                                >
-                                    {saving ? (
-                                        <>
-                                            <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                                            Saving Changes...
-                                        </>
-                                    ) : (
-                                        'Update Profile'
-                                    )}
+                            <div className="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-black/5">
+                                <span className="text-[12px] text-neutral-500">Your information is used only for clinical purposes and is never shared.</span>
+                                <button type="submit" disabled={saving} className="w-full sm:w-auto px-8 h-[44px] rounded-full bg-[#0a0a0b] text-white text-[13px] font-medium hover:bg-black active:scale-[0.98] transition flex items-center justify-center gap-2 disabled:opacity-50">
+                                    {saving ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</> : 'Update Profile'}
                                 </button>
                             </div>
                         </form>
                     </div>
-                </div>
 
-                {/* Treatment History Section */}
-                <div className="mt-10 bg-white rounded-[1rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 p-2 pt-4 sm:pt-0 sm:p-8 md:p-12">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                        <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
-                            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                                <FaHistory size={20} />
-                            </div>
-                            Clinical History
-                        </h2>
-                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                    {/* Clinical History */}
+                    <div className="mt-6 bg-white rounded-[24px] border border-black/5 shadow-sm p-6 sm:p-8">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <h2 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] flex items-center gap-2"><span className="w-8 h-8 rounded-full bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-700"><FaHistory size={12} /></span> Clinical History</h2>
                             {upcomingAppointment ? (
-                                <div className="bg-amber-50 border border-amber-200 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-sm animate-pulse-border">
-                                    <div className="bg-amber-100 p-2 rounded-xl text-amber-600 relative">
-                                        <FaCalendarAlt />
-                                        {/* Blinking Dot */}
-                                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full border-2 border-white animate-pulse"></span>
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none flex items-center gap-1">
-                                            Your Fixed Appointment
-                                        </p>
-                                        <p className="text-sm font-black text-amber-900">
-                                            {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}
-                                        </p>
-                                    </div>
-                                </div>
+                                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-100 text-amber-700 text-[11px] font-medium"><span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> Fixed: {parseAppointmentReason(upcomingAppointment.reason).treatmentName} • {new Date(upcomingAppointment.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} @ {upcomingAppointment.time}</span>
                             ) : (
-                                <a
-                                    href="/contact"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-blue-500/10 transition transform active:scale-95 flex items-center justify-center gap-2"
-                                >
-                                    <FaCalendarAlt /> Book New Appointment
-                                </a>
+                                <a href="/contact" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#0a0a0b] text-white text-[12px] font-medium hover:bg-black">Book New Appointment</a>
                             )}
                         </div>
-                    </div>
 
-                    {records.length > 0 ? (
-                        <div className="space-y-6">
-                            {records.map((record) => (
-                                <div key={record._id} className="bg-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-colors">
-                                    <div
-                                        className="p-6 cursor-pointer flex justify-between items-start"
-                                        onClick={() => toggleExpand(record._id)}
-                                    >
-                                        <div className="flex-grow">
-                                            <div className="flex items-center gap-3 mb-1">
-                                                <span className="text-xs font-black text-blue-600 uppercase tracking-widest">{new Date(record.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                                                <svg
-                                                    className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${expandedRecords[record._id] ? 'rotate-180' : ''}`}
-                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                                >
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path>
-                                                </svg>
+                        {records.length ? (
+                            <div className="space-y-3">
+                                {records.map(record => (
+                                    <div key={record._id} className="rounded-[20px] border border-black/5 overflow-hidden">
+                                        <button onClick={() => toggleExpand(record._id)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-[#fcfcfc] transition text-left">
+                                            <div>
+                                                <div className="text-[11px] tracking-[0.08em] uppercase font-medium text-neutral-500">{new Date(record.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                                                <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] mt-1">{parseAppointmentReason(record.treatmentName).treatmentName}</div>
                                             </div>
-                                            <h3 className="text-xs sm:text-lg font-black text-gray-900 uppercase tracking-tight">{parseAppointmentReason(record.treatmentName).treatmentName}</h3>
-                                        </div>
-                                        <div className="flex flex-col items-end gap-2">
-                                            <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase ${record.paymentStatus === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
-                                                {record.paymentStatus}
-                                            </span>
-                                            {record.cost && <p className="font-black text-gray-900">₹{record.cost}</p>}
-                                        </div>
-                                    </div>
-
-                                    {expandedRecords[record._id] && (
-                                        <div className="px-2 sm:px-6 pb-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-2 pt-4 border-t border-gray-100">
-                                                <div className="bg-white p-4 rounded-xl">
-                                                    <p className="text-gray-400 font-black uppercase text-[10px] mb-2 tracking-widest">Diagnosis/Notes</p>
-                                                    <p className="text-gray-700 font-medium leading-relaxed italic">{cleanNotes(record.notes) || 'General consultation'}</p>
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={(e) => { e.stopPropagation(); if (patient) setReportView({ patient, record }); }} className="w-6 h-6 rounded-full bg-white border border-black/5 text-neutral-600 grid place-items-center hover:bg-[#fcfcfc] hover:border-black/10" title="View Report"><FaEye size={10} /></button>
+                                                <span className={`px-2.5 py-1 rounded-full text-[11px] font-medium border ${record.paymentStatus === 'Paid' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>{record.paymentStatus}</span>
+                                                <span className="text-[11px] font-semibold text-[#0a0a0b]">₹{record.cost}</span>
+                                                <span className={`w-6 h-6 rounded-full bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-500 transition-transform ${expandedRecords[record._id] ? 'rotate-180' : ''}`}>⌄</span>
+                                            </div>
+                                        </button>
+                                        {expandedRecords[record._id] && (
+                                            <div className="px-5 pb-5 pt-2 grid md:grid-cols-2 gap-4 border-t border-black/5 bg-[#fcfcfc]/50">
+                                                <div className="bg-white rounded-2xl border border-black/5 p-4">
+                                                    <div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Diagnosis / Notes</div>
+                                                    <p className="text-[13px] leading-6 text-neutral-700 mt-2 italic">{cleanNotes(record.notes) || 'General consultation'}</p>
                                                 </div>
-                                                <div className="bg-white p-4 rounded-xl">
-                                                    <p className="text-gray-400 font-black uppercase text-[10px] mb-2 tracking-widest">Prescription & Medication</p>
-                                                    <div className="space-y-2">
-                                                        {(() => {
-                                                            if (!record.prescription) return <p className="text-gray-500 font-medium italic">No medicines prescribed</p>;
-
-                                                            const lines = record.prescription.split('\n').filter((l: string) => l.trim());
-                                                            const homeLines: string[] = [];
-                                                            const clinicLines: string[] = [];
-
-                                                            lines.forEach((line: string) => {
-                                                                const isClinic = CLINIC_DRUGS.some(d => line.toLowerCase().includes(d.name.toLowerCase()));
-                                                                if (isClinic) {
-                                                                    clinicLines.push(line);
-                                                                } else {
-                                                                    homeLines.push(line);
-                                                                }
-                                                            });
-
-                                                            const homeSection = homeLines.length > 0 && (
-                                                                <div className="space-y-1.5">
-                                                                    {homeLines.map((line, i) => (
-                                                                        <div key={`home-${i}`}>
-                                                                            {renderPrescriptionLine(line, 'text-emerald-600')}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            );
-
-                                                            const clinicSection = clinicLines.length > 0 && (
-                                                                <div className="space-y-1.5">
-                                                                    {homeLines.length > 0 && <hr className="border-gray-100 my-2" />}
-                                                                    {clinicLines.map((line, i) => (
-                                                                        <div key={`clinic-${i}`} className="flex items-center gap-2 flex-wrap">
-                                                                            {renderPrescriptionLine(line, 'text-indigo-600')}
-                                                                            <span className="text-[8px] font-black bg-indigo-50 text-indigo-500 px-1 py-0.5 rounded uppercase tracking-tighter">(clinic administered)</span>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            );
-
-                                                            return (
-                                                                <>
-                                                                    {homeSection}
-                                                                    {clinicSection}
-                                                                </>
-                                                            );
-                                                        })()}
+                                                <div className="bg-white rounded-2xl border border-black/5 p-4">
+                                                    <div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Prescription</div>
+                                                    <div className="mt-2 space-y-1">
+                                                        {record.prescription ? record.prescription.split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => {
+                                                            const isClinic = CLINIC_DRUGS.some(d => line.toLowerCase().includes(d.name.toLowerCase()));
+                                                            return <div key={i} className="flex gap-2 text-[13px]">{renderPrescriptionLine(line, isClinic ? 'text-violet-600' : 'text-emerald-600')}{isClinic && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-50 border border-violet-100 text-violet-600 font-medium shrink-0">clinic</span>}</div>;
+                                                        }) : <span className="text-[13px] text-neutral-400 italic">No medicines prescribed</span>}
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-20 bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200">
-                            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-                                <FaHistory size={24} className="text-gray-300" />
-                            </div>
-                            <p className="text-gray-500 font-black text-lg">No records found</p>
-                            <p className="text-sm text-gray-400 max-w-xs mx-auto mt-2 mb-6">Your clinical history will appear here after your first treatment session at the clinic.</p>
-
-                            <div className="bg-white inline-block p-6 rounded-3xl border border-blue-50 shadow-sm max-w-sm mx-auto">
-                                <p className="text-xs font-black text-blue-600 uppercase tracking-widest mb-3">Already a patient at the clinic?</p>
-                                <p className="text-[10px] text-gray-500 font-medium mb-4 leading-relaxed">
-                                    If you have visited us before, your records can be connected manually using your <strong>Patient Record ID</strong> from your booking WhatsApp message.
-                                </p>
-                                <button
-                                    onClick={() => setIsLinkingModalOpen(true)}
-                                    className="w-full py-3 bg-blue-50 text-blue-600 rounded-xl font-black text-xs hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-                                >
-                                    Connect My Clinical History
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* Additional Info Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
-                    <div className="bg-white p-6 rounded-[2rem] shadow-lg border border-gray-50 text-center space-y-3">
-                        <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto">
-                            <FaHistory size={20} />
-                        </div>
-                        <h3 className="font-black text-gray-900">Health History</h3>
-                        <p className="text-xs text-gray-500 font-medium">Detailed log of your dental health journey.</p>
-                        <span className="text-emerald-600 text-[10px] font-black uppercase tracking-widest">{records.length} Records</span>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-[2rem] shadow-lg border border-gray-50 text-center space-y-3">
-                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto">
-                            <FaCalendarAlt size={20} />
-                        </div>
-                        <h3 className="font-black text-gray-900">Appointments</h3>
-                        <p className="text-xs text-gray-500 font-medium">Manage your upcoming and past bookings details.</p>
-                        <button
-                            onClick={() => setIsAptModalOpen(true)}
-                            className="text-blue-600 text-xs font-black uppercase tracking-widest hover:underline"
-                        >
-                            View All
-                        </button>
-                    </div>
-
-                    <div className="bg-white p-6 mb-4 sm:mb-0 rounded-[2rem] shadow-lg border border-gray-50 text-center space-y-3">
-                        <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto">
-                            <FaLock size={20} />
-                        </div>
-                        <h3 className="font-black text-gray-900">Account Status</h3>
-                        <p className="text-xs text-gray-500 font-medium">Your account is verified with Google OAuth 2.0.</p>
-                        <span className="inline-block bg-purple-100 text-purple-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Verified</span>
-                    </div>
-                </div>
-            </div>
-            {/* Appointments Modal */}
-            {isAptModalOpen && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
-                        <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                            <div>
-                                <h2 className="text-2xl font-black text-gray-900 tracking-tight">Appointments History</h2>
-                                <p className="text-sm font-bold text-gray-400">Manage your past and scheduled visits</p>
-                            </div>
-                            <button
-                                onClick={() => setIsAptModalOpen(false)}
-                                className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-400 hover:bg-rose-50 hover:text-rose-600 transition shadow-sm border border-gray-100"
-                            >
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div className="flex-grow overflow-y-auto p-4 md:p-8 space-y-4">
-                            {allAppointments.length > 0 ? (
-                                allAppointments.map((apt: any) => (
-                                    <div key={apt._id} className="bg-white border border-gray-100 rounded-2xl p-6 flex justify-between items-center hover:border-blue-100 transition shadow-sm group">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center font-black ${new Date(apt.date).getTime() >= new Date().setHours(0, 0, 0, 0) ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-400'
-                                                }`}>
-                                                <span className="text-[10px] uppercase leading-none mb-1">{new Date(apt.date).toLocaleDateString(undefined, { month: 'short' })}</span>
-                                                <span className="text-lg leading-none">{new Date(apt.date).getDate()}</span>
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-sm font-black text-gray-900">{parseAppointmentReason(apt.reason).treatmentName}</span>
-                                                    {new Date(apt.date).getTime() >= new Date().setHours(0, 0, 0, 0) && apt.status !== 'Completed' && (
-                                                        <span className="text-[8px] font-black bg-blue-600 text-white px-1.5 py-0.5 rounded-full animate-pulse uppercase">Upcoming</span>
-                                                    )}
-                                                </div>
-                                                <p className="text-xs font-bold text-gray-400 flex items-center gap-2">
-                                                    <FaCalendarAlt size={10} />
-                                                    {apt.time}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-col items-end gap-2">
-                                            <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase ${apt.status === 'Completed' || apt.isTicked ? 'bg-emerald-100 text-emerald-600' :
-                                                apt.status === 'Cancelled' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
-                                                }`}>
-                                                {apt.isTicked ? 'Completed' : (apt.status || 'Scheduled')}
-                                            </span>
-                                            {apt.status !== 'Cancelled' && apt.status !== 'Completed' && !apt.isTicked && (
-                                                isCancellable(apt.date, apt.time) ? (
-                                                    <button
-                                                        onClick={() => handleCancel(apt._id)}
-                                                        className="text-[10px] font-black text-rose-600 border-b border-rose-200 hover:text-rose-700 transition-colors"
-                                                    >
-                                                        Cancel Appt
-                                                    </button>
-                                                ) : (
-                                                    <span className="text-[8px] font-bold text-gray-400">Not cancellable (within 3h)</span>
-                                                )
-                                            )}
-                                        </div>
+                                        )}
                                     </div>
-                                ))
-                            ) : (
-                                <div className="text-center py-12">
-                                    <p className="text-gray-400 font-bold">No appointment history found.</p>
-                                </div>
-                            )}
-                        </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="rounded-2xl border border-dashed border-black/10 p-10 text-center">
+                                <span className="w-10 h-10 rounded-full bg-[#f5f5f3] border border-black/5 grid place-items-center mx-auto text-neutral-400"><FaHistory size={14} /></span>
+                                <div className="text-[13px] font-medium text-[#0a0a0b] mt-3">No records found</div>
+                                <p className="text-[12px] text-neutral-500 mt-1 max-w-sm mx-auto">Your clinical history will appear here after your first treatment session.</p>
+                                <button onClick={() => setIsLinkingModalOpen(true)} className="mt-4 px-4 py-2 rounded-full bg-white border border-black/5 text-[12px] font-medium hover:border-black/10">Connect My Clinical History</button>
+                            </div>
+                        )}
+                    </div>
 
-                        <div className="p-6 bg-gray-50 border-t border-gray-100 text-center">
-                            <button
-                                onClick={() => setIsAptModalOpen(false)}
-                                className="px-8 py-3 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-100 transition shadow-sm"
-                            >
-                                Close Details
-                            </button>
+                    <div className="mt-6 grid md:grid-cols-3 gap-4">
+                        <div className="bg-white rounded-[20px] border border-black/5 p-5 text-center">
+                            <span className="w-9 h-9 rounded-xl bg-[#f5f5f3] border border-black/5 grid place-items-center mx-auto text-neutral-700"><FaHistory size={14} /></span>
+                            <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] mt-3">Health History</div>
+                            <div className="text-[11px] text-neutral-500 mt-1">{records.length} Records</div>
+                        </div>
+                        <div className="bg-white rounded-[20px] border border-black/5 p-5 text-center">
+                            <span className="w-9 h-9 rounded-xl bg-[#f5f5f3] border border-black/5 grid place-items-center mx-auto text-neutral-700"><FaCalendarAlt size={14} /></span>
+                            <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] mt-3">Appointments</div>
+                            <button onClick={() => setIsAptModalOpen(true)} className="mt-1 text-[11px] font-medium text-[#0a0a0b] underline underline-offset-4">View All</button>
+                        </div>
+                        <div className="bg-white rounded-[20px] border border-black/5 p-5 text-center">
+                            <span className="w-9 h-9 rounded-xl bg-[#f5f5f3] border border-black/5 grid place-items-center mx-auto text-neutral-700"><FaLock size={14} /></span>
+                            <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] mt-3">Account Status</div>
+                            <span className="mt-1 inline-block px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-[11px] font-medium">Verified</span>
                         </div>
                     </div>
                 </div>
-            )}
 
-            {/* Linking Modal */}
-            {isLinkingModalOpen && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
-                        <div className="p-8 border-b border-gray-50 bg-gray-50 flex justify-between items-center">
-                            <div>
-                                <h2 className="text-xl font-black text-gray-900 tracking-tight">Connect History</h2>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Manual synchronization</p>
+                {/* Linking Modal */}
+                {isLinkingModalOpen && (
+                    <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
+                        <form onSubmit={handleLinkRecord} className="bg-white rounded-[20px] border border-black/5 p-6 w-full max-w-md shadow-xl">
+                            <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">Connect Clinical History</h3>
+                            <p className="text-[12px] leading-5 text-neutral-500 mt-1">Enter your Patient Record ID from WhatsApp booking message.</p>
+                            <input value={linkingId} onChange={e => setLinkingId(e.target.value)} placeholder="e.g. PAT12345" className="mt-4 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" />
+                            <div className="mt-4 flex gap-2">
+                                <button type="button" onClick={() => setIsLinkingModalOpen(false)} className="flex-1 h-10 rounded-full bg-white border border-black/5 text-[13px] font-medium">Cancel</button>
+                                <button disabled={isLinking} className="flex-1 h-10 rounded-full bg-[#0a0a0b] text-white text-[13px] font-medium disabled:opacity-50">{isLinking ? 'Connecting...' : 'Connect'}</button>
                             </div>
-                            <button
-                                onClick={() => setIsLinkingModalOpen(false)}
-                                className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-gray-400 hover:text-rose-600 transition shadow-sm border border-gray-100"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleLinkRecord} className="p-8 space-y-6">
-                            <div className="space-y-2">
-                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Patient Record ID</label>
-                                <input
-                                    type="text"
-                                    value={linkingId}
-                                    onChange={(e) => setLinkingId(e.target.value)}
-                                    placeholder="e.g. 65f2c... or E1C7B8FD"
-                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white px-5 py-4 rounded-2xl font-black text-gray-900 placeholder:text-gray-300 transition-all outline-none"
-                                    required
-                                />
-                                <p className="text-[9px] text-gray-400 font-medium italic pl-1">
-                                    You can find this ID in the booking confirmation message sent to your WhatsApp.
-                                </p>
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={isLinking || !linkingId.trim()}
-                                className={`w-full py-4 rounded-2xl font-black text-white shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 ${isLinking ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/20'
-                                    }`}
-                            >
-                                {isLinking ? (
-                                    <>
-                                        <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                                        Connecting...
-                                    </>
-                                ) : (
-                                    'Connect Clinical Records'
-                                )}
-                            </button>
                         </form>
                     </div>
-                </div>
-            )}
+                )}
+
+                {/* Appointments Modal */}
+                {isAptModalOpen && (
+                    <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
+                        <div className="bg-white rounded-[20px] border border-black/5 w-full max-w-xl max-h-[80vh] flex flex-col overflow-hidden">
+                            <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between">
+                                <div>
+                                    <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">Appointments History</div>
+                                    <div className="text-[11px] text-neutral-500">Manage your visits</div>
+                                </div>
+                                <button onClick={() => setIsAptModalOpen(false)} className="w-8 h-8 rounded-full bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-600 hover:bg-white">✕</button>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                                {allAppointments.length ? allAppointments.map((apt: any) => (
+                                    <div key={apt._id} className="flex items-center gap-3 p-3 rounded-2xl border border-black/5 bg-[#fcfcfc]">
+                                        <span className="w-10 h-12 rounded-xl bg-white border border-black/5 grid place-items-center text-center shrink-0">
+                                            <span className="block text-[10px] tracking-[0.08em] uppercase font-medium text-neutral-500">{new Date(apt.date).toLocaleDateString(undefined, { month: 'short' })}</span>
+                                            <span className="block text-[14px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{new Date(apt.date).getDate()}</span>
+                                        </span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="text-[13px] font-medium tracking-[-0.01em] text-[#0a0a0b] truncate">{parseAppointmentReason(apt.reason).treatmentName}</div>
+                                            <div className="text-[11px] text-neutral-500">{apt.time} · <span className={`px-2 py-0.5 rounded-full border text-[10px] font-medium ${apt.status==='Completed'||apt.isTicked?'bg-emerald-50 text-emerald-700 border-emerald-100':apt.status==='Cancelled'?'bg-rose-50 text-rose-700 border-rose-100':'bg-amber-50 text-amber-700 border-amber-100'}`}>{apt.isTicked?'Completed':apt.status}</span></div>
+                                        </div>
+                                        {apt.status!=='Cancelled' && apt.status!=='Completed' && !apt.isTicked && (isCancellable(apt.date, apt.time) ? <button onClick={() => handleCancel(apt._id)} className="text-[11px] font-medium text-rose-600 hover:underline">Cancel</button> : <span className="text-[10px] text-neutral-400">Not cancellable</span>)}
+                                    </div>
+                                )) : <div className="py-10 text-center text-[13px] text-neutral-500">No appointment history</div>}
+                            </div>
+                            <div className="p-4 border-t border-black/5 text-center">
+                                <button onClick={() => setIsAptModalOpen(false)} className="w-full h-10 rounded-full bg-[#f5f5f3] border border-black/5 text-[13px] font-medium">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {reportView && <SuperfineReport patient={reportView.patient} record={reportView.record} onClose={() => setReportView(null)} />}
+            </div>
         </SessionGuard>
     );
 }

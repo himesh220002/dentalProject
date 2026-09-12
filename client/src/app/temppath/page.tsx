@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FaTooth, FaUpload, FaCopy, FaCheck, FaGlobe, FaFacebook, FaTwitter, FaLinkedin, FaInstagram, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUserMd, FaCalendarAlt, FaPlus, FaTrash, FaAward, FaUserCheck, FaPercentage, FaShieldAlt, FaStethoscope, FaUserFriends, FaLightbulb, FaFlask, FaSearch, FaSave, FaHistory, FaCloudUploadAlt, FaEdit, FaArrowLeft, FaHome } from 'react-icons/fa';
+import { FaTooth, FaCopy, FaCheck, FaGlobe, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUserMd, FaAward, FaShieldAlt, FaSave, FaHistory, FaCloudUploadAlt, FaEdit, FaTrash, FaHome, FaSearch, FaLightbulb, FaClock } from 'react-icons/fa';
 import axios from 'axios';
 import { useClinic } from '../../context/ClinicContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -23,36 +23,13 @@ const DEFAULT_CLINIC_DATA = {
     visitPolicy: 'Prior Appointment Recommended. Walk-ins subject to availability.',
     happyCustomers: '5000+',
     successRate: '99.9',
-    address: {
-        street: 'Dental Clinic Road, Near Market',
-        city: 'Katihar',
-        state: 'Bihar',
-        zip: '854105',
-        latitude: '25.555613',
-        longitude: '87.556440'
-    },
-    socialLinks: {
-        facebook: 'https://www.facebook.com/',
-        twitter: 'https://x.com/tweeter?lang=en',
-        linkedin: 'https://www.linkedin.com/',
-        instagram: 'https://www.instagram.com/'
-    },
-    timings: {
-        monday: '09:00 AM - 08:00 PM',
-        tuesday: '09:00 AM - 08:00 PM',
-        wednesday: '09:00 AM - 08:00 PM',
-        thursday: '09:00 AM - 08:00 PM',
-        friday: '09:00 AM - 08:00 PM',
-        saturday: '09:00 AM - 06:00 PM',
-        sunday: 'Closed'
-    },
+    address: { street: 'Dental Clinic Road, Near Market', city: 'Katihar', state: 'Bihar', zip: '854105', latitude: '25.555613', longitude: '87.556440' },
+    socialLinks: { facebook: 'https://www.facebook.com/', twitter: 'https://x.com/tweeter?lang=en', linkedin: 'https://www.linkedin.com/', instagram: 'https://www.instagram.com/' },
+    timings: { monday: '09:00 AM - 08:00 PM', tuesday: '09:00 AM - 08:00 PM', wednesday: '09:00 AM - 08:00 PM', thursday: '09:00 AM - 08:00 PM', friday: '09:00 AM - 08:00 PM', saturday: '09:00 AM - 06:00 PM', sunday: 'Closed' },
     certifications: 'Best Dentist Award 2022, Certified Implantologist, Member of IDA',
-    consultants: [
-        { name: 'ToothOp', role: 'Chief Surgeon', info: 'BDS, MDS', experience: '12 Years' },
-        { name: 'Dr. nefario', role: 'Orthodontist', info: 'Expert in Braces & Aligners', experience: '8 Years' }
-    ],
+    consultants: [{ name: 'ToothOp', role: 'Chief Surgeon', info: 'BDS, MDS', experience: '12 Years' }, { name: 'Dr. nefario', role: 'Orthodontist', info: 'Expert in Braces & Aligners', experience: '8 Years' }],
     treatments: [
-        { name: 'General Consultation', price: '300', description: 'General consultation for any other dental issues.', whyNeed: 'Comprehensive checkup and professional advice.', image: 'https://www.shutterstock.com/image-vector/dentist-examining-female-patient-modern-600nw-2747564801.jpg', icon: 'FaMedkit' },
+        { name: 'General Consultation', price: '300', description: 'General consultation for any other dental issues.', image: 'https://www.shutterstock.com/image-vector/dentist-examining-female-patient-modern-600nw-2747564801.jpg', icon: 'FaMedkit' },
         { name: 'Scaling & Cleaning', price: '800', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1674775372064-8c75d3f8c757?q=80&w=687' },
         { name: 'Dental Fillings', price: '1000', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1694345215004-837b089f620d?q=80&w=1929' },
         { name: 'Tooth Extraction', price: '500', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1626736985932-c0df2ae07a2e?q=80&w=1631' },
@@ -64,16 +41,8 @@ const DEFAULT_CLINIC_DATA = {
         { name: "Kid's Dentistry", price: '500', description: 'Treatment details provided by clinic.', image: 'https://www.dratuljajoo.com/wp-content/uploads/2018/09/kids-dentistry.jpg' },
         { name: 'Full Mouth X-Ray', price: '500', description: 'Treatment details provided by clinic.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjXnsLV9glWBJ77_38thCOxDEeWWN0sqTD3A&s' }
     ],
-    highlights: [
-        { title: 'Advanced Technology', description: 'Intraoral scanners & 3D imaging for precise diagnosis.' },
-        { title: 'Pain-free Dentistry', description: 'Modern anesthesia & laser treatments for comfort.' },
-        { title: 'Sterile Environment', description: 'Class B Autoclave sterilization protocols.' }
-    ],
-    seo: {
-        metaTitle: 'Best Dental Clinic in Katihar | ToothOp',
-        metaDescription: 'Expert dental care by ToothOp. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.',
-        keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist'
-    },
+    highlights: [{ title: 'Advanced Technology', description: 'Intraoral scanners & 3D imaging for precise diagnosis.' }, { title: 'Pain-free Dentistry', description: 'Modern anesthesia & laser treatments for comfort.' }, { title: 'Sterile Environment', description: 'Class B Autoclave sterilization protocols.' }],
+    seo: { metaTitle: 'Best Dental Clinic in Katihar | ToothOp', metaDescription: 'Expert dental care by ToothOp. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.', keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist' },
     lunchTime: '01:00 PM - 02:00 PM',
     isActive: false
 };
@@ -81,7 +50,6 @@ const DEFAULT_CLINIC_DATA = {
 export default function TempClinicForm() {
     const { refreshClinicData } = useClinic();
     const [formData, setFormData] = useState(() => JSON.parse(JSON.stringify(DEFAULT_CLINIC_DATA)));
-
     const [jsonOutput, setJsonOutput] = useState('');
     const [copied, setCopied] = useState(false);
     const [handoverId, setHandoverId] = useState('handover_v1');
@@ -92,833 +60,413 @@ export default function TempClinicForm() {
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [hasMounted, setHasMounted] = useState(false);
     const [password, setPassword] = useState('');
+    const [activeTab, setActiveTab] = useState('branding');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const checkHandoverAuth = () => {
             const auth = localStorage.getItem('handover_authorized');
             const expiry = localStorage.getItem('handover_expiry');
             const now = Date.now();
-
-            if (expiry && now >= Number(expiry)) {
-                localStorage.removeItem('handover_authorized');
-                localStorage.removeItem('handover_expiry');
-                setIsAuthorized(false);
-            } else if (auth === 'true' && expiry && now < Number(expiry)) {
-                setIsAuthorized(true);
-            }
+            if (expiry && now >= Number(expiry)) { localStorage.removeItem('handover_authorized'); localStorage.removeItem('handover_expiry'); setIsAuthorized(false); }
+            else if (auth === 'true' && expiry && now < Number(expiry)) setIsAuthorized(true);
         };
-        setHasMounted(true);
-        checkHandoverAuth();
-        // Set up interval to check expiry periodically
-        const interval = setInterval(checkHandoverAuth, 60000); // Check every minute
+        setHasMounted(true); checkHandoverAuth();
+        const interval = setInterval(checkHandoverAuth, 60000);
         return () => clearInterval(interval);
     }, []);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
         if (password === 'toothop2026') {
-            const expiry = Date.now() + 2 * 60 * 60 * 1000; // 2 hours
+            const expiry = Date.now() + 2 * 60 * 60 * 1000;
             localStorage.setItem('handover_authorized', 'true');
             localStorage.setItem('handover_expiry', expiry.toString());
             setIsAuthorized(true);
-        } else {
-            alert('Incorrect delivery password.');
-        }
+        } else alert('Incorrect delivery password.');
     };
+    const handleLogout = () => { localStorage.removeItem('handover_authorized'); localStorage.removeItem('handover_expiry'); setIsAuthorized(false); };
 
-    const handleLogout = () => {
-        localStorage.removeItem('handover_authorized');
-        localStorage.removeItem('handover_expiry');
-        setIsAuthorized(false);
-    };
-
-    useEffect(() => {
-        if (isAuthorized) {
-            fetchHistory();
-        }
-    }, [isAuthorized]);
-
-    const fetchHistory = async () => {
-        try {
-            const res = await axios.get(`${API_BASE_URL}/handover/history`);
-            setHistory(res.data);
-        } catch (error) {
-            console.error('Error fetching history:', error);
-        }
-    };
+    useEffect(() => { if (isAuthorized) fetchHistory(); }, [isAuthorized]);
+    const fetchHistory = async () => { try { const res = await axios.get(`${API_BASE_URL}/handover/history`); setHistory(res.data); } catch {} };
 
     const handleSave = async (publish = false) => {
-        setIsLoading(true);
-        setSaveStatus(publish ? 'Publishing...' : 'Saving Draft...');
+        setIsLoading(true); setSaveStatus(publish ? 'Publishing...' : 'Saving Draft...');
         try {
-            // First save to database
-            await axios.post(`${API_BASE_URL}/handover/save`, {
-                handoverformId: handoverId,
-                jsondata: formData
-            });
-
-            // Update JSON preview
+            await axios.post(`${API_BASE_URL}/handover/save`, { handoverformId: handoverId, jsondata: formData });
             setJsonOutput(JSON.stringify(formData, null, 4));
-
-            // If publish is true, activate this version
-            if (publish) {
-                await axios.post(`${API_BASE_URL}/handover/activate/${handoverId}`);
-                await refreshClinicData();
-                setSaveStatus(`Success! Published version: ${handoverId}`);
-            } else {
-                setSaveStatus('Draft saved successfully!');
-            }
-
-            // Refresh history
+            if (publish) { await axios.post(`${API_BASE_URL}/handover/activate/${handoverId}`); await refreshClinicData(); setSaveStatus(`Success! Published: ${handoverId}`); }
+            else setSaveStatus('Draft saved successfully!');
             const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
-            const newHistory = historyRes.data;
-            setHistory(newHistory);
-
-            // If we just published, maybe auto-increment for next draft?
-            // User might want to keep editing the same ID though.
-            // Let's only auto-increment if it was a success and we want to prevent overwriting
-            if (publish) {
-                const nextVersion = newHistory.length + 1;
-                setHandoverId(`handover_v${nextVersion}`);
-            }
-
+            const newHistory = historyRes.data; setHistory(newHistory);
+            if (publish) { const nextVersion = newHistory.length + 1; setHandoverId(`handover_v${nextVersion}`); }
             setTimeout(() => setSaveStatus(''), 5000);
-        } catch (error) {
-            setSaveStatus(`Error during ${publish ? 'publish' : 'save'}`);
-            console.error('Save error:', error);
-        } finally {
-            setIsLoading(false);
-        }
+        } catch { setSaveStatus(`Error during ${publish ? 'publish' : 'save'}`); }
+        finally { setIsLoading(false); }
     };
 
     const loadFromHistory = (item: any) => {
         const loadedData = item.jsondata;
-        setFormData((prev: any) => ({
-            ...prev,
-            ...loadedData,
-            address: {
-                ...prev.address,
-                ...(loadedData.address || {})
-            },
-            socialLinks: {
-                ...prev.socialLinks,
-                ...(loadedData.socialLinks || {})
-            },
-            timings: {
-                ...prev.timings,
-                ...(loadedData.timings || {})
-            },
-            seo: {
-                ...prev.seo,
-                ...(loadedData.seo || {})
-            }
-        }));
-        setHandoverId(item.handoverformId);
-        setJsonOutput(JSON.stringify(item.jsondata, null, 4));
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setFormData((prev: any) => ({ ...prev, ...loadedData, address: { ...prev.address, ...(loadedData.address || {}) }, socialLinks: { ...prev.socialLinks, ...(loadedData.socialLinks || {}) }, timings: { ...prev.timings, ...(loadedData.timings || {}) }, seo: { ...prev.seo, ...(loadedData.seo || {}) } }));
+        setHandoverId(item.handoverformId); setJsonOutput(JSON.stringify(item.jsondata, null, 4)); window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        if (name.includes('.')) {
-            const [parent, child] = name.split('.');
-            setFormData((prev: any) => ({
-                ...prev,
-                [parent]: {
-                    ...(prev[parent as keyof typeof prev] as any),
-                    [child]: value
-                }
-            }));
-        } else {
-            setFormData((prev: any) => ({ ...prev, [name]: value }));
-        }
+        if (name.includes('.')) { const [parent, child] = name.split('.'); setFormData((prev: any) => ({ ...prev, [parent]: { ...(prev[parent as keyof typeof prev] as any), [child]: value } })); }
+        else setFormData((prev: any) => ({ ...prev, [name]: value }));
     };
-
     const handleListChange = (listName: 'treatments' | 'consultants' | 'highlights', index: number, field: string, value: string) => {
-        const newList = [...formData[listName]];
-        // @ts-ignore
-        newList[index][field] = value;
-        setFormData((prev: any) => ({ ...prev, [listName]: newList }));
+        const newList = [...formData[listName]]; // @ts-ignore
+        newList[index][field] = value; setFormData((prev: any) => ({ ...prev, [listName]: newList }));
     };
-
     const addListItem = (listName: 'treatments' | 'consultants' | 'highlights') => {
-        let newItem;
-        if (listName === 'treatments') newItem = { name: '', price: '', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1597764650032-135acc9e83f3?q=80&w=2070' };
+        let newItem: any;
+        if (listName === 'treatments') newItem = { name: '', price: '', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1597764650032-135acc9e83f?q=80&w=2070' };
         else if (listName === 'consultants') newItem = { name: '', role: '', info: '', experience: '' };
         else newItem = { title: '', description: '' };
-
-        setFormData((prev: any) => ({
-            ...prev,
-            [listName]: [...prev[listName], newItem]
-        }));
+        setFormData((prev: any) => ({ ...prev, [listName]: [...prev[listName], newItem] }));
     };
-
-    const removeListItem = (listName: 'treatments' | 'consultants' | 'highlights', index: number) => {
-        setFormData((prev: any) => ({
-            ...prev,
-            [listName]: prev[listName].filter((_: any, i: number) => i !== index)
-        }));
-    };
-
+    const removeListItem = (listName: 'treatments' | 'consultants' | 'highlights', index: number) => { setFormData((prev: any) => ({ ...prev, [listName]: prev[listName].filter((_: any, i: number) => i !== index) })); };
     const deleteFromHistory = async (handoverformId: string) => {
         if (!confirm(`Are you sure you want to delete ${handoverformId}?`)) return;
-
-        try {
-            await axios.delete(`${API_BASE_URL}/handover/${handoverformId}`);
-            // Fetch updated history
-            const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
-            setHistory(historyRes.data);
-            setSaveStatus('Version deleted successfully');
-            setTimeout(() => setSaveStatus(''), 3000);
-        } catch (error) {
-            console.error('Delete error:', error);
-            setSaveStatus('Error deleting version');
-        }
+        try { await axios.delete(`${API_BASE_URL}/handover/${handoverformId}`); const historyRes = await axios.get(`${API_BASE_URL}/handover/history`); setHistory(historyRes.data); setSaveStatus('Version deleted successfully'); setTimeout(() => setSaveStatus(''), 3000); } catch { setSaveStatus('Error deleting version'); }
     };
-
     const activateVersion = async (handoverformId: string) => {
         setIsLoading(true);
-        try {
-            await axios.post(`${API_BASE_URL}/handover/activate/${handoverformId}`);
-            const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
-            setHistory(historyRes.data);
-            await refreshClinicData();
-
-            // Automatically find and load the active version data into the form fields
-            const activeItem = historyRes.data.find((h: any) => h.handoverformId === handoverformId);
-            if (activeItem) {
-                loadFromHistory(activeItem);
-            }
-
-            setSaveStatus(`Version ${handoverformId} activated successfully!`);
-            setTimeout(() => setSaveStatus(''), 5000);
-        } catch (error) {
-            console.error('Activation error:', error);
-            setSaveStatus('Error activating version');
-        } finally {
-            setIsLoading(false);
-        }
+        try { await axios.post(`${API_BASE_URL}/handover/activate/${handoverformId}`); const historyRes = await axios.get(`${API_BASE_URL}/handover/history`); setHistory(historyRes.data); await refreshClinicData(); const activeItem = historyRes.data.find((h: any) => h.handoverformId === handoverformId); if (activeItem) loadFromHistory(activeItem); setSaveStatus(`Version ${handoverformId} activated!`); setTimeout(() => setSaveStatus(''), 5000); } catch { setSaveStatus('Error activating version'); } finally { setIsLoading(false); }
     };
-
     const deactivateVersion = async () => {
         setIsLoading(true);
-        try {
-            await axios.post(`${API_BASE_URL}/handover/deactivate`);
-            const historyRes = await axios.get(`${API_BASE_URL}/handover/history`);
-            setHistory(historyRes.data);
-            await refreshClinicData();
-
-            // Automatically revert the editing form back to the hardcoded default data
-            const cleanDefault = JSON.parse(JSON.stringify(DEFAULT_CLINIC_DATA));
-            setFormData(cleanDefault);
-            setHandoverId('handover_v1');
-            setJsonOutput(JSON.stringify(cleanDefault, null, 4));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            setSaveStatus('Handover deactivated. Reverted form and live site to default.');
-            setTimeout(() => setSaveStatus(''), 5000);
-        } catch (error) {
-            console.error('Deactivation error:', error);
-            setSaveStatus('Error deactivating version');
-        } finally {
-            setIsLoading(false);
-        }
+        try { await axios.post(`${API_BASE_URL}/handover/deactivate`); const historyRes = await axios.get(`${API_BASE_URL}/handover/history`); setHistory(historyRes.data); await refreshClinicData(); const cleanDefault = JSON.parse(JSON.stringify(DEFAULT_CLINIC_DATA)); setFormData(cleanDefault); setHandoverId('handover_v1'); setJsonOutput(JSON.stringify(cleanDefault, null, 4)); window.scrollTo({ top: 0, behavior: 'smooth' }); setSaveStatus('Reverted to default.'); setTimeout(() => setSaveStatus(''), 5000); } catch { setSaveStatus('Error deactivating version'); } finally { setIsLoading(false); }
     };
 
+    const tabs = [
+        { id: 'branding', label: 'Branding', desc: 'Clinic & doctor' },
+        { id: 'team', label: 'Team', desc: 'Consultants' },
+        { id: 'treatments', label: 'Treatments', desc: 'Services & price' },
+        { id: 'highlights', label: 'Highlights', desc: 'Trust badges' },
+        { id: 'contact', label: 'Contact', desc: 'Address & social' },
+        { id: 'timings', label: 'Timings', desc: 'Hours & lunch' },
+        { id: 'seo', label: 'SEO', desc: 'Search' },
+    ];
 
-
-    if (!hasMounted) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-        );
-    }
+    if (!hasMounted) return <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center"><div className="w-8 h-8 border-2 border-black/10 border-t-[#0a0a0b] rounded-full animate-spin" /></div>;
 
     if (!isAuthorized) {
         return (
-            <div className="min-h-screen bg-gray-950 flex items-center justify-center p-6 relative overflow-hidden">
-                {/* Background Decor */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 blur-[100px] -mr-48 -mt-48 rounded-full" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/10 blur-[100px] -ml-48 -mb-48 rounded-full" />
-
-                <div className="max-w-md w-full bg-white rounded-[3rem] p-12 shadow-2xl space-y-8 text-center border-t-8 border-blue-600 relative z-10">
-                    <Link
-                        href="/"
-                        className="absolute top-8 left-8 text-gray-400 hover:text-blue-600 transition-colors group flex items-center gap-2"
-                    >
-                        <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Exit</span>
-                    </Link>
-
-                    <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mx-auto shadow-inner text-blue-600 mt-4">
-                        <FaShieldAlt size={40} />
+            <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center p-6">
+                <div className="w-full max-w-md bg-white rounded-[24px] border border-black/5 p-8 shadow-sm">
+                    <Link href="/" className="inline-flex items-center gap-2 text-[12px] font-medium text-neutral-500 hover:text-[#0a0a0b]"><FaShieldAlt size={12} /> Back to site</Link>
+                    <div className="mt-6 text-center">
+                        <span className="w-12 h-12 rounded-2xl bg-[#f5f5f3] border border-black/5 grid place-items-center mx-auto text-neutral-700"><FaShieldAlt size={18} /></span>
+                        <h1 className="mt-4 text-[18px] font-semibold tracking-[-0.02em] text-[#0a0a0b]">Restricted — Handover</h1>
+                        <p className="text-[13px] leading-6 text-neutral-500 mt-1">Enter delivery password to edit live site config. Access expires in 2 hours.</p>
                     </div>
-                    <div className="space-y-4">
-                        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Access Restricted</h1>
-                        <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Developer & Handover Dashboard</p>
-                    </div>
-                    <form onSubmit={handleLogin} className="space-y-6 text-left">
-                        <div>
-                            <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-[0.2em]">Enter Delivery Password</label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-6 py-4 rounded-2xl bg-gray-100 border-none focus:ring-2 focus:ring-blue-600 font-black text-center text-xl tracking-widest"
-                                placeholder="••••••••"
-                                autoFocus
-                            />
-                        </div>
-                        <button className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-700 transition transform active:scale-95">
-                            Verify Access
-                        </button>
+                    <form onSubmit={handleLogin} className="mt-6 space-y-4">
+                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" autoFocus className="w-full h-[48px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-center tracking-widest text-[14px] font-medium" />
+                        <button className="w-full h-[48px] rounded-full bg-[#0a0a0b] text-white text-[13px] font-medium hover:bg-black active:scale-[0.98] transition">Verify Access</button>
                     </form>
-
-                    <p className="text-[9px] text-gray-400 font-medium leading-relaxed">
-                        Authorized personnel only. All access attempts are logged for security.
-                    </p>
                 </div>
             </div>
         );
     }
 
+    const activeVersion = history.find(h => h.isActive)?.handoverformId || 'Default';
+    const filteredTabs = tabs.filter(t => !searchQuery || t.label.toLowerCase().includes(searchQuery.toLowerCase()) || t.desc.toLowerCase().includes(searchQuery.toLowerCase()));
+
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-[#f8fafc] py-8 px-0 sm:px-6 lg:px-8">
-                {/* Unified Header */}
-                <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200">
-                            <FaTooth className="text-white text-2xl" />
+            <div className="min-h-screen bg-[#fcfcfc]">
+                {/* Top bar */}
+                <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-black/5">
+                    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-[64px] flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <span className="w-8 h-8 rounded-xl bg-[#0a0a0b] text-white grid place-items-center"><FaTooth size={14} /></span>
+                            <div className="min-w-0">
+                                <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] leading-none truncate">Handover — Live Editor</div>
+                                <div className="text-[11px] text-neutral-500 flex items-center gap-2">Editing <span className="font-mono text-[#0a0a0b]">{handoverId}</span> <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${activeVersion === handoverId ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-amber-50 text-amber-700 border-amber-100'}`}>{activeVersion === handoverId ? '● Live' : '○ Draft'}</span></div>
+                            </div>
                         </div>
-                        <div>
-                            <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-none">Handover Dashboard</h1>
-                            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-1.5">Full Site Configuration & Versioning</p>
+                        <div className="flex items-center gap-2 shrink-0">
+                            <Link href="/" className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-black/5 text-[12px] font-medium hover:border-black/10"><FaHome size={11} /> Preview</Link>
+                            <button onClick={handleLogout} className="hidden sm:inline-flex px-4 py-2 rounded-full bg-[#f5f5f3] border border-black/5 text-[12px] font-medium text-neutral-700 hover:bg-white">Logout</button>
+                            <span className="w-px h-6 bg-black/5 hidden sm:block" />
+                            <div className="hidden lg:flex items-center gap-2 text-[11px] text-neutral-500">Live: <span className="font-mono font-medium text-[#0a0a0b]">{activeVersion}</span></div>
                         </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href="/"
-                            className="px-5 py-2.5 rounded-xl flex items-center gap-2 text-slate-600 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all border border-slate-100"
-                        >
-                            <FaHome size={14} />
-                            <span>Preview Site</span>
-                        </Link>
-                        <button
-                            onClick={handleLogout}
-                            className="px-5 py-2.5 rounded-xl flex items-center gap-2 text-rose-500 font-bold text-xs uppercase tracking-widest hover:bg-rose-50 transition-all border border-rose-100"
-                        >
-                            <FaShieldAlt size={14} />
-                            <span>Logout</span>
-                        </button>
                     </div>
                 </div>
 
-                {/* Main Content Area */}
-                <div className="max-w-7xl mx-auto space-y-12 pb-20">
-                    {/* System Vocabulary Guide Panel */}
-                    <div className="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl border border-slate-800 space-y-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg">
-                                <FaLightbulb size={20} />
-                            </div>
+                <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24">
+                    {/* Guide + Status */}
+                    <div className="grid lg:grid-cols-3 gap-4 mb-6">
+                        <div className="lg:col-span-2 bg-white rounded-[20px] border border-black/5 p-5 flex gap-4">
+                            <span className="w-8 h-8 rounded-full bg-amber-50 border border-amber-100 text-amber-600 grid place-items-center shrink-0"><FaLightbulb size={12} /></span>
                             <div>
-                                <h2 className="text-sm font-black uppercase tracking-widest">Dashboard System Guide</h2>
-                                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">Understand how your live site data and versioning works</p>
+                                <div className="text-[12px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">How it works</div>
+                                <p className="text-[12px] leading-5 text-neutral-500 mt-1"><span className="font-medium text-emerald-700">Live</span> = public site. <span className="font-medium text-[#0a0a0b]">Editing</span> = draft in form. <span className="font-medium">Save Draft</span> keeps it private, <span className="font-medium">Go Live</span> publishes instantly. History on right lets you load/activate any version.</p>
                             </div>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800/80">
-                            <div className="space-y-2 bg-slate-950/45 p-5 rounded-2xl border border-slate-800/50">
-                                <div className="flex items-center gap-2">
-                                    <span className="flex h-2.5 w-2.5 relative">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-                                    </span>
-                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-green-400">Active / Live Site</h3>
-                                </div>
-                                <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                                    The configuration currently <strong>serving your public website</strong>. Only one version can be "Live" at a time. Active configurations override the default fallback.
-                                </p>
-                            </div>
-
-                            <div className="space-y-2 bg-slate-950/45 p-5 rounded-2xl border border-slate-800/50">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-blue-400 font-bold text-sm">✍️</span>
-                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-blue-400">Currently Editing</h3>
-                                </div>
-                                <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                                    The values loaded in the form fields below. You can load any previous version from History to edit it. Clicking <strong>Save Draft</strong> saves your progress.
-                                </p>
-                            </div>
-
-                            <div className="space-y-2 bg-slate-950/45 p-5 rounded-2xl border border-slate-800/50">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-amber-400 font-bold text-sm">📦</span>
-                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-amber-400">Default (Hardcoded)</h3>
-                                </div>
-                                <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                                    The built-in <strong>failsafe configuration</strong> in your source code. If no version in History is active, the website falls back to this default layout.
-                                </p>
-                            </div>
+                        <div className="bg-[#0a0a0b] text-white rounded-[20px] p-5 flex flex-col justify-center">
+                            <div className="text-[11px] tracking-[0.12em] uppercase font-medium text-white/60">Realtime</div>
+                            <div className="text-[13px] font-medium mt-1">Changes appear on site <span className="text-emerald-400">immediately</span> after Go Live.</div>
+                            <div className="mt-2 text-[11px] text-white/50">No confusion — draft vs live is clearly labeled above.</div>
                         </div>
                     </div>
 
-                    {/* Section 1: Version Control & Persistence */}
-                    <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden lg:min-w-[400px]">
-                            <div className="p-8 bg-slate-900 text-white">
-                                <h2 className="text-lg font-black uppercase tracking-widest flex items-center gap-3">
-                                    <FaCloudUploadAlt className="text-blue-400" /> Version Control
-                                </h2>
-                                <p className="text-slate-400 text-[10px] font-bold mt-1 uppercase tracking-tighter">Manage your live site configuration</p>
-                            </div>
-
-                            <div className="p-8 space-y-6">
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Active Site Version</label>
-                                    <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                        <div className={`w-3 h-3 rounded-full ${history.find(h => h.isActive) ? 'bg-green-500 shadow-lg shadow-green-200 animate-pulse' : 'bg-slate-300'}`} />
-                                        <span className="font-black text-slate-700 truncate">
-                                            {history.find(h => h.isActive)?.handoverformId || 'Default (Hardcoded)'}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4 pt-4 border-t border-slate-100">
-                                    <div>
-                                        <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Editing ID / Version Name</label>
-                                        <input
-                                            type="text"
-                                            value={handoverId}
-                                            onChange={(e) => setHandoverId(e.target.value)}
-                                            className="w-full px-5 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-900"
-                                            placeholder="e.g. march_promo_v1"
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <button
-                                            onClick={() => handleSave(false)}
-                                            disabled={isLoading}
-                                            className="px-4 py-4 bg-white text-slate-900 border-2 border-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex flex-col items-center gap-1.5 disabled:opacity-50"
-                                        >
-                                            <FaSave size={16} />
-                                            <span>Save Draft</span>
-                                        </button>
-                                        <button
-                                            onClick={() => handleSave(true)}
-                                            disabled={isLoading}
-                                            className="px-4 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all flex flex-col items-center gap-1.5 disabled:opacity-50"
-                                        >
-                                            <FaGlobe size={16} />
-                                            <span>Go Live Now</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                    {saveStatus && (
+                        <div className={`mb-4 p-3 rounded-2xl border text-[13px] font-medium flex items-center gap-2 ${saveStatus.includes('Error') ? 'bg-rose-50 text-rose-700 border-rose-100' : saveStatus.includes('Success') || saveStatus.includes('Draft') || saveStatus.includes('Published') ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
+                            <span className={`w-2 h-2 rounded-full ${saveStatus.includes('Error') ? 'bg-rose-500' : 'bg-emerald-500 animate-pulse'}`} /> {saveStatus}
                         </div>
+                    )}
 
-                        {/* HISTORY CARD */}
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-col lg:min-w-[400px] min-h-[300px] max-h-[500px]">
-                            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                                <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-slate-900">
-                                    <FaHistory className="text-indigo-500" /> History
-                                </h2>
-                                <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 rounded-full text-slate-500">{history.length} Saved</span>
+                    <div className="grid lg:grid-cols-3 gap-6 items-start">
+                        {/* Left: Version control + History */}
+                        <div className="space-y-4 lg:sticky lg:top-[80px]">
+                            <div className="bg-white rounded-[20px] border border-black/5 p-5 shadow-sm">
+                                <h3 className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 flex items-center gap-2"><FaCloudUploadAlt size={11} className="text-neutral-400" /> Version Control</h3>
+                                <div className="mt-3">
+                                    <div className="text-[11px] font-medium text-neutral-500">Active (Live) Version</div>
+                                    <div className="mt-1 flex items-center gap-2 px-3 py-2.5 rounded-full bg-emerald-50 border border-emerald-100">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                        <span className="text-[13px] font-semibold text-emerald-800 truncate">{activeVersion}</span>
+                                    </div>
+                                </div>
+                                <div className="mt-4">
+                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Editing (Draft) ID</label>
+                                    <input value={handoverId} onChange={(e) => setHandoverId(e.target.value)} placeholder="e.g. march_promo_v1" className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-[13px] font-medium font-mono" />
+                                    <p className="text-[11px] text-neutral-400 mt-1">This ID is what you will save/overwrite.</p>
+                                </div>
+                                <div className="mt-4 grid grid-cols-2 gap-2">
+                                    <button onClick={() => handleSave(false)} disabled={isLoading} className="h-[44px] rounded-full bg-white border border-black/10 text-[#0a0a0b] text-[12px] font-medium hover:bg-[#fcfcfc] active:scale-[0.98] transition flex items-center justify-center gap-1.5 disabled:opacity-40"><FaSave size={12} /> Save Draft</button>
+                                    <button onClick={() => handleSave(true)} disabled={isLoading} className="h-[44px] rounded-full bg-[#0a0a0b] text-white text-[12px] font-medium hover:bg-black active:scale-[0.98] transition flex items-center justify-center gap-1.5 disabled:opacity-40"><FaGlobe size={12} /> Go Live</button>
+                                </div>
+                                <p className="text-[11px] text-neutral-400 text-center mt-2">Go Live publishes instantly. Save Draft keeps it private.</p>
                             </div>
 
-                            <div className="flex-grow overflow-y-auto p-2 space-y-2 custom-scrollbar">
-                                {history.length > 0 ? [...history].reverse().map((item) => (
-                                    <div key={item._id} className={`flex justify-between items-center p-2 rounded-2xl border transition-all group relative ${item.isActive ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-slate-50 border-slate-100'}`}>
-                                        <div className="flex gap-2 items-center">
-                                            <div className="flex items-center gap-2">
-                                                <span className={`font-black text-[10px] truncate max-w-[140px] ${item.isActive ? 'text-blue-700' : 'text-slate-600'}`}>
-                                                    {item.handoverformId}
-                                                </span>
-                                                {/* {item.isActive && <span className="text-[7px] font-black uppercase bg-blue-600 text-white px-1.5 py-0.5 rounded-full tracking-tighter">Active</span>} */}
+                            <div className="bg-white rounded-[20px] border border-black/5 shadow-sm overflow-hidden flex flex-col max-h-[420px]">
+                                <div className="px-5 py-4 border-b border-black/5 flex items-center justify-between">
+                                    <h3 className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 flex items-center gap-2"><FaHistory size={11} /> History</h3>
+                                    <span className="text-[11px] px-2 py-1 rounded-full bg-[#f5f5f3] border border-black/5 font-medium text-neutral-600">{history.length} saved</span>
+                                </div>
+                                <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                                    {history.length ? [...history].reverse().map(item => (
+                                        <div key={item._id} className={`p-3 rounded-2xl border flex flex-col gap-2 ${item.isActive ? 'bg-emerald-50 border-emerald-100' : 'bg-[#fcfcfc] border-black/5 hover:bg-white'}`}>
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className={`text-[12px] font-semibold font-mono truncate ${item.isActive ? 'text-emerald-800' : 'text-[#0a0a0b]'}`}>{item.handoverformId}</span>
+                                                {item.isActive && <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500 text-white font-medium">Live</span>}
                                             </div>
-                                            <span className="text-[8px] text-slate-400 font-bold uppercase">{new Date(item.updatedAt).toLocaleDateString()}</span>
-                                        </div>
-
-                                        <div className="flex items-center w-fit gap-4 border-t border-slate-100/50">
-                                            {!item.isActive && (
-                                                <button
-                                                    onClick={() => activateVersion(item.handoverformId)}
-                                                    className="p-1.5 h-10 w-10 bg-white text-blue-600 rounded-lg shadow-sm hover:bg-blue-600 hover:text-white transition-all border border-blue-100 flex-1 flex justify-center items-center cursor-pointer"
-                                                    title="Go Live"
-                                                >
-                                                    <FaGlobe size={20} />
-                                                </button>
-                                            )}
-
-                                            {item.isActive && (
-                                                <button
-                                                    onClick={() => deactivateVersion()}
-                                                    className="p-1.5 h-10 w-10 bg-green-500 text-white rounded-lg shadow-sm hover:bg-slate-900 transition-all flex-1 flex justify-center items-center cursor-pointer"
-                                                    title="Revert to Default"
-                                                >
-                                                    <FaGlobe size={20} />
-                                                </button>
-                                            )}
-                                            <div className="flex items-center gap-1.5">
-                                                <button
-                                                    onClick={() => loadFromHistory(item)}
-                                                    className="p-1.5 h-8 w-20 bg-white text-indigo-600 rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white transition-all border border-indigo-100 flex-1 flex justify-center items-center"
-                                                    title="Load Draft"
-                                                >
-                                                    <FaEdit size={12} />
-                                                </button>
-                                                <button
-                                                    onClick={() => deleteFromHistory(item.handoverformId)}
-                                                    className="p-1.5 h-8 w-20 bg-white text-rose-500 rounded-lg shadow-sm hover:bg-rose-500 hover:text-white transition-all border border-rose-100 flex-1 flex justify-center items-center"
-                                                    title="Delete"
-                                                >
-                                                    <FaTrash size={12} />
-                                                </button>
+                                            <div className="text-[11px] text-neutral-500">{new Date(item.updatedAt).toLocaleString()}</div>
+                                            <div className="flex gap-1.5">
+                                                {!item.isActive ? (
+                                                    <button onClick={() => activateVersion(item.handoverformId)} className="flex-1 h-8 rounded-full bg-emerald-500 text-white text-[11px] font-medium hover:bg-emerald-600 flex items-center justify-center gap-1"><FaGlobe size={10} /> Live</button>
+                                                ) : (
+                                                    <button onClick={deactivateVersion} className="flex-1 h-8 rounded-full bg-white border border-black/10 text-[11px] font-medium hover:bg-black hover:text-white flex items-center justify-center gap-1">Revert</button>
+                                                )}
+                                                <button onClick={() => loadFromHistory(item)} className="flex-1 h-8 rounded-full bg-white border border-black/5 text-[11px] font-medium hover:border-black/15 flex items-center justify-center gap-1"><FaEdit size={10} /> Load</button>
+                                                <button onClick={() => deleteFromHistory(item.handoverformId)} className="w-8 h-8 rounded-full bg-white border border-rose-100 text-rose-600 hover:bg-rose-50 grid place-items-center"><FaTrash size={10} /></button>
                                             </div>
                                         </div>
-                                    </div>
-                                )) : (
-                                    <div className="py-12 text-center">
-                                        <FaHistory className="mx-auto text-slate-200 text-3xl mb-3" />
-                                        <p className="text-slate-400 text-[10px] font-bold uppercase italic">No history found</p>
+                                    )) : <div className="py-10 text-center text-[12px] text-neutral-400">No history yet — save a draft to begin.</div>}
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-[20px] border border-black/5 p-4">
+                                <button onClick={() => setShowJson(!showJson)} className="w-full flex items-center justify-between text-[12px] font-medium text-neutral-700 hover:text-[#0a0a0b]"><span className="flex items-center gap-2"><FaSearch size={11} /> JSON preview</span><span className={`transition ${showJson ? 'rotate-180' : ''}`}>⌄</span></button>
+                                {showJson && (
+                                    <div className="mt-3 relative">
+                                        <button onClick={() => { navigator.clipboard.writeText(jsonOutput || JSON.stringify(formData, null, 4)); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white border border-black/5 grid place-items-center text-neutral-600 hover:bg-black hover:text-white transition">
+                                            {copied ? <FaCheck size={11} className="text-emerald-500" /> : <FaCopy size={11} />}
+                                        </button>
+                                        <pre className="p-3 bg-[#0a0a0b] text-white/80 rounded-2xl text-[11px] font-mono overflow-auto max-h-[300px] border border-white/10">{jsonOutput || JSON.stringify(formData, null, 4)}</pre>
                                     </div>
                                 )}
                             </div>
                         </div>
-                    </div>
 
-                    {/* Section 2: Clinic Content & Configuration */}
-                    <div className="space-y-12">
-                        {/* Dynamic Form Editing Mode Banner */}
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-slate-100 p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Currently Editing Draft Version</p>
-                                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                                    <span className="text-blue-600 font-bold">✍️</span> {handoverId}
-                                </h3>
+                        {/* Right: Tabbed Form */}
+                        <div className="lg:col-span-2 space-y-4">
+                            {/* Tabs */}
+                            <div className="bg-white rounded-full border border-black/5 p-1 flex gap-1 overflow-x-auto">
+                                <div className="relative flex-1 flex gap-1">
+                                    <div className="flex-1 relative">
+                                        <FaSearch size={11} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                                        <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Filter tabs..." className="w-full h-8 pl-8 pr-3 rounded-full bg-[#fcfcfc] border border-black/5 text-[12px] outline-none focus:bg-white focus:border-black/10" />
+                                    </div>
+                                </div>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                                {history.find(h => h.isActive)?.handoverformId === handoverId ? (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full font-black text-[10px] uppercase tracking-wider border border-green-200">
-                                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                                        Active on Live Site
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 rounded-full font-black text-[10px] uppercase tracking-wider border border-amber-200">
-                                        ⚠️ Inactive Draft Copy
-                                    </span>
+                                {filteredTabs.map(tab => (
+                                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`px-4 py-2 rounded-full text-[12px] font-medium border transition ${activeTab === tab.id ? 'bg-[#0a0a0b] text-white border-black shadow-sm' : 'bg-white text-neutral-600 border-black/5 hover:border-black/10'}`}>
+                                        {tab.label} <span className={`ml-1 text-[10px] ${activeTab === tab.id ? 'text-white/60' : 'text-neutral-400'}`}>{tab.desc}</span>
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Editing banner */}
+                            <div className="bg-white rounded-[20px] border border-black/5 p-4 flex flex-wrap items-center justify-between gap-3">
+                                <div className="flex items-center gap-2 text-[12px]"><span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" /> Editing <span className="font-mono font-semibold text-[#0a0a0b]">{handoverId}</span> <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${activeVersion === handoverId ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-amber-50 text-amber-700 border-amber-100'}`}>{activeVersion === handoverId ? 'Live draft' : 'Draft'}</span></div>
+                                <div className="text-[11px] text-neutral-500">Changes save to this ID only. Use Go Live to publish.</div>
+                            </div>
+
+                            {/* Tab contents */}
+                            <div className="space-y-4">
+                                {activeTab === 'branding' && (
+                                    <div className="bg-white rounded-[20px] border border-black/5 p-6 space-y-4 shadow-sm">
+                                        <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] flex items-center gap-2"><span className="w-1 h-4 bg-[#0a0a0b] rounded-full" /> Branding Essentials</h3>
+                                        <div className="grid sm:grid-cols-2 gap-4">
+                                            <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Clinic Name</label><input name="clinicName" value={formData.clinicName} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Doctor Name</label><input name="doctorName" value={formData.doctorName} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div className="sm:col-span-2"><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Tagline</label><input name="tagline" value={formData.tagline} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div className="sm:col-span-2"><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Expertise</label><input name="expertise" value={formData.expertise} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Est. Year</label><input name="establishedYear" value={formData.establishedYear} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Lunch Break</label><input name="lunchTime" value={formData.lunchTime} onChange={handleChange} placeholder="01:00 PM - 02:00 PM" className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                        </div>
+                                    </div>
                                 )}
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 text-slate-600 rounded-full font-black text-[10px] uppercase tracking-wider border border-slate-200">
-                                    📍 Edits will modify `{handoverId}`
-                                </span>
-                            </div>
-                        </div>
 
-                        {/* Status Alert */}
-                        {saveStatus && (
-                            <div className={`p-4 rounded-2xl font-bold text-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 ${saveStatus.includes('Error') ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-green-50 text-green-600 border border-green-100'
-                                }`}>
-                                <div className={`w-2 h-2 rounded-full ${saveStatus.includes('Error') ? 'bg-rose-500' : 'bg-green-500'} animate-pulse`} />
-                                {saveStatus}
-                            </div>
-                        )}
-
-                        {/* Branding */}
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-4 sm:p-8 border border-gray-100 space-y-6">
-                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <span className="w-2 h-8 bg-blue-600 rounded-full" />
-                                Branding Essentials
-                            </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="sm:col-span-1">
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Clinic Name</label>
-                                    <input type="text" name="clinicName" value={formData.clinicName} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
-                                </div>
-                                <div className="sm:col-span-1">
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Doctor Name</label>
-                                    <input type="text" name="doctorName" value={formData.doctorName} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Tagline/Hero Message</label>
-                                    <input type="text" name="tagline" value={formData.tagline} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-500 font-bold" />
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Lunch Time Break (e.g. 01:00 PM - 02:00 PM)</label>
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex-1 relative">
-                                            <input
-                                                type="text"
-                                                name="lunchTime"
-                                                value={formData.lunchTime}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 font-bold text-blue-600"
-                                                placeholder="01:00 PM - 02:00 PM"
-                                            />
+                                {activeTab === 'team' && (
+                                    <div className="bg-white rounded-[20px] border border-black/5 p-6 shadow-sm">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] flex items-center gap-2"><span className="w-1 h-4 bg-violet-500 rounded-full" /> Team Members</h3>
+                                            <button onClick={() => addListItem('consultants')} className="px-3 py-1.5 rounded-full bg-[#f5f5f3] border border-black/5 text-[12px] font-medium hover:bg-white">+ Add</button>
                                         </div>
-                                    </div>
-                                    <p className="text-[9px] text-slate-400 font-bold uppercase mt-2 ml-1">This will automatically shade and disable these slots in the booking system.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Team Section */}
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-4 sm:p-8 border border-gray-100 space-y-6">
-                            <div className="flex justify-between items-center">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-indigo-500 rounded-full" />
-                                    Consultants & Teams
-                                </h2>
-                                <button onClick={() => addListItem('consultants')} className="flex items-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest hover:bg-indigo-50 px-4 py-2 rounded-xl transition-all">
-                                    <FaPlus /> Add Member
-                                </button>
-                            </div>
-                            <div className="space-y-4">
-                                {formData.consultants.map((c: any, i: number) => (
-                                    <div key={i} className="p-6 bg-gray-50 rounded-2xl border border-gray-100 space-y-4 relative group">
-                                        <button onClick={() => removeListItem('consultants', i)} className="absolute top-4 right-4 p-2 text-rose-500 hover:bg-rose-100 rounded-lg transition-all"><FaTrash /></button>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Name</label>
-                                                <input type="text" placeholder="Dr. Name" value={c.name} onChange={(e) => handleListChange('consultants', i, 'name', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Role</label>
-                                                <input type="text" placeholder="e.g. Chief Surgeon" value={c.role} onChange={(e) => handleListChange('consultants', i, 'role', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Individual Experience</label>
-                                                <input type="text" placeholder="e.g. 10 Years" value={c.experience} onChange={(e) => handleListChange('consultants', i, 'experience', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Credentials/MDS</label>
-                                                <input type="text" placeholder="e.g. BDS, MDS" value={c.info} onChange={(e) => handleListChange('consultants', i, 'info', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-indigo-500 font-bold text-sm" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Treatments Section */}
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-4 sm:p-8 border border-gray-100 space-y-6">
-                            <div className="flex justify-between items-center">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-teal-500 rounded-full" />
-                                    Treatments & Pricing
-                                </h2>
-                                <button onClick={() => addListItem('treatments')} className="flex items-center gap-2 text-teal-600 font-black text-xs uppercase tracking-widest hover:bg-teal-50 px-4 py-2 rounded-xl transition-all">
-                                    <FaPlus /> Add Treatment
-                                </button>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {formData.treatments.map((t: any, i: number) => (
-                                    <div key={i} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4 relative group">
-                                        <button onClick={() => removeListItem('treatments', i)} className="absolute top-4 right-4 p-2 text-rose-500 hover:bg-rose-100 rounded-lg transition-all"><FaTrash size={14} /></button>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Treatment Name</label>
-                                                <input type="text" placeholder="Treatment" value={t.name} onChange={(e) => handleListChange('treatments', i, 'name', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-sm" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Price</label>
-                                                <div className="relative">
-                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
-                                                    <input type="text" placeholder="Price" value={t.price} onChange={(e) => handleListChange('treatments', i, 'price', e.target.value)} className="w-full pl-8 pr-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-sm text-teal-600" />
+                                        <div className="space-y-3">
+                                            {formData.consultants.map((c: any, i: number) => (
+                                                <div key={i} className="p-4 rounded-2xl bg-[#fcfcfc] border border-black/5 space-y-3">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-[11px] font-medium text-neutral-500">Member #{i + 1}</span>
+                                                        <button onClick={() => removeListItem('consultants', i)} className="w-7 h-7 rounded-full bg-white border border-black/5 text-rose-500 grid place-items-center hover:bg-rose-50"><FaTrash size={11} /></button>
+                                                    </div>
+                                                    <div className="grid sm:grid-cols-2 gap-3">
+                                                        <input placeholder="Name" value={c.name} onChange={e => handleListChange('consultants', i, 'name', e.target.value)} className="h-[40px] px-3 rounded-full bg-white border border-black/5 outline-none text-[13px] focus:border-black/15" />
+                                                        <input placeholder="Role" value={c.role} onChange={e => handleListChange('consultants', i, 'role', e.target.value)} className="h-[40px] px-3 rounded-full bg-white border border-black/5 outline-none text-[13px] focus:border-black/15" />
+                                                        <input placeholder="Experience" value={c.experience} onChange={e => handleListChange('consultants', i, 'experience', e.target.value)} className="h-[40px] px-3 rounded-full bg-white border border-black/5 outline-none text-[13px] focus:border-black/15" />
+                                                        <input placeholder="Info / Credentials" value={c.info} onChange={e => handleListChange('consultants', i, 'info', e.target.value)} className="h-[40px] px-3 rounded-full bg-white border border-black/5 outline-none text-[13px] focus:border-black/15" />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div>
-                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Description</label>
-                                                <textarea placeholder="Description" value={t.description} onChange={(e) => handleListChange('treatments', i, 'description', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" rows={2} />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Treatment Image URL</label>
-                                                <input type="text" placeholder="https://unsplash.com/..." value={t.image} onChange={(e) => handleListChange('treatments', i, 'image', e.target.value)} className="w-full px-4 py-2 rounded-lg bg-white border-none focus:ring-2 focus:ring-teal-500 font-bold text-xs" />
-                                            </div>
+                                            ))}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
+                                )}
 
-                        {/* Metrics Section */}
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-4 sm:p-8 border border-gray-100 space-y-6">
-                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <span className="w-2 h-8 bg-purple-500 rounded-full" />
-                                Clinic Experience & Metrics
-                            </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2">Years Since Est.</label>
-                                    <input type="text" name="clinicExperience" value={formData.clinicExperience} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-purple-500 font-bold" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2">Patient Count</label>
-                                    <input type="text" name="happyCustomers" value={formData.happyCustomers} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-purple-500 font-bold" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2">Success Rate</label>
-                                    <input type="text" name="successRate" value={formData.successRate} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-purple-500 font-bold" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Clinic Highlights */}
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-4 sm:p-8 border border-gray-100 space-y-6">
-                            <div className="flex flex-col sm:flex-row justify-between items-center">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-yellow-500 rounded-full" />
-                                    Clinic Highlights & Tech
-                                </h2>
-                                <button onClick={() => addListItem('highlights')} className="flex items-center gap-2 text-yellow-600 font-black text-xs uppercase tracking-widest hover:bg-yellow-50 px-4 py-2 rounded-xl transition-all">
-                                    <FaPlus /> Add Highlight
-                                </button>
-                            </div>
-                            <div className="space-y-4">
-                                {formData.highlights.map((h: any, i: number) => (
-                                    <div key={i} className="flex flex-col sm:flex-row gap-3 bg-gray-50 p-4 rounded-2xl relative group border border-gray-100">
-                                        <button onClick={() => removeListItem('highlights', i)} className="absolute top-2 right-2 p-1 text-rose-400 hover:text-rose-600 transition-opacity"><FaTrash size={12} /></button>
-                                        <input type="text" placeholder="Title (e.g. Modern Lab)" value={h.title} onChange={(e) => handleListChange('highlights', i, 'title', e.target.value)} className="flex-1 px-4 py-2 rounded-xl bg-white border-none focus:ring-2 focus:ring-yellow-500 font-bold text-sm" />
-                                        <input type="text" placeholder="Description" value={h.description} onChange={(e) => handleListChange('highlights', i, 'description', e.target.value)} className="flex-[2] px-4 py-2 rounded-xl bg-white border-none focus:ring-2 focus:ring-yellow-500 text-sm" />
+                                {activeTab === 'treatments' && (
+                                    <div className="bg-white rounded-[20px] border border-black/5 p-6 shadow-sm">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] flex items-center gap-2"><span className="w-1 h-4 bg-emerald-500 rounded-full" /> Treatments & Pricing</h3>
+                                            <button onClick={() => addListItem('treatments')} className="px-3 py-1.5 rounded-full bg-[#f5f5f3] border border-black/5 text-[12px] font-medium hover:bg-white">+ Add</button>
+                                        </div>
+                                        <div className="grid sm:grid-cols-2 gap-4">
+                                            {formData.treatments.map((t: any, i: number) => (
+                                                <div key={i} className="p-4 rounded-2xl bg-[#fcfcfc] border border-black/5 space-y-3">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-[11px] font-medium text-neutral-500">Treatment #{i + 1}</span>
+                                                        <button onClick={() => removeListItem('treatments', i)} className="w-7 h-7 rounded-full bg-white border border-black/5 text-rose-500 grid place-items-center hover:bg-rose-50"><FaTrash size={11} /></button>
+                                                    </div>
+                                                    <input placeholder="Name" value={t.name} onChange={e => handleListChange('treatments', i, 'name', e.target.value)} className="h-[40px] px-3 rounded-full bg-white border border-black/5 outline-none text-[13px] focus:border-black/15 w-full" />
+                                                    <div className="relative">
+                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-[12px]">₹</span>
+                                                        <input placeholder="Price" value={t.price} onChange={e => handleListChange('treatments', i, 'price', e.target.value)} className="h-[40px] pl-7 pr-3 rounded-full bg-white border border-black/5 outline-none text-[13px] focus:border-black/15 w-full" />
+                                                    </div>
+                                                    <textarea placeholder="Description" value={t.description} onChange={e => handleListChange('treatments', i, 'description', e.target.value)} rows={2} className="w-full p-3 rounded-2xl bg-white border border-black/5 outline-none text-[13px] focus:border-black/15 resize-none" />
+                                                    <input placeholder="Image URL" value={t.image} onChange={e => handleListChange('treatments', i, 'image', e.target.value)} className="h-[40px] px-3 rounded-full bg-white border border-black/5 outline-none text-[12px] focus:border-black/15 w-full" />
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
+                                )}
 
-                        {/* SEO Section */}
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <span className="w-2 h-8 bg-green-600 rounded-full" />
-                                Search & Discoverability (SEO)
-                            </h2>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Meta Title</label>
-                                    <input type="text" name="seo.metaTitle" value={formData.seo.metaTitle} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-green-500 font-bold" placeholder="Optimal for Google results" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Keywords (Comma separated)</label>
-                                    <input type="text" name="seo.keywords" value={formData.seo.keywords} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-green-500 font-bold" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Meta Description</label>
-                                    <textarea name="seo.metaDescription" value={formData.seo.metaDescription} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-green-500 font-bold" rows={2} />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Contact & Address Section */}
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <span className="w-2 h-8 bg-rose-500 rounded-full" />
-                                Address & Contact
-                            </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Doctor's Phone (Official)</label>
-                                    <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Staff/Front Desk Phone (WhatsApp Queries)</label>
-                                    <input type="text" name="staffPhone" value={formData.staffPhone} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Email</label>
-                                    <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Street Address</label>
-                                    <input type="text" name="address.street" value={formData.address.street} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                </div>
-                                <div className="grid grid-cols-3 gap-2 sm:col-span-2">
-                                    <input type="text" name="address.city" placeholder="City" value={formData.address.city} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                    <input type="text" name="address.state" placeholder="State" value={formData.address.state} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                    <input type="text" name="address.zip" placeholder="ZIP" value={formData.address.zip} onChange={handleChange} className="px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-2 sm:col-span-2">
-                                    <div className="space-y-1">
-                                        <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Latitude</label>
-                                        <input type="text" name="address.latitude" placeholder="e.g. 25.5556" value={formData.address.latitude} onChange={handleChange} className="w-full px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold text-sm" />
+                                {activeTab === 'highlights' && (
+                                    <div className="bg-white rounded-[20px] border border-black/5 p-6 shadow-sm">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] flex items-center gap-2"><span className="w-1 h-4 bg-amber-500 rounded-full" /> Highlights</h3>
+                                            <button onClick={() => addListItem('highlights')} className="px-3 py-1.5 rounded-full bg-[#f5f5f3] border border-black/5 text-[12px] font-medium hover:bg-white">+ Add</button>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {formData.highlights.map((h: any, i: number) => (
+                                                <div key={i} className="p-3 rounded-2xl bg-[#fcfcfc] border border-black/5 flex gap-3 items-center">
+                                                    <div className="flex-1 grid sm:grid-cols-2 gap-3">
+                                                        <input placeholder="Title" value={h.title} onChange={e => handleListChange('highlights', i, 'title', e.target.value)} className="h-[40px] px-3 rounded-full bg-white border border-black/5 outline-none text-[13px] focus:border-black/15" />
+                                                        <input placeholder="Description" value={h.description} onChange={e => handleListChange('highlights', i, 'description', e.target.value)} className="h-[40px] px-3 rounded-full bg-white border border-black/5 outline-none text-[13px] focus:border-black/15" />
+                                                    </div>
+                                                    <button onClick={() => removeListItem('highlights', i)} className="w-8 h-8 rounded-full bg-white border border-black/5 text-rose-500 grid place-items-center hover:bg-rose-50 shrink-0"><FaTrash size={11} /></button>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Longitude</label>
-                                        <input type="text" name="address.longitude" placeholder="e.g. 87.5564" value={formData.address.longitude} onChange={handleChange} className="w-full px-3 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold text-sm" />
+                                )}
+
+                                {activeTab === 'contact' && (
+                                    <div className="bg-white rounded-[20px] border border-black/5 p-6 shadow-sm space-y-4">
+                                        <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] flex items-center gap-2"><span className="w-1 h-4 bg-rose-500 rounded-full" /> Contact & Address</h3>
+                                        <div className="grid sm:grid-cols-2 gap-4">
+                                            <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Phone (Official)</label><input name="phone" value={formData.phone} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Staff Phone (WhatsApp)</label><input name="staffPhone" value={formData.staffPhone} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div className="sm:col-span-2"><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Email</label><input name="email" value={formData.email} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div className="sm:col-span-2"><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Street</label><input name="address.street" value={formData.address.street} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div className="grid grid-cols-3 gap-3 sm:col-span-2">
+                                                <input name="address.city" placeholder="City" value={formData.address.city} onChange={handleChange} className="h-[44px] px-3 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" />
+                                                <input name="address.state" placeholder="State" value={formData.address.state} onChange={handleChange} className="h-[44px] px-3 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" />
+                                                <input name="address.zip" placeholder="ZIP" value={formData.address.zip} onChange={handleChange} className="h-[44px] px-3 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3 sm:col-span-2">
+                                                <div><label className="text-[10px] tracking-[0.12em] uppercase font-medium text-neutral-500">Latitude</label><input name="address.latitude" value={formData.address.latitude} onChange={handleChange} className="mt-1 w-full h-[40px] px-3 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                                <div><label className="text-[10px] tracking-[0.12em] uppercase font-medium text-neutral-500">Longitude</label><input name="address.longitude" value={formData.address.longitude} onChange={handleChange} className="mt-1 w-full h-[40px] px-3 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            </div>
+                                            <div className="sm:col-span-2"><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Visit Policy</label><textarea name="visitPolicy" value={formData.visitPolicy} onChange={handleChange} rows={2} className="mt-1 w-full p-3 rounded-2xl bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium resize-none" /></div>
+                                        </div>
+                                        <div className="grid sm:grid-cols-2 gap-4 pt-2">
+                                            {Object.keys(formData.socialLinks).map(platform => (
+                                                <div key={platform}><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 capitalize">{platform}</label><input name={`socialLinks.${platform}`} value={formData.socialLinks[platform as keyof typeof formData.socialLinks]} onChange={handleChange} className="mt-1 w-full h-[40px] px-3 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Clinic Policy / Note</label>
-                                    <textarea name="visitPolicy" value={formData.visitPolicy} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-rose-500 font-bold" rows={2} placeholder="e.g. Appointment only" />
-                                </div>
+                                )}
+
+                                {activeTab === 'timings' && (
+                                    <div className="bg-white rounded-[20px] border border-black/5 p-6 shadow-sm space-y-4">
+                                        <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] flex items-center gap-2"><span className="w-1 h-4 bg-emerald-500 rounded-full" /> Timings & Lunch</h3>
+                                        <div className="grid sm:grid-cols-2 gap-3">
+                                            {Object.keys(formData.timings).map(day => (
+                                                <div key={day} className="flex items-center gap-2">
+                                                    <span className="w-20 text-[11px] tracking-[0.08em] uppercase font-medium text-neutral-500 capitalize">{day}</span>
+                                                    <input name={`timings.${day}`} value={formData.timings[day as keyof typeof formData.timings]} onChange={handleChange} className="flex-1 h-[40px] px-3 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Lunch Break</label><input name="lunchTime" value={formData.lunchTime} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                        <div className="grid sm:grid-cols-3 gap-3">
+                                            <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Happy Patients</label><input name="happyCustomers" value={formData.happyCustomers} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Success Rate</label><input name="successRate" value={formData.successRate} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                            <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Experience (yrs)</label><input name="clinicExperience" value={formData.clinicExperience} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeTab === 'seo' && (
+                                    <div className="bg-white rounded-[20px] border border-black/5 p-6 shadow-sm space-y-4">
+                                        <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] flex items-center gap-2"><span className="w-1 h-4 bg-blue-500 rounded-full" /> SEO</h3>
+                                        <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Meta Title</label><input name="seo.metaTitle" value={formData.seo.metaTitle} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                        <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Keywords</label><input name="seo.keywords" value={formData.seo.keywords} onChange={handleChange} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium" /></div>
+                                        <div><label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Meta Description</label><textarea name="seo.metaDescription" value={formData.seo.metaDescription} onChange={handleChange} rows={3} className="mt-1 w-full p-3 rounded-2xl bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/15 outline-none text-[13px] font-medium resize-none" /></div>
+                                    </div>
+                                )}
                             </div>
                         </div>
-
-                        {/* Social Links */}
-                        <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] shadow-xl p-8 border border-gray-100 space-y-6">
-                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <span className="w-2 h-8 bg-blue-400 rounded-full" />
-                                Social Presence
-                            </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {Object.keys(formData.socialLinks).map((platform) => (
-                                    <div key={platform}>
-                                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{platform}</label>
-                                        <input type="text" name={`socialLinks.${platform}`} value={formData.socialLinks[platform as keyof typeof formData.socialLinks]} onChange={handleChange} className="w-full px-4 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-400 font-bold text-sm" />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
                     </div>
+                </div>
 
-                    {/* Section 3: Technical Output & Documentation */}
-                    <div className="pt-12 border-t border-slate-200">
-                        {/* JSON PREVIEW TOGGLE */}
-                        <div className="bg-slate-900 rounded-[2rem] shadow-xl overflow-hidden mt-5">
-                            <button
-                                onClick={() => setShowJson(!showJson)}
-                                className="w-full p-6 flex justify-between items-center hover:bg-slate-800 transition-colors"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <FaFlask className="text-blue-400" />
-                                    <span className="text-white text-xs font-black uppercase tracking-widest">JSON Source</span>
-                                </div>
-                                <div className={`text-slate-400 transition-transform duration-300 ${showJson ? 'rotate-180' : ''}`}>
-                                    <FaPlus size={12} />
-                                </div>
-                            </button>
-
-                            {showJson && (
-                                <div className="p-6 pt-0 animate-in slide-in-from-top-4 duration-300">
-                                    <div className="relative">
-                                        <button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(jsonOutput || JSON.stringify(formData, null, 4));
-                                                setCopied(true);
-                                                setTimeout(() => setCopied(false), 2000);
-                                            }}
-                                            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all"
-                                        >
-                                            {copied ? <FaCheck className="text-green-400" /> : <FaCopy className="text-blue-300" />}
-                                        </button>
-                                        <pre className="p-4 bg-black/50 rounded-xl font-mono text-[8px] text-blue-300 overflow-auto max-h-[400px] custom-scrollbar border border-white/5 select-all">
-                                            {jsonOutput || JSON.stringify(formData, null, 4)}
-                                        </pre>
-                                    </div>
-                                </div>
-                            )}
+                {/* Sticky save bar */}
+                <div className="fixed bottom-0 inset-x-0 z-20 bg-white/80 backdrop-blur-xl border-t border-black/5">
+                    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-[64px] flex items-center justify-between gap-3">
+                        <div className="text-[12px] text-neutral-500 hidden sm:block">Editing <span className="font-mono font-medium text-[#0a0a0b]">{handoverId}</span> · Live is <span className="font-mono text-[#0a0a0b]">{activeVersion}</span></div>
+                        <div className="flex items-center gap-2 ml-auto">
+                            <span className="text-[11px] text-neutral-500 hidden sm:inline">No confusion — draft stays private until Go Live</span>
+                            <button onClick={() => handleSave(false)} disabled={isLoading} className="h-9 px-5 rounded-full bg-white border border-black/10 text-[12px] font-medium hover:bg-[#fcfcfc] disabled:opacity-40 flex items-center gap-1.5"><FaSave size={11} /> Save Draft</button>
+                            <button onClick={() => handleSave(true)} disabled={isLoading} className="h-9 px-5 rounded-full bg-[#0a0a0b] text-white text-[12px] font-medium hover:bg-black disabled:opacity-40 flex items-center gap-1.5"><FaCloudUploadAlt size={11} /> Go Live</button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <style jsx>{`
-                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.1); border-radius: 10px; }
-            `}</style>
         </ProtectedRoute>
     );
 }
