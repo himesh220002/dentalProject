@@ -65,8 +65,8 @@ export default function HomeHero() {
                 <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#1e3a8a]/20 rounded-full blur-[80px]" />
                 <div className="absolute bottom-0 inset-x-0 h-[280px] bg-gradient-to-t from-[#0a102e]/60 to-transparent" />
             </div>
-            <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 mt-30 ">
-                <div className="flex flex-wrap items-center gap-2 text-[11px] tracking-[0.14em] uppercase font-medium mb-6 sm:mb-8">
+            <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 mt-20 sm:mt-30 ">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] tracking-[0.14em] uppercase font-medium mb-6 sm:mb-8">
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-[#0a0a0b] border border-white/20 shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         Accepting new patients
@@ -78,17 +78,17 @@ export default function HomeHero() {
                         <FaCheck size={10} /> Sterile · ISO certified
                     </span>
                 </div>
-                <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-10 items-start">
+                <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-10 items-start mb-10 sm:mb-0">
                     <div className="space-y-6">
-                        <h1 className="text-[40px] sm:text-[56px] lg:text-[68px] leading-[0.9] tracking-[-0.04em] font-[600] text-white">
+                        <h1 className="text-[30px] sm:text-[56px] lg:text-[68px] leading-[0.9] tracking-[-0.04em] font-[600] text-center sm:text-start text-white">
                             <span className="block font-sans font-[700] tracking-[-0.04em]">Healthy smiles, </span>
                             <span className="block font-serif italic font-[400] tracking-[-0.03em] text-white/60">cared for with compassion</span>
                             <span className="block font-sans font-[700] tracking-[-0.04em] mt-1">every day.</span>
                         </h1>
-                        <p className="max-w-[560px] text-[15.5px] sm:text-[17px] leading-7 text-white/70 font-[400] text-balance">
+                        <p className="hidden md:block max-w-[560px] text-[15.5px] sm:text-[17px] leading-7 text-white/70 font-[400] text-balance">
                             {clinicName} blends evidence-led care with a gentle chair-side manner. Minimal pain, maximal clarity — from first consult to lasting smile.
                         </p>
-                        <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
                             <button onClick={scrollToInquiry} className="inline-flex items-center gap-3 bg-white text-[#0a0a0b] pl-6 pr-2 py-2 rounded-full text-[14px] font-medium hover:bg-neutral-100 transition group shadow-lg">
                                 Book appointment
                                 <span className="w-8 h-8 rounded-full bg-[#0a0a0b] text-white grid place-items-center group-hover:translate-x-0.5 transition-transform">
@@ -98,12 +98,12 @@ export default function HomeHero() {
                             <Link href="/treatments" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 text-white px-6 py-[10px] rounded-full text-[14px] font-medium hover:bg-white/15 transition">
                                 View treatments
                             </Link>
-                            <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hidden sm:inline-flex items-center gap-2 text-[13px] font-medium text-white/80 hover:text-white transition">
+                            <a href={`tel:${phone.replace(/\s+/g, '')}`} className="inline-flex items-center gap-2 text-[13px] font-medium text-white/80 hover:text-white transition">
                                 <span className="w-8 h-8 rounded-full bg-white/10 border border-white/15 grid place-items-center"><FaPhoneAlt size={12} /></span>
                                 {phone}
                             </a>
                         </div>
-                        <div className="grid grid-cols-4 gap-3 sm:gap-4 pt-2">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 pt-2">
                             {stats.map((s) => (
                                 <div key={s.v} className="rounded-2xl bg-white/5 backdrop-blur border border-black/5 p-4 sm:p-5 shadow-sm">
                                     <div className="text-[20px] sm:text-[22px] font-semibold tracking-[-0.03em] text-gray-200 leading-none">{s.k}</div>
@@ -112,20 +112,20 @@ export default function HomeHero() {
                                 </div>
                             ))}
                         </div>
-                        <div className="flex flex-wrap gap-2 text-[11px] tracking-[0.12em] uppercase font-medium text-white/60">
+                        <div className="flex flex-wrap gap-2 justify-center sm:justify-start text-[11px] tracking-[0.12em] uppercase font-medium text-white/60">
                             <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur">Painless protocols</span>
                             <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur">Transparent pricing</span>
                             <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur">Mon–Sat 10:00–20:00</span>
                         </div>
                     </div>
-                    <div className="relative lg:sticky lg:top-[84px]">
+                    <div className=" relative lg:sticky lg:top-[84px]">
                         <div className="bg-white/5 backdrop-blur-sm rounded-[24px] sm:rounded-[28px] border border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.08)] overflow-hidden">
-                            <div className="px-6 sm:px-7 pt-6 sm:pt-7 pb-5 border-b border-black/5">
+                            <div className="px-3 sm:px-7 pt-3 sm:pt-7 pb-3 sm:pb-5 border-b border-black/5">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <div className="text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-300">Check appointment</div>
-                                        <h3 className="text-[18px] font-semibold tracking-[-0.02em] text-gray-100 mt-1">Find your booking in seconds</h3>
-                                        <p className="text-[13px] leading-5 text-neutral-400 mt-1 max-w-[320px]">Enter phone or booking ID — instant status, no sign-in required.</p>
+                                        <div className=" text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-300">Check appointment</div>
+                                        <h3 className="hidden sm:block text-[18px] font-semibold tracking-[-0.02em] text-gray-100 mt-1">Find your booking in seconds</h3>
+                                        <p className="hidden sm:block text-[13px] leading-5 text-neutral-400 mt-1 max-w-[320px]">Enter phone or booking ID — instant status, no sign-in required.</p>
                                     </div>
                                     <div className="hidden sm:grid place-items-center w-9 h-9 rounded-full bg-[#f5f5f3] border border-black/5 shrink-0">
                                         <FaCheck className="text-neutral-700" size={12} />
@@ -133,17 +133,17 @@ export default function HomeHero() {
                                 </div>
                             </div>
                             <div className="bg-white/5 p-4 sm:p-5 bg-[#fcfcfc]">
-                                <div className="rounded-[20px] bg-white/5 backdrop-blur-sm border border-black/5 p-2 shadow-sm">
+                                <div className="rounded-full bg-white/5 backdrop-blur-sm border border-black/5 p-2 shadow-sm">
                                     <AppointmentSearchInline />
                                 </div>
                                 <div className="mt-4 flex items-center justify-between text-[11px]">
                                     <span className="tracking-[0.12em] uppercase font-medium text-neutral-500">Need help?</span>
-                                    <a href={`tel:${phone.replace(/\s+/g, '')}`} className="inline-flex items-center gap-1.5 font-medium text-[#0a0a0b] hover:underline">
+                                    <a href={`tel:${phone.replace(/\s+/g, '')}`} className="inline-flex items-center gap-1.5 font-medium text-[#0afafb] hover:underline">
                                         <FaPhoneAlt size={10} /> {phone}
                                     </a>
                                 </div>
                             </div>
-                            <div className="px-6 sm:px-7 py-4 bg-[#0a0a0b] text-white flex items-center justify-between">
+                            <div className="hidden sm:flex px-6 sm:px-7 py-4 bg-[#0a0a0b] text-white items-center justify-between">
                                 <div className="text-[12px] leading-4">
                                     <div className="font-medium tracking-[-0.01em]">5000+ patients · 4.9 rating</div>
                                     <div className="text-white/60 text-[11px]">Trusted across Katihar & Bihar</div>
@@ -157,8 +157,8 @@ export default function HomeHero() {
                         </div>
                     </div>
                 </div>
-                <div className="mt-8 sm:mt-10 h-px bg-white/10" />
-                <div className="mt-4 flex flex-wrap gap-2 text-[11px] tracking-[0.12em] uppercase font-medium text-white/50 justify-center sm:justify-start">
+                <div className="hidden sm:block mt-10 h-px bg-white/10" />
+                <div className="hidden sm:block mt-4 flex flex-wrap gap-2 text-[11px] tracking-[0.12em] uppercase font-medium text-white/50 justify-center sm:justify-start">
                     <span>General Dentistry</span><span className="opacity-30">·</span><span>Implants</span><span className="opacity-30">·</span><span>Orthodontics</span><span className="opacity-30">·</span><span>Whitening</span><span className="opacity-30">·</span><span>Kids Dentistry</span><span className="opacity-30">·</span><span>Root Canal</span>
                 </div>
             </div>

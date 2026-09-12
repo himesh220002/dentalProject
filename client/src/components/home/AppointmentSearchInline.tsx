@@ -46,16 +46,16 @@ export default function AppointmentSearchInline() {
 
                     {/* Search Input Group */}
                     <div className=" w-full flex-1 group/input">
-                        <div className="relative flex items-center h-10 sm:h-11 bg-gray-50/30 md:bg-transparent rounded-xl md:rounded-none">
-                            <div className="absolute left-4 text-blue-500/40 group-focus-within/input:text-blue-600 transition-colors">
+                        <div className="relative flex items-center h-10 sm:h-11 bg-gray-50/30 bg-transparent rounded-none">
+                            {/* <div className="absolute left-4 text-blue-500/40 group-focus-within/input:text-blue-600 transition-colors">
                                 <FaSearch size={12} />
-                            </div>
+                            </div> */}
                             <input
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Search by Phone Number or Booking ID"
-                                className="w-full bg-transparent pl-11 pr-4 h-full font-bold text-gray-900 placeholder:text-gray-300 outline-none text-[11px] sm:text-xs"
+                                className="w-full bg-transparent pl-11 pr-4 h-full font-bold text-gray-900 placeholder:text-gray-300 outline-none text-[11px] sm:text-sm"
                             />
 
                         </div>
