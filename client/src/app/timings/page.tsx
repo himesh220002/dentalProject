@@ -1,13 +1,15 @@
 'use client';
 
-import { FaClock, FaCalendarCheck, FaPhoneAlt, FaExclamationCircle, FaDoorOpen } from 'react-icons/fa';
+import { FaClock, FaCalendarCheck, FaPhoneAlt, FaExclamationCircle, FaMapMarkerAlt } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
 
 export default function Timings() {
     const { clinicData } = useClinic();
 
     const phone = clinicData?.phone || '+91 98765 43210';
-    const visitPolicy = clinicData?.visitPolicy || 'We recommend booking an appointment in advance to avoid long waiting times. Priority is always given to scheduled patients.';
+    const staffPhone = clinicData?.staffPhone || phone;
+    const visitPolicy = clinicData?.visitPolicy || 'We recommend booking an appointment in advance to avoid waiting. Priority is given to scheduled patients.';
+    const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}` : 'Dental Clinic Road, Katihar, Bihar - 854105';
 
     const weekDays = [
         { key: 'monday', label: 'Monday' },
@@ -21,108 +23,105 @@ export default function Timings() {
 
     const timings = weekDays.map(day => {
         const timeStr = clinicData?.timings?.[day.key as keyof typeof clinicData.timings] || (day.key === 'sunday' ? 'Closed' : '10:00 AM - 08:00 PM');
-        return {
-            day: day.label,
-            time: timeStr,
-            open: !timeStr.toLowerCase().includes('closed')
-        };
+        return { day: day.label, time: timeStr, open: !timeStr.toLowerCase().includes('closed') };
     });
+
+    const lunch = clinicData?.lunchTime || '01:00 PM - 02:00 PM';
+
     return (
-        <div className="max-w-6xl mx-auto py-12 px-2 sm:px-4 md:px-8 space-y-8 sm:space-y-16">
-
-            {/* Header */}
-            <div className="text-center space-y-4 max-w-3xl mx-auto">
-                <h1 className="text-3xl md:text-7xl font-black tracking-tight text-gray-900">
-                    Clinic <span className="text-blue-600">Hours</span>
-                </h1>
-                <p className="text-sm md:text-xl text-gray-500 font-medium leading-relaxed">
-                    We are dedicated to being available when you need us. Check our weekly schedule below or contact us for emergency support.
-                </p>
-                <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full mt-6"></div>
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-12">
-
-                {/* Weekly Schedule Card */}
-                <div className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 transform hover:scale-[1.01] transition-transform duration-500">
-                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="bg-white/20 sm:p-4 p-3 rounded-2xl backdrop-blur-sm">
-                                <FaCalendarCheck className="text-3xl" />
-                            </div>
-                            <div>
-                                <h2 className="text-sm sm:text-2xl font-black uppercase tracking-wider">Weekly Schedule</h2>
-                                <p className="text-blue-100 text-xs font-bold uppercase tracking-widest mt-1">Standard Operating Hours</p>
-                            </div>
-                        </div>
-                        <FaDoorOpen className="text-4xl opacity-40" />
-                    </div>
-                    <div className="p-4 sm:p-10 space-y-6">
-                        {timings.map((item, idx) => (
-                            <div key={idx} className={`flex justify-between items-center pb-4 ${idx !== 6 ? 'border-b border-gray-50' : ''}`}>
-                                <span className="font-black text-gray-700 tracking-tight uppercase text-sm">{item.day}</span>
-                                <span className={`font-black px-4 py-2 rounded-xl text-sm shadow-sm ${item.open
-                                    ? 'text-blue-600 bg-blue-50 border border-blue-100'
-                                    : 'text-rose-500 bg-rose-50 border border-rose-100'
-                                    }`}>
-                                    {item.time}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
+        <div className="bg-[#fcfcfc] min-h-screen">
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-10 sm:pb-16">
+                {/* Header */}
+                <div className="max-w-3xl">
+                    <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ Clinic hours ]</div>
+                    <h1 className="mt-3 text-[32px] sm:text-[44px] lg:text-[52px] font-semibold tracking-[-0.03em] leading-[1.02] text-[#0a0a0b]">
+                        Clinic <span className="font-serif italic font-normal text-neutral-400">hours</span>
+                        <span className="block text-[18px] sm:text-[22px] font-medium tracking-[-0.01em] text-neutral-500 mt-1">— always there when you need.</span>
+                    </h1>
+                    <p className="mt-4 text-[14px] leading-7 text-neutral-600 max-w-[560px]">
+                        Dedicated to being available when you need us. Check our weekly schedule below or reach us for emergency support.
+                    </p>
                 </div>
 
-                {/* Info & Emergency Column */}
-                <div className="space-y-10">
-
-                    {/* Appointment Note */}
-                    <div className="bg-emerald-50 p-10 rounded-[2.5rem] border-2 border-emerald-100 relative overflow-hidden group">
-                        <div className="absolute -right-6 -top-6 text-emerald-200/30 group-hover:scale-110 transition-transform duration-700">
-                            <FaClock className="text-[12rem]" />
-                        </div>
-                        <div className="relative z-10 space-y-6">
-                            <h3 className="text-2xl font-black text-emerald-900 flex items-center gap-3">
-                                <div className="bg-emerald-200 p-2 rounded-xl">
-                                    <FaExclamationCircle />
-                                </div>
-                                Visit Policy
-                            </h3>
-                            <div className="space-y-4 text-emerald-800 font-medium leading-relaxed">
-                                <p>
-                                    {visitPolicy}
-                                </p>
-                                <div className="bg-white/50 p-4 rounded-2xl border border-emerald-200/50">
-                                    <p className="text-sm font-black uppercase tracking-widest text-emerald-950">
-                                        Lunch Break: 02:00 PM - 03:00 PM
-                                    </p>
+                <div className="mt-10 grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+                    {/* Weekly Schedule */}
+                    <div className="bg-white rounded-[24px] border border-black/5 shadow-sm overflow-hidden">
+                        <div className="px-6 sm:px-8 py-6 border-b border-black/5 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <span className="w-9 h-9 rounded-xl bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-700"><FaCalendarCheck size={14} /></span>
+                                <div>
+                                    <h2 className="text-[14px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">Weekly Schedule</h2>
+                                    <p className="text-[11px] tracking-[0.08em] uppercase font-medium text-neutral-500">Standard hours</p>
                                 </div>
                             </div>
+                            <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[-0.01em] text-neutral-500">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Open today
+                            </span>
+                        </div>
+                        <div className="p-2 sm:p-3">
+                            <div className="rounded-[20px] bg-[#fcfcfc] border border-black/5 overflow-hidden divide-y divide-black/5">
+                                {timings.map((item) => (
+                                    <div key={item.day} className="flex items-center justify-between px-5 sm:px-6 py-4 hover:bg-white transition-colors">
+                                        <span className="text-[13px] font-medium tracking-[-0.01em] text-[#0a0a0b]">{item.day}</span>
+                                        <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-medium tracking-[-0.01em] border ${item.open ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>
+                                            {item.time}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="px-6 sm:px-8 py-4 bg-[#fcfcfc] border-t border-black/5 flex items-center justify-between text-[12px]">
+                            <span className="text-neutral-500 font-medium">Lunch break</span>
+                            <span className="font-semibold text-[#0a0a0b]">{lunch}</span>
                         </div>
                     </div>
 
-                    {/* Emergency Contact */}
-                    <div className="bg-gray-900 p-10 rounded-[2.5rem] shadow-2xl border-t-8 border-rose-600 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-rose-600/10 rounded-full -mr-16 -mt-16"></div>
-                        <div className="relative z-10 space-y-8">
-                            <div>
-                                <h3 className="text-2xl font-black text-white mb-2 flex items-center gap-3">
-                                    <FaPhoneAlt className="text-rose-500" /> Emergency
-                                </h3>
-                                <p className="text-gray-400 font-medium leading-relaxed">
-                                    Severe toothache or accident outside working hours? We offer dedicated emergency support for critical cases.
-                                </p>
+                    {/* Right stack */}
+                    <div className="space-y-5">
+                        {/* Visit Policy */}
+                        <div className="bg-white rounded-[24px] border border-black/5 p-6 sm:p-7 shadow-sm">
+                            <div className="flex items-start gap-3">
+                                <span className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 text-amber-600 grid place-items-center shrink-0"><FaClock size={14} /></span>
+                                <div>
+                                    <h3 className="text-[15px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">Visit Policy</h3>
+                                    <p className="text-[13px] leading-6 text-neutral-600 mt-2">{visitPolicy}</p>
+                                    <div className="mt-4 inline-flex items-center gap-2 px-3 py-2 rounded-full bg-[#f5f5f3] border border-black/5 text-[11px] font-medium tracking-[-0.01em] text-neutral-700">
+                                        <FaExclamationCircle size={11} className="text-neutral-400" /> Lunch: {lunch}
+                                    </div>
+                                </div>
                             </div>
-                            <a
-                                href={`tel:${phone.replace(/\s+/g, '')}`}
-                                className="inline-flex items-center justify-center gap-3 w-full bg-rose-600 text-white font-black py-5 rounded-2xl hover:bg-rose-500 transition shadow-xl hover:shadow-rose-500/20 active:scale-95 group text-base sm:text-lg"
-                            >
-                                <FaPhoneAlt className="group-hover:rotate-12 transition-transform" /> {phone}
+                        </div>
+
+                        {/* Location mini */}
+                        <div className="bg-white rounded-[24px] border border-black/5 p-6 sm:p-7 shadow-sm">
+                            <div className="flex items-start gap-3">
+                                <span className="w-9 h-9 rounded-xl bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-700 shrink-0"><FaMapMarkerAlt size={14} /></span>
+                                <div>
+                                    <h3 className="text-[15px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">Find us</h3>
+                                    <p className="text-[13px] leading-6 text-neutral-600 mt-2">{address}</p>
+                                    <p className="text-[12px] text-neutral-500 mt-1">Mon–Sat 10am–8pm · Sunday closed</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Emergency */}
+                        <div className="rounded-[24px] bg-[#0a0a0b] text-white p-6 sm:p-7 relative overflow-hidden shadow-sm">
+                            <div className="absolute -top-16 -right-16 w-40 h-40 bg-white/[0.04] rounded-full blur-2xl" />
+                            <div className="relative flex items-start gap-3">
+                                <span className="w-9 h-9 rounded-xl bg-white/10 border border-white/15 text-white grid place-items-center shrink-0"><FaPhoneAlt size={13} /></span>
+                                <div>
+                                    <h3 className="text-[15px] font-semibold tracking-[-0.01em]">Emergency support</h3>
+                                    <p className="text-[13px] leading-6 text-white/60 mt-2">Severe pain or trauma outside hours? We triage urgently for critical cases.</p>
+                                </div>
+                            </div>
+                            <a href={`tel:${staffPhone.replace(/\s+/g, '')}`} className="relative mt-5 inline-flex items-center justify-center gap-2 w-full bg-white text-[#0a0a0b] py-3 rounded-full text-[13px] font-medium tracking-[-0.01em] hover:bg-neutral-100 active:scale-[0.98] transition">
+                                <FaPhoneAlt size={12} /> {staffPhone} <span className="text-neutral-400 font-normal">· Call now</span>
                             </a>
+                            <p className="text-[11px] text-white/40 text-center mt-2">Available for registered patients on priority</p>
                         </div>
                     </div>
-
                 </div>
-            </div>
+            </section>
         </div>
     );
 }

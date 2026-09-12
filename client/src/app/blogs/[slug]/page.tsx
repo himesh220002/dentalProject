@@ -31,9 +31,9 @@ export default function BlogDetailPage() {
         const handleScroll = () => {
             const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
             const currentScroll = window.scrollY;
-            setScrollProgress((currentScroll / totalScroll) * 100);
+            setScrollProgress(totalScroll > 0 ? (currentScroll / totalScroll) * 100 : 0);
         };
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
@@ -42,37 +42,16 @@ export default function BlogDetailPage() {
 
     const handleShare = async (platform?: string) => {
         if (!platform && navigator.share) {
-            try {
-                await navigator.share({
-                    title: shareTitle,
-                    url: shareUrl
-                });
-                return;
-            } catch (err) {
-                console.log('Share failed:', err);
-            }
+            try { await navigator.share({ title: shareTitle, url: shareUrl }); return; } catch {}
         }
-
         let url = '';
         switch (platform) {
-            case 'facebook':
-                url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-                break;
-            case 'twitter':
-                url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`;
-                break;
-            case 'linkedin':
-                url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-                break;
-            case 'whatsapp':
-                url = `https://wa.me/?text=${encodeURIComponent(shareTitle + ' ' + shareUrl)}`;
-                break;
-            case 'copy':
-                navigator.clipboard.writeText(shareUrl);
-                alert('Link copied to clipboard!');
-                return;
+            case 'facebook': url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`; break;
+            case 'twitter': url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`; break;
+            case 'linkedin': url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`; break;
+            case 'whatsapp': url = `https://wa.me/?text=${encodeURIComponent(shareTitle + ' ' + shareUrl)}`; break;
+            case 'copy': navigator.clipboard.writeText(shareUrl); alert('Link copied to clipboard!'); return;
         }
-
         if (url) window.open(url, '_blank');
         setShowShareMenu(false);
     };
@@ -82,201 +61,150 @@ export default function BlogDetailPage() {
             try {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blogs/${slug}`);
                 setBlog(response.data);
-            } catch (error) {
-                console.error('Error fetching blog:', error);
-                // router.push('/blogs');
-            } finally {
-                setLoading(false);
-            }
+            } catch (error) { console.error('Error fetching blog:', error); }
+            finally { setLoading(false); }
         };
         fetchBlog();
     }, [slug]);
 
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="flex flex-col items-center gap-4">
-                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-gray-400 font-black uppercase tracking-widest text-[10px]">Loading Insights...</span>
+        <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+                <div className="w-9 h-9 border-2 border-black/10 border-t-[#0a0a0b] rounded-full animate-spin" />
+                <span className="text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-500">Loading insight…</span>
             </div>
         </div>
     );
 
     if (!blog) return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
-            <h1 className="text-4xl font-black text-gray-900 mb-4">404</h1>
-            <p className="text-gray-500 font-bold mb-8">Oops! This article doesn't seem to exist.</p>
-            <Link href="/blogs" className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-blue-200">
-                Back to Blogs
-            </Link>
+        <div className="min-h-screen bg-[#fcfcfc] flex flex-col items-center justify-center p-6 text-center">
+            <div className="bg-white rounded-[20px] border border-black/5 p-10 max-w-md w-full">
+                <h1 className="text-[28px] font-semibold tracking-[-0.02em] text-[#0a0a0b]">Article not found</h1>
+                <p className="text-[13px] leading-6 text-neutral-500 mt-2">This insight may have been moved or removed.</p>
+                <Link href="/blogs" className="mt-6 inline-flex items-center justify-center gap-2 bg-[#0a0a0b] text-white px-6 py-3 rounded-full text-[13px] font-medium hover:bg-black transition">Back to insights</Link>
+            </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-gray-50/50 pb-20">
-            {/* Navigation Header */}
-            <div className="bg-white/90 border-b border-gray-100 sticky top-17 z-40 backdrop-blur-xl transition-all duration-300">
-
-                {/* Reading Progress Bar */}
-                <div className="absolute bottom-0 left-0 h-[3px] bg-blue-600 transition-all duration-150 ease-out z-50" style={{ width: `${scrollProgress}%` }}></div>
+        <div className="min-h-screen bg-[#fcfcfc] pb-12 sm:pb-16">
+            {/* Sticky bar */}
+            <div className="sticky top-0 z-40 bg-[#fcfcfc]/80 backdrop-blur-xl border-b border-black/5">
+                <div className="absolute bottom-0 left-0 h-[2px] bg-[#0a0a0b] transition-all duration-150 ease-out" style={{ width: `${scrollProgress}%` }} />
+                <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
+                    <Link href="/blogs" className="inline-flex items-center gap-2 text-[12px] font-medium tracking-[-0.01em] text-neutral-600 hover:text-[#0a0a0b] transition">
+                        <span className="w-7 h-7 rounded-full bg-white border border-black/5 grid place-items-center"><FaArrowLeft size={11} /></span>
+                        <span className="hidden sm:inline">Back to insights</span><span className="sm:hidden">Back</span>
+                    </Link>
+                    <div className="relative">
+                        <button onClick={() => setShowShareMenu(!showShareMenu)} className="inline-flex items-center gap-2 bg-white border border-black/5 hover:border-black/10 text-neutral-700 px-4 py-2 rounded-full text-[12px] font-medium transition">
+                            <FaShareAlt size={11} /> Share
+                        </button>
+                        {showShareMenu && (
+                            <>
+                                <div className="fixed inset-0 z-40" onClick={() => setShowShareMenu(false)} />
+                                <div className="absolute right-0 top-full mt-3 bg-white rounded-[16px] shadow-[0_12px_32px_rgba(0,0,0,0.10)] border border-black/5 p-2 min-w-[200px] z-50">
+                                    <div className="px-3 py-2 text-[10px] tracking-[0.12em] uppercase font-medium text-neutral-400 border-b border-black/5 mb-1 text-center">Share</div>
+                                    {[
+                                        { id: 'whatsapp', label: 'WhatsApp', icon: <FaWhatsapp size={14} />, cls: 'hover:bg-green-50 hover:text-green-600 text-green-600 bg-green-50' },
+                                        { id: 'facebook', label: 'Facebook', icon: <FaFacebook size={14} />, cls: 'hover:bg-blue-50 hover:text-blue-600 text-blue-600 bg-blue-50' },
+                                        { id: 'twitter', label: 'X (Twitter)', icon: <FaTwitter size={14} />, cls: 'hover:bg-sky-50 hover:text-sky-500 text-sky-500 bg-sky-50' },
+                                        { id: 'linkedin', label: 'LinkedIn', icon: <FaLinkedin size={14} />, cls: 'hover:bg-blue-50 hover:text-blue-700 text-blue-700 bg-blue-50' },
+                                    ].map(item => (
+                                        <button key={item.id} onClick={() => handleShare(item.id)} className="flex items-center gap-3 w-full p-2.5 text-[13px] font-medium text-neutral-700 hover:bg-[#f5f5f3] rounded-xl transition">
+                                            <span className={`w-7 h-7 rounded-full grid place-items-center ${item.cls.split(' ')[2]} ${item.cls.split(' ')[3]}`}>{item.icon}</span> {item.label}
+                                        </button>
+                                    ))}
+                                    <button onClick={() => handleShare('copy')} className="flex items-center gap-3 w-full p-2.5 text-[13px] font-medium text-neutral-700 hover:bg-[#f5f5f3] rounded-xl transition border-t border-black/5 mt-1">
+                                        <span className="w-7 h-7 rounded-full bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-500"><FaLink size={12} /></span> Copy link
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
             </div>
 
-
-
-            <article className="max-w-7xl mx-auto px-4 md:px-0 pt-16">
-                <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-                    <Link href="/blogs" className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-all group font-black uppercase text-[10px] tracking-widest">
-                        <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
-                        <span className="hidden sm:inline">Back to Insights</span>
-                        <span className="sm:hidden">Back</span>
-                    </Link>
-                    <div className="flex items-center gap-3">
-                        <div className="relative">
-                            <button
-                                onClick={() => setShowShareMenu(!showShareMenu)}
-                                className="flex items-center gap-2 bg-gray-50 hover:bg-blue-50 text-gray-400 hover:text-blue-600 px-4 py-2 rounded-xl transition-all border border-gray-100 font-black uppercase text-[10px] tracking-widest"
-                            >
-                                <FaShareAlt />
-                                <span className="hidden sm:inline">Share</span>
-                            </button>
-
-                            {showShareMenu && (
-                                <>
-                                    <div className="fixed inset-0 z-40" onClick={() => setShowShareMenu(false)}></div>
-                                    <div className="absolute right-0 top-full mt-3 bg-white rounded-2xl shadow-2xl border border-gray-100 p-3 flex flex-col gap-1 min-w-[200px] z-50 animate-fadeIn origin-top-right transition-transform">
-                                        <h4 className="px-3 py-2 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-50 mb-1 text-center">Spread the Insight</h4>
-                                        <button onClick={() => handleShare('whatsapp')} className="flex items-center gap-3 w-full p-2.5 text-xs font-bold text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-xl transition">
-                                            <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600"><FaWhatsapp size={14} /></div>
-                                            <span>WhatsApp</span>
-                                        </button>
-                                        <button onClick={() => handleShare('facebook')} className="flex items-center gap-3 w-full p-2.5 text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition">
-                                            <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600"><FaFacebook size={14} /></div>
-                                            <span>Facebook</span>
-                                        </button>
-                                        <button onClick={() => handleShare('twitter')} className="flex items-center gap-3 w-full p-2.5 text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-400 rounded-xl transition">
-                                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-400"><FaTwitter size={14} /></div>
-                                            <span>X (Twitter)</span>
-                                        </button>
-                                        <button onClick={() => handleShare('linkedin')} className="flex items-center gap-3 w-full p-2.5 text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl transition">
-                                            <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700"><FaLinkedin size={14} /></div>
-                                            <span>LinkedIn</span>
-                                        </button>
-                                        <button onClick={() => handleShare('copy')} className="flex items-center gap-3 w-full p-2.5 text-xs font-bold text-gray-700 hover:bg-gray-50 rounded-xl transition border-t border-gray-50 mt-1">
-                                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500"><FaLink size={14} /></div>
-                                            <span>Copy Link</span>
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </div>
-                {/* Meta Header */}
-                <div className="text-center mb-16 px-4">
-                    <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+            <article className="max-w-[840px] mx-auto px-4 sm:px-6 lg:px-0 pt-8 sm:pt-12">
+                {/* Meta */}
+                <div className="text-center">
+                    <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
                         {blog.tags.map(tag => (
-                            <span key={tag} className="bg-blue-600/5 text-blue-600 text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest border border-blue-100/50">
-                                {tag}
-                            </span>
+                            <span key={tag} className="px-3 py-1 rounded-full bg-white border border-black/5 text-[11px] tracking-[0.08em] uppercase font-medium text-neutral-600">{tag}</span>
                         ))}
                     </div>
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-10 leading-[1.05] tracking-tighter">
-                        {blog.title}
-                    </h1>
-                    <div className="flex flex-wrap items-center justify-center gap-y-4 gap-x-8 text-gray-400 text-[10px] sm:text-xs font-black uppercase tracking-widest">
-                        <div className="flex items-center gap-2">
-                            <FaCalendarAlt className="text-blue-500" />
-                            <span>{new Date(blog.createdAt).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                        </div>
-                        <div className="flex items-center gap-2 border-l pl-8 border-gray-200 hidden sm:flex">
-                            <FaUser className="text-blue-500" />
-                            <span>{blog.author}</span>
-                        </div>
-                        <div className="flex items-center gap-2 border-l pl-8 border-gray-200">
-                            <FaClock className="text-blue-500" />
-                            <span>5 MIN READ</span>
-                        </div>
+                    <h1 className="text-[28px] sm:text-[38px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.05] text-[#0a0a0b]">{blog.title}</h1>
+                    <div className="mt-5 flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[12px] font-medium tracking-[-0.01em] text-neutral-500">
+                        <span className="inline-flex items-center gap-1.5"><FaCalendarAlt size={11} className="text-neutral-400" />{new Date(blog.createdAt).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        <span className="hidden sm:block w-1 h-1 rounded-full bg-black/10" />
+                        <span className="inline-flex items-center gap-1.5"><FaUser size={11} className="text-neutral-400" />{blog.author}</span>
+                        <span className="hidden sm:block w-1 h-1 rounded-full bg-black/10" />
+                        <span className="inline-flex items-center gap-1.5"><FaClock size={11} className="text-neutral-400" />5 min read</span>
                     </div>
                 </div>
 
-                {/* Featured Image */}
+                {/* Image */}
                 {blog.imageUrl && (
-                    <div className="mb-20 rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-500/10 border-4 sm:border-8 border-white group">
-                        <img src={blog.imageUrl} alt={blog.title} className="w-full h-auto max-h-[600px] object-cover group-hover:scale-105 transition-transform duration-1000" />
+                    <div className="mt-8 rounded-[24px] overflow-hidden border border-black/5 shadow-sm bg-white p-2">
+                        <img src={blog.imageUrl} alt={blog.title} className="w-full h-auto max-h-[520px] object-cover rounded-[16px]" />
                     </div>
                 )}
 
                 {/* Content */}
-                <div
-                    className="prose prose-lg prose-blue max-w-none text-gray-700 font-medium leading-[1.8]"
-                    dangerouslySetInnerHTML={{ __html: blog.content }}
-                />
+                <div className="mt-8 bg-white rounded-[24px] border border-black/5 p-6 sm:p-8 lg:p-10 shadow-sm">
+                    <div
+                        className="prose prose-neutral max-w-none prose-p:text-[15px] prose-p:leading-7 prose-p:text-neutral-700 prose-headings:tracking-[-0.02em] prose-headings:text-[#0a0a0b] prose-a:text-[#0a0a0b] prose-a:underline-offset-4 prose-img:rounded-2xl prose-img:border prose-img:border-black/5"
+                        dangerouslySetInnerHTML={{ __html: blog.content }}
+                    />
+                </div>
 
-                {/* Author Bio Section */}
-                <div className="mt-24 max-w-5xl mx-auto p-8 sm:p-12 bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/50 flex flex-col md:flex-row items-center gap-10">
-                    <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-blue-50 p-2 overflow-hidden shrink-0 shadow-inner">
-                        <img src="/images/rendering-anime-doctor-job.jpg" alt="Author" className="w-full h-full object-cover rounded-full shadow-lg" />
+                {/* Author */}
+                <div className="mt-8 bg-white rounded-[24px] border border-black/5 p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+                    <div className="w-20 h-20 rounded-full bg-[#f5f5f3] border border-black/5 p-1 overflow-hidden shrink-0">
+                        <img src="/images/rendering-anime-doctor-job.jpg" alt="Author" className="w-full h-full object-cover rounded-full" />
                     </div>
-                    <div className="flex-grow text-center md:text-left space-y-4">
-                        <div>
-                            <span className="text-blue-600 font-black uppercase text-[10px] tracking-[0.2em] mb-2 block">Written By</span>
-                            <h3 className="text-2xl sm:text-3xl font-black text-gray-900">{clinicData?.doctorName || blog.author}</h3>
-                            <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-1">{clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief'))?.role || 'Chief Surgeon'}</p>
-                        </div>
-                        <p className="text-gray-600 font-medium leading-relaxed max-w-2xl">
-                            {language === 'hi'
-                                ? `${clinicData?.doctorName} शीर्ष स्तर की दंत चिकित्सा देखभाल प्रदान करने के लिए प्रतिबद्ध हैं। यह लेख उनके वर्षों के अनुभव और रोगियों के प्रति समर्पण का परिणाम है।`
-                                : `With years of dedicated service in dentistry, ${clinicData?.doctorName} is committed to providing top-tier care. This insight is crafted from clinical experience and a passion for oral health education.`}
+                    <div className="flex-1 min-w-0">
+                        <div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Written by</div>
+                        <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-[#0a0a0b] mt-1">{clinicData?.doctorName || blog.author}</h3>
+                        <p className="text-[11px] tracking-[0.08em] uppercase font-medium text-neutral-400 mt-0.5">{clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief'))?.role || 'Chief Surgeon'}</p>
+                        <p className="text-[13px] leading-6 text-neutral-600 mt-3">
+                            {language === 'hi' ? `${clinicData?.doctorName} शीर्ष स्तर की देखभाल के लिए प्रतिबद्ध हैं। यह लेख नैदानिक अनुभव से तैयार है।` : `With years of dedicated service, ${clinicData?.doctorName} shares evidence-led guidance from clinical practice.`}
                         </p>
-                        <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-2">
-                            <Link href="/about" className="text-blue-600 font-black uppercase text-[10px] tracking-widest hover:underline underline-offset-4">Learn More About {clinicData?.doctorName}</Link>
-                            <span className="text-gray-200 hidden sm:inline">|</span>
-                            <Link href="/contact" className="text-blue-600 font-black uppercase text-[10px] tracking-widest hover:underline underline-offset-4">Book Consultation</Link>
+                        <div className="mt-3 flex gap-4 text-[12px] font-medium">
+                            <Link href="/about" className="text-[#0a0a0b] hover:underline underline-offset-4">Learn more →</Link>
+                            <Link href="/contact" className="text-neutral-500 hover:text-[#0a0a0b]">Book consultation →</Link>
                         </div>
                     </div>
                 </div>
 
-                {/* Share Section */}
-                <div className="mt-24 pt-16 border-t border-gray-100">
-                    <h3 className="text-center text-gray-400 font-black uppercase tracking-widest text-[10px] mb-10">Share this clinical insight</h3>
-                    <div className="flex justify-center gap-4 sm:gap-8 flex-wrap">
-                        <button
-                            onClick={() => handleShare('whatsapp')}
-                            className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white shadow-sm border border-gray-100 text-green-600 hover:bg-green-600 hover:text-white transition-all transform hover:-translate-y-1 font-bold text-xs"
-                        >
-                            <FaWhatsapp /> <span className="hidden sm:inline">WhatsApp</span>
-                        </button>
-                        <button
-                            onClick={() => handleShare('linkedin')}
-                            className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white shadow-sm border border-gray-100 text-blue-700 hover:bg-blue-700 hover:text-white transition-all transform hover:-translate-y-1 font-bold text-xs"
-                        >
-                            <FaLinkedin /> <span className="hidden sm:inline">LinkedIn</span>
-                        </button>
-                        <button
-                            onClick={() => handleShare('twitter')}
-                            className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white shadow-sm border border-gray-100 text-sky-500 hover:bg-sky-500 hover:text-white transition-all transform hover:-translate-y-1 font-bold text-xs"
-                        >
-                            <FaTwitter /> <span className="hidden sm:inline">Twitter</span>
-                        </button>
+                {/* Share row */}
+                <div className="mt-8 rounded-[20px] bg-white border border-black/5 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <span className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500">Share this insight</span>
+                    <div className="flex gap-2">
+                        {[
+                            { id: 'whatsapp', icon: <FaWhatsapp size={14} />, label: 'WhatsApp' },
+                            { id: 'linkedin', icon: <FaLinkedin size={14} />, label: 'LinkedIn' },
+                            { id: 'twitter', icon: <FaTwitter size={14} />, label: 'Twitter' },
+                        ].map(b => (
+                            <button key={b.id} onClick={() => handleShare(b.id)} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f5f5f3] border border-black/5 text-[12px] font-medium text-neutral-700 hover:bg-[#0a0a0b] hover:text-white hover:border-black transition-colors">
+                                {b.icon} <span className="hidden sm:inline">{b.label}</span>
+                            </button>
+                        ))}
                     </div>
                 </div>
 
-                {/* CTA */}
-                <div className="mt-24 bg-gray-900 rounded-[3rem] sm:rounded-[4rem] p-8 sm:p-16 text-center text-white relative overflow-hidden group shadow-2xl">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-transparent to-teal-500/10 opacity-50"></div>
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
-                    <div className="relative z-10 space-y-8">
-                        <div className="inline-flex items-center gap-2 bg-blue-600/20 text-blue-400 px-6 py-2 rounded-2xl text-[10px] font-black tracking-widest uppercase border border-blue-500/20">
-                            Professional Care
+                {/* CTA — homepage style */}
+                <div className="mt-8 rounded-[24px] bg-[#0a0a0b] text-white p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+                    <div className="absolute -top-16 -right-16 w-64 h-64 bg-white/[0.04] rounded-full blur-3xl" />
+                    <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                        <div>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[11px] tracking-[0.12em] uppercase font-medium text-white/60">Professional care</div>
+                            <h2 className="mt-3 text-[22px] sm:text-[28px] font-semibold tracking-[-0.03em] leading-[1.1]">Ready for a checkup?</h2>
+                            <p className="mt-2 text-[13px] leading-6 text-white/60 max-w-[480px]">Direct consultation with {clinicData?.doctorName || 'our team'} — clear plan, transparent costs.</p>
                         </div>
-                        <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter leading-tight">Ready for a<br className="sm:hidden" /> Professional Checkup?</h2>
-                        <p className="text-gray-400 max-w-xl mx-auto font-medium text-base sm:text-lg">Take the first step towards a healthier, brighter smile. Direct consultation with {clinicData?.doctorName} available.</p>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Link href="/contact" className="w-full sm:w-auto bg-white text-gray-900 px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-blue-50 transition-all shadow-xl active:scale-95">
-                                Book Appointment Now
-                            </Link>
-                            <Link href="/blogs" className="w-full sm:w-auto bg-gray-800 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-gray-700 transition-all active:scale-95">
-                                Read More Blogs
-                            </Link>
+                        <div className="flex gap-3 shrink-0">
+                            <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-white text-[#0a0a0b] px-6 py-3 rounded-full text-[13px] font-medium hover:bg-neutral-100 active:scale-[0.98] transition">Book now</Link>
+                            <Link href="/blogs" className="inline-flex items-center justify-center bg-white/10 border border-white/15 text-white px-6 py-3 rounded-full text-[13px] font-medium hover:bg-white/15 transition">More blogs</Link>
                         </div>
                     </div>
                 </div>

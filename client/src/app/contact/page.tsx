@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useSession } from '../../context/AuthContext';
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaPaperPlane, FaChevronRight, FaChevronLeft, FaCalendarCheck, FaClock, FaCheckCircle } from 'react-icons/fa';
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaPaperPlane, FaCalendarCheck, FaClock, FaCheckCircle } from 'react-icons/fa';
 import { useClinic } from '../../context/ClinicContext';
 import { translations } from '../../constants/translations';
 import TreatmentIcon from '../../components/TreatmentIcon';
@@ -18,23 +18,22 @@ const formatSlot = (time24: string) => {
 };
 
 const BookingSummary = ({ formData, language, t, blinking = true }: any) => (
-    <div className="mb-6 rounded-3xl border border-blue-100 bg-blue-50/30 p-5 sm:p-6 backdrop-blur-sm">
-        <div className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-3 flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-            Booking summary
+    <div className="mb-6 rounded-[20px] border border-black/5 bg-[#fcfcfc] p-4 sm:p-5">
+        <div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 mb-3 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0a0a0b] animate-pulse" /> Booking summary
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div key={`treatment-${formData.requestedTreatment}`} className={`rounded-2xl border shadow-sm border-white/50 px-4 py-3 transition-all duration-500 ${formData.requestedTreatment ? 'bg-blue-100/60 shadow-blue-100/50 ' + (blinking ? 'animate-blink-blue' : '') : 'bg-gray-50/50'}`}>
-                <div className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Treatment</div>
-                <div className="font-black text-gray-900 truncate">{formData.requestedTreatment || 'Not selected'}</div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className={`rounded-2xl border px-4 py-3 ${formData.requestedTreatment ? 'bg-white border-black/10 shadow-sm' : 'bg-white border-black/5'}`}>
+                <div className="text-[10px] tracking-[0.12em] uppercase font-medium text-neutral-400">Treatment</div>
+                <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] truncate mt-1">{formData.requestedTreatment || 'Not selected'}</div>
             </div>
-            <div key={`date-${formData.requestedDate}`} className={`rounded-2xl border shadow-sm border-white/50 px-4 py-3 transition-all duration-500 ${formData.requestedDate ? 'bg-blue-100/60 shadow-blue-100/50 ' + (blinking ? 'animate-blink-blue' : '') : 'bg-gray-50/50'}`}>
-                <div className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Date</div>
-                <div className="font-black text-gray-900">{formData.requestedDate || 'Not selected'}</div>
+            <div className={`rounded-2xl border px-4 py-3 ${formData.requestedDate ? 'bg-white border-black/10 shadow-sm' : 'bg-white border-black/5'}`}>
+                <div className="text-[10px] tracking-[0.12em] uppercase font-medium text-neutral-400">Date</div>
+                <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] mt-1">{formData.requestedDate || 'Not selected'}</div>
             </div>
-            <div key={`time-${formData.requestedTime}`} className={`rounded-2xl border shadow-sm border-white/50 px-4 py-3 transition-all duration-500 ${formData.requestedTime ? 'bg-blue-100/60 shadow-blue-100/50 ' + (blinking ? 'animate-blink-blue' : '') : 'bg-gray-50/50'}`}>
-                <div className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Time</div>
-                <div className="font-black text-gray-900">{formData.requestedTime ? formatSlot(formData.requestedTime) : 'Not selected'}</div>
+            <div className={`rounded-2xl border px-4 py-3 ${formData.requestedTime ? 'bg-white border-black/10 shadow-sm' : 'bg-white border-black/5'}`}>
+                <div className="text-[10px] tracking-[0.12em] uppercase font-medium text-neutral-400">Time</div>
+                <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] mt-1">{formData.requestedTime ? formatSlot(formData.requestedTime) : 'Not selected'}</div>
             </div>
         </div>
     </div>
@@ -47,26 +46,15 @@ function ContactContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
-    // Fallbacks
     const phone = clinicData?.phone || '+91 98765 43210';
     const staffPhone = clinicData?.staffPhone || phone;
     const email = clinicData?.email || 'care@drToothdental.in';
-    const address = clinicData
-        ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}`
-        : 'Dental Clinic Road, Katihar, Bihar - 854105';
+    const address = clinicData ? `${clinicData.address.street}, ${clinicData.address.city}, ${clinicData.address.state} - ${clinicData.address.zip}` : 'Dental Clinic Road, Katihar, Bihar - 854105';
     const whatsappLink = `https://wa.me/${staffPhone.replace(/\D/g, '')}`;
     const latitude = clinicData?.address.latitude || '25.555613';
     const longitude = clinicData?.address.longitude || '87.556440';
 
-    const [formData, setFormData] = useState({
-        name: '',
-        phone: '',
-        email: '',
-        message: '',
-        requestedTreatment: '',
-        requestedDate: '',
-        requestedTime: ''
-    });
+    const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '', requestedTreatment: '', requestedDate: '', requestedTime: '' });
     const [treatments, setTreatments] = useState<any[]>([]);
     const [status, setStatus] = useState({ type: '', message: '' });
     const [generalStatus, setGeneralStatus] = useState({ type: '', message: '' });
@@ -79,191 +67,92 @@ function ContactContent() {
     const [loadingTimes, setLoadingTimes] = useState(false);
     const [configLoading, setConfigLoading] = useState(true);
     const [guestAppointments, setGuestAppointments] = useState<any[]>([]);
-    const [loadingGuestApts, setLoadingGuestApts] = useState(false);
     const [editingAptId, setEditingAptId] = useState<string | null>(null);
     const [editData, setEditData] = useState({ date: '', time: '' });
     const [savingEdit, setSavingEdit] = useState(false);
     const [confirmedBookingId, setConfirmedBookingId] = useState<string | null>(null);
+    const [loadingGuestApts, setLoadingGuestApts] = useState(false);
 
-    // Automatic Step Tracking for Progress Bar
     useEffect(() => {
         if (!isAutoBookingEnabled) return;
-
         let step = 1;
-        if (formData.name && formData.phone.length === 10) {
-            step = 2;
-            if (formData.requestedTreatment) {
-                step = 3;
-                if (formData.requestedDate && formData.requestedTime) {
-                    // All fields filled
-                }
-            }
-        }
+        if (formData.name && formData.phone.length === 10) { step = 2; if (formData.requestedTreatment) { step = 3; } }
         setCurrentStep(step);
     }, [formData.name, formData.phone, formData.requestedTreatment, formData.requestedDate, formData.requestedTime, isAutoBookingEnabled]);
 
     useEffect(() => {
         const fetchTreatments = async () => {
-            try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/treatments`);
-                setTreatments(res.data);
-            } catch (err) {
-                console.error('Error fetching treatments for contact suggestions:', err);
-            }
+            try { const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/treatments`); setTreatments(res.data); } catch {}
         };
         const fetchDensity = async () => {
             try {
                 const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/density`);
                 setDensity(res.data);
-
-                // Generate next 14 days suggestions (skipping Sundays)
                 const allNextDays = [];
-                for (let i = 0; i <= 14; i++) { // Include today (0)
-                    const d = new Date();
-                    d.setDate(d.getDate() + i);
-                    if (d.getDay() === 0) continue; // Skip Sunday
-
+                for (let i = 0; i <= 14; i++) {
+                    const d = new Date(); d.setDate(d.getDate() + i);
+                    if (d.getDay() === 0) continue;
                     const dateStr = d.toISOString().split('T')[0];
                     const count = res.data[dateStr]?.count || 0;
                     const closed = res.data[dateStr]?.closed || false;
-
-                    allNextDays.push({
-                        date: d,
-                        dateStr,
-                        count,
-                        closed,
-                        daysFromToday: i,
-                        display: d.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { weekday: 'short', day: 'numeric', month: 'short' })
-                    });
+                    allNextDays.push({ date: d, dateStr, count, closed, daysFromToday: i, display: d.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { weekday: 'short', day: 'numeric', month: 'short' }) });
                 }
-
-                const sortedSuggestions = allNextDays
-                    .filter(d => !d.closed)
-                    .slice(0, 5);
-
+                const sortedSuggestions = allNextDays.filter(d => !d.closed).slice(0, 5);
                 setSuggestedDates(sortedSuggestions);
-
-                // Alert if any of next 3 days are closed
                 const next3Closed = allNextDays.find(d => d.daysFromToday <= 2 && d.closed);
-                if (next3Closed) {
-                    setStatus({
-                        type: 'info',
-                        message: t.leaveAlert.replace('{date}', next3Closed.display)
-                    });
-                }
-            } catch (err) {
-                console.error('Error fetching density:', err);
-            }
+                if (next3Closed) setStatus({ type: 'info', message: t.leaveAlert.replace('{date}', next3Closed.display) });
+            } catch {}
         };
         const fetchConfig = async () => {
-            try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/config/automated_booking`);
-                setIsAutoBookingEnabled(res.data?.value === 'true');
-            } catch (err) {
-                console.error('Error fetching auto booking config:', err);
-            } finally {
-                setConfigLoading(false);
-            }
+            try { const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/config/automated_booking`); setIsAutoBookingEnabled(res.data?.value === 'true'); } catch {} finally { setConfigLoading(false); }
         };
-        fetchTreatments();
-        fetchDensity();
-        fetchConfig();
+        fetchTreatments(); fetchDensity(); fetchConfig();
     }, [language]);
 
     const fetchAllRecentBookings = async () => {
         try {
             setLoadingGuestApts(true);
             let appointments: any[] = [];
-
-            // 1. If logged in, fetch from backend via patient ID
             if (session?.user) {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
                 // @ts-ignore
                 const userRes = await axios.get(`${backendUrl}/api/auth/google/${session.user.id}`);
                 const patientId = userRes.data?.patientId?._id;
-
-                if (patientId) {
-                    const aptRes = await axios.get(`${backendUrl}/api/appointments/patient/${patientId}`);
-                    appointments = aptRes.data;
-                }
+                if (patientId) { const aptRes = await axios.get(`${backendUrl}/api/appointments/patient/${patientId}`); appointments = aptRes.data; }
             }
-
-            // 2. If guest or if logged-in list is empty, also check localStorage for local bookings
             const storedIds = localStorage.getItem('toothop_guest_bookings');
             if (storedIds) {
                 const ids = JSON.parse(storedIds);
                 if (ids.length > 0) {
                     const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/bulk-retrieve`, { ids });
-                    // Merge with global ones, avoid duplicates
                     const localApts = res.data;
-                    localApts.forEach((apt: any) => {
-                        if (!appointments.find(a => a._id === apt._id)) {
-                            appointments.push(apt);
-                        }
-                    });
+                    localApts.forEach((apt: any) => { if (!appointments.find(a => a._id === apt._id)) appointments.push(apt); });
                 }
             }
-
-            // Filter out cancelled/completed ones for "Recent" view if preferred, 
-            // but user said "Your Recent Bookings" so we show scheduled ones
-            // Sort latest to oldest and take 2
             setGuestAppointments(appointments.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 2));
-        } catch (err) {
-            console.error('Error fetching bookings:', err);
-        } finally {
-            setLoadingGuestApts(false);
-        }
+        } catch {} finally { setLoadingGuestApts(false); }
     };
-
-    useEffect(() => {
-        fetchAllRecentBookings();
-    }, [session]);
+    useEffect(() => { fetchAllRecentBookings(); }, [session]);
 
     const handleCancelGuestBooking = async (id: string) => {
         if (!confirm(t.confirmCancel)) return;
         try {
             await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${id}`);
-            // Update local state
             setGuestAppointments(prev => prev.filter(a => a._id !== id));
-            // Update localStorage
             const storedIds = localStorage.getItem('toothop_guest_bookings');
-            if (storedIds) {
-                const ids = JSON.parse(storedIds);
-                const newIds = ids.filter((sid: string) => sid !== id);
-                localStorage.setItem('toothop_guest_bookings', JSON.stringify(newIds));
-            }
-            setStatus({
-                type: 'info',
-                message: language === 'hi' ? 'अपॉइंटमेंट सफलतापूर्वक रद्द कर दिया गया।' : 'Appointment cancelled successfully.'
-            });
+            if (storedIds) { const ids = JSON.parse(storedIds); const newIds = ids.filter((sid: string) => sid !== id); localStorage.setItem('toothop_guest_bookings', JSON.stringify(newIds)); }
+            setStatus({ type: 'info', message: language === 'hi' ? 'अपॉइंटमेंट सफलतापूर्वक रद्द कर दिया गया।' : 'Appointment cancelled successfully.' });
             setTimeout(() => setStatus({ type: '', message: '' }), 5000);
-        } catch (err) {
-            console.error('Error cancelling booking:', err);
-        }
+        } catch {}
     };
-
     const handleUpdateBooking = async (id: string) => {
         if (!editData.date || !editData.time) return;
         setSavingEdit(true);
         try {
-            await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${id}`, {
-                date: editData.date,
-                time: editData.time,
-                status: 'Scheduled'
-            });
-            setEditingAptId(null);
-            fetchAllRecentBookings();
-            setStatus({
-                type: 'success',
-                message: t.updateSuccess
-            });
-        } catch (err) {
-            console.error('Error updating booking:', err);
-        } finally {
-            setSavingEdit(false);
-        }
+            await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/${id}`, { date: editData.date, time: editData.time, status: 'Scheduled' });
+            setEditingAptId(null); fetchAllRecentBookings(); setStatus({ type: 'success', message: t.updateSuccess });
+        } catch {} finally { setSavingEdit(false); }
     };
-
     useEffect(() => {
         const fetchPatientProfile = async () => {
             if (!session?.user) return;
@@ -272,1052 +161,412 @@ function ContactContent() {
                 const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google/${session.user.id}`);
                 if (res.data?.patientId) {
                     const patient = res.data.patientId;
-                    setFormData(prev => ({
-                        ...prev,
-                        name: patient.name || prev.name,
-                        phone: patient.contact === '-__-' ? prev.phone : (patient.contact || prev.phone),
-                        email: patient.email || prev.email
-                    }));
+                    setFormData(prev => ({ ...prev, name: patient.name || prev.name, phone: patient.contact === '-__-' ? prev.phone : (patient.contact || prev.phone), email: patient.email || prev.email }));
                 }
-            } catch (err) {
-                console.error('Error fetching patient profile for autofill:', err);
-            }
+            } catch {}
         };
         fetchPatientProfile();
     }, [session]);
-
     useEffect(() => {
         const treatment = searchParams.get('treatment');
         if (treatment) {
-            setFormData(prev => ({
-                ...prev,
-                requestedTreatment: treatment,
-                message: t.placeholderMsg.replace('...', treatment.toUpperCase())
-            }));
-            // Clean up the URL to prevent repeating on refresh
+            setFormData(prev => ({ ...prev, requestedTreatment: treatment, message: t.placeholderMsg.replace('...', treatment.toUpperCase()) }));
             const newUrl = window.location.pathname;
             router.replace(newUrl, { scroll: false });
         }
     }, [searchParams, router, language, t.placeholderMsg]);
 
-    const suggestions = treatments.map((t, idx) => {
-        const colors = [
-            'bg-indigo-100 text-rose-700 hover:bg-rose-200 border-rose-200',
-            'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border-indigo-200',
-            'bg-indigo-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200',
-            'bg-indigo-100 text-amber-700 hover:bg-amber-200 border-amber-200',
-            'bg-indigo-100 text-teal-700 hover:bg-teal-200 border-teal-200',
-            'bg-indigo-100 text-violet-700 hover:bg-violet-200 border-violet-200',
-            'bg-indigo-100 text-sky-700 hover:bg-sky-200 border-sky-200',
-            'bg-indigo-100 text-orange-700 hover:bg-orange-200 border-orange-200',
-            'bg-indigo-100 text-red-700 hover:bg-red-200 border-red-200',
-            'bg-indigo-100 text-blue-700 hover:bg-blue-200 border-blue-200'
-        ];
-        return {
-            label: t.name,
-            value: t.name,
-            color: colors[idx % colors.length]
-        };
-    });
+    const suggestions = treatments.map((t: any, idx: number) => ({ label: t.name, value: t.name }));
 
     const handleSuggestionClick = (label: string) => {
-        const textToAppend = formData.message
-            ? `\n${t.discuss}: ${label}, `
-            : `${t.discuss}: ${label}, `;
-        setFormData(prev => ({
-            ...prev,
-            message: prev.message + textToAppend
-        }));
+        const textToAppend = formData.message ? `\n${t.discuss}: ${label}, ` : `${t.discuss}: ${label}, `;
+        setFormData(prev => ({ ...prev, message: prev.message + textToAppend }));
     };
-
     const fetchAvailableTimes = async (dateStr: string) => {
         setLoadingTimes(true);
         try {
-            // We use the appointments endpoint which we'll need to extend or use density
-            // For now, let's assume we have an endpoint for this. 
-            // I'll use the density logic but refined.
             const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/appointments/density?days=14`);
             const dayData = res.data[dateStr];
-
-            if (dayData?.closed) {
-                setAvailableTimes([]);
-                return;
-            }
-
-            // Standard slots
+            if (dayData?.closed) { setAvailableTimes([]); return; }
             const allSlots = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
             const booked = dayData?.slots || [];
-
-            // Get dynamic lunch time
             const lunchTimeRange = clinicData?.lunchTime || "01:00 PM - 02:00 PM";
-
-            // Helper to parse lunch range to 24h hours
             const parseTimeRange = (range: string) => {
                 try {
                     const [startPart, endPart] = range.split('-').map(p => p.trim());
-                    const parseH = (t: string) => {
-                        const [time, period] = t.split(' ');
-                        let [h] = time.split(':').map(Number);
-                        if (period === 'PM' && h < 12) h += 12;
-                        if (period === 'AM' && h === 12) h = 0;
-                        return h;
-                    };
+                    const parseH = (t: string) => { const [time, period] = t.split(' '); let [h] = time.split(':').map(Number); if (period === 'PM' && h < 12) h += 12; if (period === 'AM' && h === 12) h = 0; return h; };
                     return [parseH(startPart), parseH(endPart)];
-                } catch (e) {
-                    return [13, 14]; // Fallback to 1 PM
-                }
+                } catch { return [13, 14]; }
             };
-
             const [lunchStart, lunchEnd] = parseTimeRange(lunchTimeRange);
-
-            const available = allSlots.filter(slot => {
-                const hour = parseInt(slot.split(':')[0]);
-                const isBooked = booked.some((b: string) => b.startsWith(slot));
-                const isLunch = hour >= lunchStart && hour < lunchEnd;
-                return !isBooked && !isLunch;
-            });
-
+            const available = allSlots.filter(slot => { const hour = parseInt(slot.split(':')[0]); const isBooked = booked.some((b: string) => b.startsWith(slot)); const isLunch = hour >= lunchStart && hour < lunchEnd; return !isBooked && !isLunch; });
             setAvailableTimes(available);
-        } catch (err) {
-            console.error('Error fetching times:', err);
-        } finally {
-            setLoadingTimes(false);
-        }
+        } catch {} finally { setLoadingTimes(false); }
     };
-
     const handleDateSuggestion = (item: any) => {
-        if (isAutoBookingEnabled) {
-            setFormData(prev => ({ ...prev, requestedDate: item.dateStr, requestedTime: '' }));
-            fetchAvailableTimes(item.dateStr);
-            setCurrentStep(3);
-            return;
-        }
+        if (isAutoBookingEnabled) { setFormData(prev => ({ ...prev, requestedDate: item.dateStr, requestedTime: '' })); fetchAvailableTimes(item.dateStr); setCurrentStep(3); return; }
         const textToAppend = `\n${t.suggestedApt}: ${item.display}, `;
-        setFormData(prev => ({
-            ...prev,
-            message: prev.message + textToAppend
-        }));
+        setFormData(prev => ({ ...prev, message: prev.message + textToAppend }));
     };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [e.target.id]: e.target.value });
-    };
-
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => { setFormData({ ...formData, [e.target.id]: e.target.value }); };
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSubmitting(true);
-        setStatus({ type: '', message: '' });
-
+        e.preventDefault(); setSubmitting(true); setStatus({ type: '', message: '' });
         try {
-            // Find treatment price for amount mapping
             const selectedTreat = treatments.find(t => t.name === formData.requestedTreatment);
             const amountVal = selectedTreat ? parseFloat(selectedTreat.price.replace(/\D/g, '')) : 0;
-
             const clinicName = clinicData?.clinicName || "ToothOp";
             const enthusiasticMessage = `Hi *${clinicName}*! 👋 I just booked an appointment through your website. I’m looking forward to getting my smile checked! 🦷\n\n*Details:*\nTreatment: *${formData.requestedTreatment}*\n📅 *Date:* ${formData.requestedDate}\n⏰ *Time:* ${formData.requestedTime}\n👤 *Name:* ${formData.name}\n\nSee you soon!`;
-
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, {
-                ...formData,
-                message: (isAutoBookingEnabled && formData.requestedTreatment) ? enthusiasticMessage : (formData.message || `Consultation for ${formData.requestedTreatment}`),
-                amount: amountVal,
-                // @ts-ignore
-                userId: session?.user?.id
-            });
-
-            const isAutomatedSuccess = res.data?.isAutomated;
-            const appointmentId = res.data?.appointmentId;
-            const bId = res.data?.bookingId;
-
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, { ...formData, message: (isAutoBookingEnabled && formData.requestedTreatment) ? enthusiasticMessage : (formData.message || `Consultation for ${formData.requestedTreatment}`), amount: amountVal, // @ts-ignore
+                userId: session?.user?.id });
+            const isAutomatedSuccess = res.data?.isAutomated; const appointmentId = res.data?.appointmentId; const bId = res.data?.bookingId;
             if (bId) setConfirmedBookingId(bId);
-
-            // --- LOCAL STORAGE TRACKING FOR GUESTS ---
-            if (isAutomatedSuccess && appointmentId) {
-                const existingBookings = JSON.parse(localStorage.getItem('toothop_guest_bookings') || '[]');
-                if (!existingBookings.includes(appointmentId)) {
-                    existingBookings.push(appointmentId);
-                    localStorage.setItem('toothop_guest_bookings', JSON.stringify(existingBookings));
-                }
-                fetchAllRecentBookings(); // Refresh the list
-            }
-
-            // Success Feedback
-            setStatus({
-                type: 'success',
-                message: isAutomatedSuccess
-                    ? t.bookingConfirmed
-                    : t.detailsSaved
-            });
-
-            // Construct the WhatsApp Message
+            if (isAutomatedSuccess && appointmentId) { const existingBookings = JSON.parse(localStorage.getItem('toothop_guest_bookings') || '[]'); if (!existingBookings.includes(appointmentId)) { existingBookings.push(appointmentId); localStorage.setItem('toothop_guest_bookings', JSON.stringify(existingBookings)); } fetchAllRecentBookings(); }
+            setStatus({ type: 'success', message: isAutomatedSuccess ? t.bookingConfirmed : t.detailsSaved });
             const clinicPhone = staffPhone.replace(/\D/g, '');
-
             let messageText = "";
-            if (isAutomatedSuccess) {
-                messageText = enthusiasticMessage;
-            } else {
-                messageText = language === 'hi'
-                    ? `नमस्ते डॉक्टर, मैं *${formData.name}* हूँ।\nमैं आपसे इस विषय में परामर्श करना चाहता/चाहती हूँ:- \n\n${formData.message}\n\n*मेरा फोन:* ${formData.phone}`
-                    : `Hello Doctor, I'm *${formData.name}*.\nI'd like to consult regarding:- \n\n${formData.message}.\n\n*My contact:* ${formData.phone}`;
-            }
-
+            if (isAutomatedSuccess) messageText = enthusiasticMessage;
+            else messageText = language === 'hi' ? `नमस्ते डॉक्टर, मैं *${formData.name}* हूँ।\nमैं आपसे इस विषय में परामर्श करना चाहता/चाहती हूँ:- \n\n${formData.message}\n\n*मेरा फोन:* ${formData.phone}` : `Hello Doctor, I'm *${formData.name}*.\nI'd like to consult regarding:- \n\n${formData.message}.\n\n*My contact:* ${formData.phone}`;
             const encodedMessage = encodeURIComponent(messageText);
             const finalWhatsappLink = `https://wa.me/${clinicPhone}?text=${encodedMessage}`;
-
-            // Redirect after a short delay (Only if automated or if user explicitly needs WA)
             if (isAutomatedSuccess) {
                 setTimeout(() => {
                     window.open(finalWhatsappLink, '_blank');
-
-                    // WhatsApp Staff Trigger - 2 seconds later
                     const staffPhoneNum = staffPhone.replace(/\D/g, '');
                     const staffMsg = `*New Lead/Booking Alert!* 📧\n\nName: ${formData.name}\nPhone: ${formData.phone}\nMessage: ${formData.message}\n\n*Treatment:* ${formData.requestedTreatment}\n*Date:* ${formData.requestedDate}\n*Time:* ${formData.requestedTime}`;
                     const staffWhatsappUrl = `https://wa.me/91${staffPhoneNum}?text=${encodeURIComponent(staffMsg)}`;
-
-                    setTimeout(() => {
-                        window.open(staffWhatsappUrl, '_blank');
-                    }, 2000);
+                    setTimeout(() => { window.open(staffWhatsappUrl, '_blank'); }, 2000);
                 }, 3000);
-            } else {
-                setTimeout(() => {
-                    window.open(finalWhatsappLink, '_blank');
-                }, 3000);
-            }
-
-        } catch (error) {
-            setStatus({
-                type: 'error',
-                message: language === 'hi'
-                    ? t.failedTryAgain + ' ' + ((error as any).response?.data?.message || '')
-                    : t.failedTryAgain + ' ' + ((error as any).response?.data?.message || '')
-            });
-        } finally {
-            setSubmitting(false);
-        }
+            } else { setTimeout(() => { window.open(finalWhatsappLink, '_blank'); }, 3000); }
+        } catch (error) { setStatus({ type: 'error', message: language === 'hi' ? t.failedTryAgain + ' ' + ((error as any).response?.data?.message || '') : t.failedTryAgain + ' ' + ((error as any).response?.data?.message || '') }); }
+        finally { setSubmitting(false); }
     };
-
-    const handleBookAnother = () => {
-        setFormData({ name: '', phone: '', email: '', message: '', requestedTreatment: '', requestedDate: '', requestedTime: '' });
-        setCurrentStep(1);
-        setStatus({ type: '', message: '' });
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-
+    const handleBookAnother = () => { setFormData({ name: '', phone: '', email: '', message: '', requestedTreatment: '', requestedDate: '', requestedTime: '' }); setCurrentStep(1); setStatus({ type: '', message: '' }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
     return (
-        <div className="relative w-full max-w-7xl px-4 py-8 sm:py-12 lg:py-16 mx-auto space-y-8 sm:space-y-12 overflow-x-hidden">
-
-
-
-            <div className="block text-center space-y-2">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">{t.getIntouch}</h1>
-                <p className="text-xs text-gray-600 max-w-2xl mx-auto">
-                    {t.contactHeroSub}
-                </p>
-                {isAutoBookingEnabled && (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100 text-[11px] font-black uppercase tracking-widest">
-                        <FaCheckCircle className="text-emerald-600" />
-                        Automated booking enabled
-                    </div>
-                )}
-            </div>
-
-            <div className=" grid lg:grid-cols-3 gap-12">
-                <div className="fixed inset-0 -z-10">
-                    <img
-                        src="/images/sciencehanddrawnbg.jpg"
-                        className="w-full h-full object-cover opacity-[0.4]"
-                        alt="pattern"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-transparent to-teal-50/10"></div>
+        <div className="bg-[#fcfcfc] min-h-screen">
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-8">
+                <div className="max-w-3xl">
+                    <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ Contact ]</div>
+                    <h1 className="mt-3 text-[32px] sm:text-[44px] font-semibold tracking-[-0.03em] leading-[1.02] text-[#0a0a0b]">{t.getIntouch}</h1>
+                    <p className="mt-3 text-[14px] leading-7 text-neutral-600 max-w-[560px]">{t.contactHeroSub}</p>
+                    {isAutoBookingEnabled && (
+                        <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-[11px] font-medium tracking-[-0.01em]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Automated booking enabled
+                        </div>
+                    )}
                 </div>
 
-                {/* Contact Info Column */}
-                <div className="hidden lg:block lg:col-span-1 space-y-4 text-left">
-
-                    {/* Phone Card */}
-                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
-                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
-                            <div className="bg-blue-100 p-3 rounded-full text-blue-600">
-                                <FaPhoneAlt className="text-xl" />
+                <div className="mt-10 grid lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+                    {/* Left info — desktop */}
+                    <div className="hidden lg:block space-y-4 sticky top-24">
+                        {[
+                            { icon: <FaPhoneAlt size={14} />, title: t.callNow, desc: clinicData?.timings.monday || t.timingsSub, value: staffPhone, href: `tel:${staffPhone.replace(/\D/g, '')}`, bg: 'bg-[#f5f5f3]' },
+                            { icon: <FaWhatsapp size={14} />, title: 'WhatsApp', desc: t.chatHelp, value: t.chatNow, href: whatsappLink, bg: 'bg-emerald-50' },
+                            { icon: <FaMapMarkerAlt size={14} />, title: t.location, desc: address, value: null, href: null, bg: 'bg-[#f5f5f3]' },
+                        ].map(card => (
+                            <div key={card.title} className="bg-white rounded-[20px] border border-black/5 p-5 hover:border-black/10 hover:shadow-[0_8px_24px_rgba(0,0,0,0.04)] transition-all duration-300">
+                                <div className="flex items-center gap-3">
+                                    <span className={`w-9 h-9 rounded-xl border border-black/5 grid place-items-center ${card.bg} text-neutral-700`}>{card.icon}</span>
+                                    <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{card.title}</h3>
+                                </div>
+                                <p className="text-[13px] leading-6 text-neutral-600 mt-3">{card.desc}</p>
+                                {card.href && card.value && (
+                                    <a href={card.href} target={card.href.startsWith('http') ? '_blank' : undefined} className="mt-3 inline-flex text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] hover:underline underline-offset-4">{card.value} →</a>
+                                )}
                             </div>
-                            <h3 className="text-xl font-bold text-gray-800">{t.callNow}</h3>
-                        </div>
-                        <p className="text-gray-600 mb-2">{clinicData?.timings.monday || (t.timingsSub)}</p>
-                        <a href={`tel:${staffPhone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block">
-                            {staffPhone}
-                        </a>
+                        ))}
                     </div>
 
-                    {/* Whatsapp Card */}
-                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
-                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
-                            <div className="bg-green-100 p-3 rounded-full text-green-600">
-                                <FaWhatsapp className="text-xl" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-800">WhatsApp</h3>
-                        </div>
-                        <p className="text-gray-600 mb-2">{t.chatHelp}</p>
-                        <a href={whatsappLink} target="_blank" className="text-center sm:text-left text-lg font-bold text-green-700 hover:underline block">
-                            {t.chatNow}
-                        </a>
-                    </div>
-
-                    {/* Visit Us Card */}
-                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
-                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
-                            <div className="bg-teal-100 p-3 rounded-full text-teal-600">
-                                <FaMapMarkerAlt className="text-xl" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-800">{t.location}</h3>
-                        </div>
-                        <p className="text-gray-600 leading-relaxed whitespace-pre-line text-center sm:text-left">
-                            {address}
-                        </p>
-                    </div>
-                </div>
-
-                {/* Contact Form & Map Column */}
-                <div className="lg:col-span-2 space-y-8">
-
-                    {/* Contact Form / Guided Booking */}
-                    <div className="bg-white p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-sm">
-                        <div className="flex flex-col sm:flex-row gap-2 justify-between items-center mb-6">
-                            <h2 className="text-lg sm:text-xl font-black text-gray-800 flex items-center gap-2">
-                                <FaCalendarCheck className="text-blue-600" />
-                                {isAutoBookingEnabled ? (
-                                    <span className="">{t.appointmentBooking}</span>
-                                ) : t.send}
-                            </h2>
-                            {isAutoBookingEnabled && (
-                                <div className="flex gap-1">
-                                    {[1, 2, 3].map(step => (
-                                        <div key={step} className={`w-8 h-1.5 rounded-full transition-all ${currentStep >= step ? 'bg-blue-600' : 'bg-gray-100'}`} />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-
-
-                        {status.type === 'success' ? (
-                            <div className="space-y-8 animate-in zoom-in duration-500 py-4">
-                                <div className="text-center space-y-4">
-                                    <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-4xl animate-bounce">
-                                        <FaCheckCircle />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h3 className="flex flex-col items-center gap-2 justify-center text-lg font-black text-gray-800"><FaWhatsapp className="text-emerald-500 text-xl shrink-0 mt-0.5" /> {t.bookingConfirmed}</h3>
-                                        <p className="text-sm text-gray-500 font-bold uppercase tracking-widest">{t.detailsSaved}</p>
-                                    </div>
-                                </div>
-
-                                <div className="bg-slate-50 rounded-[2rem] border border-slate-100 overflow-hidden shadow-inner">
-                                    <div className="bg-slate-900 text-white px-8 py-4 flex justify-between items-center">
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Confirmed Booking Details</span>
-                                        <span className="text-[10px] font-black uppercase tracking-widest bg-blue-500 px-3 py-1 rounded-full">
-                                            #{confirmedBookingId || 'APT-GENERATING'}
-                                        </span>
-                                    </div>
-                                    <div className="p-8 space-y-6">
-                                        <div className="grid sm:grid-cols-2 gap-8">
-                                            <div className="space-y-1">
-                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Patient Name</div>
-                                                <div className="text-lg font-black text-slate-800">{formData.name}</div>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Phone Number</div>
-                                                <div className="text-lg font-black text-slate-800">{formData.phone}</div>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Treatment</div>
-                                                <div className="text-lg font-black text-blue-600">{formData.requestedTreatment}</div>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Appointment Slot</div>
-                                                <div className="text-lg font-black text-slate-800">
-                                                    {formData.requestedDate ? new Date(formData.requestedDate).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
-                                                    <span className="mx-2 text-slate-300">|</span>
-                                                    {formData.requestedTime ? formatSlot(formData.requestedTime) : ''}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-4 border-t border-slate-200">
-                                            <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 flex items-start gap-3">
-                                                <div className="text-[11px] font-medium text-slate-600 leading-relaxed">
-                                                    {language === 'hi'
-                                                        ? "कृपया अपने अकाउंट में लॉगिन करके अधिक जानकारी के लिए अपना इनबॉक्स देखें।"
-                                                        : "Please login your account to check your inbox for further details and clinic directions."}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <button
-                                        onClick={handleBookAnother}
-                                        className="w-full py-5 bg-emerald-600 text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all active:scale-95 shadow-xl shadow-emerald-100 flex items-center justify-center gap-3"
-                                    >
-                                        <FaCheckCircle /> {t.bookAnother}
-                                    </button>
-                                    <button
-                                        onClick={() => router.push('/')}
-                                        className="w-full py-4 bg-gray-100 text-gray-600 rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-gray-200 transition-all text-xs"
-                                    >
-                                        Back to Home
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <>
-                                {isAutoBookingEnabled && <BookingSummary formData={formData} language={language} t={t} />}
-
-                                {status.message && (
-                                    <div className={`mb-6 p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
-                                            status.type === 'info' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
-                                                'bg-rose-50 text-rose-700 border border-rose-100'
-                                        }`}>
-                                        {status.message}
+                    {/* Right form */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <div className="bg-white rounded-[24px] border border-black/5 shadow-sm overflow-hidden">
+                            <div className="px-6 sm:px-8 py-6 border-b border-black/5 flex items-center justify-between">
+                                <h2 className="text-[14px] font-semibold tracking-[-0.01em] text-[#0a0a0b] inline-flex items-center gap-2"><FaCalendarCheck className="text-neutral-400" size={14} /> {isAutoBookingEnabled ? t.appointmentBooking : t.send}</h2>
+                                {isAutoBookingEnabled && (
+                                    <div className="flex gap-1.5">
+                                        {[1, 2, 3].map(step => <span key={step} className={`w-8 h-1.5 rounded-full transition-colors ${currentStep >= step ? 'bg-[#0a0a0b]' : 'bg-black/5'}`} />)}
                                     </div>
                                 )}
+                            </div>
 
-                                {configLoading ? (
-                                    <div className="space-y-6 animate-pulse p-4">
-                                        <div className="h-4 bg-gray-100 rounded-full w-1/4 mb-8"></div>
-                                        <div className="grid sm:grid-cols-2 gap-6">
-                                            <div className="h-14 bg-gray-50 rounded-2xl"></div>
-                                            <div className="h-14 bg-gray-50 rounded-2xl"></div>
+                            <div className="p-6 sm:p-8">
+                                {status.type === 'success' ? (
+                                    <div className="space-y-6 py-2">
+                                        <div className="text-center space-y-3">
+                                            <span className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 grid place-items-center mx-auto"><FaCheckCircle size={20} /></span>
+                                            <h3 className="text-[15px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{t.bookingConfirmed}</h3>
+                                            <p className="text-[12px] tracking-[0.08em] uppercase font-medium text-neutral-500">{t.detailsSaved}</p>
                                         </div>
-                                        <div className="h-32 bg-gray-50 rounded-2xl"></div>
-                                        <div className="h-14 bg-blue-100 rounded-2xl w-full"></div>
+                                        <div className="rounded-[20px] border border-black/5 bg-[#fcfcfc] overflow-hidden">
+                                            <div className="px-5 py-3 bg-[#0a0a0b] text-white flex justify-between items-center">
+                                                <span className="text-[11px] tracking-[0.12em] uppercase font-medium text-white/60">Confirmed</span>
+                                                <span className="text-[11px] font-mono bg-white text-[#0a0a0b] px-2.5 py-1 rounded-full">#{confirmedBookingId || 'APT'}</span>
+                                            </div>
+                                            <div className="p-5 grid sm:grid-cols-2 gap-4 text-[13px]">
+                                                <div><div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-400">Name</div><div className="font-semibold text-[#0a0a0b] mt-1">{formData.name}</div></div>
+                                                <div><div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-400">Phone</div><div className="font-semibold text-[#0a0a0b] mt-1">{formData.phone}</div></div>
+                                                <div><div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-400">Treatment</div><div className="font-semibold text-[#0a0a0b] mt-1">{formData.requestedTreatment}</div></div>
+                                                <div><div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-400">Slot</div><div className="font-semibold text-[#0a0a0b] mt-1">{formData.requestedDate} · {formData.requestedTime ? formatSlot(formData.requestedTime) : ''}</div></div>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col sm:flex-row gap-3">
+                                            <button onClick={handleBookAnother} className="flex-1 py-3.5 bg-[#0a0a0b] text-white rounded-full text-[13px] font-medium hover:bg-black active:scale-[0.98] transition"> {t.bookAnother}</button>
+                                            <button onClick={() => router.push('/')} className="flex-1 py-3.5 bg-white border border-black/10 text-[#0a0a0b] rounded-full text-[13px] font-medium hover:bg-[#fcfcfc] transition">Back to Home</button>
+                                        </div>
                                     </div>
                                 ) : (
-                                    <form onSubmit={handleSubmit} className="space-y-10">
-                                        {isAutoBookingEnabled ? (
-                                            <div className="space-y-4 sm:space-y-6 divide-y divide-gray-50">
+                                    <>
+                                        {isAutoBookingEnabled && <BookingSummary formData={formData} language={language} t={t} />}
+                                        {status.message && (
+                                            <div className={`mb-6 p-3 rounded-2xl text-[13px] font-medium border ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : status.type === 'info' ? 'bg-blue-50 text-blue-700 border-blue-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>
+                                                {status.message}
+                                            </div>
+                                        )}
 
-
-                                                {/* SECTION 1: CHOOSE TREATMENT */}
-                                                <div className="space-y-6">
-                                                    <div className="flex items-center gap-3 mb-2">
-                                                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-sm">1</div>
-                                                        <h3 className="text-sm font-black uppercase tracking-widest text-gray-800">Choose Treatment</h3>
-                                                    </div>
-                                                    <div className="max-h-[520px] overflow-y-auto pr-1 custom-scrollbar">
-                                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                                            {treatments.map((t) => (
-                                                                <button
-                                                                    key={t._id}
-                                                                    type="button"
-                                                                    onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: prev.requestedTreatment === t.name ? '' : t.name }))}
-                                                                    className={`p-2 sm:p-3 rounded-2xl border-2 shadow-inner transition-all flex flex-col items-center gap-2 ${formData.requestedTreatment === t.name ? 'border-blue-600 bg-blue-200' : 'border-gray-50 bg-gradient-to-b from-purple-100/50 to-blue-100/50 backdrop-blur-sm hover:bg-gray-100'}`}
-                                                                >
-                                                                    <TreatmentIcon iconName={t.icon} treatmentName={t.name} treatmentDescription={t.description} className="text-2xl" />
-                                                                    <span className="text-[10px] font-black uppercase text-center leading-tight">
-                                                                        {(translations[language] as any).treatmentNames?.[t.name] || t.name}
-                                                                    </span>
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* SECTION 2: SELECT DATE & TIME */}
-                                                <div className="space-y-6">
-                                                    <div className="flex items-center gap-3 mb-2">
-                                                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-sm">2</div>
-                                                        <h3 className="text-sm font-black uppercase tracking-widest text-gray-800">Select Date & Time</h3>
-                                                    </div>
-                                                    <div className="space-y-4">
-                                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.availableDates}</label>
-                                                        <div className="flex flex-wrap gap-2 overflow-x-auto pb-3 custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-                                                            {suggestedDates.map((item) => (
-                                                                <button
-                                                                    key={item.dateStr}
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        const isDeselecting = formData.requestedDate === item.dateStr;
-                                                                        setFormData(prev => ({ ...prev, requestedDate: isDeselecting ? '' : item.dateStr, requestedTime: '' }));
-                                                                        if (!isDeselecting) {
-                                                                            fetchAvailableTimes(item.dateStr);
-                                                                        } else {
-                                                                            setAvailableTimes([]);
-                                                                        }
-                                                                    }}
-                                                                    className={`flex-shrink-0 w-24 p-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 cursor-pointer ${formData.requestedDate === item.dateStr ? 'border-blue-600 bg-blue-50' : 'border-gray-50 bg-gray-50'}`}
-                                                                >
-                                                                    <span className="text-[10px] font-black text-blue-600">{item.display.split(' ')[0]}</span>
-                                                                    <span className="text-sm font-black text-gray-800">{item.display.split(' ')[1]}</span>
-                                                                    <span className="text-[8px] font-bold text-gray-400">{item.display.split(' ')[2]}</span>
-                                                                    <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${item.count < 6 ? 'bg-emerald-100 text-emerald-700' : item.count < 8 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>
-                                                                        {item.count < 6 ? t.flexible : item.count < 8 ? t.steady : t.busy}
-                                                                    </span>
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-
-                                                    {formData.requestedDate && (
-                                                        <div className="space-y-4 pt-4 border-t border-gray-100">
-                                                            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.availableSlots}</label>
-                                                            {loadingTimes ? (
-                                                                <div className="flex items-center gap-2 text-blue-600 font-bold text-xs"><div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div> {t.fetchingSlots}</div>
-                                                            ) : availableTimes.length > 0 ? (
-                                                                <div className="grid grid-cols-4 gap-2">
-                                                                    {availableTimes.map(time => {
-                                                                        const isToday = formData.requestedDate === new Date().toISOString().split('T')[0];
-                                                                        let isPassed = false;
-                                                                        if (isToday) {
-                                                                            const [slotHour, slotMin] = time.split(':').map(Number);
-                                                                            const now = new Date();
-                                                                            const currentHour = now.getHours();
-                                                                            const currentMin = now.getMinutes();
-                                                                            if (slotHour < currentHour || (slotHour === currentHour && slotMin <= currentMin)) {
-                                                                                isPassed = true;
-                                                                            }
-                                                                        }
-
-                                                                        return (
-                                                                            <button
-                                                                                key={time}
-                                                                                type="button"
-                                                                                disabled={isPassed}
-                                                                                onClick={() => setFormData(prev => ({ ...prev, requestedTime: prev.requestedTime === time ? '' : time }))}
-                                                                                className={`py-3 rounded-xl border-2 font-black text-xs transition-all ${formData.requestedTime === time
-                                                                                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                                                                                    : isPassed
-                                                                                        ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
-                                                                                        : 'border-gray-50 bg-gray-50 text-gray-600 hover:bg-gray-100'
-                                                                                    }`}
-                                                                            >
-                                                                                {formatSlot(time)}
-                                                                            </button>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            ) : (
-                                                                <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-xs font-bold border border-rose-100">{t.noSlots}</div>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                {/* SECTION 3: PERSONAL DETAILS */}
-                                                <div className="space-y-2 pt-2">
-                                                    <div className="flex items-center gap-3 mb-2">
-                                                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-sm">3</div>
-                                                        <h3 className="text-sm font-black uppercase tracking-widest text-gray-800">Personal Details</h3>
-                                                    </div>
-                                                    <div className="grid sm:grid-cols-2 gap-6">
-                                                        <div className="space-y-2">
-                                                            <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">{t.formName}</label>
-                                                            <input
-                                                                type="text" id="name" value={formData.name} onChange={handleChange} required
-                                                                className="w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all "
-                                                                placeholder={t.namePlaceholder}
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1 flex items-center gap-2">
-                                                                {t.formPhone} <FaWhatsapp className="text-emerald-500" />
-                                                            </label>
-                                                            <input
-                                                                type="tel" id="phone" value={formData.phone} required
-                                                                onChange={(e) => {
-                                                                    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                                                    setFormData(prev => ({ ...prev, phone: val }));
-                                                                }}
-                                                                className={`w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 font-bold outline-none transition-all ${formData.phone.length === 10 ? 'border-emerald-100 text-emerald-600' : 'border-transparent focus:border-blue-500'}`}
-                                                                placeholder="10 digit number"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">{t.emailOptional}</label>
-                                                        <input
-                                                            type="email" id="email" value={formData.email} onChange={handleChange}
-                                                            className="w-full px-5 py-4 rounded-2xl bg-blue-50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all placeholder:text-gray-300"
-                                                            placeholder={t.emailPlaceholder}
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div className="pt-10">
-                                                    <button
-                                                        type="submit"
-                                                        disabled={submitting || !formData.requestedTime || !formData.name || formData.phone.length !== 10}
-                                                        className="w-full py-5 bg-emerald-600 text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
-                                                    >
-                                                        {submitting ? t.confirming : t.bookApt}
-                                                        <FaCheckCircle className="text-xl" />
-                                                    </button>
-                                                </div>
+                                        {configLoading ? (
+                                            <div className="space-y-4 animate-pulse">
+                                                <div className="h-4 bg-black/5 rounded-full w-1/3" />
+                                                <div className="grid sm:grid-cols-2 gap-4"><div className="h-12 bg-black/5 rounded-2xl" /><div className="h-12 bg-black/5 rounded-2xl" /></div>
+                                                <div className="h-24 bg-black/5 rounded-2xl" />
                                             </div>
                                         ) : (
-                                            <div className="grid md:grid-cols-2 gap-6">
-                                                <div className="space-y-2 text-left">
-                                                    <label htmlFor="name" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
-                                                        {t.formName}
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="name"
-                                                        value={formData.name}
-                                                        onChange={handleChange}
-                                                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
-                                                        placeholder={t.yourNamePlaceholder}
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="space-y-2 text-left">
-                                                    <label htmlFor="phone" className="text-sm font-semibold text-gray-700 h-8 flex items-end justify-start gap-2">
-                                                        <span>{t.formPhone} </span><FaWhatsapp className="text-green-500 text-xl" />
-                                                        {formData.phone.length > 0 && formData.phone.length < 10 && (
-                                                            <span className="text-red-500 text-[10px] animate-pulse">{t.phoneRequired}: {formData.phone.length}/10</span>
-                                                        )}
-                                                    </label>
-                                                    <input
-                                                        type="tel"
-                                                        id="phone"
-                                                        value={formData.phone}
-                                                        onChange={(e) => {
-                                                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                                            setFormData(prev => ({ ...prev, phone: val }));
-                                                        }}
-                                                        className={`w-full px-4 py-3 rounded-xl border-2 font-bold outline-none transition-all ${formData.phone.length === 10
-                                                            ? 'border-green-200 focus:border-green-500 text-green-600'
-                                                            : formData.phone.length > 0
-                                                                ? 'border-red-100 focus:border-red-400 text-red-600'
-                                                                : 'border-gray-200 focus:border-blue-500'
-                                                            }`}
-                                                        placeholder={t.waPlaceholder}
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="md:col-span-2 space-y-2 text-left">
-                                                    <label htmlFor="email" className="text-sm font-semibold text-gray-700 h-8 flex items-end">
-                                                        {language === 'hi' ? 'ईमेल आईडी' : 'Email Address'} <span className="ml-2 text-gray-400 font-normal text-[10px] uppercase tracking-widest">(Optional)</span>
-                                                    </label>
-                                                    <input
-                                                        type="email"
-                                                        id="email"
-                                                        value={(formData as any).email || ''}
-                                                        onChange={handleChange}
-                                                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 font-bold outline-none transition-all"
-                                                        placeholder={t.yourEmailPlaceholder}
-                                                    />
-                                                </div>
-                                                <div className="md:col-span-2 space-y-4">
-                                                    <div className="space-y-2 text-left">
-                                                        <label htmlFor="message" className="text-sm font-semibold text-gray-700 flex justify-between items-center">
-                                                            <span>{t.formMessage}</span>
-                                                            <span className="text-gray-400 font-normal text-xs uppercase tracking-widest italic">Optional Selection</span>
-                                                        </label>
-
-                                                        <div className="flex flex-wrap gap-2 mb-3">
-                                                            {suggestions.map((s) => (
-                                                                <button
-                                                                    key={s.value}
-                                                                    type="button"
-                                                                    onClick={() => handleSuggestionClick(s.label)}
-                                                                    className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 transform active:scale-90 ${s.color}`}
-                                                                >
-                                                                    + {s.label}
-                                                                </button>
-                                                            ))}
-                                                        </div>
-
-                                                        <div className="space-y-2">
-                                                            <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest pl-1 mb-1">
-                                                                {t.smartSuggestions}
-                                                            </p>
-                                                            <div className="flex flex-wrap gap-2 mb-4">
-                                                                {suggestedDates.map((item) => (
-                                                                    <button
-                                                                        key={item.dateStr}
-                                                                        type="button"
-                                                                        onClick={() => handleDateSuggestion(item)}
-                                                                        className={`px-3 py-2 rounded-2xl flex flex-col items-center border shadow-sm transition-all transform active:scale-95 ${item.count < 6 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
-                                                                            item.count < 8 ? 'bg-amber-50 border-amber-200 text-amber-700' :
-                                                                                'bg-rose-50 border-rose-200 text-rose-700'
-                                                                            }`}
-                                                                    >
-                                                                        <span className="text-[10px] font-black uppercase tracking-tighter leading-none mb-1">{item.display}</span>
-                                                                        <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${item.count < 6 ? 'bg-emerald-100' :
-                                                                            item.count < 8 ? 'bg-amber-100' :
-                                                                                'bg-rose-100'
-                                                                            }`}>
-                                                                            {item.count < 6 ? t.flexible :
-                                                                                item.count < 8 ? t.steady :
-                                                                                    t.busy}
-                                                                        </span>
+                                            <form onSubmit={handleSubmit} className="space-y-6">
+                                                {isAutoBookingEnabled ? (
+                                                    <div className="space-y-6">
+                                                        {/* Step 1 */}
+                                                        <div>
+                                                            <div className="flex items-center gap-2 mb-3">
+                                                                <span className="w-6 h-6 rounded-full bg-[#0a0a0b] text-white grid place-items-center text-[11px] font-bold">1</span>
+                                                                <h3 className="text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-500">Choose Treatment</h3>
+                                                            </div>
+                                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[320px] overflow-y-auto pr-1">
+                                                                {treatments.map((tr) => (
+                                                                    <button key={tr._id} type="button" onClick={() => setFormData(prev => ({ ...prev, requestedTreatment: prev.requestedTreatment === tr.name ? '' : tr.name }))} className={`p-3 rounded-2xl border text-left flex flex-col gap-2 transition-all ${formData.requestedTreatment === tr.name ? 'bg-[#0a0a0b] text-white border-black shadow-sm' : 'bg-[#fcfcfc] border-black/5 hover:border-black/10 hover:bg-white'}`}>
+                                                                        <TreatmentIcon iconName={tr.icon} treatmentName={tr.name} treatmentDescription={tr.description} className={`text-[18px] ${formData.requestedTreatment === tr.name ? 'text-white' : 'text-neutral-700'}`} />
+                                                                        <span className={`text-[11px] font-medium leading-tight ${formData.requestedTreatment === tr.name ? 'text-white' : 'text-[#0a0a0b]'}`}>{(translations[language] as any).treatmentNames?.[tr.name] || tr.name}</span>
                                                                     </button>
                                                                 ))}
                                                             </div>
                                                         </div>
 
-                                                        <textarea
-                                                            id="message"
-                                                            rows={4}
-                                                            value={formData.message}
-                                                            onChange={handleChange}
-                                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                                                            placeholder={t.placeholderMsg}
-                                                            required
-                                                        ></textarea>
-                                                    </div>
-                                                </div>
-                                                <div className="md:col-span-2">
-                                                    <button
-                                                        type="submit"
-                                                        disabled={submitting}
-                                                        className={`w-full ${submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center gap-2`}
-                                                    >
-                                                        <FaPaperPlane /> {submitting ? t.submitting : t.send}
-                                                    </button>
-                                                </div>
+                                                        {/* Step 2 */}
+                                                        <div>
+                                                            <div className="flex items-center gap-2 mb-3">
+                                                                <span className="w-6 h-6 rounded-full bg-[#0a0a0b] text-white grid place-items-center text-[11px] font-bold">2</span>
+                                                                <h3 className="text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-500">Select Date & Time</h3>
+                                                            </div>
+                                                            <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+                                                                {suggestedDates.map((item) => (
+                                                                    <button key={item.dateStr} type="button" onClick={() => { const isDeselecting = formData.requestedDate === item.dateStr; setFormData(prev => ({ ...prev, requestedDate: isDeselecting ? '' : item.dateStr, requestedTime: '' })); if (!isDeselecting) fetchAvailableTimes(item.dateStr); else setAvailableTimes([]); }} className={`shrink-0 w-[92px] p-3 rounded-2xl border flex flex-col items-center gap-1 transition ${formData.requestedDate === item.dateStr ? 'bg-[#0a0a0b] text-white border-black' : 'bg-[#fcfcfc] border-black/5 hover:border-black/10 bg-white'}`}>
+                                                                        <span className={`text-[10px] font-medium ${formData.requestedDate === item.dateStr ? 'text-white/60' : 'text-neutral-500'}`}>{item.display.split(' ')[0]}</span>
+                                                                        <span className={`text-[13px] font-semibold ${formData.requestedDate === item.dateStr ? 'text-white' : 'text-[#0a0a0b]'}`}>{item.display.split(' ')[1]} {item.display.split(' ')[2]}</span>
+                                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${item.count < 6 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : item.count < 8 ? 'bg-amber-50 text-amber-700 border border-amber-100' : 'bg-rose-50 text-rose-700 border border-rose-100'} ${formData.requestedDate === item.dateStr ? '!bg-white/15 !text-white !border-white/15' : ''}`}>{item.count < 6 ? t.flexible : item.count < 8 ? t.steady : t.busy}</span>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
 
-                                            </div>
+                                                            {formData.requestedDate && (
+                                                                <div className="mt-3">
+                                                                    <div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 mb-2">Available slots</div>
+                                                                    {loadingTimes ? (
+                                                                        <div className="flex items-center gap-2 text-[13px] text-neutral-500"><span className="w-4 h-4 border-2 border-black/10 border-t-[#0a0a0b] rounded-full animate-spin" /> {t.fetchingSlots}</div>
+                                                                    ) : availableTimes.length > 0 ? (
+                                                                        <div className="grid grid-cols-4 gap-2">
+                                                                            {availableTimes.map(time => {
+                                                                                const isToday = formData.requestedDate === new Date().toISOString().split('T')[0];
+                                                                                let isPassed = false;
+                                                                                if (isToday) { const [h, m] = time.split(':').map(Number); const now = new Date(); if (h < now.getHours() || (h === now.getHours() && m <= now.getMinutes())) isPassed = true; }
+                                                                                return (
+                                                                                    <button key={time} type="button" disabled={isPassed} onClick={() => setFormData(prev => ({ ...prev, requestedTime: prev.requestedTime === time ? '' : time }))} className={`py-2.5 rounded-full border text-[12px] font-medium transition ${formData.requestedTime === time ? 'bg-[#0a0a0b] text-white border-black' : isPassed ? 'bg-black/5 text-neutral-300 border-black/5 cursor-not-allowed' : 'bg-white border-black/5 hover:border-black/15 text-[#0a0a0b]'}`}>
+                                                                                        {formatSlot(time)}
+                                                                                    </button>
+                                                                                );
+                                                                            })}
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="p-3 rounded-2xl bg-rose-50 border border-rose-100 text-rose-700 text-[13px]">{t.noSlots}</div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Step 3 */}
+                                                        <div>
+                                                            <div className="flex items-center gap-2 mb-3">
+                                                                <span className="w-6 h-6 rounded-full bg-[#0a0a0b] text-white grid place-items-center text-[11px] font-bold">3</span>
+                                                                <h3 className="text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-500">Personal details</h3>
+                                                            </div>
+                                                            <div className="grid sm:grid-cols-2 gap-4">
+                                                                <div>
+                                                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Full name</label>
+                                                                    <input id="name" value={formData.name} onChange={handleChange} required placeholder={t.namePlaceholder} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-[13px] font-medium transition" />
+                                                                </div>
+                                                                <div>
+                                                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1 flex items-center gap-1.5">Phone <FaWhatsapp size={10} className="text-emerald-500" /></label>
+                                                                    <input id="phone" value={formData.phone} onChange={e => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))} required placeholder="10 digit number" className={`mt-1 w-full h-[44px] px-4 rounded-full border outline-none text-[13px] font-medium transition ${formData.phone.length === 10 ? 'bg-white border-emerald-200 text-emerald-700' : 'bg-[#fcfcfc] border-black/5 focus:border-black/15 focus:bg-white'}`} />
+                                                                </div>
+                                                                <div className="sm:col-span-2">
+                                                                    <label className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Email <span className="normal-case tracking-normal text-neutral-400">(optional)</span></label>
+                                                                    <input id="email" value={formData.email} onChange={handleChange} placeholder={t.emailPlaceholder} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-[13px] font-medium transition" />
+                                                                </div>
+                                                            </div>
+                                                            <button type="submit" disabled={submitting || !formData.requestedTime || !formData.name || formData.phone.length !== 10} className="mt-6 w-full h-[48px] rounded-full bg-[#0a0a0b] text-white text-[13px] font-medium tracking-[-0.01em] hover:bg-black disabled:opacity-40 active:scale-[0.98] transition flex items-center justify-center gap-2">
+                                                                {submitting ? t.confirming : t.bookApt} <FaCheckCircle size={12} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="grid sm:grid-cols-2 gap-4">
+                                                        <div>
+                                                            <label htmlFor="name" className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Full name</label>
+                                                            <input id="name" value={formData.name} onChange={handleChange} placeholder={t.yourNamePlaceholder} required className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-[13px] font-medium transition" />
+                                                        </div>
+                                                        <div>
+                                                            <label htmlFor="phone" className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1 flex items-center gap-1.5">Phone <FaWhatsapp size={10} className="text-emerald-500" />{formData.phone.length>0 && formData.phone.length<10 && <span className="text-rose-500 text-[10px]">{t.phoneRequired}: {formData.phone.length}/10</span>}</label>
+                                                            <input id="phone" value={formData.phone} onChange={e => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))} placeholder={t.waPlaceholder} required className={`mt-1 w-full h-[44px] px-4 rounded-full border outline-none text-[13px] font-medium transition ${formData.phone.length===10 ? 'bg-white border-emerald-200 text-emerald-700' : formData.phone.length>0 ? 'bg-white border-rose-100 text-rose-600' : 'bg-[#fcfcfc] border-black/5 focus:border-black/15'}`} />
+                                                        </div>
+                                                        <div className="sm:col-span-2">
+                                                            <label htmlFor="email" className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1">Email <span className="text-neutral-400 normal-case tracking-normal">(optional)</span></label>
+                                                            <input id="email" value={(formData as any).email || ''} onChange={handleChange} placeholder={t.yourEmailPlaceholder} className="mt-1 w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-[13px] font-medium transition" />
+                                                        </div>
+                                                        <div className="sm:col-span-2">
+                                                            <label htmlFor="message" className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 ml-1 flex justify-between"><span>Message</span><span className="text-neutral-400 normal-case tracking-normal text-[10px]">Optional</span></label>
+                                                            <div className="mt-2 flex flex-wrap gap-1.5">
+                                                                {suggestions.slice(0,8).map(s => (
+                                                                    <button key={s.value} type="button" onClick={() => handleSuggestionClick(s.label)} className="px-3 py-1.5 rounded-full bg-white border border-black/5 text-[11px] font-medium text-neutral-600 hover:border-black/10 hover:text-[#0a0a0b] transition">{s.label}</button>
+                                                                ))}
+                                                            </div>
+                                                            <div className="mt-3">
+                                                                <div className="text-[11px] tracking-[0.08em] uppercase font-medium text-neutral-400 mb-1.5">{t.smartSuggestions}</div>
+                                                                <div className="flex flex-wrap gap-1.5">
+                                                                    {suggestedDates.map(item => (
+                                                                        <button key={item.dateStr} type="button" onClick={() => handleDateSuggestion(item)} className={`px-3 py-2 rounded-full border text-[11px] font-medium flex flex-col items-center leading-none hover:border-black/10 transition ${item.count<6 ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : item.count<8 ? 'bg-amber-50 border-amber-100 text-amber-700' : 'bg-rose-50 border-rose-100 text-rose-700'}`}>
+                                                                            <span className="text-[10px] tracking-[0.06em] uppercase">{item.display}</span>
+                                                                            <span className="text-[10px] mt-0.5 opacity-70">{item.count < 6 ? t.flexible : item.count < 8 ? t.steady : t.busy}</span>
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                            <textarea id="message" rows={4} value={formData.message} onChange={handleChange} placeholder={t.placeholderMsg} required className="mt-3 w-full p-4 rounded-[20px] bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-[13px] leading-6 transition resize-none" />
+                                                        </div>
+                                                        <div className="sm:col-span-2">
+                                                            <button type="submit" disabled={submitting} className="w-full h-[48px] rounded-full bg-[#0a0a0b] text-white text-[13px] font-medium hover:bg-black active:scale-[0.98] transition flex items-center justify-center gap-2 disabled:opacity-60">
+                                                                <FaPaperPlane size={11} /> {submitting ? t.submitting : t.send}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </form>
                                         )}
-                                    </form>
+                                    </>
                                 )}
-                            </>
+                            </div>
+                        </div>
+
+                        {/* Recent bookings */}
+                        {guestAppointments.length > 0 && (
+                            <div className="bg-white rounded-[24px] border border-black/5 p-6 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] inline-flex items-center gap-2"><FaCalendarCheck size={12} className="text-neutral-400" /> {t.recentBookings}</h3>
+                                    <span className={`text-[10px] px-2.5 py-1 rounded-full font-medium tracking-[0.06em] uppercase border ${session?.user ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-[#f5f5f3] text-neutral-500 border-black/5'}`}>{session?.user ? t.patientProfile : t.guestMode}</span>
+                                </div>
+                                <div className="space-y-3">
+                                    {guestAppointments.map((apt: any) => {
+                                        const treatment = treatments.find((x: any) => x.name === apt.reason);
+                                        const isEditing = editingAptId === apt._id;
+                                        return (
+                                            <div key={apt._id} className="rounded-[20px] border border-black/5 bg-[#fcfcfc] p-4">
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <div className="flex gap-3 min-w-0">
+                                                        <span className="w-9 h-9 rounded-xl bg-white border border-black/5 grid place-items-center text-neutral-700 shrink-0"><TreatmentIcon iconName={treatment?.icon || ''} treatmentName={apt.reason} treatmentDescription={treatment?.description || ''} className="text-[14px]" /></span>
+                                                        <div className="min-w-0">
+                                                            <div className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] truncate">{apt.reason}</div>
+                                                            <div className="text-[11px] text-neutral-500">{new Date(apt.date).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short' })} · {apt.time} · <span className={`px-2 py-0.5 rounded-full border text-[10px] font-medium ${apt.status==='Scheduled' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : apt.status==='Completed' ? 'bg-blue-50 text-blue-700 border-blue-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>{apt.status}</span></div>
+                                                        </div>
+                                                    </div>
+                                                    {apt.status==='Scheduled' && !isEditing && (
+                                                        <div className="flex gap-2 shrink-0">
+                                                            <button onClick={() => { setEditingAptId(apt._id); setEditData({ date: apt.date.split('T')[0], time: apt.time }); }} className="text-[11px] font-medium text-[#0a0a0b] underline underline-offset-4">{t.edit}</button>
+                                                            <button onClick={() => handleCancelGuestBooking(apt._id)} className="text-[11px] font-medium text-rose-600 underline underline-offset-4">{t.cancel}</button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                {isEditing && (
+                                                    <div className="mt-3 p-3 rounded-2xl bg-white border border-black/5 flex flex-col sm:flex-row gap-3">
+                                                        <input type="date" value={editData.date} onChange={e => setEditData(prev=>({...prev, date:e.target.value}))} className="flex-1 h-9 px-3 rounded-full border border-black/5 text-[12px] outline-none focus:border-black/15" />
+                                                        <select value={editData.time} onChange={e => setEditData(prev=>({...prev, time:e.target.value}))} className="flex-1 h-9 px-3 rounded-full border border-black/5 text-[12px] outline-none focus:border-black/15">
+                                                            {(availableTimes.length?availableTimes:[apt.time,"10:00","11:00","12:00","13:00","14:00","17:00","18:00"]).map(v=><option key={v} value={v}>{formatSlot(v)}</option>)}
+                                                        </select>
+                                                        <div className="flex gap-2">
+                                                            <button onClick={()=>handleUpdateBooking(apt._id)} disabled={savingEdit} className="px-4 h-9 rounded-full bg-[#0a0a0b] text-white text-[11px] font-medium disabled:opacity-40">{savingEdit?'...':t.save}</button>
+                                                            <button onClick={()=>setEditingAptId(null)} className="px-4 h-9 rounded-full bg-white border border-black/5 text-[11px] font-medium">Back</button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Map */}
+                        <div className="bg-white rounded-[24px] border border-black/5 p-2 shadow-sm">
+                            <div className="rounded-[20px] overflow-hidden h-[360px] border border-black/5">
+                                <iframe src={`https://maps.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`} width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="ToothOp Location" />
+                            </div>
+                        </div>
+
+                        {/* General inquiry */}
+                        {isAutoBookingEnabled && !configLoading && (
+                            <div className="bg-white rounded-[24px] border border-black/5 p-6 sm:p-8 shadow-sm">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="w-9 h-9 rounded-xl bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-700"><FaEnvelope size={13} /></span>
+                                    <div>
+                                        <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{t.generalInquiry}</h3>
+                                        <p className="text-[11px] tracking-[0.08em] uppercase font-medium text-neutral-500">{t.directMsg}</p>
+                                    </div>
+                                </div>
+                                {generalStatus.message && <div className={`mb-4 p-3 rounded-2xl text-[13px] font-medium border ${generalStatus.type==='success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>{generalStatus.message}</div>}
+                                <form onSubmit={e=>{e.preventDefault(); const cPhone=staffPhone.replace(/\D/g,''); setSubmitting(true); axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, {...formData, requestedTreatment:'', requestedDate:null, requestedTime:'', message:formData.message}).then(()=>{setGeneralStatus({type:'success', message:t.successMsg}); setFormData(prev=>({...prev, message:''}));}).catch(err=>setGeneralStatus({type:'error', message: err.message})).finally(()=>setSubmitting(false));}} className="space-y-4">
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        <input value={formData.name} onChange={e=>setFormData(prev=>({...prev, name:e.target.value}))} required placeholder={t.generalNamePlaceholder} className="h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-[13px]" />
+                                        <input value={formData.phone} onChange={e=>setFormData(prev=>({...prev, phone:e.target.value.replace(/\D/g,'').slice(0,10)}))} required placeholder={t.generalPhonePlaceholder} className="h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-[13px]" />
+                                    </div>
+                                    <input value={formData.email} onChange={e=>setFormData(prev=>({...prev, email:e.target.value}))} placeholder={t.generalEmailPlaceholder} className="w-full h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-[13px]" />
+                                    <textarea rows={3} value={formData.message} onChange={e=>setFormData(prev=>({...prev, message:e.target.value}))} required placeholder={t.askPlaceholder} className="w-full p-4 rounded-[20px] bg-[#fcfcfc] border border-black/5 focus:border-black/15 focus:bg-white outline-none text-[13px] leading-6 resize-none" />
+                                    <button disabled={submitting} className="w-full h-[44px] rounded-full bg-[#0a0a0b] text-white text-[13px] font-medium hover:bg-black active:scale-[0.98] transition flex items-center justify-center gap-2"><FaPaperPlane size={11} /> {submitting ? t.submitting : t.send}</button>
+                                </form>
+                            </div>
                         )}
                     </div>
 
-
-
-                    {/* YOUR RECENT BOOKINGS */}
-                    {guestAppointments.length > 0 && (
-                        <div className="p-6 sm:p-8 bg-gradient-to-br from-white to-blue-50/30 rounded-[2.5rem] shadow-xl border border-blue-100 space-y-6 mt-8">
-                            <div className="flex flex-col sm:flex-row gap-1 items-center justify-between">
-                                <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
-                                    <FaCalendarCheck className="text-blue-600" />
-                                    {t.recentBookings}
-                                </h2>
-                                <div className="flex items-center gap-2">
-                                    {session?.user && (
-                                        <button
-                                            onClick={() => router.push('/profile')}
-                                            className="text-[10px] font-black bg-blue-600 text-white px-3 py-1 rounded-full uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95 shadow-sm"
-                                        >
-                                            {t.seeProfile}
-                                        </button>
-                                    )}
-                                    <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest ${session?.user ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-gray-400'}`}>
-                                        {session?.user ? t.patientProfile : t.guestMode}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="grid gap-4">
-                                {guestAppointments.map((apt: any) => {
-                                    const treatment = treatments.find((t: any) => t.name === apt.reason);
-                                    const isEditing = editingAptId === apt._id;
-                                    const patientName = apt.patientId?.name || apt.name || t.guest;
-                                    const patientPhone = apt.patientId?.contact || apt.phone || "";
-                                    const patientEmail = apt.patientId?.email || apt.email || "";
-
-                                    return (
-                                        <div key={apt._id} className="p-5 rounded-3xl bg-white/50 border border-blue-50 flex flex-col gap-4 hover:shadow-md transition-all">
-                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 bg-blue-100/50 rounded-2xl flex items-center justify-center text-blue-600 shadow-sm shrink-0">
-                                                        <TreatmentIcon
-                                                            iconName={treatment?.icon || ""}
-                                                            treatmentName={apt.reason}
-                                                            treatmentDescription={treatment?.description || ""}
-                                                            className="text-xl"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-black text-gray-800 leading-tight mb-1">{apt.reason}</div>
-                                                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-                                                            {patientName} {patientPhone && `• ${patientPhone}`}
-                                                        </div>
-                                                        {patientEmail && (
-                                                            <div className="text-[9px] font-bold text-gray-400/80 mb-1">{patientEmail}</div>
-                                                        )}
-                                                        <div className="text-xs font-bold text-blue-600 flex items-center gap-2">
-                                                            <FaClock className="text-[10px]" /> {new Date(apt.date).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short' })} • {apt.time}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${apt.status === 'Scheduled' ? 'bg-emerald-50 text-emerald-600' :
-                                                        apt.status === 'Completed' ? 'bg-blue-50 text-blue-600' :
-                                                            'bg-rose-50 text-rose-600'
-                                                        }`}>
-                                                        {apt.status}
-                                                    </div>
-                                                    {apt.status === 'Scheduled' && !isEditing && (
-                                                        <>
-                                                            <button
-                                                                onClick={() => {
-                                                                    setEditingAptId(apt._id);
-                                                                    setEditData({ date: apt.date.split('T')[0], time: apt.time });
-                                                                }}
-                                                                className="text-[10px] font-black text-blue-600 hover:text-blue-700 uppercase tracking-widest underline underline-offset-4"
-                                                            >
-                                                                {t.edit}
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleCancelGuestBooking(apt._id)}
-                                                                className="text-[10px] font-black text-rose-600 hover:text-rose-700 uppercase tracking-widest underline underline-offset-4"
-                                                            >
-                                                                {t.cancel}
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* EDIT MODE UI */}
-                                            {isEditing && (
-                                                <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 flex flex-col sm:flex-row items-end gap-3 animate-in zoom-in-95 duration-200">
-                                                    <div className="w-full sm:w-auto flex-grow grid grid-cols-2 gap-3">
-                                                        <div className="space-y-1">
-                                                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.newDate}</label>
-                                                            <input
-                                                                type="date"
-                                                                min={new Date().toISOString().split('T')[0]}
-                                                                value={editData.date}
-                                                                onChange={(e) => setEditData(prev => ({ ...prev, date: e.target.value }))}
-                                                                className="w-full px-3 py-2 rounded-xl bg-white border border-blue-100 font-bold text-xs outline-none focus:border-blue-500"
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.newTime}</label>
-                                                            <select
-                                                                value={editData.time}
-                                                                onChange={(e) => setEditData(prev => ({ ...prev, time: e.target.value }))}
-                                                                className="w-full px-3 py-2 rounded-xl bg-white border border-blue-100 font-bold text-xs outline-none focus:border-blue-500"
-                                                            >
-                                                                {availableTimes.length > 0 ? (
-                                                                    availableTimes.map(t => <option key={t} value={t}>{t}</option>)
-                                                                ) : (
-                                                                    [apt.time, "10:00", "11:00", "12:00", "13:00", "14:00", "17:00", "18:00", "19:00"].map(t => <option key={t} value={t}>{t}</option>)
-                                                                )}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                                                        <button
-                                                            onClick={() => handleUpdateBooking(apt._id)}
-                                                            disabled={savingEdit}
-                                                            className="flex-grow sm:flex-none px-6 py-2 bg-blue-600 text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
-                                                        >
-                                                            {savingEdit ? '...' : t.save}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleCancelGuestBooking(apt._id)}
-                                                            className="flex-grow sm:flex-none px-6 py-2 bg-rose-50 text-rose-600 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-rose-100 transition-all active:scale-95"
-                                                        >
-                                                            {t.cancelBooking}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setEditingAptId(null)}
-                                                            className="flex-grow sm:flex-none px-6 py-2 bg-gray-100 text-gray-500 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-200 transition-all active:scale-95"
-                                                        >
-                                                            {t.back}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            <p className="text-[10px] text-gray-400 font-medium text-center italic leading-tight">
-                                {session?.user
-                                    ? t.syncMsg
-                                    : t.guestSyncMsg}
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Google Map Integration */}
-                    <div id="map" className="bg-white p-3 rounded-3xl shadow-xl overflow-hidden h-[400px] w-full border-4 border-white transform hover:shadow-2xl transition duration-500">
-                        <iframe
-                            src={`https://maps.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`}
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0 }}
-                            allowFullScreen
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                            className="rounded-2xl"
-                            title="ToothOp Location"
-                        ></iframe>
-                    </div>
-
-                    {/* GENERAL INQUIRY FORM (Only when auto-booking is enabled) */}
-                    {isAutoBookingEnabled && !configLoading && (
-                        <div className='p-6 sm:p-8 bg-gradient-to-br from-white to-blue-50/30 rounded-[2.5rem] shadow-xl border border-blue-50 animate-in fade-in slide-in-from-bottom-4 duration-700'>
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                // Manual submission for general inquiry
-                                const clinicPhone = staffPhone.replace(/\D/g, '');
-                                const clinicName = clinicData?.clinicName || "ToothOp";
-                                const messageText = language === 'hi'
-                                    ? `नमस्ते *${clinicName}*, मैं *${formData.name}* हूँ।\nमेरा संदेश:- \n\n${formData.message}\n\n*संपर्क:* ${formData.phone}`
-                                    : `Hello *${clinicName}*, I'm *${formData.name}*.\nMy message:- \n\n${formData.message}\n\n*Contact:* ${formData.phone}`;
-
-                                setSubmitting(true);
-                                axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contacts`, {
-                                    ...formData,
-                                    requestedTreatment: '',
-                                    requestedDate: null,
-                                    requestedTime: '',
-                                    message: formData.message
-                                }).then(() => {
-                                    setGeneralStatus({
-                                        type: 'success',
-                                        message: t.successMsg
-                                    });
-                                    setFormData(prev => ({ ...prev, message: '' }));
-                                }).catch(err => {
-                                    setGeneralStatus({ type: 'error', message: err.message });
-                                }).finally(() => setSubmitting(false));
-                            }} className="space-y-6">
-                                {generalStatus.message && (
-                                    <div className={`p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${generalStatus.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
-                                        {generalStatus.message}
-                                    </div>
-                                )}
+                    {/* Mobile info */}
+                    <div className="lg:hidden space-y-4">
+                        {[
+                            { icon:<FaPhoneAlt size={14} />, title:t.callNow, desc:clinicData?.timings.monday || t.timingsSub, value: staffPhone, href:`tel:${staffPhone.replace(/\D/g,'')}` },
+                            { icon:<FaWhatsapp size={14} />, title:'WhatsApp', desc:t.chatHelp, value:t.chatNow, href:whatsappLink },
+                            { icon:<FaMapMarkerAlt size={14} />, title:t.location, desc:address, value:null, href:null },
+                        ].map(card=>(
+                            <div key={card.title} className="bg-white rounded-[20px] border border-black/5 p-5">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
-                                        <FaEnvelope />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-black text-gray-800 tracking-tight">
-                                            {t.generalInquiry}
-                                        </h2>
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                            {t.directMsg}
-                                        </p>
-                                    </div>
+                                    <span className="w-9 h-9 rounded-xl bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-700">{card.icon}</span>
+                                    <h3 className="text-[13px] font-semibold text-[#0a0a0b]">{card.title}</h3>
                                 </div>
-
-                                <div className="space-y-4">
-                                    <div className="grid sm:grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formName}</label>
-                                            <input
-                                                type="text" value={formData.name}
-                                                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                                required
-                                                className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
-                                                placeholder={t.generalNamePlaceholder}
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formPhone}</label>
-                                            <input
-                                                type="tel" value={formData.phone}
-                                                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
-                                                required
-                                                className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
-                                                placeholder={t.generalPhonePlaceholder}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.emailOptional}</label>
-                                        <input
-                                            type="email" value={formData.email}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                            className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
-                                            placeholder={t.generalEmailPlaceholder}
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formMessage}</label>
-                                        <textarea
-                                            rows={3}
-                                            value={formData.message}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                                            required
-                                            className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all resize-none"
-                                            placeholder={t.askPlaceholder}
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        disabled={submitting}
-                                        className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-gray-200"
-                                    >
-                                        <FaPaperPlane /> {submitting ? t.submitting : t.send}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
-
-                </div>
-
-                {/* Contact Info Column */}
-                <div className="block lg:hidden lg:col-span-1 space-y-4 text-left">
-
-                    {/* Phone Card */}
-                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
-                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
-                            <div className="bg-blue-100 p-3 rounded-full text-blue-600">
-                                <FaPhoneAlt className="text-xl" />
+                                <p className="text-[13px] leading-6 text-neutral-600 mt-3">{card.desc}</p>
+                                {card.href && <a href={card.href} className="mt-2 inline-block text-[13px] font-semibold text-[#0a0a0b]">{card.value} →</a>}
                             </div>
-                            <h3 className="text-xl font-bold text-gray-800">{t.callNow}</h3>
-                        </div>
-                        <p className="text-gray-600 mb-2">{clinicData?.timings.monday || (t.timingsSub)}</p>
-                        <a href={`tel:${staffPhone.replace(/\D/g, '')}`} className="text-lg font-bold text-blue-700 hover:underline text-center sm:text-left block">
-                            {staffPhone}
-                        </a>
-                    </div>
-
-                    {/* Whatsapp Card */}
-                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
-                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
-                            <div className="bg-green-100 p-3 rounded-full text-green-600">
-                                <FaWhatsapp className="text-xl" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-800">WhatsApp</h3>
-                        </div>
-                        <p className="text-gray-600 mb-2">{t.chatHelp}</p>
-                        <a href={whatsappLink} target="_blank" className="text-center sm:text-left text-lg font-bold text-green-700 hover:underline block">
-                            {t.chatNow}
-                        </a>
-                    </div>
-
-                    {/* Visit Us Card */}
-                    <div className="text-center sm:text-left bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-200 transition duration-300">
-                        <div className="flex items-center justify-center sm:justify-start gap-4 mb-3">
-                            <div className="bg-teal-100 p-3 rounded-full text-teal-600">
-                                <FaMapMarkerAlt className="text-xl" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-800">{t.location}</h3>
-                        </div>
-                        <p className="text-gray-600 leading-relaxed whitespace-pre-line text-center sm:text-left">
-                            {address}
-                        </p>
+                        ))}
                     </div>
                 </div>
-
-
-
-            </div>
+            </section>
         </div>
     );
 }
 
 export default function Contact() {
     return (
-        <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-        }>
+        <Suspense fallback={<div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center"><div className="w-8 h-8 border-2 border-black/10 border-t-[#0a0a0b] rounded-full animate-spin" /></div>}>
             <ContactContent />
         </Suspense>
     );

@@ -49,8 +49,8 @@ describe('BlogListPage', () => {
         (axios.get as any).mockReturnValue(new Promise(() => { })); // Never resolves
         renderPage();
         // Skeletons don't have text, but we can check if the hero title is there
-        expect(screen.getByText(/Clinic/i)).toBeInTheDocument();
-        expect(screen.getByText(/Insights/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/Clinic/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/Insights/i).length).toBeGreaterThan(0);
     });
 
     it('should render blogs after fetching', async () => {
