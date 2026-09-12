@@ -116,9 +116,11 @@ app.use('/api/config', configRoutes);
 app.use('/api/handover', handoverRoutes);
 app.use('/api/blogs', blogRoutes);
 
+const buildTime = new Date().toLocaleString();
+
 app.get('/', (req, res) => {
     console.log('📬 [Server Status Check] Keep-alive / health ping received!');
-    res.send('ToothOp Server is Running [Build: 2026-02-28 18:15]');
+    res.send(`ToothOp Server is Running [Build: ${buildTime}]`);
 });
 
 const PORT = process.env.PORT || 5000;

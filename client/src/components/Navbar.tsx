@@ -128,15 +128,15 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="bg-white/80 backdrop-blur-xl sticky top-0 z-50 shadow-sm border-b border-gray-100 font-sans">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-20 items-center">
+            <nav className="bg-gray-950 backdrop-blur-xl sticky top-0 z-50 shadow-sm font-sans py-2">
+                <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between  items-center">
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-3 group">
                             <div className="rounded-2xl transition-transform duration-300">
-                                <Image src="/images/brand-logo.png" alt="Logo" width={600} height={600} className="w-16 h-16 object-cover object-center rounded-xl border-white p-0.5" />
+                                <Image src="/images/brand-logo.png" alt="Logo" width={600} height={600} className="w-12 h-12 object-cover object-center rounded-xl border-white p-0.5" />
                             </div>
-                            <span className="text-4xl font-serif font-black text-gray-600 tracking-tight">
+                            <span className="text-4xl font-serif font-black text-gray-300 tracking-tight">
                                 {(() => {
                                     const name = clinicData?.clinicName || 'Tooth';
                                     const parts = name.split(' ');
@@ -158,7 +158,7 @@ export default function Navbar() {
                                         onClick={(e) => link.protected && handleProtectedClick(e, link.href)}
                                         className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${pathname === link.href || (link.name === t.dashboard && pathname.startsWith('/temppath'))
                                             ? 'bg-gray-100 text-gray-900 shadow-inner'
-                                            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                                            : 'text-gray-300 hover:text-gray-900 hover:bg-gray-50'
                                             }`}
                                     >
                                         <span className="whitespace-nowrap">{link.name}</span>
@@ -175,7 +175,7 @@ export default function Navbar() {
                                                 </div>
                                                 <button
                                                     onClick={handleLock}
-                                                    className="w-full flex items-center space-x-2 px-3 py-2 hover:bg-gray-50 text-gray-700 rounded-xl transition font-semibold text-sm"
+                                                    className="w-full flex items-center space-x-2 px-3 py-2 hover:bg-gray-50 text-gray-400 rounded-xl transition font-semibold text-sm"
                                                 >
                                                     <FaLock size={12} />
                                                     <span>{t.lockDashboard}</span>

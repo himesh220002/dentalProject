@@ -196,7 +196,7 @@ export default function Home() {
 
                     {/* Right Side: Video */}
                     <div className="order-1 lg:order-2 w-full">
-                        <div className="overflow-hidden rounded-[2rem] sm:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 bg-white group relative aspect-[4/3] sm:aspect-video lg:aspect-square xl:aspect-[4/3]">
+                        <div className="overflow-hidden rounded-[2rem] sm:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 bg-white group relative aspect-[4/3] sm:aspect-video xl:aspect-[5/3]">
                             {!isVideoLoaded && (
                                 <div className="absolute inset-0 bg-gray-50 flex items-center justify-center z-20">
                                     <div className="flex flex-col items-center gap-4">
@@ -250,18 +250,18 @@ export default function Home() {
                     {useClinic().isLoading
                         ? [...Array(4)].map((_, i) => <ConsultantCardSkeleton key={i} />)
                         : clinicData?.consultants.map((consultant, idx) => (
-                              <div key={idx} className="bg-white rounded-[20px] border border-black/5 p-6 hover:border-black/10 hover:shadow-sm transition">
-                                  <div className="w-12 h-12 rounded-full bg-[#0a0a0b] text-white grid place-items-center">
-                                      <FaUserMd size={18} />
-                                  </div>
-                                  <h3 className="mt-4 text-[16px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{consultant.name}</h3>
-                                  <p className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 mt-1">{consultant.role}</p>
-                                  <p className="text-[13px] leading-6 text-neutral-600 mt-3">{consultant.info}</p>
-                                  <p className="text-[12px] font-medium text-[#0a0a0b] mt-2">
-                                      {consultant.experience} {translations[language].homeSpecialists.experience}
-                                  </p>
-                              </div>
-                          ))}
+                            <div key={idx} className="bg-white rounded-[20px] border border-black/5 p-6 hover:border-black/10 hover:shadow-sm transition">
+                                <div className="w-12 h-12 rounded-full bg-[#0a0a0b] text-white grid place-items-center">
+                                    <FaUserMd size={18} />
+                                </div>
+                                <h3 className="mt-4 text-[16px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{consultant.name}</h3>
+                                <p className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 mt-1">{consultant.role}</p>
+                                <p className="text-[13px] leading-6 text-neutral-600 mt-3">{consultant.info}</p>
+                                <p className="text-[12px] font-medium text-[#0a0a0b] mt-2">
+                                    {consultant.experience} {translations[language].homeSpecialists.experience}
+                                </p>
+                            </div>
+                        ))}
                 </div>
             </section>
             {/* Transform — approved dark */}

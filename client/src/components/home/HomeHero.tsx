@@ -7,6 +7,7 @@ import { FaArrowRight, FaPhoneAlt, FaCheck, FaStar } from 'react-icons/fa';
 import Link from 'next/link';
 
 const AppointmentSearchInline = dynamic(() => import('./AppointmentSearchInline'), { ssr: false });
+const CurvedVideoBackground = dynamic(() => import('./CurvedVideoBackground'), { ssr: false });
 
 function AnimatedCounter({ target, suffix = '', duration = 1400 }: { target: number; suffix?: string; duration?: number }) {
     const [val, setVal] = useState(0);
@@ -52,13 +53,19 @@ export default function HomeHero() {
     ];
 
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#060a1e] via-[#0a102e] to-[#0f2850] pt-10">
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0d2a55]/40" />
+        <section className="relative overflow-hidden bg-gradient-to-b from-[#060a1e] via-[#0a102e] to-[#0f2850] min-h-[90vh] lg:min-h-screen pt-20">
+            {/* 3D Curved Video Canvas Background */}
+            <div className="absolute inset-0 z-0 opacity-85 sm:opacity-90">
+                <CurvedVideoBackground videoUrl="/video/canvasvideo.mp4" bendDepth={3.8} />
+            </div>
+
+            {/* Subtle Gradient Overlays */}
+            <div className="absolute inset-0 pointer-events-none z-1">
+                <div className="absolute inset-0 bg-gradient-to-b from-[#060a1e]/80 via-transparent to-[#0f2850]/80" />
                 <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#1e3a8a]/20 rounded-full blur-[80px]" />
                 <div className="absolute bottom-0 inset-x-0 h-[280px] bg-gradient-to-t from-[#0a102e]/60 to-transparent" />
             </div>
-            <div className="relative max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 pb-8 lg:pb-10">
+            <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 pb-8 lg:pb-10">
                 <div className="flex flex-wrap items-center gap-2 text-[11px] tracking-[0.14em] uppercase font-medium mb-6 sm:mb-8">
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-[#0a0a0b] border border-white/20 shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -74,9 +81,9 @@ export default function HomeHero() {
                 <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-10 items-start">
                     <div className="space-y-6">
                         <h1 className="text-[40px] sm:text-[56px] lg:text-[68px] leading-[0.9] tracking-[-0.04em] font-[600] text-white">
-                            <span className="block font-sans font-[700] tracking-[-0.04em]">Expert care,</span>
-                            <span className="block font-serif italic font-[400] tracking-[-0.03em] text-white/60">softly delivered</span>
-                            <span className="block font-sans font-[700] tracking-[-0.04em] mt-1">in Katihar.</span>
+                            <span className="block font-sans font-[700] tracking-[-0.04em]">Healthy smiles, </span>
+                            <span className="block font-serif italic font-[400] tracking-[-0.03em] text-white/60">cared for with compassion</span>
+                            <span className="block font-sans font-[700] tracking-[-0.04em] mt-1">every day.</span>
                         </h1>
                         <p className="max-w-[560px] text-[15.5px] sm:text-[17px] leading-7 text-white/70 font-[400] text-balance">
                             {clinicName} blends evidence-led care with a gentle chair-side manner. Minimal pain, maximal clarity — from first consult to lasting smile.
@@ -98,9 +105,9 @@ export default function HomeHero() {
                         </div>
                         <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-2">
                             {stats.map((s) => (
-                                <div key={s.v} className="rounded-2xl bg-white border border-black/5 p-4 sm:p-5 shadow-sm">
-                                    <div className="text-[20px] sm:text-[22px] font-semibold tracking-[-0.03em] text-[#0a0a0b] leading-none">{s.k}</div>
-                                    <div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 mt-1">{s.v}</div>
+                                <div key={s.v} className="rounded-2xl bg-white/5 backdrop-blur border border-black/5 p-4 sm:p-5 shadow-sm">
+                                    <div className="text-[20px] sm:text-[22px] font-semibold tracking-[-0.03em] text-gray-200 leading-none">{s.k}</div>
+                                    <div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-300 mt-1">{s.v}</div>
                                     <div className="text-[11px] text-neutral-400 mt-1 hidden sm:block">{s.sub}</div>
                                 </div>
                             ))}
@@ -112,21 +119,21 @@ export default function HomeHero() {
                         </div>
                     </div>
                     <div className="relative lg:sticky lg:top-[84px]">
-                        <div className="bg-white rounded-[24px] sm:rounded-[28px] border border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.08)] overflow-hidden">
+                        <div className="bg-white/5 backdrop-blur-sm rounded-[24px] sm:rounded-[28px] border border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.08)] overflow-hidden">
                             <div className="px-6 sm:px-7 pt-6 sm:pt-7 pb-5 border-b border-black/5">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <div className="text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-500">Check appointment</div>
-                                        <h3 className="text-[18px] font-semibold tracking-[-0.02em] text-[#0a0a0b] mt-1">Find your booking in seconds</h3>
-                                        <p className="text-[13px] leading-5 text-neutral-500 mt-1 max-w-[320px]">Enter phone or booking ID — instant status, no sign-in required.</p>
+                                        <div className="text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-300">Check appointment</div>
+                                        <h3 className="text-[18px] font-semibold tracking-[-0.02em] text-gray-100 mt-1">Find your booking in seconds</h3>
+                                        <p className="text-[13px] leading-5 text-neutral-400 mt-1 max-w-[320px]">Enter phone or booking ID — instant status, no sign-in required.</p>
                                     </div>
                                     <div className="hidden sm:grid place-items-center w-9 h-9 rounded-full bg-[#f5f5f3] border border-black/5 shrink-0">
                                         <FaCheck className="text-neutral-700" size={12} />
                                     </div>
                                 </div>
                             </div>
-                            <div className="p-4 sm:p-5 bg-[#fcfcfc]">
-                                <div className="rounded-[20px] bg-white border border-black/5 p-2 shadow-sm">
+                            <div className="bg-white/5 p-4 sm:p-5 bg-[#fcfcfc]">
+                                <div className="rounded-[20px] bg-white/5 backdrop-blur-sm border border-black/5 p-2 shadow-sm">
                                     <AppointmentSearchInline />
                                 </div>
                                 <div className="mt-4 flex items-center justify-between text-[11px]">
