@@ -17,9 +17,9 @@ export default function FAQSection() {
         <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
             <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 lg:gap-12 items-start">
                 <div className="lg:sticky lg:top-[88px]">
-                    <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ Questions — answers ]</div>
+                    <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-300">[ Questions — answers ]</div>
                     <h2 className="mt-3 text-[30px] sm:text-[38px] font-semibold tracking-[-0.03em] leading-[1.05] text-[#0a0a0b]">Frequent <span className="font-serif italic font-normal text-neutral-400">questions.</span></h2>
-                    <p className="mt-3 text-[14px] leading-6 text-neutral-600 max-w-[420px]">Clear answers — so you know what to expect before you visit. Still unsure? Send a direct inquiry below.</p>
+                    <p className="mt-3 text-[14px] leading-6 text-neutral-200 max-w-[420px]">Clear answers — so you know what to expect before you visit. Still unsure? Send a direct inquiry below.</p>
                     <div className="hidden lg:flex mt-6 p-4 rounded-2xl bg-[#f5f5f3] border border-black/5 text-[13px] leading-6 text-neutral-600">
                         <span className="font-medium tracking-[-0.01em] text-[#0a0a0b]">Tip:</span>&nbsp;For urgent pain outside hours, call us directly — we triage on priority.
                     </div>

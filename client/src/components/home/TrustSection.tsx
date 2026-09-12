@@ -45,7 +45,7 @@ export default function TrustSection() {
     const audiences = ['Families', 'Kids & teens', 'Working professionals', 'Seniors', 'First-time visitors', 'Follow-up care'];
 
     return (
-        <section className="bg-[#fcfcfc] max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+        <section className="bg-[#fcfcfc] max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 mt-0 xl:mt-16">
             {/* stats — keep exact but tighter */}
             <div className="grid grid-cols-3 gap-0 rounded-[20px] bg-white border border-black/5 overflow-hidden shadow-sm">
                 {[

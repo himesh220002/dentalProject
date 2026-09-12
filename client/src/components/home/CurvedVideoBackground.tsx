@@ -77,6 +77,7 @@ export default function CurvedVideoBackground({
         const container = containerRef.current;
         const canvas = canvasRef.current;
         if (!container || !canvas) return;
+        const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
         // 1. Create Hidden Video Element for Autoplay
         const video = document.createElement('video');
@@ -108,8 +109,8 @@ export default function CurvedVideoBackground({
         const width = container.clientWidth || window.innerWidth;
         const height = container.clientHeight || window.innerHeight;
 
-        const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
-        camera.position.set(0, 0, 15.5);
+        const camera = new THREE.PerspectiveCamera(48, width / height, 0.1, 1000);
+        camera.position.set(0, 0, 14.8);
 
         const renderer = new THREE.WebGLRenderer({
             canvas,
@@ -138,9 +139,10 @@ export default function CurvedVideoBackground({
         videoTexture.minFilter = THREE.LinearFilter;
         videoTexture.magFilter = THREE.LinearFilter;
 
-        const planeWidth = 32;
-        const planeHeight = 18; // 16:9 ratio
-        const geom = new THREE.PlaneGeometry(planeWidth, planeHeight, 44, 44);
+        // Slightly oversized plane so even at max rotation the edges still cover viewport
+        const planeWidth = 40;
+        const planeHeight = 22.5; // 16:9
+        const geom = new THREE.PlaneGeometry(planeWidth, planeHeight, 48, 32);
         geomRef.current = geom;
 
         applyPlaneCurve(geom, bendDepth);
@@ -171,17 +173,32 @@ export default function CurvedVideoBackground({
         wireframeMeshRef.current = wireframeMesh;
         scene.add(wireframeMesh);
 
-        // 5. Interactive Mouse Movement Parallax
+        // 5. Interactive Mouse Movement Parallax — clamped so extreme drag still keeps screen fully visible
         const handleMouseMove = (e: MouseEvent) => {
             if (!interactive) return;
             const rect = container.getBoundingClientRect();
             const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
             const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-            mouseRef.current.targetX = x * 0.35;
-            mouseRef.current.targetY = y * 0.2;
+            // reduced range + hard clamp keeps rotation within visible bounds
+            mouseRef.current.targetX = clamp(x * 0.22, -0.22, 0.22);
+            mouseRef.current.targetY = clamp(y * 0.12, -0.12, 0.12);
         };
 
         window.addEventListener('mousemove', handleMouseMove);
+        const handleTouchMove = (e: TouchEvent) => {
+            if (!interactive || !e.touches[0]) return;
+            const rect = container.getBoundingClientRect();
+            const x = ((e.touches[0].clientX - rect.left) / rect.width) * 2 - 1;
+            const y = -(((e.touches[0].clientY - rect.top) / rect.height) * 2 - 1);
+            mouseRef.current.targetX = clamp(x * 0.22, -0.22, 0.22);
+            mouseRef.current.targetY = clamp(y * 0.12, -0.12, 0.12);
+        };
+        window.addEventListener('touchmove', handleTouchMove, { passive: true });
+        const handlePointerLeave = () => {
+            mouseRef.current.targetX = 0;
+            mouseRef.current.targetY = 0;
+        };
+        window.addEventListener('mouseleave', handlePointerLeave);
 
         // 6. Responsive Resize Listener
         const handleResize = () => {
@@ -202,13 +219,19 @@ export default function CurvedVideoBackground({
             animationFrameId = requestAnimationFrame(animate);
             const elapsedTime = (performance.now() - startTime) * 0.001;
 
-            // Smooth interpolation towards mouse position
-            mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.05;
-            mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.05;
+            // Smooth interpolation + hard limits guarantee edges never leave viewport
+            mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.06;
+            mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.06;
 
             if (mesh) {
-                mesh.rotation.y = mouseRef.current.x + Math.sin(elapsedTime * 0.4) * 0.04;
-                mesh.rotation.x = mouseRef.current.y + Math.cos(elapsedTime * 0.3) * 0.02;
+                const ry = clamp(mouseRef.current.x + Math.sin(elapsedTime * 0.4) * 0.03, -0.24, 0.24);
+                const rx = clamp(mouseRef.current.y + Math.cos(elapsedTime * 0.3) * 0.015, -0.14, 0.14);
+                mesh.rotation.y = ry;
+                mesh.rotation.x = rx;
+                // subtle scale-up at extremes keeps corners covered
+                const s = 1 + Math.abs(ry) * 0.06;
+                mesh.scale.set(s, s, 1);
+                if (wireframeMesh) wireframeMesh.scale.set(s, s, 1);
             }
 
             if (wireframeMesh) {
@@ -224,6 +247,8 @@ export default function CurvedVideoBackground({
         // 8. Cleanup Resources on Unmount
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('mouseleave', handlePointerLeave);
             window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(animationFrameId);
 
@@ -240,13 +265,13 @@ export default function CurvedVideoBackground({
         };
     }, [videoUrl]);
 
-    // Dynamic Updates for Curvature & Wireframe
+    // Dynamic Updates for Curvature & Wireframe — keep same oversized plane as initial
     useEffect(() => {
         if (!meshRef.current) return;
-        const planeWidth = 32;
-        const planeHeight = 18;
+        const planeWidth = 40;
+        const planeHeight = 22.5;
 
-        const newGeom = new THREE.PlaneGeometry(planeWidth, planeHeight, 44, 44);
+        const newGeom = new THREE.PlaneGeometry(planeWidth, planeHeight, 48, 32);
         applyPlaneCurve(newGeom, bendDepth);
 
         if (meshRef.current) {

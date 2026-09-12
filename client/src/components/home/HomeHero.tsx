@@ -134,7 +134,7 @@ export default function HomeHero() {
 
             <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[860px] h-[480px] bg-[#1e3a8a]/14 rounded-full blur-[90px] pointer-events-none z-[1]" />
 
-            <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-[108px] sm:pt-[128px] lg:pt-[132px] pb-10 sm:pb-12">
+            <div className="relative z-10 mx-auto  px-4 sm:px-6 lg:px-8 2xl:px-40 pt-[108px] sm:pt-[128px] lg:pt-[132px] pb-10 sm:pb-12">
                 <div className={`flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] tracking-[0.14em] uppercase font-medium mb-5 sm:mb-6 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-[#0a0a0b] border border-white/20 shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Accepting new patients
@@ -237,7 +237,7 @@ export default function HomeHero() {
                     <span className="w-5 h-px bg-white/15" /> scroll <span className="w-5 h-px bg-white/15" />
                 </div>
             </div>
-            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#fcfcfc] to-transparent pointer-events-none z-10" />
+            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#0c0c0c] to-transparent pointer-events-none z-10" />
         </section>
     );
 }

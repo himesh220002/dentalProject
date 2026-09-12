@@ -99,7 +99,7 @@ export default function Home() {
     }, []);
 
     return (
-        <div className="bg-[#fcfcfc] overflow-x-hidden selection:bg-[#0a0a0b] selection:text-white">
+        <div className="bg-gradient-to-br from-blue-900/90 to-purple-900/20 overflow-x-hidden selection:bg-[#0a0a0b] selection:text-white">
             <HomeHero />
             <ActionTiles />
             <TrustSection />
@@ -151,9 +151,9 @@ export default function Home() {
             <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
                 <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
                     <div>
-                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ The team ]</div>
+                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-300">[ The team ]</div>
                         <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-none text-[#0a0a0b]">{translations[language].homeSpecialists.title}</h2>
-                        <p className="mt-2 text-[14px] leading-6 text-neutral-500 max-w-[560px]">{translations[language].homeSpecialists.subtitle}</p>
+                        <p className="mt-2 text-[14px] leading-6 text-neutral-200 max-w-[560px]">{translations[language].homeSpecialists.subtitle}</p>
                     </div>
                     <Link href="/about" className="hidden sm:inline-flex items-center gap-2 text-[13px] font-medium tracking-[-0.01em] text-[#0a0a0b] hover:gap-3 transition-all duration-200 ease-out">Meet all <FaArrowRight size={11} /></Link>
                 </div>
@@ -204,10 +204,10 @@ export default function Home() {
             <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
                 <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
                     <div>
-                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ Certified & compliant ]</div>
+                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-300">[ Certified & compliant ]</div>
                         <h2 className="mt-2 text-[26px] sm:text-[30px] font-semibold tracking-[-0.03em] leading-none text-[#0a0a0b]">Sterile, certified, <span className="font-serif italic font-normal text-neutral-400">trusted.</span></h2>
                     </div>
-                    <p className="hidden sm:block text-[13px] leading-6 text-neutral-500 max-w-[420px] text-right">International hygiene standards with Class B autoclave protocols, transparent audits, and patient-first safety.</p>
+                    <p className="hidden sm:block text-[13px] leading-6 text-neutral-200 max-w-[420px] text-right">International hygiene standards with Class B autoclave protocols, transparent audits, and patient-first safety.</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
@@ -229,9 +229,9 @@ export default function Home() {
             <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
                 <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
                     <div>
-                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ Inside the clinic ]</div>
+                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-300">[ Inside the clinic ]</div>
                         <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-none text-[#0a0a0b]">{translations[language].homeVirtualTour.title}</h2>
-                        <p className="text-[13px] leading-6 text-neutral-500 mt-2">{translations[language].homeVirtualTour.subtitle}</p>
+                        <p className="text-[13px] leading-6 text-neutral-200 mt-2">{translations[language].homeVirtualTour.subtitle}</p>
                     </div>
                 </div>
                 <div className="bg-white p-2 sm:p-3 rounded-[24px] border border-black/5 shadow-sm overflow-hidden">
