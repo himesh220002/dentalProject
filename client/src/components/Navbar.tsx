@@ -128,7 +128,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="bg-gray-950 backdrop-blur-xl sticky top-0 z-50 shadow-sm font-sans py-2">
+            <nav className="bg-gradient-to-b from-gray-950/80 to-transparent backdrop-blur-sm sticky top-0 z-50 shadow-sm font-sans py-4">
                 <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between  items-center">
                         {/* Logo */}

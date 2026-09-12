@@ -236,13 +236,13 @@ export default function Home() {
             <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
                 <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
                     <div>
-                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">The team</div>
-                        <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-none text-[#0a0a0b]">
+                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-400">The team</div>
+                        <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-none text-gray-50">
                             {translations[language].homeSpecialists.title}
                         </h2>
-                        <p className="mt-2 text-[14px] leading-6 text-neutral-600 max-w-[560px]">{translations[language].homeSpecialists.subtitle}</p>
+                        <p className="mt-2 text-[14px] leading-6 text-neutral-400 max-w-[560px]">{translations[language].homeSpecialists.subtitle}</p>
                     </div>
-                    <Link href="/about" className="hidden sm:inline-flex items-center gap-2 text-[13px] font-medium text-[#0a0a0b] hover:gap-3 transition-all">
+                    <Link href="/about" className="hidden sm:inline-flex items-center gap-2 text-[13px] font-medium text-gray-50 hover:gap-3 transition-all">
                         Meet all <FaArrowRight size={11} />
                     </Link>
                 </div>
@@ -320,9 +320,9 @@ export default function Home() {
             <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
                 <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
                     <div>
-                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">Inside the clinic</div>
-                        <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-none text-[#0a0a0b]">{translations[language].homeVirtualTour.title}</h2>
-                        <p className="text-[13px] text-neutral-500 mt-2">{translations[language].homeVirtualTour.subtitle}</p>
+                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-400">Inside the clinic</div>
+                        <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-none text-blue-50">{translations[language].homeVirtualTour.title}</h2>
+                        <p className="text-[13px] text-neutral-400 mt-2">{translations[language].homeVirtualTour.subtitle}</p>
                     </div>
                 </div>
                 <div className="bg-white p-3 sm:p-4 rounded-[24px] border border-black/5 shadow-sm overflow-hidden">

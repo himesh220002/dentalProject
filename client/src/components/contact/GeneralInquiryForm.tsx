@@ -61,7 +61,7 @@ export default function GeneralInquiryForm() {
     };
 
     return (
-        <div className="max-w-5xl mx-auto p-6 sm:p-8 bg-gradient-to-br from-white to-blue-50/30 rounded-[2.5rem] shadow-xl border border-blue-50 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="max-w-5xl mx-auto p-6 sm:p-8 bg-gradient-to-br from-white via-blue-50/30 to-transparent rounded-[2.5rem] shadow-inner  border-blue-50 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <form onSubmit={handleSubmit} className="space-y-6">
                 {status.message && (
                     <div className={`p-4 rounded-2xl text-center font-bold animate-in zoom-in duration-300 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
@@ -69,14 +69,14 @@ export default function GeneralInquiryForm() {
                     </div>
                 )}
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                    <div className="w-10 h-10 bg-blue-800 rounded-xl flex items-center justify-center text-blue-300">
                         <FaEnvelope />
                     </div>
                     <div>
-                        <h2 className="text-xl font-black text-gray-800 tracking-tight">
+                        <h2 className="text-xl font-black text-gray-900 tracking-tight">
                             {t.generalInquiry}
                         </h2>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        <p className="text-[10px] font-bold text-gray-700 uppercase tracking-widest">
                             {t.directMsg}
                         </p>
                     </div>
@@ -85,53 +85,53 @@ export default function GeneralInquiryForm() {
                 <div className="space-y-4">
                     <div className="grid sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formName}</label>
+                            <label className="text-[10px] font-black uppercase text-gray-800 tracking-widest ml-1">{t.formName}</label>
                             <input
                                 type="text"
                                 value={formData.name}
                                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                                 required
-                                className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
+                                className="w-full px-5 py-3 rounded-2xl bg-white/40 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
                                 placeholder={t.generalNamePlaceholder}
                             />
                         </div>
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formPhone}</label>
+                            <label className="text-[10px] font-black uppercase text-gray-800 tracking-widest ml-1">{t.formPhone}</label>
                             <input
                                 type="tel"
                                 value={formData.phone}
                                 onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
                                 required
-                                className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
+                                className="w-full px-5 py-3 rounded-2xl bg-white/40 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
                                 placeholder={t.generalPhonePlaceholder}
                             />
                         </div>
                     </div>
                     <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.emailOptional}</label>
+                        <label className="text-[10px] font-black uppercase text-gray-800 tracking-widest ml-1">{t.emailOptional}</label>
                         <input
                             type="email"
                             value={formData.email}
                             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                            className="w-full px-5 py-3 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
+                            className="w-full px-5 py-3 rounded-2xl bg-white/40 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all"
                             placeholder={t.generalEmailPlaceholder}
                         />
                     </div>
                     <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">{t.formMessage}</label>
+                        <label className="text-[10px] font-black uppercase text-gray-800 tracking-widest ml-1">{t.formMessage}</label>
                         <textarea
                             rows={3}
                             value={formData.message}
                             onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                             required
-                            className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all resize-none"
+                            className="w-full px-5 py-4 rounded-2xl bg-white/40 border-2 border-transparent focus:border-blue-500 font-bold outline-none transition-all resize-none"
                             placeholder={t.askPlaceholder}
                         />
                     </div>
                     <button
                         type="submit"
                         disabled={submitting}
-                        className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-gray-200 disabled:opacity-70"
+                        className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2 shadow-inner shadow-gray-200 disabled:opacity-70"
                     >
                         <FaPaperPlane /> {submitting ? t.submitting : t.send}
                     </button>

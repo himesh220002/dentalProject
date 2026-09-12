@@ -53,7 +53,7 @@ export default function HomeHero() {
     ];
 
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#060a1e] via-[#0a102e] to-[#0f2850] min-h-[90vh] lg:min-h-screen pt-20">
+        <section className="relative overflow-hidden bg-gradient-to-b from-[#060a1e] via-[#0a102e] to-[#0f2850] min-h-[100vh] -mt-20">
             {/* 3D Curved Video Canvas Background */}
             <div className="absolute inset-0 z-0 opacity-85 sm:opacity-90">
                 <CurvedVideoBackground videoUrl="/video/canvasvideo.mp4" bendDepth={3.8} />
@@ -65,7 +65,7 @@ export default function HomeHero() {
                 <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#1e3a8a]/20 rounded-full blur-[80px]" />
                 <div className="absolute bottom-0 inset-x-0 h-[280px] bg-gradient-to-t from-[#0a102e]/60 to-transparent" />
             </div>
-            <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 pb-8 lg:pb-10">
+            <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 mt-30 ">
                 <div className="flex flex-wrap items-center gap-2 text-[11px] tracking-[0.14em] uppercase font-medium mb-6 sm:mb-8">
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-[#0a0a0b] border border-white/20 shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -103,7 +103,7 @@ export default function HomeHero() {
                                 {phone}
                             </a>
                         </div>
-                        <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-2">
+                        <div className="grid grid-cols-4 gap-3 sm:gap-4 pt-2">
                             {stats.map((s) => (
                                 <div key={s.v} className="rounded-2xl bg-white/5 backdrop-blur border border-black/5 p-4 sm:p-5 shadow-sm">
                                     <div className="text-[20px] sm:text-[22px] font-semibold tracking-[-0.03em] text-gray-200 leading-none">{s.k}</div>

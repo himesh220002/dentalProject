@@ -43,18 +43,18 @@ export default function About() {
     const consultantExpLabel = language === 'hi' ? 'का अनुभव' : 'Experience';
 
     return (
-        <div className=" max-w-7xl mx-auto space-y-14 overflow-x-clip">
+        <div className=" max-w-[1600px] mx-auto space-y-14 overflow-x-clip">
             {/* Hero Section - Refined */}
-            <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-16 pb-5 min-h-[85vh] sm:min-h-screen">
+            <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-26 pb-5 min-h-[85vh] sm:min-h-screen">
                 <div className="space-y-8 order-2 lg:order-1">
                     <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-5 py-2 rounded-2xl text-xs font-black tracking-widest uppercase">
                         <FaCertificate className="text-blue-600" />
                         {t.aboutHero.excellence}
                     </div>
-                    <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-gray-900 leading-[1.05] tracking-tight">
+                    <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-gray-400 leading-[1.05] tracking-tight">
                         {t.aboutHero.meet} {useClinic().isLoading ? <Skeleton variant="text" className="inline-block w-48 h-12" /> : <span className="bg-gradient-to-r from-blue-800 via-blue-600 to-purple-800 bg-clip-text text-transparent">{doctorName}</span>}, {t.aboutHero.guardian}
                     </h1>
-                    <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-medium max-w-xl">
+                    <p className="text-base sm:text-lg text-gray-400 leading-relaxed font-medium max-w-xl">
                         {doctorDesc}
                     </p>
                     <div className="relative p-8 bg-gray-900 text-white rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
@@ -74,7 +74,7 @@ export default function About() {
                 <div className="relative order-1 lg:order-2 flex justify-center mt-12 sm:mt-16 lg:mt-0">
                     {/* Decorative glow wrapped to prevent overflow */}
                     <div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
-                        <div className="absolute -inset-10 bg-gradient-to-tr from-blue-100 via-teal-50 to-indigo-100 rounded-full opacity-50 blur-3xl animate-pulse"></div>
+                        <div className="absolute inset-10 bg-gradient-to-tr from-blue-100 via-teal-50 to-indigo-100 rounded-full opacity-50 blur-3xl animate-pulse"></div>
                     </div>
 
                     {/* Interactive Badge Moved Above */}
@@ -118,21 +118,21 @@ export default function About() {
             </section>
 
             {/* Meet Our Team - Synchronized Grid with Classy Pattern */}
-            <section className="relative py-20 px-6 sm:px-16 overflow-hidden rounded-[3rem] sm:rounded-[4rem] mx-4 group">
+            <section className="relative py-20 px-6 sm:px-16 overflow-hidden rounded-[3rem] sm:rounded-[4rem] mx-20 group">
                 {/* Immersive Background Pattern */}
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
                     <img
                         src="/images/sciencehanddrawnbg.jpg"
-                        className="w-full h-full object-cover opacity-[0.4]"
+                        className="w-full h-full object-cover opacity-[0.7]"
                         alt="pattern"
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-transparent to-teal-50/10"></div>
                 </div>
 
                 <div className="text-start space-y-4 mb-16 max-w-4xl">
-                    <h2 className="text-sm font-black text-blue-700 uppercase tracking-[0.2em]">{t.aboutExperts.title}</h2>
-                    <h3 className="text-3xl xl:text-5xl font-black text-gray-900 leading-tight">{t.aboutExperts.subtitle} <span className="bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent ">{clinicName}</span></h3>
-                    <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+                    <h2 className="text-sm font-black text-blue-900 uppercase tracking-[0.2em]">{t.aboutExperts.title}</h2>
+                    <h3 className="text-3xl xl:text-5xl font-black text-gray-100 leading-tight">{t.aboutExperts.subtitle} <span className="bg-gradient-to-r from-blue-200 to-cyan-300 bg-clip-text text-transparent ">{clinicName}</span></h3>
+                    <p className="text-slate-100 text-base sm:text-lg leading-relaxed">
                         {language === 'hi'
                             ? 'हमारी टीम अनुभवी दंत विशेषज्ञों से बनी है जो सटीक निदान, स्पष्ट सलाह और दीर्घकालिक उपचार परिणामों पर ध्यान देती है।'
                             : 'Our team combines clinical experience with patient-first communication, so every treatment plan is clear, transparent, and outcome-focused.'}
@@ -163,8 +163,8 @@ export default function About() {
             <div className="pt-12 sm:pt-20 px-6 sm:px-16">
                 <div className="space-y-4 mb-12 max-w-4xl">
                     <h2 className="text-sm font-black text-blue-700 uppercase tracking-[0.2em]">{t.aboutMilestones.title}</h2>
-                    <p className="text-3xl xl:text-5xl font-black text-gray-900 leading-tight">{t.aboutMilestones.subtitle} <span className="bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">{t.aboutMilestones.provenSmiles}</span></p>
-                    <p className="text-slate-600 text-base sm:text-lg">
+                    <p className="text-3xl xl:text-5xl font-black text-gray-300 leading-tight">{t.aboutMilestones.subtitle} <span className="bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">{t.aboutMilestones.provenSmiles}</span></p>
+                    <p className="text-slate-200 text-base sm:text-lg">
                         {language === 'hi'
                             ? 'हमारे परिणाम निरंतर गुणवत्ता, कड़े संक्रमण नियंत्रण और सुव्यवस्थित उपचार प्रोटोकॉल पर आधारित हैं।'
                             : 'These outcomes reflect consistent standards in diagnosis, sterilization, and follow-through across every treatment stage.'}
