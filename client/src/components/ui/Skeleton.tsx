@@ -66,28 +66,22 @@ export function ActionTileSkeleton() {
 
 export function TreatmentCardSkeleton() {
     return (
-        <div className="bg-white rounded-[2.5rem] shadow-xl border-2 border-gray-100 overflow-hidden">
-            <div className="p-8 space-y-6">
-                <div className="flex items-center gap-5">
-                    <Skeleton variant="rect" className="w-16 h-16 !rounded-2xl shrink-0" />
-                    <Skeleton variant="text" className="h-8 w-1/2" />
+        <div className="bg-white rounded-[20px] border border-black/5 overflow-hidden">
+            <div className="p-6 space-y-5">
+                <div className="flex items-center gap-4">
+                    <Skeleton variant="rect" className="w-11 h-11 !rounded-xl shrink-0" />
+                    <Skeleton variant="text" className="h-6 w-1/2" />
                 </div>
                 <div className="space-y-4">
-                    <div className="space-y-2">
-                        <Skeleton variant="text" className="w-1/4" />
-                        <Skeleton variant="text" className="h-12" />
-                    </div>
-                    <div className="bg-gray-50 p-4 rounded-2xl space-y-2">
-                        <Skeleton variant="text" className="w-1/3" />
-                        <Skeleton variant="text" className="h-8" />
-                    </div>
+                    <Skeleton variant="text" className="h-12" />
+                    <Skeleton variant="rect" className="h-[180px] !rounded-xl" />
                 </div>
-                <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
+                <div className="pt-4 border-t border-black/5 flex items-center justify-between">
                     <div className="space-y-1">
                         <Skeleton variant="text" className="h-3 w-12" />
-                        <Skeleton variant="text" className="h-8 w-20" />
+                        <Skeleton variant="text" className="h-6 w-20" />
                     </div>
-                    <Skeleton variant="rect" className="h-12 w-32 !rounded-2xl" />
+                    <Skeleton variant="rect" className="h-9 w-24 !rounded-full" />
                 </div>
             </div>
         </div>
@@ -159,15 +153,14 @@ export function AboutPageSkeleton() {
 
 export function TreatmentsPageSkeleton() {
     return (
-        <div className="max-w-7xl mx-auto px-6 py-12 space-y-12 mt-20">
-            <div className="text-center space-y-4">
-                <Skeleton variant="text" className="h-12 w-64 mx-auto" />
-                <Skeleton variant="text" className="h-4 w-96 mx-auto" />
+        <div className="bg-[#fcfcfc] max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 space-y-8">
+            <div className="max-w-3xl space-y-4">
+                <Skeleton variant="text" className="h-4 w-32" />
+                <Skeleton variant="text" className="h-10 w-3/4" />
+                <Skeleton variant="text" className="h-6 w-full" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <TreatmentCardSkeleton key={i} />
-                ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => <TreatmentCardSkeleton key={i} />)}
             </div>
         </div>
     );
