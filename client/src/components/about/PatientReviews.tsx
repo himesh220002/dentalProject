@@ -4,7 +4,6 @@ import { FaQuoteLeft, FaStar } from 'react-icons/fa';
 import { useClinic } from '@/context/ClinicContext';
 import { translations } from '@/constants/translations';
 
-
 export default function PatientReviews() {
     const { language, clinicData } = useClinic();
     const t = translations[language as keyof typeof translations];
@@ -13,109 +12,57 @@ export default function PatientReviews() {
         const clinicName = clinicData?.clinicName || 'ToothOp';
         const data = {
             en: [
-                {
-                    name: 'Monika J.',
-                    text: `${clinicName} is incredibly gentle. I used to be terrified of the dentist, but now I look forward to my checkups!`,
-                    rating: 5,
-                    treatment: 'Dental Cleaning'
-                },
-                {
-                    name: 'Monty R.',
-                    text: 'The best clinic in town. Modern equipment, friendly staff, and the treatments are actually painless.',
-                    rating: 5,
-                    treatment: 'Root Canal'
-                },
-                {
-                    name: 'Priya S.',
-                    text: `I got my braces done here. The transformation is amazing! ${clinicName} explained everything clearly at every step.`,
-                    rating: 5,
-                    treatment: 'Orthodontics'
-                },
-                {
-                    name: 'Rahul D.',
-                    text: "Excellent service and very hygienic. Highly recommended for anyone looking for quality dental care.",
-                    rating: 5,
-                    treatment: 'Teeth Whitening'
-                }
+                { name: 'Monika J.', text: `${clinicName} is incredibly gentle. I used to be terrified of the dentist, but now I look forward to my checkups!`, rating: 5, treatment: 'Dental Cleaning' },
+                { name: 'Monty R.', text: 'The best clinic in town. Modern equipment, friendly staff, and the treatments are actually painless.', rating: 5, treatment: 'Root Canal' },
+                { name: 'Priya S.', text: `I got my braces done here. The transformation is amazing! ${clinicName} explained everything clearly at every step.`, rating: 5, treatment: 'Orthodontics' },
+                { name: 'Rahul D.', text: "Excellent service and very hygienic. Highly recommended for anyone looking for quality dental care.", rating: 5, treatment: 'Teeth Whitening' }
             ],
             hi: [
-                {
-                    name: 'मोनिका जे.',
-                    text: `${clinicName} अविश्वसनीय रूप से कोमल हैं। मैं पहले दंत चिकित्सक से बहुत डरती थी, लेकिन अब मैं अपने चेकअप का इंतजार करती हूं!`,
-                    rating: 5,
-                    treatment: 'दांतों की सफाई'
-                },
-                {
-                    name: 'मोंटी आर.',
-                    text: 'शहर का सबसे अच्छा क्लिनिक। आधुनिक उपकरण, मित्रवत कर्मचारी, और उपचार वास्तव में दर्द रहित हैं।',
-                    rating: 5,
-                    treatment: 'रूट कैनाल'
-                },
-                {
-                    name: 'प्रिया एस.',
-                    text: `मैंने अपने ब्रेसिज़ यहाँ लगवाए हैं। बदलाव अद्भुत है! ${clinicName} ने हर कदम पर सब कुछ स्पष्ट रूप से समझाया।`,
-                    rating: 5,
-                    treatment: 'ऑर्थोडॉन्टिक्स'
-                },
-                {
-                    name: 'राहुल डी.',
-                    text: "बेहतरीन सेवा और बहुत स्वच्छ। गुणवत्तापूर्ण दंत चिकित्सा देखभाल की तलाश करने वाले किसी भी व्यक्ति के लिए अत्यधिक अनुशंसित।",
-                    rating: 5,
-                    treatment: 'दांत चमकाना'
-                }
+                { name: 'मोनिका जे.', text: `${clinicName} अविश्वसनीय रूप से कोमल हैं। मैं पहले दंत चिकित्सक से बहुत डरती थी, लेकिन अब मैं अपने चेकअप का इंतजार करती हूं!`, rating: 5, treatment: 'दांतों की सफाई' },
+                { name: 'मोंटी आर.', text: 'शहर का सबसे अच्छा क्लिनिक। आधुनिक उपकरण, मित्रवत कर्मचारी, और उपचार वास्तव में दर्द रहित हैं।', rating: 5, treatment: 'रूट कैनाल' },
+                { name: 'प्रिया एस.', text: `मैंने अपने ब्रेसिज़ यहाँ लगवाए हैं। बदलाव अद्भुत है! ${clinicName} ने हर कदम पर सब कुछ स्पष्ट रूप से समझाया।`, rating: 5, treatment: 'ऑर्थोडॉन्टिक्स' },
+                { name: 'राहुल डी.', text: "बेहतरीन सेवा और बहुत स्वच्छ। गुणवत्तापूर्ण दंत चिकित्सा देखभाल की तलाश करने वाले किसी भी व्यक्ति के लिए अत्यधिक अनुशंसित।", rating: 5, treatment: 'दांत चमकाना' }
             ]
         };
         return data[language as keyof typeof data] || data.en;
     }, [language, clinicData]);
 
     return (
-        <section className="py-12 sm:py-20 bg-blue-50/10 mx-2 sm:mx-16 lg:mx-28 px-4 sm:px-6 lg:px-28 rounded-[2rem] sm:rounded-[3rem]">
-            <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16 space-y-3 sm:space-y-4">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-200 leading-tight">{t.aboutReviews.title}</h2>
-                <div className="h-1 sm:h-1.5 w-16 sm:w-24 bg-blue-500 mx-auto rounded-full"></div>
-                <p className="text-slate-400 text-base sm:text-lg">{t.aboutReviews.subtitle}</p>
+        <section className="py-10 sm:py-12">
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+                <div>
+                    <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ Patient voices ]</div>
+                    <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-none text-[#0a0a0b]">{t.aboutReviews.title}</h2>
+                    <p className="mt-2 text-[14px] leading-6 text-neutral-500 max-w-[560px]">{t.aboutReviews.subtitle}</p>
+                </div>
+                <a href="https://google.com/search?q=dr+tooth+dental+clinic+reviews" target="_blank" rel="noopener noreferrer" className="hidden sm:inline-flex items-center gap-2 text-[13px] font-medium tracking-[-0.01em] text-[#0a0a0b] hover:gap-3 transition-all duration-200"> {t.aboutReviews.seeMore} <span>→</span></a>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                 {reviews.map((review, index) => (
                     <div
                         key={index}
-                        className="bg-white p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border border-slate-200 relative overflow-hidden group hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-200 transition-all duration-500"
+                        className="group bg-white p-6 sm:p-7 rounded-[20px] border border-black/5 hover:border-black/10 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] relative overflow-hidden"
                     >
-                        <FaQuoteLeft className="absolute -top-2 -left-2 sm:-top-4 sm:-left-4 text-7xl sm:text-9xl text-blue-50/50 z-0" />
-
-                        <div className="relative z-10">
-                            <div className="flex gap-1 mb-4 sm:mb-6">
-                                {[...Array(review.rating)].map((_, i) => (
-                                    <FaStar key={i} className="text-yellow-400 text-sm sm:text-base" />
-                                ))}
+                        <FaQuoteLeft className="absolute -top-1 -right-2 text-6xl text-[#f5f5f3] group-hover:text-black/[0.04] transition-colors" />
+                        <div className="relative">
+                            <div className="flex gap-1 mb-4">
+                                {[...Array(review.rating)].map((_, i) => <FaStar key={i} className="text-[#0a0a0b] text-[12px]" />)}
                             </div>
-                            <p className="text-slate-700 text-sm md:text-base lg:text-lg leading-relaxed italic mb-6 sm:mb-8 font-medium">
-                                &ldquo;{review.text}&rdquo;
-                            </p>
-                            <div className="flex items-center gap-3 sm:gap-4">
-                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-base sm:text-lg">
-                                    {review.name.charAt(0)}
-                                </div>
-                                <div className="flex-1">
-                                    <h4 className="font-black text-gray-900 text-sm sm:text-base">{review.name}</h4>
-                                    <p className="text-blue-700 text-[10px] sm:text-sm font-bold uppercase tracking-wider">{review.treatment}</p>
+                            <p className="text-[14px] leading-7 text-neutral-700 font-medium">“{review.text}”</p>
+                            <div className="mt-6 flex items-center gap-3 pt-5 border-t border-black/5">
+                                <div className="w-9 h-9 rounded-full bg-[#0a0a0b] text-white grid place-items-center text-[13px] font-semibold">{review.name.charAt(0)}</div>
+                                <div>
+                                    <h4 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{review.name}</h4>
+                                    <p className="text-[11px] tracking-[0.08em] uppercase font-medium text-neutral-500">{review.treatment}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
-
-            <div className="mt-10 sm:mt-16 text-center">
-                <a
-                    href="https://google.com/search?q=dr+tooth+dental+clinic+reviews"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-blue-700 font-black hover:gap-4 transition-all text-sm sm:text-base"
-                >
-                    {t.aboutReviews.seeMore} <span className="text-lg sm:text-xl">→</span>
-                </a>
+            <div className="mt-6 sm:hidden text-center">
+                <a href="https://google.com/search?q=dr+tooth+dental+clinic+reviews" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[13px] font-medium text-[#0a0a0b]">{t.aboutReviews.seeMore} →</a>
             </div>
         </section>
     );

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FaAward, FaUserMd, FaSmile, FaCertificate, FaQuoteLeft } from 'react-icons/fa';
+import { FaAward, FaUserMd, FaSmile, FaQuoteLeft } from 'react-icons/fa';
 import AchievementsGrid from '@/components/about/AchievementsGrid';
 import PatientReviews from '@/components/about/PatientReviews';
 import DoctorAdvice from '@/components/about/DoctorAdvice';
@@ -23,7 +23,6 @@ export default function About() {
     const chiefConsultant = clinicData?.consultants.find(c => c.role.toLowerCase().includes('chief')) || clinicData?.consultants[0];
     const doctorExperience = chiefConsultant?.experience || '12 Years';
 
-    // Description text (localized)
     const doctorDesc = language === 'hi'
         ? `दंत चिकित्सा में ${doctorExperience} की समर्पित सेवा के साथ, ${doctorName} शीर्ष स्तर की दंत चिकित्सा देखभाल प्रदान करने के लिए प्रतिबद्ध हैं। उनका दर्शन सरल है: रोगियों के साथ करुणा, सहानुभूति और उच्चतम चिकित्सा मानकों के साथ व्यवहार करना।`
         : `With ${doctorExperience} of dedicated service in dentistry, ${doctorName} is committed to providing top-tier dental care. His philosophy is simple: treating patients with compassion, empathy, and the highest medical standards.`;
@@ -43,194 +42,127 @@ export default function About() {
     const consultantExpLabel = language === 'hi' ? 'का अनुभव' : 'Experience';
 
     return (
-        <div className=" max-w-[1600px] mx-auto space-y-14 overflow-x-clip">
-            {/* Hero Section - Refined */}
-            <section className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center overflow-hidden px-6 sm:px-26 pb-5 min-h-[85vh] sm:min-h-screen">
-                <div className="space-y-8 order-2 lg:order-1">
-                    <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-5 py-2 rounded-2xl text-xs font-black tracking-widest uppercase">
-                        <FaCertificate className="text-blue-600" />
-                        {t.aboutHero.excellence}
-                    </div>
-                    <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-gray-200 leading-[1.05] tracking-tight">
-                        {t.aboutHero.meet} {useClinic().isLoading ? <Skeleton variant="text" className="inline-block w-48 h-12" /> : <span className="bg-gradient-to-r from-blue-800 via-blue-600 to-purple-800 bg-clip-text text-transparent">{doctorName}</span>}, {t.aboutHero.guardian}
-                    </h1>
-                    <p className="text-base sm:text-lg text-gray-400 leading-relaxed font-medium max-w-xl">
-                        {doctorDesc}
-                    </p>
-                    <div className="relative p-8 bg-gray-900 text-white rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full -mr-16 -mt-16 blur-xl"></div>
-                        <FaQuoteLeft className="text-4xl text-blue-500/30 mb-4" />
-                        <p className="text-lg font-bold leading-relaxed italic relative z-10">
-                            {t.aboutHero.quote}
-                        </p>
-                        <div className="mt-6 flex items-center gap-3">
-                            <div className="w-10 h-1 bg-blue-500 rounded-full"></div>
-                            <span className="font-black uppercase tracking-widest text-[10px]">{doctorName} • {t.aboutHero.surgeon}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Doctor Image Refined */}
-                <div className="relative order-1 lg:order-2 flex justify-center mt-12 sm:mt-16 lg:mt-0">
-                    {/* Decorative glow wrapped to prevent overflow */}
-                    <div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
-                        <div className="absolute inset-10 bg-gradient-to-tr from-blue-100 via-teal-50 to-indigo-100 rounded-full opacity-50 blur-3xl animate-pulse"></div>
-                    </div>
-
-                    {/* Interactive Badge Moved Above */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white/95 backdrop-blur-md px-4 py-2 sm:px-8 sm:py-5 rounded-2xl sm:rounded-[2rem] shadow-2xl flex items-center gap-3 sm:gap-5 border border-blue-50 whitespace-nowrap">
-                        <div className="bg-yellow-100 p-2 sm:p-3 rounded-xl sm:rounded-2xl text-yellow-600 shadow-inner">
-                            <FaAward size={18} className="sm:size-[24px]" />
-                        </div>
+        <div className="bg-[#fcfcfc] overflow-x-clip">
+            {/* Hero — minimal, matches homepage TrustSection rhythm */}
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-10 sm:pb-12">
+                <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-8 lg:gap-12 items-start">
+                    <div className="order-2 lg:order-1 space-y-6">
                         <div>
-                            <p className="text-[8px] sm:text-[11px] font-black uppercase text-blue-500 tracking-[0.2em] leading-none mb-1 sm:mb-2 text-center lg:text-left">{t.aboutHero.topRated}</p>
-                            <p className="font-black text-gray-900 text-xs sm:text-xl">{t.aboutHero.eliteDentist}</p>
+                            <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ Dedicated excellence ]</div>
+                            <h1 className="mt-3 text-[32px] sm:text-[42px] lg:text-[48px] font-semibold tracking-[-0.03em] leading-[1.02] text-[#0a0a0b]">
+                                {t.aboutHero.meet} <span className="font-serif italic font-normal text-neutral-400">{useClinic().isLoading ? <Skeleton variant="text" className="inline-block w-40 h-8 align-middle" /> : doctorName}</span>
+                                <span className="block text-[22px] sm:text-[28px] font-normal tracking-[-0.02em] text-neutral-500 mt-1">{t.aboutHero.guardian}</span>
+                            </h1>
+                            <p className="mt-4 text-[14px] leading-7 text-neutral-600 max-w-[560px]">{doctorDesc}</p>
                         </div>
-                    </div>
 
-                    <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-[450px] lg:h-[450px] bg-gray-200 rounded-full shadow-2xl overflow-hidden flex items-center justify-center text-gray-400 group border-8 border-white">
-                        {!imgLoaded && (
-                            <div className="absolute inset-0">
-                                <Skeleton variant="rect" className="w-full h-full !rounded-none" />
+                        <div className="rounded-[20px] bg-[#0a0a0b] text-white p-6 sm:p-7 relative overflow-hidden">
+                            <div className="absolute -top-16 -right-16 w-40 h-40 bg-white/[0.04] rounded-full blur-2xl" />
+                            <FaQuoteLeft className="text-white/15 text-xl mb-3" />
+                            <p className="text-[15px] leading-7 font-medium relative">“{t.aboutHero.quote}”</p>
+                            <div className="mt-5 flex items-center gap-3 pt-4 border-t border-white/10">
+                                <div className="w-8 h-8 rounded-full bg-white text-[#0a0a0b] grid place-items-center text-[10px] font-bold">“</div>
+                                <span className="text-[11px] tracking-[0.14em] uppercase font-medium text-white/60">{doctorName} • {t.aboutHero.surgeon}</span>
                             </div>
-                        )}
-                        <img
-                            // src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1964&auto=format&fit=crop"
-                            src="/images/rendering-anime-doctor-job.jpg"
-                            alt={doctorName}
-                            onLoad={() => setImgLoaded(true)}
-                            className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent"></div>
+                        </div>
                     </div>
 
-                    {/* Experience Badge Refined */}
-                    <div className="absolute -bottom-2 -right-2 sm:-bottom-8 sm:-right-8 bg-white p-3 sm:p-8 rounded-[1.2rem] sm:rounded-[2.5rem] shadow-2xl border-4 border-blue-50 flex items-center gap-3 sm:gap-6">
-                        <div className="bg-blue-600 text-white w-10 h-10 sm:w-16 sm:h-16 rounded-xl sm:rounded-3xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                            <FaSmile size={20} className="sm:size-[32px]" />
-                        </div>
-                        <div>
-                            <p className="text-xl sm:text-4xl font-black text-gray-900 leading-none mb-0.5 sm:mb-1">{doctorExperience}</p>
-                            <p className="text-[8px] sm:text-xs text-gray-400 uppercase font-black tracking-widest">{t.aboutHero.experience}</p>
+                    <div className="order-1 lg:order-2 relative">
+                        <div className="bg-white p-2 sm:p-2.5 rounded-[24px] border border-black/5 shadow-[0_12px_32px_rgba(0,0,0,0.06)]">
+                            <div className="relative rounded-[18px] overflow-hidden bg-[#f5f5f3] aspect-[4/4.6] sm:aspect-[4/4.2]">
+                                {!imgLoaded && <div className="absolute inset-0"><Skeleton variant="rect" className="w-full h-full !rounded-none" /></div>}
+                                <img src="/images/rendering-anime-doctor-job.jpg" alt={doctorName} onLoad={() => setImgLoaded(true)} className={`w-full h-full object-cover transition duration-700 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`} />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent pointer-events-none" />
+                                {/* top badge inside */}
+                                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-white/95 backdrop-blur-md px-3 py-2 rounded-2xl shadow-sm border border-black/5 flex items-center gap-2.5">
+                                    <span className="w-7 h-7 rounded-full bg-amber-100 text-amber-600 grid place-items-center"><FaAward size={12} /></span>
+                                    <span>
+                                        <span className="block text-[10px] tracking-[0.12em] uppercase font-medium text-neutral-500 leading-none">{t.aboutHero.topRated}</span>
+                                        <span className="block text-[12px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{t.aboutHero.eliteDentist}</span>
+                                    </span>
+                                </div>
+                                {/* bottom badge inside */}
+                                <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-white/95 backdrop-blur-md px-3.5 py-2.5 rounded-2xl shadow-sm border border-black/5 flex items-center gap-3">
+                                    <span className="w-8 h-8 rounded-xl bg-[#0a0a0b] text-white grid place-items-center"><FaSmile size={14} /></span>
+                                    <span>
+                                        <span className="block text-[13px] font-semibold leading-none text-[#0a0a0b]">{doctorExperience}</span>
+                                        <span className="block text-[10px] tracking-[0.12em] uppercase font-medium text-neutral-500">{t.aboutHero.experience}</span>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Meet Our Team - Synchronized Grid with Classy Pattern */}
-            <section className="relative py-10 px-6 sm:px-16 overflow-hidden rounded-[3rem] sm:rounded-[4rem] mx-20 group">
-                {/* Immersive Background Pattern */}
-                <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
-                    <img
-                        src="/images/sciencehanddrawnbg.jpg"
-                        className="w-full h-full object-cover opacity-[0.7]"
-                        alt="pattern"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-transparent to-teal-50/10"></div>
+            {/* Team — same card system as homepage */}
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+                <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+                    <div>
+                        <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ The team ]</div>
+                        <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-none text-[#0a0a0b]">{t.aboutExperts.title}</h2>
+                        <h3 className="text-[16px] font-medium tracking-[-0.01em] text-neutral-500 mt-1">{t.aboutExperts.subtitle} <span className="font-serif italic text-neutral-400">{clinicName}</span></h3>
+                    </div>
                 </div>
-
-                <div className="text-start space-y-4 mb-16 max-w-4xl">
-                    <h2 className="text-sm font-black text-blue-900 uppercase tracking-[0.2em]">{t.aboutExperts.title}</h2>
-                    <h3 className="text-3xl xl:text-4xl font-black text-gray-100 leading-tight">{t.aboutExperts.subtitle} <span className="bg-gradient-to-r from-blue-200 to-cyan-300 bg-clip-text text-transparent ">{clinicName}</span></h3>
-                    <p className="text-slate-100 text-base sm:text-lg leading-relaxed">
-                        {language === 'hi'
-                            ? 'हमारी टीम अनुभवी दंत विशेषज्ञों से बनी है जो सटीक निदान, स्पष्ट सलाह और दीर्घकालिक उपचार परिणामों पर ध्यान देती है।'
-                            : 'Our team combines clinical experience with patient-first communication, so every treatment plan is clear, transparent, and outcome-focused.'}
-                    </p>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {useClinic().isLoading ? (
-                        [...Array(4)].map((_, i) => <ConsultantCardSkeleton key={i} />)
-                    ) : (
-                        clinicData?.consultants.map((consultant, idx) => (
-                            <div key={idx} className="bg-white/85 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-xl border border-slate-200 hover:border-blue-200 hover:shadow-2xl transition-all group/card">
-                                <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-6 group-hover/card:rotate-6 transition-transform">
-                                    <FaUserMd size={40} className="text-blue-700" />
-                                </div>
-                                <h3 className="text-2xl font-black text-gray-900">{consultant.name}</h3>
-                                <p className="text-blue-700 font-bold uppercase tracking-widest text-xs mb-4">{consultantRole(consultant.role)}</p>
-                                <div className="space-y-2">
-                                    <p className="text-gray-500 text-sm font-medium">{language === 'hi' ? 'विशेषज्ञ दंत चिकित्सा सेवाएं प्रदान करना' : consultant.info}</p>
-                                    <p className="text-gray-900 text-sm font-black italic">{consultant.experience} {consultantExpLabel}</p>
-                                </div>
-                            </div>
-                        ))
-                    )}
+                <p className="text-[14px] leading-7 text-neutral-600 max-w-[720px] mb-8">
+                    {language === 'hi' ? 'हमारी टीम अनुभवी दंत विशेषज्ञों से बनी है जो सटीक निदान, स्पष्ट सलाह और दीर्घकालिक उपचार परिणामों पर ध्यान देती है।' : 'Our team combines clinical experience with patient-first communication, so every treatment plan is clear, transparent, and outcome-focused.'}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                    {useClinic().isLoading ? [...Array(4)].map((_, i) => <ConsultantCardSkeleton key={i} />) : clinicData?.consultants.map((consultant, idx) => (
+                        <div key={idx} className="group bg-white rounded-[20px] border border-black/5 p-6 hover:border-black/10 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                            <div className="w-10 h-10 rounded-full bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-700 group-hover:bg-[#0a0a0b] group-hover:text-white group-hover:border-black transition-colors duration-300"><FaUserMd size={14} /></div>
+                            <h3 className="mt-4 text-[15px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{consultant.name}</h3>
+                            <p className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 mt-1">{consultantRole(consultant.role)}</p>
+                            <p className="text-[13px] leading-6 text-neutral-600 mt-3 line-clamp-3">{language === 'hi' ? 'विशेषज्ञ दंत चिकित्सा सेवाएं प्रदान करना' : consultant.info}</p>
+                            <p className="text-[12px] font-medium tracking-[-0.01em] text-[#0a0a0b] mt-3">{consultant.experience} {consultantExpLabel}</p>
+                        </div>
+                    ))}
                 </div>
             </section>
 
-            {/* Achievements Grid Section */}
-            <div className="pt-12 sm:pt-20 px-6 sm:px-16">
-                <div className="space-y-4 mb-12 max-w-4xl">
-                    <h2 className="text-sm font-black text-blue-700 uppercase tracking-[0.2em]">{t.aboutMilestones.title}</h2>
-                    <p className="text-3xl xl:text-4xl font-black text-gray-300 leading-tight">{t.aboutMilestones.subtitle} <span className="bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">{t.aboutMilestones.provenSmiles}</span></p>
-                    <p className="text-slate-200 text-base sm:text-lg">
-                        {language === 'hi'
-                            ? 'हमारे परिणाम निरंतर गुणवत्ता, कड़े संक्रमण नियंत्रण और सुव्यवस्थित उपचार प्रोटोकॉल पर आधारित हैं।'
-                            : 'These outcomes reflect consistent standards in diagnosis, sterilization, and follow-through across every treatment stage.'}
-                    </p>
+            {/* Milestones */}
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+                <div className="mb-6">
+                    <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ Proof of care ]</div>
+                    <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-[1.05] text-[#0a0a0b]">{t.aboutMilestones.subtitle} <span className="font-serif italic font-normal text-neutral-400">{t.aboutMilestones.provenSmiles}</span></h2>
+                    <p className="mt-2 text-[14px] leading-7 text-neutral-600 max-w-[720px]">{language === 'hi' ? 'हमारे परिणाम निरंतर गुणवत्ता, कड़े संक्रमण नियंत्रण और सुव्यवस्थित उपचार प्रोटोकॉल पर आधारित हैं।' : 'These outcomes reflect consistent standards in diagnosis, sterilization, and follow-through across every treatment stage.'}</p>
                 </div>
                 <AchievementsGrid />
-            </div>
+            </section>
 
-            {/* Reviews Section */}
-            <div>
+            {/* Reviews */}
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
                 <PatientReviews />
-            </div>
+            </section>
 
-            {/* Advice Section */}
-            <div>
-                <DoctorAdvice />
-            </div>
+            {/* Advice */}
+            <DoctorAdvice />
 
-            {/* Our Values / Mission Refined */}
-            <section className="bg-gray-300/20 py-14 sm:py-18 px-6 sm:px-12 mb-10 xl:mb-20 rounded-[2rem] overflow-hidden relative mx-2 sm:mx-34">
-                <div className="max-w-5xl mx-auto space-y-5 sm:space-y-8">
-                    <div className="text-center space-y-4 sm:space-y-6">
-                        <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-gray-200 leading-tight">{t.aboutValues.title}</h2>
-                        <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">{t.aboutValues.subtitle}</p>
-                    </div>
+            {/* Values */}
+            <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+                <div className="text-center max-w-[720px] mx-auto">
+                    <div className="text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">[ Why we are different ]</div>
+                    <h2 className="mt-2 text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em] leading-[1.05] text-[#0a0a0b]">{t.aboutValues.title}</h2>
+                    <p className="mt-3 text-[14px] leading-7 text-neutral-600">{t.aboutValues.subtitle}</p>
+                </div>
 
-                    <div className="grid md:grid-cols-3 gap-12 text-white">
-                        <div className="text-center sm:text-left flex flex-col items-center sm:items-center space-y-6 group">
-                            <div className="w-20 h-20 bg-blue-600/60 border border-blue-500/30 rounded-3xl flex items-center justify-center text-blue-300 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
-                                <FaUserMd size={32} />
-                            </div>
-                            <h3 className="text-2xl text-gray-100 font-black">{t.aboutValues.expertCare}</h3>
-                            <p className="text-gray-300 text-center leading-relaxed font-medium">
-                                {language === 'hi'
-                                    ? `${doctorName} आपको आपकी आवश्यकताओं के अनुसार सर्वोत्तम संभव उपचार प्रदान करने के लिए दंत विज्ञान में नवीनतम के साथ अपडेट रहते हैं।`
-                                    : `${doctorName} stays updated with the latest in dental science to provide the best possible treatments tailored to your needs.`}
-                            </p>
+                <div className="grid md:grid-cols-3 gap-4 sm:gap-5 mt-8">
+                    {[
+                        { icon: <FaUserMd size={14} />, title: t.aboutValues.expertCare, desc: language === 'hi' ? `${doctorName} आपको आपकी आवश्यकताओं के अनुसार सर्वोत्तम संभव उपचार प्रदान करने के लिए दंत विज्ञान में नवीनतम के साथ अपडेट रहते हैं।` : `${doctorName} stays updated with the latest in dental science to provide the best possible treatments tailored to your needs.` },
+                        { icon: <FaSmile size={14} />, title: t.aboutValues.painlessPath, desc: language === 'hi' ? 'हम यह सुनिश्चित करने के लिए अत्याधुनिक आधुनिक तकनीकों का उपयोग करते हैं कि आपकी यात्रा यथासंभव आरामदायक, तेज और दर्द रहित हो।' : 'We use cutting-edge modern techniques to ensure your visit is as comfortable, fast, and pain-free as possible.' },
+                        { icon: <FaAward size={14} />, title: t.aboutValues.goldStandard, desc: language === 'hi' ? 'पूर्ण स्वच्छता हमारी प्राथमिकता है। हम आपकी पूर्ण सुरक्षा के लिए अति-कठिन अंतरराष्ट्रीय नसबंदी प्रोटोकॉल का पालन करते हैं।' : 'Absolute hygiene is our priority. We follow ultra-strict international sterilization protocols for your complete safety.' },
+                    ].map(card => (
+                        <div key={card.title} className="group bg-white rounded-[20px] border border-black/5 p-6 sm:p-7 hover:border-black/10 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] text-center">
+                            <div className="w-10 h-10 rounded-xl bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-700 mx-auto group-hover:bg-[#0a0a0b] group-hover:text-white transition-colors duration-300">{card.icon}</div>
+                            <h3 className="mt-4 text-[15px] font-semibold tracking-[-0.01em] text-[#0a0a0b]">{card.title}</h3>
+                            <p className="mt-2 text-[13px] leading-6 text-neutral-600">{card.desc}</p>
                         </div>
-                        <div className="text-center sm:text-left flex flex-col items-center sm:items-center space-y-6 group">
-                            <div className="w-20 h-20 bg-teal-600/60 border border-teal-500/30 rounded-3xl flex items-center justify-center text-teal-300 group-hover:bg-teal-600 group-hover:text-white transition-all duration-500">
-                                <FaSmile size={32} />
-                            </div>
-                            <h3 className="text-2xl text-gray-100 font-black">{t.aboutValues.painlessPath}</h3>
-                            <p className="text-gray-300 text-center leading-relaxed font-medium">
-                                {language === 'hi'
-                                    ? 'हम यह सुनिश्चित करने के लिए अत्याधुनिक आधुनिक तकनीकों का उपयोग करते हैं कि आपकी यात्रा यथासंभव आरामदायक, तेज और दर्द रहित हो।'
-                                    : 'We use cutting-edge modern techniques to ensure your visit is as comfortable, fast, and pain-free as possible.'}
-                            </p>
-                        </div>
-                        <div className="text-center sm:text-left flex flex-col items-center sm:items-center space-y-6 group">
-                            <div className="w-20 h-20 bg-purple-600/60 border border-purple-500/30 rounded-3xl flex items-center justify-center text-purple-300 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
-                                <FaAward size={32} />
-                            </div>
-                            <h3 className="text-2xl text-gray-100 font-black">{t.aboutValues.goldStandard}</h3>
-                            <p className="text-gray-300 text-center leading-relaxed font-medium">
-                                {language === 'hi'
-                                    ? 'पूर्ण स्वच्छता हमारी प्राथमिकता है। हम आपकी पूर्ण सुरक्षा के लिए अति-कठिन अंतरराष्ट्रीय नसबंदी प्रोटोकॉल का पालन करते हैं।'
-                                    : 'Absolute hygiene is our priority. We follow ultra-strict international sterilization protocols for your complete safety.'}
-                            </p>
-                        </div>
-                    </div>
+                    ))}
+                </div>
 
-                    <div className="pt-12 border-t border-white/10 text-center">
-                        <p className="text-blue-500 font-black uppercase tracking-[0.2em] text-xl mb-2">{clinicExperience} {t.aboutValues.excellence}</p>
-                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">{t.aboutValues.decade}</p>
-                    </div>
+                <div className="mt-6 rounded-[20px] bg-[#f5f5f3] border border-black/5 px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+                    <p className="text-[13px] font-medium tracking-[-0.01em] text-[#0a0a0b]">{clinicExperience} {t.aboutValues.excellence} <span className="text-neutral-500 font-normal">· {t.aboutValues.decade}</span></p>
+                    <span className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 hidden sm:block">Katihar · Bihar</span>
                 </div>
             </section>
         </div>

@@ -36,16 +36,16 @@ export function ProfileSkeleton() {
 
 export function ConsultantCardSkeleton() {
     return (
-        <div className="bg-white/70 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl border border-gray-100/50 space-y-6">
-            <Skeleton variant="rect" className="w-20 h-20 !rounded-3xl" />
+        <div className="bg-white p-6 rounded-[20px] border border-black/5 space-y-5">
+            <Skeleton variant="rect" className="w-10 h-10 !rounded-full" />
             <div className="space-y-3">
-                <Skeleton variant="text" className="h-8 w-3/4" />
-                <Skeleton variant="text" className="h-4 w-1/4" />
+                <Skeleton variant="text" className="h-5 w-3/4" />
+                <Skeleton variant="text" className="h-3 w-1/3" />
             </div>
             <div className="space-y-2">
                 <Skeleton variant="text" />
                 <Skeleton variant="text" className="w-5/6" />
-                <Skeleton variant="text" className="w-2/3 h-5 mt-4" />
+                <Skeleton variant="text" className="w-2/3 h-4 mt-3" />
             </div>
         </div>
     );
@@ -140,18 +140,18 @@ export function DoctorSectionSkeleton() {
 
 export function AboutPageSkeleton() {
     return (
-        <div className="space-y-24 pb-20">
-            <div className="relative h-[60vh] bg-blue-900 overflow-hidden flex items-center justify-center">
-                <div className="text-center space-y-6 px-4">
-                    <Skeleton variant="text" className="h-16 w-64 mx-auto !bg-white/20" />
-                    <Skeleton variant="text" className="h-6 w-96 mx-auto !bg-white/10" />
+        <div className="bg-[#fcfcfc] max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+            <div className="grid lg:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                    <Skeleton variant="text" className="h-4 w-32" />
+                    <Skeleton variant="text" className="h-10 w-3/4" />
+                    <Skeleton variant="text" className="h-20 w-full" />
+                    <Skeleton variant="rect" className="h-32 !rounded-[20px]" />
                 </div>
+                <Skeleton variant="rect" className="h-[420px] !rounded-[24px]" />
             </div>
-            <div className="max-w-7xl mx-auto px-6 space-y-24">
-                <DoctorSectionSkeleton />
-                <div className="grid md:grid-cols-3 gap-8">
-                    {[1, 2, 3].map(i => <ActionTileSkeleton key={i} />)}
-                </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[1,2,3,4].map(i => <ConsultantCardSkeleton key={i} />)}
             </div>
         </div>
     );
