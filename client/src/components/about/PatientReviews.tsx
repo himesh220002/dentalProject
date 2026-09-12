@@ -69,11 +69,11 @@ export default function PatientReviews() {
     }, [language, clinicData]);
 
     return (
-        <section className="py-12 sm:py-20 bg-blue-50/50 -mx-2 sm:-mx-6 lg:mx-8 px-4 sm:px-6 lg:px-8 rounded-[2rem] sm:rounded-[3rem]">
+        <section className="py-12 sm:py-20 bg-blue-50/10 mx-2 sm:mx-16 lg:mx-28 px-4 sm:px-6 lg:px-28 rounded-[2rem] sm:rounded-[3rem]">
             <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16 space-y-3 sm:space-y-4">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight">{t.aboutReviews.title}</h2>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-200 leading-tight">{t.aboutReviews.title}</h2>
                 <div className="h-1 sm:h-1.5 w-16 sm:w-24 bg-blue-500 mx-auto rounded-full"></div>
-                <p className="text-slate-600 text-base sm:text-lg">{t.aboutReviews.subtitle}</p>
+                <p className="text-slate-400 text-base sm:text-lg">{t.aboutReviews.subtitle}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">

@@ -93,7 +93,7 @@ const DEFAULT_CLINIC_DATA: ClinicData = {
         { name: 'Dr. nefario', role: 'Orthodontist', info: 'Expert in Braces & Aligners', experience: '8 Years' }
     ],
     treatments: [
-        { name: 'General Consultation', price: '300', description: 'Initial dental check‑up where the dentist examines teeth, gums, and oral health, provides diagnosis, and recommends treatment options.', image: 'images/dentalconsult.webp' },
+        { name: 'General Consultation', price: '300', description: 'Initial dental check‑up where the dentist examines teeth, gums, and oral health, provides diagnosis.', image: 'images/dentalconsult.webp' },
         { name: 'Scaling & Cleaning', price: '800', description: 'Professional removal of plaque, tartar, and stains from teeth surfaces and gum line to prevent cavities and gum disease.', image: 'https://images.unsplash.com/photo-1674775372064-8c75d3f8c757?q=80&w=687' },
         { name: 'Dental Fillings', price: '1000', description: 'White composite material used to restore decayed or damaged teeth, preserving natural tooth structure.', image: 'https://images.unsplash.com/photo-1694345215004-837b089f620d?q=80&w=1929' },
         { name: 'Tooth Extraction', price: '500', description: 'Removal of damaged or infected tooth when it cannot be saved by other dental treatments.', image: 'https://images.unsplash.com/photo-1626736985932-c0df2ae07a2e?q=80&w=1631' },

@@ -51,7 +51,7 @@ export default function About() {
                         <FaCertificate className="text-blue-600" />
                         {t.aboutHero.excellence}
                     </div>
-                    <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-gray-400 leading-[1.05] tracking-tight">
+                    <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-gray-200 leading-[1.05] tracking-tight">
                         {t.aboutHero.meet} {useClinic().isLoading ? <Skeleton variant="text" className="inline-block w-48 h-12" /> : <span className="bg-gradient-to-r from-blue-800 via-blue-600 to-purple-800 bg-clip-text text-transparent">{doctorName}</span>}, {t.aboutHero.guardian}
                     </h1>
                     <p className="text-base sm:text-lg text-gray-400 leading-relaxed font-medium max-w-xl">
@@ -118,7 +118,7 @@ export default function About() {
             </section>
 
             {/* Meet Our Team - Synchronized Grid with Classy Pattern */}
-            <section className="relative py-20 px-6 sm:px-16 overflow-hidden rounded-[3rem] sm:rounded-[4rem] mx-20 group">
+            <section className="relative py-10 px-6 sm:px-16 overflow-hidden rounded-[3rem] sm:rounded-[4rem] mx-20 group">
                 {/* Immersive Background Pattern */}
                 <div className="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-[2s]">
                     <img
@@ -131,7 +131,7 @@ export default function About() {
 
                 <div className="text-start space-y-4 mb-16 max-w-4xl">
                     <h2 className="text-sm font-black text-blue-900 uppercase tracking-[0.2em]">{t.aboutExperts.title}</h2>
-                    <h3 className="text-3xl xl:text-5xl font-black text-gray-100 leading-tight">{t.aboutExperts.subtitle} <span className="bg-gradient-to-r from-blue-200 to-cyan-300 bg-clip-text text-transparent ">{clinicName}</span></h3>
+                    <h3 className="text-3xl xl:text-4xl font-black text-gray-100 leading-tight">{t.aboutExperts.subtitle} <span className="bg-gradient-to-r from-blue-200 to-cyan-300 bg-clip-text text-transparent ">{clinicName}</span></h3>
                     <p className="text-slate-100 text-base sm:text-lg leading-relaxed">
                         {language === 'hi'
                             ? 'हमारी टीम अनुभवी दंत विशेषज्ञों से बनी है जो सटीक निदान, स्पष्ट सलाह और दीर्घकालिक उपचार परिणामों पर ध्यान देती है।'
@@ -163,7 +163,7 @@ export default function About() {
             <div className="pt-12 sm:pt-20 px-6 sm:px-16">
                 <div className="space-y-4 mb-12 max-w-4xl">
                     <h2 className="text-sm font-black text-blue-700 uppercase tracking-[0.2em]">{t.aboutMilestones.title}</h2>
-                    <p className="text-3xl xl:text-5xl font-black text-gray-300 leading-tight">{t.aboutMilestones.subtitle} <span className="bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">{t.aboutMilestones.provenSmiles}</span></p>
+                    <p className="text-3xl xl:text-4xl font-black text-gray-300 leading-tight">{t.aboutMilestones.subtitle} <span className="bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">{t.aboutMilestones.provenSmiles}</span></p>
                     <p className="text-slate-200 text-base sm:text-lg">
                         {language === 'hi'
                             ? 'हमारे परिणाम निरंतर गुणवत्ता, कड़े संक्रमण नियंत्रण और सुव्यवस्थित उपचार प्रोटोकॉल पर आधारित हैं।'
@@ -184,42 +184,42 @@ export default function About() {
             </div>
 
             {/* Our Values / Mission Refined */}
-            <section className="bg-gray-300/20 py-14 sm:py-18 px-6 sm:px-12 mb-10 xl:mb-20 rounded-[2rem] overflow-hidden relative mx-2 sm:mx-4">
+            <section className="bg-gray-300/20 py-14 sm:py-18 px-6 sm:px-12 mb-10 xl:mb-20 rounded-[2rem] overflow-hidden relative mx-2 sm:mx-34">
                 <div className="max-w-5xl mx-auto space-y-5 sm:space-y-8">
                     <div className="text-center space-y-4 sm:space-y-6">
-                        <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-gray-700 leading-tight">{t.aboutValues.title}</h2>
-                        <p className="text-gray-700 text-base sm:text-lg max-w-2xl mx-auto">{t.aboutValues.subtitle}</p>
+                        <h2 className="text-3xl sm:text-4xl xl:text-6xl font-black text-gray-200 leading-tight">{t.aboutValues.title}</h2>
+                        <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">{t.aboutValues.subtitle}</p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-12 text-white">
                         <div className="text-center sm:text-left flex flex-col items-center sm:items-center space-y-6 group">
-                            <div className="w-20 h-20 bg-blue-600/20 border border-blue-500/30 rounded-3xl flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
+                            <div className="w-20 h-20 bg-blue-600/60 border border-blue-500/30 rounded-3xl flex items-center justify-center text-blue-300 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
                                 <FaUserMd size={32} />
                             </div>
-                            <h3 className="text-2xl text-gray-700 font-black">{t.aboutValues.expertCare}</h3>
-                            <p className="text-gray-400 text-center leading-relaxed font-medium">
+                            <h3 className="text-2xl text-gray-100 font-black">{t.aboutValues.expertCare}</h3>
+                            <p className="text-gray-300 text-center leading-relaxed font-medium">
                                 {language === 'hi'
                                     ? `${doctorName} आपको आपकी आवश्यकताओं के अनुसार सर्वोत्तम संभव उपचार प्रदान करने के लिए दंत विज्ञान में नवीनतम के साथ अपडेट रहते हैं।`
                                     : `${doctorName} stays updated with the latest in dental science to provide the best possible treatments tailored to your needs.`}
                             </p>
                         </div>
                         <div className="text-center sm:text-left flex flex-col items-center sm:items-center space-y-6 group">
-                            <div className="w-20 h-20 bg-teal-600/20 border border-teal-500/30 rounded-3xl flex items-center justify-center text-teal-500 group-hover:bg-teal-600 group-hover:text-white transition-all duration-500">
+                            <div className="w-20 h-20 bg-teal-600/60 border border-teal-500/30 rounded-3xl flex items-center justify-center text-teal-300 group-hover:bg-teal-600 group-hover:text-white transition-all duration-500">
                                 <FaSmile size={32} />
                             </div>
-                            <h3 className="text-2xl text-gray-700 font-black">{t.aboutValues.painlessPath}</h3>
-                            <p className="text-gray-400 text-center leading-relaxed font-medium">
+                            <h3 className="text-2xl text-gray-100 font-black">{t.aboutValues.painlessPath}</h3>
+                            <p className="text-gray-300 text-center leading-relaxed font-medium">
                                 {language === 'hi'
                                     ? 'हम यह सुनिश्चित करने के लिए अत्याधुनिक आधुनिक तकनीकों का उपयोग करते हैं कि आपकी यात्रा यथासंभव आरामदायक, तेज और दर्द रहित हो।'
                                     : 'We use cutting-edge modern techniques to ensure your visit is as comfortable, fast, and pain-free as possible.'}
                             </p>
                         </div>
                         <div className="text-center sm:text-left flex flex-col items-center sm:items-center space-y-6 group">
-                            <div className="w-20 h-20 bg-purple-600/20 border border-purple-500/30 rounded-3xl flex items-center justify-center text-purple-500 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
+                            <div className="w-20 h-20 bg-purple-600/60 border border-purple-500/30 rounded-3xl flex items-center justify-center text-purple-300 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
                                 <FaAward size={32} />
                             </div>
-                            <h3 className="text-2xl text-gray-700 font-black">{t.aboutValues.goldStandard}</h3>
-                            <p className="text-gray-400 text-center leading-relaxed font-medium">
+                            <h3 className="text-2xl text-gray-100 font-black">{t.aboutValues.goldStandard}</h3>
+                            <p className="text-gray-300 text-center leading-relaxed font-medium">
                                 {language === 'hi'
                                     ? 'पूर्ण स्वच्छता हमारी प्राथमिकता है। हम आपकी पूर्ण सुरक्षा के लिए अति-कठिन अंतरराष्ट्रीय नसबंदी प्रोटोकॉल का पालन करते हैं।'
                                     : 'Absolute hygiene is our priority. We follow ultra-strict international sterilization protocols for your complete safety.'}
