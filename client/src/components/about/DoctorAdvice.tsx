@@ -23,7 +23,7 @@ export default function DoctorAdvice() {
     const tips = tipsData[language as keyof typeof tipsData] || tipsData.en;
 
     return (
-        <section className="py-10 sm:py-12">
+        <section className="py-10 sm:py-12 px-4 md:px-8 xl:px-0">
             <div className="max-w-[1280px] mx-auto">
                 <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
                     <div>
@@ -46,7 +46,7 @@ export default function DoctorAdvice() {
                     ))}
                 </div>
 
-                <div className="mt-6 rounded-[24px] bg-[#0a0a0b] text-white p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 overflow-hidden relative">
+                <div className="mt-6 rounded-[24px] bg-[#0a0a0b] text-white  p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 overflow-hidden relative">
                     <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/[0.04] rounded-full blur-3xl pointer-events-none" />
                     <div className="relative max-w-[560px]">
                         <h3 className="text-[22px] sm:text-[28px] font-semibold tracking-[-0.03em] leading-[1.1]">{t.aboutAdvice.askAnything} <span className="font-serif italic font-normal text-white/60">{doctorName}</span></h3>
