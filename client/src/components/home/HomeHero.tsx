@@ -9,32 +9,6 @@ import Link from 'next/link';
 const AppointmentSearchInline = dynamic(() => import('./AppointmentSearchInline'), { ssr: false });
 const CurvedVideoBackground = dynamic(() => import('./CurvedVideoBackground'), { ssr: false });
 
-function AnimatedCounter({ target, suffix = '', duration = 1400 }: { target: number; suffix?: string; duration?: number }) {
-    const [val, setVal] = useState(0);
-    const ref = useRef<HTMLSpanElement>(null);
-    const started = useRef(false);
-    useEffect(() => {
-        const el = ref.current;
-        if (!el) return;
-        const io = new IntersectionObserver(([e]) => {
-            if (e.isIntersecting && !started.current) {
-                started.current = true;
-                const start = performance.now();
-                const tick = (now: number) => {
-                    const p = Math.min(1, (now - start) / duration);
-                    const eased = 1 - Math.pow(1 - p, 3);
-                    setVal(Math.round(eased * target));
-                    if (p < 1) requestAnimationFrame(tick);
-                };
-                requestAnimationFrame(tick);
-            }
-        }, { threshold: 0.3 });
-        io.observe(el);
-        return () => io.disconnect();
-    }, [target, duration]);
-    return <span ref={ref}>{val.toLocaleString('en-IN')}{suffix}</span>;
-}
-
 export default function HomeHero() {
     const { clinicData } = useClinic();
     const phone = clinicData?.phone || '+91 98765 43210';
@@ -42,9 +16,91 @@ export default function HomeHero() {
     const experience = clinicData?.clinicExperience || '10';
     const happy = clinicData?.happyCustomers || '5000+';
 
-    const scrollToInquiry = () => {
-        document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
-    };
+    const heroRef = useRef<HTMLElement>(null);
+    const titleRef = useRef<HTMLDivElement>(null);
+    const paraRef = useRef<HTMLParagraphElement>(null);
+    const ctaRef = useRef<HTMLDivElement>(null);
+    const statsRef = useRef<HTMLDivElement>(null);
+    const bookingRef = useRef<HTMLDivElement>(null);
+
+    const mouse = useRef({ x: 0, y: 0, tx: 0, ty: 0 });
+    const scrollRef = useRef(0);
+    const rafRef = useRef<number | null>(null);
+    const reduceMotion = useRef(false);
+
+    const [ready, setReady] = useState(false);
+    useEffect(() => { const t = setTimeout(() => setReady(true), 60); return () => clearTimeout(t); }, []);
+    useEffect(() => {
+        reduceMotion.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const onScroll = () => { scrollRef.current = window.scrollY; };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+
+    useEffect(() => {
+        const el = heroRef.current;
+        if (!el) return;
+        const onMove = (e: MouseEvent) => {
+            if (reduceMotion.current) return;
+            const rect = el.getBoundingClientRect();
+            const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+            mouse.current.tx = nx;
+            mouse.current.ty = ny;
+        };
+        const onLeave = () => { mouse.current.tx = 0; mouse.current.ty = 0; };
+        window.addEventListener('mousemove', onMove, { passive: true });
+        el.addEventListener('mouseleave', onLeave);
+
+        const tick = () => {
+            // lerp mouse
+            mouse.current.x += (mouse.current.tx - mouse.current.x) * 0.055;
+            mouse.current.y += (mouse.current.ty - mouse.current.y) * 0.055;
+            const mx = reduceMotion.current ? 0 : mouse.current.x;
+            const my = reduceMotion.current ? 0 : mouse.current.y;
+            const vh = window.innerHeight || 800;
+            const progress = Math.min(1, scrollRef.current / (vh * 0.92));
+            const parallaxY = progress * -32;
+            const fade = 1 - progress * 0.52;
+            const scale = 1 - progress * 0.035;
+
+            if (titleRef.current) {
+                const tx = mx * 12; const ty = my * 7 + parallaxY;
+                const rx = my * -1; const ry = mx * 1.4;
+                titleRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) scale(${scale})`;
+                titleRef.current.style.opacity = `${fade}`;
+            }
+            if (paraRef.current) {
+                const tx = mx * 8; const ty = my * 5 + parallaxY * 0.78;
+                paraRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+                paraRef.current.style.opacity = `${Math.max(0, fade - 0.04)}`;
+            }
+            if (ctaRef.current) {
+                const tx = mx * 6; const ty = my * 4 + parallaxY * 0.58;
+                ctaRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+                ctaRef.current.style.opacity = `${Math.max(0, fade - 0.07)}`;
+            }
+            if (statsRef.current) {
+                const tx = mx * -5; const ty = my * -3 + parallaxY * 0.42;
+                statsRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+                statsRef.current.style.opacity = `${Math.max(0, 1 - progress * 0.85)}`;
+            }
+            if (bookingRef.current) {
+                const tx = mx * -8; const ty = my * -5 + parallaxY * 0.32;
+                const brx = my * 0.7; const bry = mx * -0.9;
+                bookingRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${brx}deg) rotateY(${bry}deg)`;
+            }
+            rafRef.current = requestAnimationFrame(tick);
+        };
+        rafRef.current = requestAnimationFrame(tick);
+        return () => {
+            window.removeEventListener('mousemove', onMove);
+            el.removeEventListener('mouseleave', onLeave);
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        };
+    }, []);
+
+    const scrollToInquiry = () => document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
 
     const stats = [
         { k: `${experience}+ yrs`, v: 'clinical excellence', sub: `since ${clinicData?.establishedYear || '2014'}` },
@@ -53,115 +109,135 @@ export default function HomeHero() {
     ];
 
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#060a1e] via-[#0a102e] to-[#0f2850] min-h-[100vh] -mt-20">
-            {/* 3D Curved Video Canvas Background */}
-            <div className="absolute inset-0 z-0 opacity-85 sm:opacity-90">
-                <CurvedVideoBackground videoUrl="/video/canvasvideo.mp4" bendDepth={3.8} />
+        <section
+            ref={heroRef}
+            className="relative overflow-hidden bg-[#060a1e] min-h-[100svh] -mt-[64px] isolate"
+            style={{ perspective: '1200px', perspectiveOrigin: '50% 38%' } as React.CSSProperties}
+        >
+            <div className="absolute inset-0 z-0">
+                <CurvedVideoBackground videoUrl="/video/canvasvideo.mp4" bendDepth={3.8} showControls={false} />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_65%_at_50%_10%,transparent_32%,rgba(6,10,30,0.58)_78%)]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#060a1e]/70 via-[#060a1e]/20 to-[#0a102e]/90" />
+                <div className="absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-[#060a1e] via-[#060a1e]/60 to-transparent" />
+                <div className="absolute inset-0 opacity-[0.04] mix-blend-soft-light pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }} />
             </div>
 
-            {/* Subtle Gradient Overlays */}
-            <div className="absolute inset-0 pointer-events-none z-1">
-                <div className="absolute inset-0 bg-gradient-to-b from-[#060a1e]/80 via-transparent to-[#0f2850]/80" />
-                <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#1e3a8a]/20 rounded-full blur-[80px]" />
-                <div className="absolute bottom-0 inset-x-0 h-[280px] bg-gradient-to-t from-[#0a102e]/60 to-transparent" />
-            </div>
-            <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 mt-20 sm:mt-30 ">
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] tracking-[0.14em] uppercase font-medium mb-6 sm:mb-8">
+            {/* top pill — add breathing room from nav */}
+            {/* <div className="absolute top-[86px] sm:top-[92px] inset-x-0 z-10 pointer-events-none hidden sm:flex justify-center px-4">
+                <div className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-white/[0.07] border border-white/12 backdrop-blur-md text-[10px] tracking-[0.14em] uppercase font-medium text-white/65 shadow-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Drag / move to explore — curved display
+                    <span className="hidden lg:inline text-white/25">·</span>
+                    <span className="hidden lg:inline">scroll to dive in</span>
+                </div>
+            </div> */}
+
+            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[860px] h-[480px] bg-[#1e3a8a]/14 rounded-full blur-[90px] pointer-events-none z-[1]" />
+
+            <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-[108px] sm:pt-[128px] lg:pt-[132px] pb-10 sm:pb-12">
+                <div className={`flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] tracking-[0.14em] uppercase font-medium mb-5 sm:mb-6 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-[#0a0a0b] border border-white/20 shadow-sm">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        Accepting new patients
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Accepting new patients
                     </span>
-                    <span className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-white border border-white/10 backdrop-blur">
+                    <span className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-white border border-white/10 backdrop-blur-md">
                         <FaStar size={10} className="text-white/70" /> 4.9 · 500+ reviews
                     </span>
-                    <span className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-white border border-white/10 backdrop-blur">
+                    <span className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-white border border-white/10 backdrop-blur-md">
                         <FaCheck size={10} /> Sterile · ISO certified
                     </span>
                 </div>
-                <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-10 items-start mb-10 sm:mb-0">
-                    <div className="space-y-6">
-                        <h1 className="text-[30px] sm:text-[56px] lg:text-[68px] leading-[0.9] tracking-[-0.04em] font-[600] text-center sm:text-start text-white">
-                            <span className="block font-sans font-[700] tracking-[-0.04em]">Healthy smiles, </span>
-                            <span className="block font-serif italic font-[400] tracking-[-0.03em] text-white/60">cared for with compassion</span>
-                            <span className="block font-sans font-[700] tracking-[-0.04em] mt-1">every day.</span>
-                        </h1>
-                        <p className="hidden md:block max-w-[560px] text-[15.5px] sm:text-[17px] leading-7 text-white/70 font-[400] text-balance">
+
+                <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-10 items-start">
+                    <div className="space-y-5 sm:space-y-6" style={{ transformStyle: 'preserve-3d' }}>
+                        <div ref={titleRef} className="will-change-transform" style={{ transformStyle: 'preserve-3d' }}>
+                            <h1 className="text-[32px] sm:text-[54px] lg:text-[64px] leading-[0.88] tracking-[-0.04em] font-semibold text-center sm:text-left text-white select-none">
+                                <span className={`block font-sans font-bold tracking-[-0.04em] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-100 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>Healthy smiles,</span>
+                                <span className={`block font-serif italic font-normal tracking-[-0.03em] text-white/60 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-200 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>cared for with compassion</span>
+                                <span className={`block font-sans font-bold tracking-[-0.04em] mt-1 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>every day.</span>
+                            </h1>
+                            <div className="hidden sm:block mt-5 h-px w-[92%] max-w-[560px] bg-gradient-to-r from-white/25 via-white/10 to-transparent" />
+                        </div>
+
+                        <p ref={paraRef} className={`hidden md:block max-w-[560px] text-[15px] leading-7 text-white/70 font-normal text-balance will-change-transform transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
                             {clinicName} blends evidence-led care with a gentle chair-side manner. Minimal pain, maximal clarity — from first consult to lasting smile.
                         </p>
-                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                            <button onClick={scrollToInquiry} className="inline-flex items-center gap-3 bg-white text-[#0a0a0b] pl-6 pr-2 py-2 rounded-full text-[14px] font-medium hover:bg-neutral-100 transition group shadow-lg">
+
+                        <div ref={ctaRef} className={`flex flex-wrap items-center justify-center sm:justify-start gap-3 will-change-transform transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-400 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+                            <button onClick={scrollToInquiry} className="inline-flex items-center gap-3 bg-white text-[#0a0a0b] pl-6 pr-2 py-2 rounded-full text-[14px] font-medium tracking-[-0.01em] hover:bg-neutral-50 transition-colors duration-200 group shadow-[0_8px_24px_rgba(0,0,0,0.18)] active:scale-[0.98]">
                                 Book appointment
-                                <span className="w-8 h-8 rounded-full bg-[#0a0a0b] text-white grid place-items-center group-hover:translate-x-0.5 transition-transform">
-                                    <FaArrowRight size={12} />
-                                </span>
+                                <span className="w-8 h-8 rounded-full bg-[#0a0a0b] text-white grid place-items-center group-hover:translate-x-0.5 transition-transform duration-200 ease-out"><FaArrowRight size={11} /></span>
                             </button>
-                            <Link href="/treatments" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 text-white px-6 py-[10px] rounded-full text-[14px] font-medium hover:bg-white/15 transition">
+                            <Link href="/treatments" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/15 text-white px-6 py-2.5 rounded-full text-[14px] font-medium tracking-[-0.01em] hover:bg-white/15 transition-colors duration-200">
                                 View treatments
                             </Link>
-                            <a href={`tel:${phone.replace(/\s+/g, '')}`} className="inline-flex items-center gap-2 text-[13px] font-medium text-white/80 hover:text-white transition">
-                                <span className="w-8 h-8 rounded-full bg-white/10 border border-white/15 grid place-items-center"><FaPhoneAlt size={12} /></span>
+                            <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hidden sm:inline-flex items-center gap-2 text-[13px] font-medium tracking-[-0.01em] text-white/75 hover:text-white transition-colors duration-200">
+                                <span className="w-8 h-8 rounded-full bg-white/10 border border-white/15 grid place-items-center"><FaPhoneAlt size={11} /></span>
                                 {phone}
                             </a>
                         </div>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 pt-2">
+
+                        <div ref={statsRef} className={`grid grid-cols-3 gap-3 pt-2 will-change-transform transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-500 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
                             {stats.map((s) => (
-                                <div key={s.v} className="rounded-2xl bg-white/5 backdrop-blur border border-black/5 p-4 sm:p-5 shadow-sm">
-                                    <div className="text-[20px] sm:text-[22px] font-semibold tracking-[-0.03em] text-gray-200 leading-none">{s.k}</div>
-                                    <div className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-300 mt-1">{s.v}</div>
-                                    <div className="text-[11px] text-neutral-400 mt-1 hidden sm:block">{s.sub}</div>
+                                <div key={s.v} className="rounded-2xl bg-white/[0.07] backdrop-blur-md border border-white/10 p-4 shadow-sm">
+                                    <div className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.03em] text-white leading-none tabular-nums">{s.k}</div>
+                                    <div className="text-[10px] tracking-[0.12em] uppercase font-medium text-white/60 mt-1.5">{s.v}</div>
+                                    <div className="text-[11px] text-white/40 mt-1 hidden sm:block">{s.sub}</div>
                                 </div>
                             ))}
                         </div>
-                        <div className="flex flex-wrap gap-2 justify-center sm:justify-start text-[11px] tracking-[0.12em] uppercase font-medium text-white/60">
-                            <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur">Painless protocols</span>
-                            <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur">Transparent pricing</span>
-                            <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur">Mon–Sat 10:00–20:00</span>
+
+                        <div className={`flex flex-wrap gap-2 justify-center sm:justify-start text-[11px] tracking-[0.12em] uppercase font-medium text-white/50 will-change-transform transition-all duration-700 delay-600 ${ready ? 'opacity-100' : 'opacity-0'}`}>
+                            <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur-md">Painless protocols</span>
+                            <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur-md">Transparent pricing</span>
+                            <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur-md">Mon–Sat 10:00–20:00</span>
                         </div>
                     </div>
-                    <div className=" relative lg:sticky lg:top-[84px]">
-                        <div className="bg-white/5 backdrop-blur-sm rounded-[24px] sm:rounded-[28px] border border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.08)] overflow-hidden">
-                            <div className="px-3 sm:px-7 pt-3 sm:pt-7 pb-3 sm:pb-5 border-b border-black/5">
+
+                    <div ref={bookingRef} className={`relative lg:sticky lg:top-[88px] will-change-transform transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{ transformStyle: 'preserve-3d' }}>
+                        {/* Transparent glass — previous look */}
+                        <div className="bg-white/[0.08] backdrop-blur-2xl rounded-[24px] border border-white/15 shadow-[0_16px_48px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] overflow-hidden">
+                            <div className="px-5 sm:px-6 pt-5 pb-4 border-b border-white/10">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <div className=" text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-300">Check appointment</div>
-                                        <h3 className="hidden sm:block text-[18px] font-semibold tracking-[-0.02em] text-gray-100 mt-1">Find your booking in seconds</h3>
-                                        <p className="hidden sm:block text-[13px] leading-5 text-neutral-400 mt-1 max-w-[320px]">Enter phone or booking ID — instant status, no sign-in required.</p>
+                                        <div className="text-[11px] tracking-[0.14em] uppercase font-medium text-white/60">Check appointment</div>
+                                        <h3 className="hidden sm:block text-[16px] font-semibold tracking-[-0.02em] text-white mt-1">Find your booking in seconds</h3>
+                                        <p className="hidden sm:block text-[13px] leading-5 text-white/60 mt-1 max-w-[300px]">Enter phone or booking ID — instant status, no sign-in required.</p>
                                     </div>
-                                    <div className="hidden sm:grid place-items-center w-9 h-9 rounded-full bg-[#f5f5f3] border border-black/5 shrink-0">
-                                        <FaCheck className="text-neutral-700" size={12} />
-                                    </div>
+                                    <div className="hidden sm:grid place-items-center w-8 h-8 rounded-full bg-white/10 border border-white/15 backdrop-blur shrink-0"><FaCheck className="text-white/80" size={11} /></div>
                                 </div>
                             </div>
-                            <div className="bg-white/5 p-4 sm:p-5 bg-[#fcfcfc]">
-                                <div className="rounded-full bg-white/5 backdrop-blur-sm border border-black/5 p-2 shadow-sm">
+                            <div className="bg-transparent p-3 sm:p-4">
+                                <div className="rounded-[20px] bg-white border border-white/20 p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
                                     <AppointmentSearchInline />
                                 </div>
-                                <div className="mt-4 flex items-center justify-between text-[11px]">
-                                    <span className="tracking-[0.12em] uppercase font-medium text-neutral-500">Need help?</span>
-                                    <a href={`tel:${phone.replace(/\s+/g, '')}`} className="inline-flex items-center gap-1.5 font-medium text-[#0afafb] hover:underline">
-                                        <FaPhoneAlt size={10} /> {phone}
-                                    </a>
+                                <div className="mt-3 flex items-center justify-between text-[11px]">
+                                    <span className="tracking-[0.12em] uppercase font-medium text-white/50">Need help?</span>
+                                    <a href={`tel:${phone.replace(/\s+/g, '')}`} className="inline-flex items-center gap-1.5 font-medium text-white hover:text-white/80 transition"><FaPhoneAlt size={10} className="text-white/60" /> {phone}</a>
                                 </div>
                             </div>
-                            <div className="hidden sm:flex px-6 sm:px-7 py-4 bg-[#0a0a0b] text-white items-center justify-between">
+                            <div className="hidden sm:flex px-5 sm:px-6 py-3.5 bg-black/20 backdrop-blur-md border-t border-white/10 text-white items-center justify-between">
                                 <div className="text-[12px] leading-4">
                                     <div className="font-medium tracking-[-0.01em]">5000+ patients · 4.9 rating</div>
-                                    <div className="text-white/60 text-[11px]">Trusted across Katihar & Bihar</div>
+                                    <div className="text-white/55 text-[11px]">Trusted across Katihar & Bihar</div>
                                 </div>
-                                <div className="flex -space-x-2">
-                                    {[1, 2, 3].map((i) => (
-                                        <span key={i} className="w-7 h-7 rounded-full bg-white/15 border border-white/20 grid place-items-center text-[11px] font-bold">✓</span>
-                                    ))}
-                                </div>
+                                {/* <div className="flex -space-x-1.5">
+                                    {[1, 2, 3].map((i) => <span key={i} className="w-7 h-7 rounded-full bg-white/12 border border-white/15 grid place-items-center text-[10px] font-bold">✓</span>)}
+                                </div> */}
                             </div>
                         </div>
+                        <div className="absolute -z-10 inset-0 translate-y-4 blur-[24px] bg-black/20 rounded-[24px] hidden lg:block pointer-events-none" />
                     </div>
                 </div>
-                <div className="hidden sm:block mt-10 h-px bg-white/10" />
-                <div className="hidden sm:block mt-4 flex flex-wrap gap-2 text-[11px] tracking-[0.12em] uppercase font-medium text-white/50 justify-center sm:justify-start">
+
+                <div className="hidden sm:block mt-8 h-px bg-white/10" />
+                <div className="hidden sm:flex mt-3 flex-wrap gap-2.5 text-[11px] tracking-[0.12em] uppercase font-medium text-white/45">
                     <span>General Dentistry</span><span className="opacity-30">·</span><span>Implants</span><span className="opacity-30">·</span><span>Orthodontics</span><span className="opacity-30">·</span><span>Whitening</span><span className="opacity-30">·</span><span>Kids Dentistry</span><span className="opacity-30">·</span><span>Root Canal</span>
                 </div>
+                <div className="hidden lg:flex absolute bottom-5 left-1/2 -translate-x-1/2 items-center gap-2 text-[10px] tracking-[0.16em] uppercase font-medium text-white/30">
+                    <span className="w-5 h-px bg-white/15" /> scroll <span className="w-5 h-px bg-white/15" />
+                </div>
             </div>
+            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#fcfcfc] to-transparent pointer-events-none z-10" />
         </section>
     );
 }

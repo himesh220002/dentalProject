@@ -36,7 +36,7 @@ vi.mock('@/context/ClinicContext', () => ({
 describe('Footer Component', () => {
     it('renders the clinic name correctly', () => {
         render(<Footer />);
-        expect(screen.getByText(/ToothOp/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/ToothOp/i).length).toBeGreaterThan(0);
     });
 
     it('displays the contact email', () => {

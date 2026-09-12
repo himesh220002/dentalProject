@@ -110,7 +110,7 @@ export default async function RootLayout({
 
     return (
         <html lang="en">
-            <body className="flex flex-col min-h-screen bg-gradient-to-br from-[#060a1e] to-[#0f2850] text-gray-900 font-sans antialiased">
+            <body className="flex flex-col min-h-screen bg-[#fcfcfc] text-[#0a0a0b] font-sans antialiased selection:bg-black selection:text-white">
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{

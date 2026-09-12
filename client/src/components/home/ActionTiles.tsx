@@ -10,105 +10,66 @@ export default function ActionTiles() {
     const router = useRouter();
 
     const tiles = [
-        {
-            icon: <FaCalendarAlt size={28} />,
-            title: t.bookAppointment,
-            subtitle: t.bookAppointmentSub,
-            buttonText: t.bookAppointmentBtn,
-            color: 'blue',
-            link: '/contact',
-            isPrimary: true
-        },
-        {
-            icon: <FaUserMd size={28} />,
-            title: t.meetDentists,
-            subtitle: t.meetDentistsSub,
-            buttonText: t.meetDentistsBtn,
-            color: 'teal',
-            link: '/about'
-        },
-        {
-            icon: <FaSmile size={28} />,
-            title: t.patientStories,
-            subtitle: t.patientStoriesSub,
-            buttonText: t.patientStoriesBtn,
-            color: 'indigo',
-            link: '/blogs'
-        }
+        { icon: <FaCalendarAlt size={14} />, eyebrow: '01 — Booking', title: t.bookAppointment, subtitle: t.bookAppointmentSub, buttonText: t.bookAppointmentBtn, link: '/contact', accent: 'from-blue-500/10 to-transparent', iconBg: 'bg-blue-50 text-blue-600 border-blue-100' },
+        { icon: <FaUserMd size={14} />, eyebrow: '02 — Team', title: t.meetDentists, subtitle: t.meetDentistsSub, buttonText: t.meetDentistsBtn, link: '/about', accent: 'from-violet-500/10 to-transparent', iconBg: 'bg-violet-50 text-violet-600 border-violet-100' },
+        { icon: <FaSmile size={14} />, eyebrow: '03 — Stories', title: t.patientStories, subtitle: t.patientStoriesSub, buttonText: t.patientStoriesBtn, link: '/blogs', accent: 'from-emerald-500/10 to-transparent', iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-100' }
     ];
-
     const { isLoading } = useClinic();
 
     return (
-        <section className="relative z-30 px-4 sm:px-6 lg:px-16 pb-12 sm:pb-0">
-            {/* Background Bridge Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-blue-500/10 blur-[120px] -z-10 -mt-20"></div>
+        <section className="bg-[#fcfcfc] px-4 sm:px-6 lg:px-8 py-10 sm:py-14 relative z-20">
+            <div className="max-w-[1280px] mx-auto">
+                {/* header — improved hierarchy */}
+                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 mb-8">
+                    <div>
+                        <div className="inline-flex items-center gap-3 text-[11px] tracking-[0.16em] uppercase font-medium text-neutral-500">
+                            <span className="w-8 h-px bg-neutral-200 hidden sm:block" />[ What ToothOp does ]
+                        </div>
+                        <h2 className="mt-3 text-[24px] sm:text-[30px] lg:text-[32px] font-semibold tracking-[-0.03em] leading-[1.05] text-[#0a0a0b]">Simple access, <span className="font-serif italic font-normal text-neutral-400">expert care —</span> without friction.</h2>
+                        <div className="mt-3 h-px w-12 bg-[#0a0a0b]/10 hidden sm:block" />
+                    </div>
+                    <p className="hidden lg:block text-[14px] leading-6 text-neutral-500 max-w-[440px] text-right">Book in seconds, meet verified specialists, and see real transformations — all from one calm, transparent experience.</p>
+                    <p className="lg:hidden text-[13px] leading-6 text-neutral-500">Book in seconds, meet verified specialists, and see real transformations.</p>
+                </div>
 
-            <div className="max-w-7xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                {isLoading ? (
-                    [...Array(3)].map((_, i) => (
-                        <ActionTileSkeleton key={i} />
-                    ))
-                ) : (
-                    tiles.map((tile, index) => (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                    {isLoading ? [...Array(3)].map((_, i) => <ActionTileSkeleton key={i} />) : tiles.map((tile, index) => (
                         <div
                             key={index}
                             onClick={() => router.push(tile.link)}
-                            className={`group relative overflow-hidden bg-white p-6 sm:p-8 rounded-[2.5rem] shadow-[0_20px_50px_rgba(15,23,42,0.06)] border border-slate-200/80 flex flex-col items-center sm:items-start gap-6 hover:shadow-2xl hover:shadow-slate-400/10 transition-all duration-500 transform hover:-translate-y-2 cursor-pointer
-                            ${tile.isPrimary ? 'ring-2 ring-blue-500/20' : ''}`}
+                            className="group relative bg-white rounded-[20px] border border-black/5 p-6 sm:p-7 flex flex-col overflow-hidden hover:border-black/10 hover:shadow-[0_12px_32px_rgba(0,0,0,0.07)] hover:-translate-y-1.5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer"
                         >
-                            {/* Gradient Accent */}
-                            <div className={`absolute top-0 left-0 w-4 h-full transition-all duration-500
-                            ${tile.color === 'blue' ? 'bg-gradient-to-r from-blue-600/20 to-transparent' :
-                                    tile.color === 'teal' ? 'bg-gradient-to-r from-cyan-600/20 to-transparent' :
-                                        'bg-gradient-to-r from-indigo-600/20 to-transparent'}`}
-                            />
+                            {/* subtle accent wash */}
+                            <div className={`absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r ${tile.accent} opacity-60`} />
+                            <div className={`absolute -top-12 -right-12 w-32 h-32 rounded-full bg-gradient-to-br ${tile.accent} blur-2xl opacity-40 pointer-events-none`} />
 
-                            {/* Icon Container */}
-                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-lg
-                            ${tile.color === 'blue' ? 'bg-blue-50 text-blue-600' :
-                                    tile.color === 'teal' ? 'bg-cyan-50 text-cyan-600' :
-                                        'bg-indigo-50 text-indigo-600'}`}
-                            >
-                                {tile.icon}
+                            <div className="relative flex items-start justify-between gap-3">
+                                <span className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-400">{tile.eyebrow}</span>
+                                <span className={`w-9 h-9 rounded-xl border grid place-items-center shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-[-10deg] group-hover:scale-105 shadow-sm ${tile.iconBg}`}>
+                                    {tile.icon}
+                                </span>
                             </div>
 
-                            {/* Content */}
-                            <div className="space-y-3">
-                                <h3 className={`text-2xl text-center sm:text-left font-black tracking-tight leading-tight transition-colors duration-300
-                                ${tile.color === 'blue' ? 'text-blue-900' :
-                                        tile.color === 'teal' ? 'text-cyan-900' :
-                                            'text-indigo-900'}`}
-                                >
-                                    {tile.title}
-                                </h3>
-                                <p className="text-slate-600 text-center sm:text-left font-medium leading-relaxed">
-                                    {tile.subtitle}
-                                </p>
-                            </div>
+                            <h3 className="relative mt-6 text-[18px] font-semibold tracking-[-0.02em] text-[#0a0a0b] leading-tight">{tile.title}</h3>
+                            <p className="relative mt-2.5 text-[13.5px] leading-6 text-neutral-600 flex-1">{tile.subtitle}</p>
 
-                            {/* Button */}
-                            <div className="mt-auto pt-4">
-                                <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-500
-                                ${tile.color === 'blue' ? 'bg-blue-600 text-white shadow-blue-200 hover:bg-blue-700' :
-                                        tile.color === 'teal' ? 'bg-cyan-600 text-white shadow-cyan-200 hover:bg-cyan-700' :
-                                            'bg-indigo-600 text-white shadow-indigo-200 hover:bg-indigo-700'} 
-                                group-hover:gap-5 shadow-xl`}
-                                >
+                            <div className="relative mt-7 flex items-center gap-3">
+                                <span className="inline-flex items-center gap-2.5 text-[13px] font-medium tracking-[-0.01em] text-[#0a0a0b] group-hover:gap-3 transition-all duration-300 ease-out">
                                     {tile.buttonText}
-                                    <FaArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-                                </div>
+                                    <span className="w-8 h-8 rounded-full bg-[#0a0a0b] text-white grid place-items-center group-hover:bg-black transition-colors duration-300 shadow-sm">
+                                        <FaArrowRight size={11} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+                                    </span>
+                                </span>
                             </div>
-
-                            {/* Decorative Background Element */}
-                            <div className={`absolute -bottom-12 -right-12 w-32 h-32 rounded-full opacity-[0.03] transition-all duration-700 group-hover:scale-150
-                            ${tile.color === 'blue' ? 'bg-blue-600' :
-                                    tile.color === 'teal' ? 'bg-cyan-600' :
-                                        'bg-indigo-600'}`}
-                            />
                         </div>
-                    ))
-                )}
+                    ))}
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-2.5 text-[11px] tracking-[0.1em] uppercase font-medium text-neutral-500 justify-center sm:justify-start">
+                    <span className="px-3.5 py-2 rounded-full bg-white border border-black/5 shadow-sm">No sign-in required</span>
+                    <span className="px-3.5 py-2 rounded-full bg-white border border-black/5 shadow-sm">Transparent pricing</span>
+                    <span className="px-3.5 py-2 rounded-full bg-white border border-black/5 shadow-sm">Mon–Sat 10am–8pm</span>
+                </div>
             </div>
         </section>
     );

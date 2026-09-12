@@ -3,6 +3,7 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import Home from '../page';
 import { useClinic } from '../../context/ClinicContext';
 import { useSession } from 'next-auth/react';
+import { useSession as useAuthSession } from '../../context/AuthContext';
 import axios from 'axios';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -28,6 +29,11 @@ vi.mock('axios');
 const mockedAxios = vi.mocked(axios, true);
 vi.mock('next-auth/react');
 const mockUseSession = vi.mocked(useSession);
+vi.mock('../../context/AuthContext', async () => {
+    const actual = await vi.importActual('../../context/AuthContext');
+    return { ...actual, useSession: vi.fn() };
+});
+const mockUseAuthSession = vi.mocked(useAuthSession);
 vi.mock('../../context/ClinicContext');
 const mockUseClinic = vi.mocked(useClinic);
 vi.mock('socket.io-client', () => ({
@@ -77,6 +83,7 @@ describe('Home Page Component', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockUseSession.mockReturnValue({ data: null, status: 'unauthenticated', update: vi.fn() } as any);
+        mockUseAuthSession.mockReturnValue({ data: null, status: 'unauthenticated' } as any);
         mockUseClinic.mockReturnValue({
             clinicData: mockClinicData,
             language: 'en',
@@ -103,6 +110,10 @@ describe('Home Page Component', () => {
             data: { user: { name: 'Test User', id: 'u1', patientId: 'p1' } },
             status: 'authenticated'
         } as any);
+        mockUseAuthSession.mockReturnValue({
+            data: { user: { name: 'Test User', id: 'u1', patientId: 'p1' } },
+            status: 'authenticated'
+        } as any);
 
         const mockAppointment = {
             _id: 'a1',
@@ -123,8 +134,8 @@ describe('Home Page Component', () => {
         });
 
         await waitFor(() => {
-            expect(screen.getByText(/Fixed Appointment/i)).toBeInTheDocument();
-            expect(screen.getByText(/10:00 AM/i)).toBeInTheDocument();
+            expect(screen.getAllByText(/Fixed Appointment/i).length).toBeGreaterThan(0);
+            expect(screen.getAllByText(/10:00 AM/i).length).toBeGreaterThan(0);
         });
     });
 

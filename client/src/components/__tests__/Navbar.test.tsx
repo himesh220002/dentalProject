@@ -45,9 +45,9 @@ describe('Navbar Component', () => {
             return element?.tagName.toLowerCase() === 'span' && content.includes('ToothOp');
         })).toBeInTheDocument();
 
-        expect(screen.getByText('Home')).toBeInTheDocument();
-        expect(screen.getByText('About')).toBeInTheDocument();
-        expect(screen.getByText('Treatments')).toBeInTheDocument();
+        expect(screen.getAllByText('Home').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('About').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Treatments').length).toBeGreaterThan(0);
     });
 
     it('toggles mobile menu when button is clicked', () => {

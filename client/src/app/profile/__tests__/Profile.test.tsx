@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import ProfilePage from '../page';
 import { useSession } from 'next-auth/react';
+import { useSession as useAuthSession } from '../../../context/AuthContext';
 import axios from 'axios';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -11,6 +12,14 @@ vi.mock('axios');
 vi.mock('next-auth/react', () => ({
     useSession: vi.fn()
 }));
+
+vi.mock('../../../context/AuthContext', async () => {
+    const actual = await vi.importActual('../../../context/AuthContext');
+    return {
+        ...actual,
+        useSession: vi.fn(),
+    };
+});
 
 // Mock SessionGuard to just render children
 vi.mock('@/components/SessionGuard', () => ({
@@ -38,7 +47,8 @@ describe('Profile Page Component', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        (useSession as any).mockReturnValue({ data: { user: mockUser } });
+        (useSession as any).mockReturnValue({ data: { user: mockUser }, status: 'authenticated' });
+        (useAuthSession as any).mockReturnValue({ data: { user: mockUser }, status: 'authenticated' });
 
         // Default API responses
         (axios.get as any).mockImplementation((url: string) => {
