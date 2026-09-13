@@ -59,9 +59,9 @@ export async function generateMetadata() {
                 canonical: baseUrl,
             },
             icons: {
-                icon: '/favicon.png',
-                shortcut: '/favicon.png',
-                apple: '/favicon.png',
+                icon: '/images/logo.png',
+                shortcut: '/images/logo.png',
+                apple: '/images/logo.png',
             },
             robots: {
                 index: true,
@@ -79,6 +79,11 @@ export async function generateMetadata() {
         return {
             title: 'ToothOp | Best Dentist in Katihar',
             description: 'Professional Dental Care with Years of Experience',
+            icons: {
+                icon: '/images/logo.png',
+                shortcut: '/images/logo.png',
+                apple: '/images/logo.png',
+            },
         };
     }
 }
@@ -110,7 +115,7 @@ export default async function RootLayout({
 
     return (
         <html lang="en">
-            <body className="flex flex-col min-h-screen bg-gradient-to-br from-blue-900/90 to-purple-900/20 text-[#0a0a0b] font-sans antialiased selection:bg-black selection:text-white">
+            <body className="flex flex-col min-h-screen bg-white text-[#0a0a0b] font-sans antialiased selection:bg-black selection:text-white">
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
@@ -132,8 +137,8 @@ export default async function RootLayout({
                             },
                             "geo": {
                                 "@type": "GeoCoordinates",
-                                "latitude": address.latitude || 25.555613,
-                                "longitude": address.longitude || 87.556440
+                                "latitude": address.latitude || 28.555613,
+                                "longitude": address.longitude || 77.556440
                             },
                             "openingHoursSpecification": {
                                 "@type": "OpeningHoursSpecification",

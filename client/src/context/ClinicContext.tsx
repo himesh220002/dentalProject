@@ -53,7 +53,7 @@ interface ClinicData {
 
 const DEFAULT_CLINIC_DATA: ClinicData = {
     clinicName: 'ToothOp',
-    doctorName: 'ToothOp kumar',
+    doctorName: 'ToothOp',
     tagline: "Your Smile's Guardian",
     email: 'care@drToothdental.in',
     phone: '+91 9876543210',
@@ -69,8 +69,8 @@ const DEFAULT_CLINIC_DATA: ClinicData = {
         city: 'Katihar',
         state: 'Bihar',
         zip: '854105',
-        latitude: '25.555613',
-        longitude: '87.556440'
+        latitude: '28.55',
+        longitude: '77.25'
     },
     socialLinks: {
         facebook: 'https://www.facebook.com/',

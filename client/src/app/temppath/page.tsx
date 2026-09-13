@@ -15,34 +15,34 @@ const DEFAULT_CLINIC_DATA = {
     doctorName: 'ToothOp',
     tagline: "Your Smile's Guardian",
     email: 'care@drToothdental.in',
-    phone: '+91 90000 00000',
-    staffPhone: '+91 8105542318',
+    phone: '+91 9876543210',
+    staffPhone: '+91 9876543211',
     establishedYear: '2014',
     clinicExperience: '10',
     expertise: 'Restorative Dentistry, Oral Surgery, Orthodontics, Cosmetic Dentistry',
     visitPolicy: 'Prior Appointment Recommended. Walk-ins subject to availability.',
     happyCustomers: '5000+',
     successRate: '99.9',
-    address: { street: 'Dental Clinic Road, Near Market', city: 'Katihar', state: 'Bihar', zip: '854105', latitude: '25.555613', longitude: '87.556440' },
+    address: { street: 'Dental Clinic Road, Near Market', city: 'CityZ', state: 'State9', zip: '854105', latitude: '28.55', longitude: '77.25' },
     socialLinks: { facebook: 'https://www.facebook.com/', twitter: 'https://x.com/tweeter?lang=en', linkedin: 'https://www.linkedin.com/', instagram: 'https://www.instagram.com/' },
     timings: { monday: '09:00 AM - 08:00 PM', tuesday: '09:00 AM - 08:00 PM', wednesday: '09:00 AM - 08:00 PM', thursday: '09:00 AM - 08:00 PM', friday: '09:00 AM - 08:00 PM', saturday: '09:00 AM - 06:00 PM', sunday: 'Closed' },
     certifications: 'Best Dentist Award 2022, Certified Implantologist, Member of IDA',
     consultants: [{ name: 'ToothOp', role: 'Chief Surgeon', info: 'BDS, MDS', experience: '12 Years' }, { name: 'Dr. nefario', role: 'Orthodontist', info: 'Expert in Braces & Aligners', experience: '8 Years' }],
     treatments: [
-        { name: 'General Consultation', price: '300', description: 'General consultation for any other dental issues.', image: 'https://www.shutterstock.com/image-vector/dentist-examining-female-patient-modern-600nw-2747564801.jpg', icon: 'FaMedkit' },
-        { name: 'Scaling & Cleaning', price: '800', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1674775372064-8c75d3f8c757?q=80&w=687' },
-        { name: 'Dental Fillings', price: '1000', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1694345215004-837b089f620d?q=80&w=1929' },
-        { name: 'Tooth Extraction', price: '500', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1626736985932-c0df2ae07a2e?q=80&w=1631' },
-        { name: 'Root Canal Treatment', price: '3500', description: 'Treatment details provided by clinic.', image: 'https://www.smilecentre.in/assets/images/treatments/root-canal-procedure.jpg' },
-        { name: 'Dental Implants', price: '25000', description: 'Treatment details provided by clinic.', image: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Dental-implant-illustration.jpg' },
-        { name: 'Teeth Whitening', price: '5000', description: 'Treatment details provided by clinic.', image: 'https://www.smilecentre.in/assets/images/treatments/tooth-whitening.jpg' },
-        { name: 'Orthodontic Braces', price: '15000', description: 'Treatment details provided by clinic.', image: 'https://smilecreations.in/wp-content/uploads/2023/11/understanding-metal-braces.jpg' },
-        { name: 'Crowns & Bridges', price: '3500', description: 'Treatment details provided by clinic.', image: 'https://www.cyprusfamilydental.com/wp-content/uploads/2022/12/Depositphotos_274172422_L.jpg' },
-        { name: "Kid's Dentistry", price: '500', description: 'Treatment details provided by clinic.', image: 'https://www.dratuljajoo.com/wp-content/uploads/2018/09/kids-dentistry.jpg' },
-        { name: 'Full Mouth X-Ray', price: '500', description: 'Treatment details provided by clinic.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjXnsLV9glWBJ77_38thCOxDEeWWN0sqTD3A&s' }
+        { name: 'General Consultation', price: '300', description: 'Initial dental check‑up where the dentist examines teeth, gums, and oral health, provides diagnosis.', image: 'images/dentalconsult.webp', icon: 'FaMedkit' },
+        { name: 'Scaling & Cleaning', price: '800', description: 'Professional removal of plaque, tartar, and stains from teeth surfaces and gum line to prevent cavities and gum disease.', image: 'https://images.unsplash.com/photo-1674775372064-8c75d3f8c757?q=80&w=687' },
+        { name: 'Dental Fillings', price: '1000', description: 'White composite material used to restore decayed or damaged teeth, preserving natural tooth structure.', image: 'https://images.unsplash.com/photo-1694345215004-837b089f620d?q=80&w=1929' },
+        { name: 'Tooth Extraction', price: '500', description: 'Removal of damaged or infected tooth when it cannot be saved by other dental treatments.', image: 'https://images.unsplash.com/photo-1626736985932-c0df2ae07a2e?q=80&w=1631' },
+        { name: 'Root Canal Treatment', price: '3500', description: 'Removes infected tooth pulp and seals the canal to save the tooth from extraction and further infection.', image: 'https://www.smilecentre.in/assets/images/treatments/root-canal-procedure.jpg' },
+        { name: 'Dental Implants', price: '25000', description: 'Artificial tooth roots used to replace missing teeth, providing stable and long‑lasting support for crowns or dentures.', image: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Dental-implant-illustration.jpg' },
+        { name: 'Teeth Whitening', price: '5000', description: 'Professional bleaching process to lighten discolored teeth and improve smile appearance without damaging tooth structure.', image: 'https://www.smilecentre.in/assets/images/treatments/tooth-whitening.jpg' },
+        { name: 'Orthodontic Braces', price: '15000', description: 'Metal, ceramic, or clear aligners used to straighten teeth and correct bite issues for improved function and aesthetics.', image: 'https://smilecreations.in/wp-content/uploads/2023/11/understanding-metal-braces.jpg' },
+        { name: 'Crowns & Bridges', price: '3500', description: 'Tooth‑shaped caps that cover damaged teeth or act as replacements for missing teeth, supported by implants or natural teeth.', image: 'https://www.cyprusfamilydental.com/wp-content/uploads/2022/12/Depositphotos_274172422_L.jpg' },
+        { name: "Kid's Dentistry", price: '500', description: 'Gentle dental care for children including check‑ups, sealants, fluoride treatments, and age‑appropriate restorative care.', image: 'https://www.dratuljajoo.com/wp-content/uploads/2018/09/kids-dentistry.jpg' },
+        { name: 'Full Mouth X-Ray', price: '500', description: 'Comprehensive X‑ray imaging of all teeth and jaw structures for detailed diagnosis of dental conditions.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjXnsLV9glWBJ77_38thCOxDEeWWN0sqTD3A&s' }
     ],
     highlights: [{ title: 'Advanced Technology', description: 'Intraoral scanners & 3D imaging for precise diagnosis.' }, { title: 'Pain-free Dentistry', description: 'Modern anesthesia & laser treatments for comfort.' }, { title: 'Sterile Environment', description: 'Class B Autoclave sterilization protocols.' }],
-    seo: { metaTitle: 'Best Dental Clinic in Katihar | ToothOp', metaDescription: 'Expert dental care by ToothOp. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.', keywords: 'dentist in katihar, dental clinic, root canal, teeth whitening, orthodontist' },
+    seo: { metaTitle: 'Best Dental Clinic | ToothOp', metaDescription: 'Expert dental care by ToothOp. Specializing in Root Canal, Implants, and Braces. Advanced technology and painless treatments in Katihar.', keywords: 'dentist, best dentist, best dentist near me, dentist near me, dental clinic, root canal, teeth whitening, orthodontist' },
     lunchTime: '01:00 PM - 02:00 PM',
     isActive: false
 };
@@ -88,7 +88,7 @@ export default function TempClinicForm() {
     const handleLogout = () => { localStorage.removeItem('handover_authorized'); localStorage.removeItem('handover_expiry'); setIsAuthorized(false); };
 
     useEffect(() => { if (isAuthorized) fetchHistory(); }, [isAuthorized]);
-    const fetchHistory = async () => { try { const res = await axios.get(`${API_BASE_URL}/handover/history`); setHistory(res.data); } catch {} };
+    const fetchHistory = async () => { try { const res = await axios.get(`${API_BASE_URL}/handover/history`); setHistory(res.data); } catch { } };
 
     const handleSave = async (publish = false) => {
         setIsLoading(true); setSaveStatus(publish ? 'Publishing...' : 'Saving Draft...');
@@ -115,13 +115,27 @@ export default function TempClinicForm() {
         if (name.includes('.')) { const [parent, child] = name.split('.'); setFormData((prev: any) => ({ ...prev, [parent]: { ...(prev[parent as keyof typeof prev] as any), [child]: value } })); }
         else setFormData((prev: any) => ({ ...prev, [name]: value }));
     };
+    const autoFillTreatmentDescriptions = () => {
+        const defaultMap = new Map(DEFAULT_CLINIC_DATA.treatments.map(t => [t.name.toLowerCase(), t.description]));
+        setFormData((prev: any) => ({
+            ...prev,
+            treatments: prev.treatments.map((t: any) => {
+                const defaultDesc = defaultMap.get(t.name.toLowerCase());
+                if ((!t.description || t.description === 'Treatment details provided by clinic.') && defaultDesc) {
+                    return { ...t, description: defaultDesc };
+                }
+                return t;
+            })
+        }));
+    };
+
     const handleListChange = (listName: 'treatments' | 'consultants' | 'highlights', index: number, field: string, value: string) => {
         const newList = [...formData[listName]]; // @ts-ignore
         newList[index][field] = value; setFormData((prev: any) => ({ ...prev, [listName]: newList }));
     };
     const addListItem = (listName: 'treatments' | 'consultants' | 'highlights') => {
         let newItem: any;
-        if (listName === 'treatments') newItem = { name: '', price: '', description: 'Treatment details provided by clinic.', image: 'https://images.unsplash.com/photo-1597764650032-135acc9e83f?q=80&w=2070' };
+        if (listName === 'treatments') newItem = { name: '', price: '', description: '', image: 'https://images.unsplash.com/photo-1597764650032-135acc9e83f?q=80&w=2070' };
         else if (listName === 'consultants') newItem = { name: '', role: '', info: '', experience: '' };
         else newItem = { title: '', description: '' };
         setFormData((prev: any) => ({ ...prev, [listName]: [...prev[listName], newItem] }));
@@ -353,7 +367,10 @@ export default function TempClinicForm() {
                                     <div className="bg-white rounded-[20px] border border-black/5 p-6 shadow-sm">
                                         <div className="flex items-center justify-between mb-4">
                                             <h3 className="text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0b] flex items-center gap-2"><span className="w-1 h-4 bg-emerald-500 rounded-full" /> Treatments & Pricing</h3>
-                                            <button onClick={() => addListItem('treatments')} className="px-3 py-1.5 rounded-full bg-[#f5f5f3] border border-black/5 text-[12px] font-medium hover:bg-white">+ Add</button>
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={autoFillTreatmentDescriptions} className="px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-[12px] font-medium hover:bg-emerald-100 transition">✨ Auto-fill Descriptions</button>
+                                                <button onClick={() => addListItem('treatments')} className="px-3 py-1.5 rounded-full bg-[#f5f5f3] border border-black/5 text-[12px] font-medium hover:bg-white transition">+ Add</button>
+                                            </div>
                                         </div>
                                         <div className="grid sm:grid-cols-2 gap-4">
                                             {formData.treatments.map((t: any, i: number) => (

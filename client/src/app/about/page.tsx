@@ -13,7 +13,7 @@ import Skeleton from '@/components/ui/Skeleton';
 
 export default function About() {
     const { clinicData, language } = useClinic();
-    const [imgLoaded, setImgLoaded] = useState(false);
+    // const [imgLoaded, setImgLoaded] = useState(false);
 
     const t = translations[language as keyof typeof translations];
 
@@ -56,7 +56,7 @@ export default function About() {
                             <p className="mt-4 text-[14px] leading-7 text-neutral-600 max-w-[560px]">{doctorDesc}</p>
                         </div>
 
-                        <div className="rounded-[20px] bg-[#0a0a0b] text-white p-6 sm:p-7 relative overflow-hidden">
+                        <div className="rounded-[20px] bg-gradient-to-br from-purple-950 via-[#121282] to-black text-white p-6 sm:p-7 relative overflow-hidden">
                             <div className="absolute -top-16 -right-16 w-40 h-40 bg-white/[0.04] rounded-full blur-2xl" />
                             <FaQuoteLeft className="text-white/15 text-xl mb-3" />
                             <p className="text-[15px] leading-7 font-medium relative">“{t.aboutHero.quote}”</p>
@@ -70,8 +70,8 @@ export default function About() {
                     <div className="order-1 lg:order-2 relative">
                         <div className="bg-white p-2 sm:p-2.5 rounded-[24px] border border-black/5 shadow-[0_12px_32px_rgba(0,0,0,0.06)]">
                             <div className="relative rounded-[18px] overflow-hidden bg-[#f5f5f3] aspect-[4/4.6] sm:aspect-[4/4.2]">
-                                {!imgLoaded && <div className="absolute inset-0"><Skeleton variant="rect" className="w-full h-full !rounded-none" /></div>}
-                                <img src="/images/rendering-anime-doctor-job.jpg" alt={doctorName} onLoad={() => setImgLoaded(true)} className={`w-full h-full object-cover transition duration-700 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`} />
+                                {/* {!imgLoaded && <div className="absolute inset-0"><Skeleton variant="rect" className="w-full h-full !rounded-none" /></div>} */}
+                                <img src="/images/rendering-anime-doctor-job.jpg" alt={doctorName} className={`w-full h-full object-cover transition duration-700 `} />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent pointer-events-none" />
                                 {/* top badge inside */}
                                 <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-white/95 backdrop-blur-md px-3 py-2 rounded-2xl shadow-sm border border-black/5 flex items-center gap-2.5">
@@ -162,7 +162,7 @@ export default function About() {
 
                 <div className="mt-6 rounded-[20px] bg-[#f5f5f3] border border-black/5 px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
                     <p className="text-[13px] font-medium tracking-[-0.01em] text-[#0a0a0b]">{clinicExperience} {t.aboutValues.excellence} <span className="text-neutral-500 font-normal">· {t.aboutValues.decade}</span></p>
-                    <span className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 hidden sm:block">Katihar · Bihar</span>
+                    {/* <span className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 hidden sm:block">Katihar · Bihar</span> */}
                 </div>
             </section>
         </div>

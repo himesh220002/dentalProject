@@ -65,29 +65,29 @@ export default function HomeHero() {
             const scale = 1 - progress * 0.035;
 
             if (titleRef.current) {
-                const tx = mx * 12; const ty = my * 7 + parallaxY;
-                const rx = my * -1; const ry = mx * 1.4;
+                const tx = mx * 10; const ty = my * 6 + parallaxY;
+                const rx = my * -1; const ry = mx * 1.2;
                 titleRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) scale(${scale})`;
                 titleRef.current.style.opacity = `${fade}`;
             }
             if (paraRef.current) {
-                const tx = mx * 8; const ty = my * 5 + parallaxY * 0.78;
+                const tx = mx * 8; const ty = my * 5 + parallaxY;
                 paraRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
                 paraRef.current.style.opacity = `${Math.max(0, fade - 0.04)}`;
             }
             if (ctaRef.current) {
-                const tx = mx * 6; const ty = my * 4 + parallaxY * 0.58;
+                const tx = mx * 6; const ty = my * 4 + parallaxY;
                 ctaRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
                 ctaRef.current.style.opacity = `${Math.max(0, fade - 0.07)}`;
             }
             if (statsRef.current) {
-                const tx = mx * -5; const ty = my * -3 + parallaxY * 0.42;
+                const tx = mx * 4; const ty = my * 3 + parallaxY;
                 statsRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
                 statsRef.current.style.opacity = `${Math.max(0, 1 - progress * 0.85)}`;
             }
             if (bookingRef.current) {
-                const tx = mx * -8; const ty = my * -5 + parallaxY * 0.32;
-                const brx = my * 0.7; const bry = mx * -0.9;
+                const tx = mx * -6; const ty = my * 4 + parallaxY * 0.8;
+                const brx = my * 0.5; const bry = mx * -0.7;
                 bookingRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${brx}deg) rotateY(${bry}deg)`;
             }
             rafRef.current = requestAnimationFrame(tick);
@@ -135,7 +135,7 @@ export default function HomeHero() {
             <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[860px] h-[480px] bg-[#1e3a8a]/14 rounded-full blur-[90px] pointer-events-none z-[1]" />
 
             <div className="relative z-10 mx-auto  px-4 sm:px-6 lg:px-8 2xl:px-40 pt-[108px] sm:pt-[128px] lg:pt-[132px] pb-10 sm:pb-12">
-                <div className={`flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] tracking-[0.14em] uppercase font-medium mb-5 sm:mb-6 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                <div className={`flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] tracking-[0.14em] uppercase font-medium mb-5 sm:mb-6 transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${ready ? 'opacity-100' : 'opacity-0'}`}>
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-[#0a0a0b] border border-white/20 shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Accepting new patients
                     </span>
@@ -149,21 +149,21 @@ export default function HomeHero() {
 
                 <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-10 items-start">
                     <div className="space-y-5 sm:space-y-6" style={{ transformStyle: 'preserve-3d' }}>
-                        <div ref={titleRef} className="will-change-transform" style={{ transformStyle: 'preserve-3d' }}>
+                        <div ref={titleRef} style={{ transformStyle: 'preserve-3d' }}>
                             <h1 className="text-[32px] sm:text-[54px] lg:text-[64px] leading-[0.88] tracking-[-0.04em] font-semibold text-center sm:text-left text-white select-none">
-                                <span className={`block font-sans font-bold tracking-[-0.04em] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-100 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>Healthy smiles,</span>
-                                <span className={`block font-serif italic font-normal tracking-[-0.03em] text-white/60 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-200 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>cared for with compassion</span>
-                                <span className={`block font-sans font-bold tracking-[-0.04em] mt-1 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>every day.</span>
+                                <span className={`block font-sans font-bold tracking-[-0.04em] transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-100 ${ready ? 'opacity-100' : 'opacity-0'}`}>Healthy smiles,</span>
+                                <span className={`block font-serif italic font-normal tracking-[-0.03em] text-white/60 transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-200 ${ready ? 'opacity-100' : 'opacity-0'}`}>cared for with compassion</span>
+                                <span className={`block font-sans font-bold tracking-[-0.04em] mt-1 transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${ready ? 'opacity-100' : 'opacity-0'}`}>every day.</span>
                             </h1>
                             <div className="hidden sm:block mt-5 h-px w-[92%] max-w-[560px] bg-gradient-to-r from-white/25 via-white/10 to-transparent" />
                         </div>
 
-                        <p ref={paraRef} className={`hidden md:block max-w-[560px] text-[15px] leading-7 text-white/70 font-normal text-balance will-change-transform transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+                        <p ref={paraRef} className={`hidden md:block max-w-[560px] text-[15px] leading-7 text-white/70 font-normal text-balance transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${ready ? 'opacity-100' : 'opacity-0'}`}>
                             {clinicName} blends evidence-led care with a gentle chair-side manner. Minimal pain, maximal clarity — from first consult to lasting smile.
                         </p>
 
-                        <div ref={ctaRef} className={`flex flex-wrap items-center justify-center sm:justify-start gap-3 will-change-transform transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-400 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
-                            <button onClick={scrollToInquiry} className="inline-flex items-center gap-3 bg-white text-[#0a0a0b] pl-6 pr-2 py-2 rounded-full text-[14px] font-medium tracking-[-0.01em] hover:bg-neutral-50 transition-colors duration-200 group shadow-[0_8px_24px_rgba(0,0,0,0.18)] active:scale-[0.98]">
+                        <div ref={ctaRef} className={`flex flex-wrap items-center justify-center sm:justify-start gap-3 transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-400 ${ready ? 'opacity-100' : 'opacity-0'}`}>
+                            <button onClick={() => location.href = "/contact"} className="inline-flex items-center gap-3 bg-white text-[#0a0a0b] pl-6 pr-2 py-2 rounded-full text-[14px] font-medium tracking-[-0.01em] hover:bg-neutral-50 transition-colors duration-200 group shadow-[0_8px_24px_rgba(0,0,0,0.18)] active:scale-[0.98]">
                                 Book appointment
                                 <span className="w-8 h-8 rounded-full bg-[#0a0a0b] text-white grid place-items-center group-hover:translate-x-0.5 transition-transform duration-200 ease-out"><FaArrowRight size={11} /></span>
                             </button>
@@ -176,7 +176,7 @@ export default function HomeHero() {
                             </a>
                         </div>
 
-                        <div ref={statsRef} className={`grid grid-cols-3 gap-3 pt-2 will-change-transform transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-500 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+                        <div ref={statsRef} className={`grid grid-cols-3 gap-3 pt-2 transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-500 ${ready ? 'opacity-100' : 'opacity-0'}`}>
                             {stats.map((s) => (
                                 <div key={s.v} className="rounded-2xl bg-white/[0.07] backdrop-blur-md border border-white/10 p-4 shadow-sm">
                                     <div className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.03em] text-white leading-none tabular-nums">{s.k}</div>
@@ -186,14 +186,14 @@ export default function HomeHero() {
                             ))}
                         </div>
 
-                        <div className={`flex flex-wrap gap-2 justify-center sm:justify-start text-[11px] tracking-[0.12em] uppercase font-medium text-white/50 will-change-transform transition-all duration-700 delay-600 ${ready ? 'opacity-100' : 'opacity-0'}`}>
+                        <div className={`flex flex-wrap gap-2 justify-center sm:justify-start text-[11px] tracking-[0.12em] uppercase font-medium text-white/50 transition-opacity duration-700 delay-600 ${ready ? 'opacity-100' : 'opacity-0'}`}>
                             <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur-md">Painless protocols</span>
                             <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur-md">Transparent pricing</span>
                             <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur-md">Mon–Sat 10:00–20:00</span>
                         </div>
                     </div>
 
-                    <div ref={bookingRef} className={`relative lg:sticky lg:top-[88px] will-change-transform transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${ready ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{ transformStyle: 'preserve-3d' }}>
+                    <div ref={bookingRef} className={`relative lg:sticky lg:top-[88px] transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${ready ? 'opacity-100' : 'opacity-0'}`} style={{ transformStyle: 'preserve-3d' }}>
                         {/* Transparent glass — previous look */}
                         <div className="bg-white/[0.08] backdrop-blur-2xl rounded-[24px] border border-white/15 shadow-[0_16px_48px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] overflow-hidden">
                             <div className="px-5 sm:px-6 pt-5 pb-4 border-b border-white/10">

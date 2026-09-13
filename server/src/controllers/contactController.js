@@ -38,7 +38,7 @@ exports.submitContact = async (req, res) => {
                 contact: phone,
                 email: email || '',
                 age: 0,
-                gender: '',
+                gender: '-',
                 address: '',
                 medicalHistory: [],
                 addedByAdmin: false

@@ -147,7 +147,7 @@ exports.updateProfile = async (req, res) => {
                 name: name || user.name,
                 email: user.email,
                 age: age || 0,
-                gender: gender || '',
+                gender: (gender && ['Male', 'Female', 'Other', '-'].includes(gender)) ? gender : '-',
                 contact: contact || '',
                 addedByAdmin: false,
                 userId: user._id
@@ -167,7 +167,9 @@ exports.updateProfile = async (req, res) => {
         // Standard update
         patient.name = name || patient.name;
         patient.age = age || (patient.age === 0 ? age : patient.age);
-        patient.gender = gender || patient.gender;
+        if (gender && ['Male', 'Female', 'Other', '-'].includes(gender)) {
+            patient.gender = gender;
+        }
         patient.address = address || patient.address;
         patient.contact = contact || patient.contact;
         patient.alternateContact = alternateContact || patient.alternateContact;

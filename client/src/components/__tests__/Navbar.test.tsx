@@ -52,9 +52,7 @@ describe('Navbar Component', () => {
 
     it('toggles mobile menu when button is clicked', () => {
         render(<Navbar />);
-        // Mobile button is inside a div with class lg:hidden
-        const buttons = screen.getAllByRole('button');
-        const hamburgerBtn = buttons.find(btn => btn.parentElement?.className.includes('lg:hidden'));
+        const hamburgerBtn = screen.getByRole('button', { name: /toggle menu/i });
 
         if (hamburgerBtn) {
             fireEvent.click(hamburgerBtn);
@@ -73,8 +71,7 @@ describe('Navbar Component', () => {
         } as any);
 
         render(<Navbar />);
-        const buttons = screen.getAllByRole('button');
-        const hamburgerBtn = buttons.find(btn => btn.parentElement?.className.includes('lg:hidden'));
+        const hamburgerBtn = screen.getByRole('button', { name: /toggle menu/i });
 
         if (hamburgerBtn) {
             fireEvent.click(hamburgerBtn);

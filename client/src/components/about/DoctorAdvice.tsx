@@ -33,7 +33,7 @@ export default function DoctorAdvice() {
                         </h2>
                         <p className="mt-3 text-[14px] leading-7 text-neutral-600 max-w-[560px]">{t.aboutAdvice.quote}</p>
                     </div>
-                    <div className="hidden lg:flex w-14 h-14 rounded-2xl bg-[#f5f5f3] border border-black/5 grid place-items-center text-neutral-700"><FaUserShield size={18} /></div>
+                    <div className="hidden lg:flex w-14 h-14 rounded-2xl bg-[#f5f5f3] border border-black/5 grid place-items-center justify-center text-neutral-700"><FaUserShield size={18} /></div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
@@ -46,7 +46,7 @@ export default function DoctorAdvice() {
                     ))}
                 </div>
 
-                <div className="mt-6 rounded-[24px] bg-[#0a0a0b] text-white  p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 overflow-hidden relative">
+                <div className="mt-6 rounded-[24px] bg-gradient-to-br from-purple-950 via-[#121212] to-black text-white  p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 overflow-hidden relative">
                     <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/[0.04] rounded-full blur-3xl pointer-events-none" />
                     <div className="relative max-w-[560px]">
                         <h3 className="text-[22px] sm:text-[28px] font-semibold tracking-[-0.03em] leading-[1.1]">{t.aboutAdvice.askAnything} <span className="font-serif italic font-normal text-white/60">{doctorName}</span></h3>

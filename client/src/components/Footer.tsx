@@ -25,7 +25,7 @@ export default function Footer() {
             <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
                 <div className="flex flex-wrap items-end justify-between gap-6 pb-8 border-b border-white/10">
                     <div className="flex items-center gap-4">
-                        <div className="w-[48px] h-[48px] rounded-[14px] overflow-hidden bg-white p-[1px] shrink-0"><Image src="/images/brand-logo.png" alt="Logo" width={200} height={200} className="w-full h-full object-cover rounded-[13px]" /></div>
+                        <div className="w-[48px] h-[48px] rounded-[14px] overflow-hidden shrink-0"><Image src="/images/logo.png" alt="Logo" width={200} height={200} className="w-full h-full object-cover rounded-[13px]" /></div>
                         <div>
                             <div className="text-[18px] font-semibold tracking-[-0.02em] leading-none">{name.split(' ')[0]} <span className="font-normal text-white/60">{name.split(' ').slice(1).join(' ')}</span></div>
                             <div className="text-[11px] tracking-[0.14em] uppercase font-medium text-white/50 mt-1">{tagline}</div>

@@ -48,7 +48,7 @@ export default function RegisterPage() {
             <div className="max-w-md w-full bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 sm:p-10 border border-gray-100">
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-14 h-14 bg-[#f9fafb] rounded-2xl mb-4 border border-gray-100">
-                        <Image src="/images/toothlogo.png" alt="Logo" width={32} height={32} className="object-contain" />
+                        <Image src="/images/logo.png" alt="Logo" width={32} height={32} className="object-contain" />
                     </div>
                     <h1 className="text-2xl font-serif font-medium text-gray-900 mb-2">Create Account</h1>
                     <p className="text-sm text-gray-500 font-medium font-sans">Join us to manage your dental health</p>
