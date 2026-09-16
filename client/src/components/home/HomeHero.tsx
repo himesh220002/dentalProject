@@ -147,7 +147,7 @@ export default function HomeHero() {
                     </span>
                 </div>
 
-                <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-10 items-start">
+                <div className="grid md:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-10 items-start">
                     <div className="space-y-5 sm:space-y-6" style={{ transformStyle: 'preserve-3d' }}>
                         <div ref={titleRef} style={{ transformStyle: 'preserve-3d' }}>
                             <h1 className="text-[32px] sm:text-[54px] lg:text-[64px] leading-[0.88] tracking-[-0.04em] font-semibold text-center sm:text-left text-white select-none">
@@ -196,7 +196,7 @@ export default function HomeHero() {
                     <div ref={bookingRef} className={`relative lg:sticky lg:top-[88px] transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${ready ? 'opacity-100' : 'opacity-0'}`} style={{ transformStyle: 'preserve-3d' }}>
                         {/* Transparent glass — previous look */}
                         <div className="bg-white/[0.08] backdrop-blur-2xl rounded-[24px] border border-white/15 shadow-[0_16px_48px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] overflow-hidden">
-                            <div className="px-5 sm:px-6 pt-5 pb-4 border-b border-white/10">
+                            <div className="hidden md:block px-5 sm:px-6 pt-5 pb-4 border-b border-white/10">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
                                         <div className="text-[11px] tracking-[0.14em] uppercase font-medium text-white/60">Check appointment</div>
@@ -229,8 +229,8 @@ export default function HomeHero() {
                     </div>
                 </div>
 
-                <div className="hidden sm:block mt-8 h-px bg-white/10" />
-                <div className="hidden sm:flex mt-3 flex-wrap gap-2.5 text-[11px] tracking-[0.12em] uppercase font-medium text-white/45">
+                <div className="mt-8 h-px bg-white/10" />
+                <div className="flex mt-3 flex-wrap gap-2.5 text-[11px] tracking-[0.12em] uppercase font-medium text-white/45">
                     <span>General Dentistry</span><span className="opacity-30">·</span><span>Implants</span><span className="opacity-30">·</span><span>Orthodontics</span><span className="opacity-30">·</span><span>Whitening</span><span className="opacity-30">·</span><span>Kids Dentistry</span><span className="opacity-30">·</span><span>Root Canal</span>
                 </div>
                 <div className="hidden lg:flex absolute bottom-5 left-1/2 -translate-x-1/2 items-center gap-2 text-[10px] tracking-[0.16em] uppercase font-medium text-white/30">

@@ -54,7 +54,21 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
         } catch { setStatusMessage({ type: 'error', text: 'Failed to remove clinic closure.' }); }
         finally { setLoading(false); }
     };
-    const getTodayDate = () => { const today = new Date(); return today.toISOString().split('T')[0]; };
+    const formatLocalDate = (d: Date): string => {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+    const getSafeDateString = (dateInput: Date | string | undefined | null): string => {
+        if (!dateInput) return formatLocalDate(new Date());
+        if (typeof dateInput === 'string') {
+            if (/^\d{4}-\d{2}-\d{2}/.test(dateInput)) return dateInput.split('T')[0];
+            return formatLocalDate(new Date(dateInput));
+        }
+        return formatLocalDate(dateInput);
+    };
+    const getTodayDate = () => formatLocalDate(new Date());
     const formatTimeForInput = (timeStr: string) => {
         if (!timeStr) return '';
         if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
@@ -63,7 +77,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
         return timeStr;
     };
     const [formData, setFormData] = useState({
-        patientId: initialPatientId || '', date: initialDate ? initialDate.toISOString().split('T')[0] : getTodayDate(), time: '', selectedTreatments: [] as { name: string, price: number }[], additionalItems: [] as { name: string, price: number }[], notes: ''
+        patientId: initialPatientId || '', date: initialDate ? getSafeDateString(initialDate) : getTodayDate(), time: '', selectedTreatments: [] as { name: string, price: number }[], additionalItems: [] as { name: string, price: number }[], notes: ''
     });
     useEffect(() => {
         const fetchData = async () => {
@@ -76,7 +90,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                     const lastOpenParen = reason.lastIndexOf(' ('); if (lastOpenParen !== -1 && reason.endsWith(')')) { mainReason = reason.substring(0, lastOpenParen); noteContent = reason.substring(lastOpenParen + 2, reason.length - 1); }
                     const treatmentNames = mainReason.split(',').map((s: string) => s.trim()).filter((s: string) => s !== '');
                     const selected = treatmentNames.map((name: string) => { const t = treatmentsRes.data.find((tr: any) => tr.name.toLowerCase() === name.toLowerCase()); if (t) return { name: t.name, price: parseInt(t.price.replace(/\D/g, '')) }; return { name, price: 0 }; });
-                    setFormData({ patientId: apt.patientId?._id || apt.patientId, date: new Date(apt.date).toISOString().split('T')[0], time: formatTimeForInput(apt.time), selectedTreatments: selected.length > 0 ? selected : [{ name: '', price: 0 }], additionalItems: (apt.amount - selected.reduce((s: number, t: any) => s + t.price, 0) > 0) ? [{ name: 'Previous Adjustment', price: apt.amount - selected.reduce((s: number, t: any) => s + t.price, 0) }] : [], notes: noteContent });
+                    setFormData({ patientId: apt.patientId?._id || apt.patientId, date: getSafeDateString(apt.date), time: formatTimeForInput(apt.time), selectedTreatments: selected.length > 0 ? selected : [{ name: '', price: 0 }], additionalItems: (apt.amount - selected.reduce((s: number, t: any) => s + t.price, 0) > 0) ? [{ name: 'Previous Adjustment', price: apt.amount - selected.reduce((s: number, t: any) => s + t.price, 0) }] : [], notes: noteContent });
                     setSearchTerm(apt.patientId?.name || '');
                 } else if (inquiryMessage) {
                     const phoneMatch = patientsRes.data.find((p: any) => { const hasPhone = initialSearch && p.contact.replace(/\D/g, '') === initialSearch.replace(/\D/g, ''); const hasEmail = initialEmail && p.email && p.email.toLowerCase() === initialEmail.toLowerCase(); return hasPhone || hasEmail; });
@@ -228,7 +242,7 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                             <h3 className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 flex items-center gap-2"><FaCalendarAlt size={11} /> Date & Time</h3>
                             <div className="mt-3 grid sm:grid-cols-2 gap-3 min-w-0 w-full max-w-full">
                                 <div className="relative min-w-0 w-full max-w-full">
-                                    <input type="date" value={formData.date} onChange={handleDateChange} className="w-full max-w-full min-w-0 h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/10 outline-none text-[13px] font-medium" />
+                                    <input type="date" value={formData.date} min={getTodayDate()} onChange={handleDateChange} className="w-full max-w-full min-w-0 h-[44px] px-4 rounded-full bg-[#fcfcfc] border border-black/5 focus:bg-white focus:border-black/10 outline-none text-[13px] font-medium" />
                                 </div>
                                 <div className="relative min-w-0 w-full max-w-full">
                                     <FaClock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400" size={11} />
@@ -239,12 +253,39 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                             <div className="mt-4 flex gap-2 overflow-x-auto pb-2 w-full max-w-full min-w-0">
                                 <div className="flex gap-2 min-w-max">
                                 {[...Array(12)].map((_, i) => {
-                                    const d = new Date(); d.setDate(d.getDate() + i); const dateStr = d.toISOString().split('T')[0]; const isSelected = formData.date === dateStr; const dateData = density[dateStr]; const isClosed = dateData?.closed; const isBusy = (dateData?.count || 0) > 7;
+                                    const d = new Date();
+                                    d.setHours(0, 0, 0, 0);
+                                    d.setDate(d.getDate() + i);
+                                    const dateStr = formatLocalDate(d);
+                                    const isSelected = formData.date === dateStr;
+                                    const dateData = density[dateStr];
+                                    const isClosed = dateData?.closed;
+                                    const isBusy = (dateData?.count || 0) > 7;
+                                    const isCurrentDay = i === 0;
                                     return (
-                                        <button key={dateStr} type="button" onClick={() => setFormData({ ...formData, date: dateStr })} className={`shrink-0 w-[72px] py-2.5 rounded-2xl border flex flex-col items-center gap-0.5 transition ${isSelected ? 'bg-[#0a0a0b] text-white border-black' : isClosed ? 'bg-rose-50 border-rose-100 text-rose-700 opacity-60' : isBusy ? 'bg-amber-50 border-amber-100 text-amber-800' : 'bg-white border-black/5 hover:border-black/10'}`}>
-                                            <span className={`text-[10px] tracking-[0.08em] uppercase font-medium ${isSelected ? 'text-white/60' : 'text-neutral-500'}`}>{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                                            <span className={`text-[14px] font-semibold ${isSelected ? 'text-white' : 'text-[#0a0a0b]'}`}>{d.getDate()}</span>
-                                            <span className={`text-[10px] ${isSelected ? 'text-white/60' : 'text-neutral-400'}`}>{d.toLocaleDateString('en-US', { month: 'short' })}</span>
+                                        <button
+                                            key={dateStr}
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, date: dateStr })}
+                                            className={`shrink-0 w-[72px] py-2.5 rounded-2xl border flex flex-col items-center gap-0.5 transition ${
+                                                isSelected
+                                                    ? 'bg-[#0a0a0b] text-white border-black shadow-sm'
+                                                    : isClosed
+                                                    ? 'bg-rose-50 border-rose-100 text-rose-700 opacity-60'
+                                                    : isBusy
+                                                    ? 'bg-amber-50 border-amber-100 text-amber-800'
+                                                    : 'bg-white border-black/5 hover:border-black/10'
+                                            }`}
+                                        >
+                                            <span className={`text-[10px] tracking-[0.08em] uppercase font-medium ${isSelected ? 'text-white/60' : 'text-neutral-500'}`}>
+                                                {isCurrentDay ? 'Today' : d.toLocaleDateString('en-US', { weekday: 'short' })}
+                                            </span>
+                                            <span className={`text-[14px] font-semibold ${isSelected ? 'text-white' : 'text-[#0a0a0b]'}`}>
+                                                {d.getDate()}
+                                            </span>
+                                            <span className={`text-[10px] ${isSelected ? 'text-white/60' : 'text-neutral-400'}`}>
+                                                {d.toLocaleDateString('en-US', { month: 'short' })}
+                                            </span>
                                         </button>
                                     );
                                 })}
@@ -252,64 +293,110 @@ export default function QuickScheduler({ isOpen, onClose, onSuccess, initialDate
                             </div>
 
                             {/* Heat map */}
-                            {formData.date && (
-                                <div className="mt-4 rounded-2xl border border-black/5 bg-[#fcfcfc] p-4 w-full max-w-full min-w-0 overflow-hidden">
-                                    <div className="flex items-center justify-between gap-2 min-w-0">
-                                        <span className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 truncate min-w-0 flex-1">Day heat map — {formData.date}</span>
-                                        {density[formData.date]?.closed ? <span className="text-[11px] px-2 py-1 rounded-full bg-rose-500 text-white font-medium shrink-0">Closed</span> : (density[formData.date]?.count || 0) > 7 ? <span className="text-[11px] px-2 py-1 rounded-full bg-amber-500 text-white font-medium shrink-0">Busy</span> : <span className="text-[11px] px-2 py-1 rounded-full bg-emerald-500 text-white font-medium shrink-0">Available</span>}
-                                    </div>
-                                    {density[formData.date]?.closed ? (
-                                        <div className="mt-3 h-16 rounded-xl bg-rose-50 border border-rose-100 grid place-items-center text-rose-700 text-[12px] font-medium p-2 text-center">No appointments — clinic closed</div>
-                                    ) : (
+                            {formData.date && (() => {
+                                const now = new Date();
+                                const todayStr = getTodayDate();
+                                const isToday = formData.date === todayStr;
+                                const isPastDate = formData.date < todayStr;
+                                const allHoursPassed = isPastDate || (isToday && now.getHours() >= 20);
+                                const isDayClosed = density[formData.date]?.closed;
+                                const isDayBusy = (density[formData.date]?.count || 0) > 7;
+
+                                return (
+                                    <div className="mt-4 rounded-2xl border border-black/5 bg-[#fcfcfc] p-4 w-full max-w-full min-w-0 overflow-hidden">
+                                        <div className="flex items-center justify-between gap-2 min-w-0">
+                                            <span className="text-[11px] tracking-[0.12em] uppercase font-medium text-neutral-500 truncate min-w-0 flex-1">
+                                                Day heat map — {formData.date} {isToday ? '(Today)' : ''}
+                                            </span>
+                                            {isDayClosed ? (
+                                                <span className="text-[11px] px-2 py-1 rounded-full bg-rose-500 text-white font-medium shrink-0">Closed</span>
+                                            ) : isPastDate ? (
+                                                <span className="text-[11px] px-2 py-1 rounded-full bg-neutral-200 text-neutral-600 font-medium shrink-0">Past Date</span>
+                                            ) : allHoursPassed ? (
+                                                <span className="text-[11px] px-2 py-1 rounded-full bg-neutral-200 text-neutral-600 font-medium shrink-0">Day Ended</span>
+                                            ) : isDayBusy ? (
+                                                <span className="text-[11px] px-2 py-1 rounded-full bg-amber-500 text-white font-medium shrink-0">Busy</span>
+                                            ) : (
+                                                <span className="text-[11px] px-2 py-1 rounded-full bg-emerald-500 text-white font-medium shrink-0">Available</span>
+                                            )}
+                                        </div>
+
+                                        {isDayClosed ? (
+                                            <div className="mt-3 h-16 rounded-xl bg-rose-50 border border-rose-100 grid place-items-center text-rose-700 text-[12px] font-medium p-2 text-center">No appointments — clinic closed</div>
+                                        ) : allHoursPassed ? (
+                                            <div className="mt-3 p-3 rounded-xl bg-neutral-100 border border-black/5 text-center">
+                                                <p className="text-[12px] font-medium text-neutral-600">Clinic hours for {isToday ? 'today' : 'this date'} have ended.</p>
+                                                <p className="text-[11px] text-neutral-400 mt-0.5">Please select tomorrow or an upcoming date to view available slots.</p>
+                                            </div>
+                                        ) : null}
+
                                         <div className="mt-3 grid grid-cols-6 sm:grid-cols-12 gap-1.5 w-full max-w-full min-w-0">
                                             {[9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(hour => {
                                                 const booked = (density[formData.date]?.slots || []).some((s: string) => parseInt(s.split(':')[0]) === hour);
                                                 const closures = density[formData.date]?.closures || [];
                                                 const isClosed = closures.some((c: any) => c.type === 'full' || (c.type === 'partial' && hour >= parseInt(c.startTime.split(':')[0]) && hour < parseInt(c.endTime.split(':')[0])));
+                                                const isPastHour = isPastDate || (isToday && hour <= now.getHours());
+                                                const isSlotDisabled = isClosed || isPastHour;
                                                 const isSelected = formData.time.startsWith(hour.toString().padStart(2, '0'));
+
                                                 let cls = 'bg-white border-black/5 text-neutral-700 hover:border-black/10';
-                                                if (isClosed) cls = 'bg-rose-50 border-rose-100 text-rose-700 opacity-60 cursor-not-allowed';
-                                                else if (booked) cls = 'bg-[#0a0a0b] border-black text-white';
-                                                if (isSelected) cls = 'bg-[#0a0a0b] text-white border-black ring-2 ring-black';
+                                                if (isClosed) {
+                                                    cls = 'bg-rose-50 border-rose-100 text-rose-700 opacity-60 cursor-not-allowed';
+                                                } else if (isPastHour) {
+                                                    cls = 'bg-neutral-100 border-black/5 text-neutral-300 cursor-not-allowed opacity-50';
+                                                } else if (booked) {
+                                                    cls = 'bg-[#0a0a0b] border-black text-white';
+                                                }
+                                                if (isSelected && !isSlotDisabled) {
+                                                    cls = 'bg-[#0a0a0b] text-white border-black ring-2 ring-black';
+                                                }
+
                                                 return (
-                                                    <button key={hour} type="button" disabled={isClosed} onClick={() => !isClosed && setFormData({ ...formData, time: `${hour.toString().padStart(2, '0')}:00` })} className={`h-10 rounded-xl border flex flex-col items-center justify-center transition ${cls}`}>
+                                                    <button
+                                                        key={hour}
+                                                        type="button"
+                                                        disabled={isSlotDisabled}
+                                                        title={isClosed ? 'Clinic closed' : isPastHour ? 'Slot has passed' : booked ? 'Slot booked' : 'Available'}
+                                                        onClick={() => !isSlotDisabled && setFormData({ ...formData, time: `${hour.toString().padStart(2, '0')}:00` })}
+                                                        className={`h-10 rounded-xl border flex flex-col items-center justify-center transition ${cls}`}
+                                                    >
                                                         <span className="text-[11px] font-semibold leading-none">{hour > 12 ? hour - 12 : hour}</span>
                                                         <span className="text-[9px] uppercase leading-none opacity-60">{hour >= 12 ? 'pm' : 'am'}</span>
                                                     </button>
                                                 );
                                             })}
                                         </div>
-                                    )}
-                                    <div className="mt-3 flex flex-wrap gap-2 min-w-0 w-full max-w-full">
-                                        {density[formData.date]?.closures?.map((c: any, idx: number) => (
-                                            <span key={idx} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-50 border border-rose-100 text-rose-700 text-[11px] font-medium max-w-full break-words">
-                                                {c.type === 'full' ? 'Full day closed' : `${c.startTime}–${c.endTime} closed`}
-                                                <button type="button" onClick={() => removeClosure(idx)} className="w-5 h-5 rounded-full bg-white border border-rose-100 grid place-items-center hover:bg-rose-500 hover:text-white hover:border-rose-500 transition shrink-0"><FaTrash size={9} /></button>
-                                            </span>
-                                        ))}
-                                    </div>
-                                    {closureForm.isOpen ? (
-                                        <div className="mt-3 p-3 rounded-2xl bg-white border border-black/5 space-y-3 w-full max-w-full min-w-0 overflow-hidden">
-                                            <div className="flex gap-2 min-w-0">
-                                                <button type="button" onClick={() => setClosureForm({ ...closureForm, type: 'full' })} className={`flex-1 min-w-0 h-8 rounded-full text-[11px] font-medium border ${closureForm.type === 'full' ? 'bg-[#0a0a0b] text-white border-black' : 'bg-white border-black/5'}`}>Full day</button>
-                                                <button type="button" onClick={() => setClosureForm({ ...closureForm, type: 'partial' })} className={`flex-1 min-w-0 h-8 rounded-full text-[11px] font-medium border ${closureForm.type === 'partial' ? 'bg-[#0a0a0b] text-white border-black' : 'bg-white border-black/5'}`}>Partial</button>
-                                            </div>
-                                            {closureForm.type === 'partial' && (
-                                                <div className="grid grid-cols-2 gap-2 min-w-0 w-full max-w-full">
-                                                    <input type="time" value={closureForm.startTime} onChange={e => setClosureForm({ ...closureForm, startTime: e.target.value })} className="h-9 px-3 rounded-full bg-[#fcfcfc] border border-black/5 text-[12px] outline-none w-full max-w-full min-w-0" />
-                                                    <input type="time" value={closureForm.endTime} onChange={e => setClosureForm({ ...closureForm, endTime: e.target.value })} className="h-9 px-3 rounded-full bg-[#fcfcfc] border border-black/5 text-[12px] outline-none w-full max-w-full min-w-0" />
-                                                </div>
-                                            )}
-                                            <div className="flex gap-2 min-w-0">
-                                                <button type="button" onClick={() => setClosureForm({ ...closureForm, isOpen: false })} className="flex-1 min-w-0 h-8 rounded-full bg-white border border-black/5 text-[11px] font-medium">Cancel</button>
-                                                <button type="button" onClick={() => toggleClosure(closureForm.type, closureForm.startTime, closureForm.endTime)} className="flex-1 min-w-0 h-8 rounded-full bg-[#0a0a0b] text-white text-[11px] font-medium">Save closure</button>
-                                            </div>
+                                        <div className="mt-3 flex flex-wrap gap-2 min-w-0 w-full max-w-full">
+                                            {density[formData.date]?.closures?.map((c: any, idx: number) => (
+                                                <span key={idx} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-50 border border-rose-100 text-rose-700 text-[11px] font-medium max-w-full break-words">
+                                                    {c.type === 'full' ? 'Full day closed' : `${c.startTime}–${c.endTime} closed`}
+                                                    <button type="button" onClick={() => removeClosure(idx)} className="w-5 h-5 rounded-full bg-white border border-rose-100 grid place-items-center hover:bg-rose-500 hover:text-white hover:border-rose-500 transition shrink-0"><FaTrash size={9} /></button>
+                                                </span>
+                                            ))}
                                         </div>
-                                    ) : (
-                                        <button type="button" onClick={() => setClosureForm({ ...closureForm, isOpen: true })} className="mt-3 w-full max-w-full min-w-0 h-9 rounded-full bg-white border border-black/5 text-[12px] font-medium hover:border-black/10">Mark day as closed / leave</button>
-                                    )}
-                                </div>
-                            )}
+                                        {closureForm.isOpen ? (
+                                            <div className="mt-3 p-3 rounded-2xl bg-white border border-black/5 space-y-3 w-full max-w-full min-w-0 overflow-hidden">
+                                                <div className="flex gap-2 min-w-0">
+                                                    <button type="button" onClick={() => setClosureForm({ ...closureForm, type: 'full' })} className={`flex-1 min-w-0 h-8 rounded-full text-[11px] font-medium border ${closureForm.type === 'full' ? 'bg-[#0a0a0b] text-white border-black' : 'bg-white border-black/5'}`}>Full day</button>
+                                                    <button type="button" onClick={() => setClosureForm({ ...closureForm, type: 'partial' })} className={`flex-1 min-w-0 h-8 rounded-full text-[11px] font-medium border ${closureForm.type === 'partial' ? 'bg-[#0a0a0b] text-white border-black' : 'bg-white border-black/5'}`}>Partial</button>
+                                                </div>
+                                                {closureForm.type === 'partial' && (
+                                                    <div className="grid grid-cols-2 gap-2 min-w-0 w-full max-w-full">
+                                                        <input type="time" value={closureForm.startTime} onChange={e => setClosureForm({ ...closureForm, startTime: e.target.value })} className="h-9 px-3 rounded-full bg-[#fcfcfc] border border-black/5 text-[12px] outline-none w-full max-w-full min-w-0" />
+                                                        <input type="time" value={closureForm.endTime} onChange={e => setClosureForm({ ...closureForm, endTime: e.target.value })} className="h-9 px-3 rounded-full bg-[#fcfcfc] border border-black/5 text-[12px] outline-none w-full max-w-full min-w-0" />
+                                                    </div>
+                                                )}
+                                                <div className="flex gap-2 min-w-0">
+                                                    <button type="button" onClick={() => setClosureForm({ ...closureForm, isOpen: false })} className="flex-1 min-w-0 h-8 rounded-full bg-white border border-black/5 text-[11px] font-medium">Cancel</button>
+                                                    <button type="button" onClick={() => toggleClosure(closureForm.type, closureForm.startTime, closureForm.endTime)} className="flex-1 min-w-0 h-8 rounded-full bg-[#0a0a0b] text-white text-[11px] font-medium">Save closure</button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <button type="button" onClick={() => setClosureForm({ ...closureForm, isOpen: true })} className="mt-3 w-full max-w-full min-w-0 h-9 rounded-full bg-white border border-black/5 text-[12px] font-medium hover:border-black/10">Mark day as closed / leave</button>
+                                        )}
+                                    </div>
+                                );
+                            })()}
                         </div>
 
                         {/* Treatments */}

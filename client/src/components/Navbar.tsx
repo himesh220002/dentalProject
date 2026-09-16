@@ -57,9 +57,6 @@ export default function Navbar() {
     const pathname = usePathname();
     const router = useRouter();
 
-    const isDarkHeaderPage = pathname === '/';
-    const useDarkTheme = !isScrolled && isDarkHeaderPage && !isOpen;
-
     useEffect(() => {
         const checkSession = () => {
             const lockedBase = localStorage.getItem('clinic_admin_locked');
@@ -95,20 +92,17 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    // lock body + html scroll when mobile menu open (full-page overlay)
+    // lock body scroll when mobile menu open (full-page overlay)
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
-            document.documentElement.style.overflow = 'hidden';
             document.body.style.touchAction = 'none';
         } else {
             document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
             document.body.style.touchAction = '';
         }
         return () => {
             document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
             document.body.style.touchAction = '';
         };
     }, [isOpen]);
@@ -118,8 +112,22 @@ export default function Navbar() {
         setIsOpen(false);
     }, [pathname]);
 
+    // close on Escape key
+    useEffect(() => {
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isOpen) setIsOpen(false);
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [isOpen]);
+
     const handleProtectedClick = (e: React.MouseEvent, href: string) => {
-        if (!isUnlocked) { e.preventDefault(); setPendingHref(href); setIsLockModalOpen(true); }
+        if (!isUnlocked) {
+            e.preventDefault();
+            setPendingHref(href);
+            setIsLockModalOpen(true);
+            setIsOpen(false);
+        }
     };
     const handleLock = () => {
         localStorage.removeItem('clinic_admin_locked'); localStorage.removeItem('clinic_admin_expiry');
@@ -134,9 +142,9 @@ export default function Navbar() {
         <>
             <nav
                 className={`sticky top-0 z-50 font-sans border-b transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
-                ${!useDarkTheme
-                        ? 'bg-white/75 backdrop-blur-xl border-black/[0.06] shadow-[0_1px_0_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.04)]'
-                        : 'bg-white/75 backdrop-blur-xl border-white/[0.08] shadow-none'}`}
+                ${isScrolled
+                        ? 'bg-white/80 backdrop-blur-xl border-black/[0.06] shadow-[0_1px_0_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.04)]'
+                        : 'bg-white/75 backdrop-blur-xl border-black/[0.04] shadow-none'}`}
             >
                 <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex h-[64px] items-center justify-between gap-6">
@@ -144,11 +152,11 @@ export default function Navbar() {
                             <div className="w-9 h-9 rounded-xl overflow-hidden shadow-sm shrink-0">
                                 <Image src="/images/logo.png" alt="Logo" width={200} height={200} className="w-full h-full object-cover rounded-[10px]" />
                             </div>
-                            <span className={`text-[18px] sm:text-[20px] font-semibold tracking-[-0.02em] leading-none transition-colors duration-300 ${!useDarkTheme ? 'text-[#0a0a0b]' : 'text-black'}`}>
+                            <span className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.02em] leading-none text-[#0a0a0b]">
                                 {(() => {
                                     const name = clinicData?.clinicName || 'ToothOp';
                                     const parts = name.split(' ');
-                                    return <>{parts[0]} <span className={`font-normal ${!useDarkTheme ? 'text-neutral-500' : 'text-neutral-500'}`}>{parts.slice(1).join(' ')}</span></>;
+                                    return <>{parts[0]} <span className="font-normal text-neutral-500">{parts.slice(1).join(' ')}</span></>;
                                 })()}
                             </span>
                         </Link>
@@ -163,12 +171,12 @@ export default function Navbar() {
                                             onClick={(e) => link.protected && handleProtectedClick(e, link.href)}
                                             className={`px-3.5 py-2 rounded-full text-[13px] font-[500] tracking-[-0.01em] inline-flex items-center gap-1.5 transition-all duration-200 ease-out
                                                 ${active
-                                                    ? !useDarkTheme ? 'bg-[#0a0a0b] text-white' : 'bg-white text-[#0a0a0b] shadow-sm'
-                                                    : !useDarkTheme ? 'text-neutral-600 hover:text-[#0a0a0b] hover:bg-black/[0.06]' : 'text-black hover:text-gray-800 hover:bg-purple-100'}`}
+                                                    ? 'bg-[#0a0a0b] text-white'
+                                                    : 'text-neutral-600 hover:text-[#0a0a0b] hover:bg-black/[0.06]'}`}
                                         >
                                             <span className="whitespace-nowrap">{link.name}</span>
                                             {link.protected && (
-                                                isUnlocked ? <FaLockOpen size={10} className={active ? 'text-white/70' : 'text-emerald-500'} /> : <FaLock size={10} className={active ? 'text-white/60' : !useDarkTheme ? 'text-neutral-400' : 'text-white/40'} />
+                                                isUnlocked ? <FaLockOpen size={10} className={active ? 'text-white/70' : 'text-emerald-500'} /> : <FaLock size={10} className={active ? 'text-white/60' : 'text-neutral-400'} />
                                             )}
                                         </Link>
                                         {link.protected && isUnlocked && (
@@ -188,17 +196,17 @@ export default function Navbar() {
                                 );
                             })}
 
-                            <div className={`ml-2 pl-3 flex items-center ${!useDarkTheme ? 'border-l border-black/10' : 'border-l border-white/15'}`}>
+                            <div className="ml-2 pl-3 flex items-center border-l border-black/10">
                                 {!isLoading && (
                                     user ? (
                                         <div className="flex items-center gap-2.5">
                                             <div className="hidden xl:flex flex-col items-end leading-none">
-                                                <span className={`text-[10px] tracking-[0.12em] uppercase font-medium ${!useDarkTheme ? 'text-neutral-400' : 'text-white/50'}`}>Account</span>
-                                                <span className={`text-[13px] font-medium tracking-[-0.01em] ${!useDarkTheme ? 'text-[#0a0a0b]' : 'text-white'}`}>{user.name?.split(' ')[0]}</span>
+                                                <span className="text-[10px] tracking-[0.12em] uppercase font-medium text-neutral-400">Account</span>
+                                                <span className="text-[13px] font-medium tracking-[-0.01em] text-[#0a0a0b]">{user.name?.split(' ')[0]}</span>
                                             </div>
                                             <div className="relative group/user">
-                                                <button className="relative w-9 h-9 rounded-full bg-white/10 border border-white/15 grid place-items-center overflow-visible hover:bg-white/15 transition">
-                                                    <FaUserCircle className={`${!useDarkTheme ? 'text-[#0a0a0b]' : 'text-white'} text-[22px]`} />
+                                                <button className="relative w-9 h-9 rounded-full bg-black/[0.04] border border-black/10 grid place-items-center overflow-visible hover:bg-black/[0.08] transition">
+                                                    <FaUserCircle className="text-[#0a0a0b] text-[22px]" />
                                                     {upcomingAppointment && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white shadow-sm" />}
                                                 </button>
                                                 <div className="absolute top-full right-0 pt-3 opacity-0 translate-y-1 pointer-events-none group-hover/user:opacity-100 group-hover/user:translate-y-0 group-hover/user:pointer-events-auto transition-all duration-200 ease-out z-50">
@@ -222,7 +230,7 @@ export default function Navbar() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <Link href="/login" className={`px-5 py-2.5 rounded-full text-[13px] font-medium tracking-[-0.01em] shadow-sm transition-all duration-200 active:scale-[0.98] ${!useDarkTheme ? 'bg-[#0a0a0b] text-white hover:bg-black' : 'bg-white text-[#0a0a0b] hover:bg-white/90'}`}>
+                                        <Link href="/login" className="px-5 py-2.5 rounded-full text-[13px] font-medium tracking-[-0.01em] shadow-sm transition-all duration-200 active:scale-[0.98] bg-[#0a0a0b] text-white hover:bg-black">
                                             {t.login}
                                         </Link>
                                     )
@@ -232,13 +240,12 @@ export default function Navbar() {
 
                         <div className="flex items-center gap-2 xl:hidden">
                             {!isOpen && (
-                                <Link href="/contact" className={`hidden sm:inline-flex items-center gap-1 px-4 py-2 rounded-full text-[13px] font-medium tracking-[-0.01em] transition ${!useDarkTheme ? 'bg-[#0a0a0b] text-white hover:bg-black' : 'bg-white text-[#0a0a0b] hover:bg-white/90'}`}>Book →</Link>
+                                <Link href="/contact" className="hidden sm:inline-flex items-center gap-1 px-4 py-2 rounded-full text-[13px] font-medium tracking-[-0.01em] transition bg-[#0a0a0b] text-white hover:bg-black">Book Appointment</Link>
                             )}
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
                                 aria-label="Toggle menu"
-                                className={`w-9 h-9 rounded-full grid place-items-center transition-all duration-200 active:scale-95
-                                    ${!useDarkTheme ? 'bg-black/[0.06] text-[#0a0a0b] hover:bg-black/10 border border-black/10' : 'bg-white/10 text-white border border-white/15 hover:bg-white/15 backdrop-blur'}`}
+                                className="w-9 h-9 rounded-full grid place-items-center transition-all duration-200 active:scale-95 bg-black/[0.06] text-[#0a0a0b] hover:bg-black/10 border border-black/10"
                             >
                                 <span className="relative w-4 h-4 grid place-items-center">
                                     <FaBars size={16} className={`absolute transition-all duration-200 ${isOpen ? 'opacity-0 rotate-90 scale-75' : 'opacity-100 rotate-0 scale-100'}`} />
@@ -251,13 +258,37 @@ export default function Navbar() {
 
             </nav>
 
-            {/* Mobile sheet — full page, fixed below sticky nav; outside <nav> to escape backdrop-filter containing block */}
+            {/* Mobile sheet — full page, fixed complete screen overlay with top bar and close option */}
             <div
-                className={`xl:hidden fixed inset-x-0 top-[64px] bottom-0 z-[60] bg-white border-t border-black/5 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overscroll-contain ${isOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-2 opacity-0 pointer-events-none'
+                className={`xl:hidden fixed inset-0 z-[110] bg-white flex flex-col transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overscroll-contain ${isOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'
                     }`}
                 aria-hidden={!isOpen}
             >
-                <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-5 pb-[calc(1rem+env(safe-area-inset-bottom))] space-y-1">
+                {/* Mobile sheet top bar with Logo and dedicated Close button */}
+                <div className="h-[64px] shrink-0 border-b border-black/5 px-4 sm:px-6 flex items-center justify-between">
+                    <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-3 group shrink-0">
+                        <div className="w-9 h-9 rounded-xl overflow-hidden shadow-sm shrink-0">
+                            <Image src="/images/logo.png" alt="Logo" width={200} height={200} className="w-full h-full object-cover rounded-[10px]" />
+                        </div>
+                        <div className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.02em] leading-none text-[#0a0a0b]">
+                            {(() => {
+                                const name = clinicData?.clinicName || 'ToothOp';
+                                const parts = name.split(' ');
+                                return <>{parts[0]} <span className="font-normal text-neutral-500">{parts.slice(1).join(' ')}</span></>;
+                            })()}
+                        </div>
+                    </Link>
+                    <button
+                        onClick={() => setIsOpen(false)}
+                        aria-label="Close menu"
+                        className="w-9 h-9 rounded-full grid place-items-center transition-all duration-200 active:scale-95 bg-black/[0.06] text-[#0a0a0b] hover:bg-black/10 border border-black/10"
+                    >
+                        <FaTimes size={16} />
+                    </button>
+                </div>
+
+                {/* Mobile sheet scrollable content */}
+                <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] space-y-1">
                     {user ? (
                         <div className="pb-4 mb-3 border-b border-black/5">
                             <button onClick={() => setIsMobileUserMenuOpen(!isMobileUserMenuOpen)} className="w-full flex items-center justify-between gap-3 p-3 rounded-2xl hover:bg-[#fcfcfc] border border-transparent hover:border-black/5 transition text-left">

@@ -68,7 +68,7 @@ export default function About() {
                     </div>
 
                     <div className="order-1 lg:order-2 relative">
-                        <div className="bg-white p-2 sm:p-2.5 rounded-[24px] border border-black/5 shadow-[0_12px_32px_rgba(0,0,0,0.06)]">
+                        <div className="bg-white max-w-[300px] sm:max-w-[500px] p-2 sm:p-2.5 rounded-[24px] border border-black/5 shadow-[0_12px_32px_rgba(0,0,0,0.06)]">
                             <div className="relative rounded-[18px] overflow-hidden bg-[#f5f5f3] aspect-[4/4.6] sm:aspect-[4/4.2]">
                                 {/* {!imgLoaded && <div className="absolute inset-0"><Skeleton variant="rect" className="w-full h-full !rounded-none" /></div>} */}
                                 <img src="/images/rendering-anime-doctor-job.jpg" alt={doctorName} className={`w-full h-full object-cover transition duration-700 `} />
