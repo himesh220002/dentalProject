@@ -8,9 +8,11 @@
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)
 ![Express.js](https://img.shields.io/badge/Express.js-000000?style=flat-square&logo=express&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=flat-square&logo=socketdotio&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-Secure%20Auth-black?style=flat-square&logo=jsonwebtokens)
 
 </div>
@@ -44,130 +46,169 @@ graph TD
     C -->|Push Notifications| A
 ```
 
-The application follows a **Decoupled Architecture**:
-1.  **Client (React/Next.js)**: Manages state using Context API and ensures a premium UI with Tailwind CSS.
-2.  **Server (Express/Node.js)**: Handles business logic, authentication, and database orchestrations.
-3.  **Real-Time Sync**: Socket.io ensures that any change in schedules or patients is reflected instantly across all admin instances.
+The application follows a **Decoupled Architecture**:  
+
+* **Client (React / Next.js):** Manages state using Context API and ensures a responsive UI built with Tailwind CSS.  
+* **Server (Express / Node.js):** Handles business logic, authentication middleware, and database orchestrations.  
+* **Real-Time Sync:** Socket.io ensures that any change in schedules or patients is reflected instantly across all admin instances.  
 
 ---
 
-## Tech Stack
+## 💻 Tech Stack
 
 ### Frontend: Next.js
-- **React 19**: Utilizing Concurrent Mode and the latest hooks.
-- **Tailwind CSS 4**: For a premium, glassmorphic UI design.
-- **Socket.io-client**: For live data streaming.
-- **Axios**: Robust HTTP client for API communication.
+* **React 19:** Concurrent Mode support and modern hooks lifecycle.
+* **Tailwind CSS 4:** Responsive design engine with optimized glassmorphic interface elements.
+* **Socket.io-client:** Persistent duplex channel for live appointment and check-in streams.
+* **Axios:** Promise-based HTTP client for typed REST communication.
 
 ### Backend: Express.js + Socket.io
-- **Node.js**: Asynchronous event-driven runtime.
-- **Socket.io**: Bidirectional event-based communication.
-- **Mailgun**: Scalable email delivery for transaction alerts.
+* **Node.js:** Event-driven asynchronous runtime.
+* **Socket.io:** Real-time bi-directional messaging gateway.
+* **Mailgun:** Cloud delivery API for transactional alerts and booking updates.
+* **JSON Web Tokens (JWT):** Stateless token authorization and role-based access validation.
 
-### Database: MongoDB
-- **Mongoose**: Object Data Modeling (ODM) for schema-based data integrity.
-- **Atlas**: Highly available cloud-hosted clusters.
+### Database & Persistence: MongoDB
+* **Mongoose:** Strict schema definition, hooks, and automated validation rules.
+* **MongoDB Atlas:** Managed multi-region cloud cluster deployment.
 
 ---
 
-## Installation
+## 🚀 Installation
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18+)
-- [MongoDB](https://www.mongodb.com/try/download/community) (Local or Atlas)
-- [NPM](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
+* Node.js `>= 18.x`
+* MongoDB (Local daemon or MongoDB Atlas URI)
+* `npm` or `yarn`
 
 ### Steps
-1.  **Clone the Repository**:
-    ```bash
-    git clone https://github.com/himesh220002/dentalProject.git
-    cd dr-tooth-dental-clinic
-    ```
 
-2.  **Install Client Dependencies**:
-    ```bash
-    cd client
-    npm install
-    ```
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/himesh220002/dentalProject.git
+   cd dentalProject
+   ```
 
-3.  **Install Server Dependencies**:
-    ```bash
-    cd ../server
-    npm install
-    ```
+2. **Install Client Dependencies:**
+   ```bash
+   cd client
+   npm install
+   ```
 
-4.  **Environment Variable Setup**:
-    Create `.env` files in both `client` and `server` folders.
-    - **Server .env**: `MONGO_URI`, `PORT`, `MAILGUN_API_KEY`, `JWT_SECRET`
-    - **Client .env**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SOCKET_URL`
+3. **Install Server Dependencies:**
+   ```bash
+   cd ../server
+   npm install
+   ```
+
+4. **Environment Variable Setup:**  
+   Configure `.env` files in both the client and server directories:
+
+   **`server/.env`**
+   ```env
+   PORT=5000
+   MONGO_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret_key
+   MAILGUN_API_KEY=your_mailgun_api_key
+   NODE_ENV=development
+   ```
+
+   **`client/.env`**
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000/api
+   NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
+   ```
 
 ---
 
-## Usage
+## ⚡ Usage
 
 ### Run Development Server
-- **Start Backend**:
+
+* **Start Backend:**
   ```bash
   cd server
   npm run dev
   ```
-- **Start Frontend**:
+
+* **Start Frontend:**
   ```bash
   cd client
   npm run dev
   ```
 
 ### Admin Access
-- Navigate to `/temppath` to access the **Version Control & Handover Dashboard**.
-- Use the **Quick Scheduler** for internal appointment management.
+* Navigate to `/temppath` to access the **Version Control & Handover Dashboard**.
+* Use the **Quick Scheduler** for internal appointment management.
 
 ---
 
-## Patient Journey Flow
-1.  **Discovery**: Patient browses high-quality treatment images and clinic milestones.
-2.  **Authentication**: Secure login/signup via NextAuth for profile management.
-3.  **Booking**: Selection of treatments and time slots with real-time availability check.
-4.  **Post-Visit**: Automatic history generation and digital receipt management.
+## 🔄 Patient Journey Flow
+
+```
+[ 1. Discovery ] ──► [ 2. Authentication ] ──► [ 3. Dynamic Booking ] ──► [ 4. Post-Visit Records ]
+ Browse services        NextAuth session        Real-time slot check         Automated history &
+ & treatment catalog    profile verification      with doctor sync          digital receipt ledger
+```
+
+* **Discovery:** Patient explores clinical services, treatment breakdowns, and doctor profiles.
+* **Authentication:** Secure registration and session validation via NextAuth.
+* **Booking:** Selection of treatments and scheduling slots with real-time conflict checks.
+* **Post-Visit:** Automatic clinical history logging, billing calculation, and digital receipt delivery.
 
 ---
 
-## Communication Hub
-- **WhatsApp**: Direct redirection with pre-filled context (`Regarding Dental - `).
-- **Mailgun**: Professional email confirmations for every booking.
-- **Socket.io**: Instant alerts to the clinic's front desk for every new appointment.
+## 📡 Communication Hub
+
+* **WhatsApp:** Context-aware routing directly to clinic representatives (`Regarding Dental - `).
+* **Mailgun:** Automated dispatch of appointment itineraries, invoices, and confirmation emails.
+* **Socket.io:** Low-latency desktop alerts delivered to clinic terminals on patient arrival.
 
 ---
 
-## Data Management
-- **Patient Profiles**: Centralized history of treatments, payments, and appointments.
-- **Financial Ledger**: "Financial Revenue Pulse" tracking monthly collections.
-- **Traffic Analytics**: Basic intelligence on customer acquisition and treatment frequency.
+## 📊 Data Management & Analytics
+
+* **Patient Profiles:** Centralized historical ledger of medical notes, prescription plans, and invoices.
+* **Financial Ledger:** "Financial Revenue Pulse" component tracking monthly receivables and pending bills.
+* **Traffic Analytics:** Telemetry dashboard mapping patient retention and treatment demand frequencies.
 
 ---
 
-## Future Enhancements
-- 🤖 **AI Appointment Recommendations**: Predictive scheduling based on patient history.
-- 🏥 **Multi-Clinic Support**: Single dashboard for managing multiple clinic branches.
-- 📱 **Mobile Native App**: Dedicated iOS and Android apps for patients.
+## 🔮 Future Enhancements
+
+* 🤖 **AI Appointment Recommendations:** Predictive scheduling suggestions based on clinical treatment history.
+* 🏥 **Multi-Clinic Support:** Multi-tenant database schema for centralized administration across clinic branches.
+* 📱 **Mobile Native Companion:** Dedicated client portal built with React Native.
 
 ---
 
-## Contributing
-We welcome contributions!
-1.  Fork the Project.
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the Branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
+## 🤝 Contributing
+
+1. Fork the project repository
+2. Create a feature branch:
+   ```bash
+   git checkout -b feature/Optimization
+   ```
+3. Commit changes:
+   ```bash
+   git commit -m 'feat: optimize scheduler re-renders'
+   ```
+4. Push to origin:
+   ```bash
+   git push origin feature/Optimization
+   ```
+5. Open a Pull Request
 
 ---
 
-## License
-Distributed under the **MIT License**. See `LICENSE` for more information.
+## 📄 License
+
+Distributed under the **MIT License**. See `LICENSE` for details.
 
 ---
 
-## Acknowledgments
-- [React Icons](https://react-icons.github.io/react-icons/) for the beautiful UI icons.
-- [Unsplash](https://unsplash.com/) for the professional dental imagery.
-- All the medical staff who provided workflow insights.
+## 💙 Acknowledgments
+
+* [React Icons](https://react-icons.github.io/react-icons/) for scalable interface iconography.
+* [Unsplash](https://unsplash.com/) for high-resolution clinical assets.
+* Clinical healthcare professionals who provided feedback on real-world workflow constraints.
