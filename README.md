@@ -1,26 +1,37 @@
-# ToothOp - Technical Architecture
+<div align="center">
 
-A state-of-the-art, full-stack dental clinic management platform designed to bridge the gap between patients and modern dental care through a data-driven, visually engaging experience.
+# ToothOp — Clinic Management Platform
 
-## Overview
-**ToothOp** is a comprehensive dental ecosystem that combines advanced patient management with real-time clinic operations. 
+**A secure, end-to-end dental clinic management system designed to streamline patient care, automated scheduling, and clinical operations.**
 
-- **Purpose**: Connecting patients and clinics through a modern web platform that prioritizes patient comfort, transparency, and operational efficiency.
-- **Vision**: To modernize the dental experience using real-time synchronization and proactive communication.
+<br/>
 
----
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=flat-square&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-Secure%20Auth-black?style=flat-square&logo=jsonwebtokens)
 
-## Features
-- ✅ **Patient Booking System**: Intelligent appointment scheduling with automated slot validation.
-- 🔔 **Real-Time Admin Alerts**: Immediate notifications for appointments and urgent queries via Socket.io.
-- 🌐 **Communication Hub**: Integrated WhatsApp redirection, Mailgun email services, and live browser notifications.
-- 📝 **Blog System**: Dynamic clinic updates, dental hygiene tips, and announcements.
-- 📊 **Data-Driven Analytics**: Financial revenue tracking, customer intelligence metrics, and monthly performance pulse.
-- 🖼️ **Visual Treatment Catalog**: High-resolution image-based treatment repository with 200px visual cards.
+</div>
 
 ---
 
-## System Architecture
+## 📌 Overview
+
+**ToothOp** addresses critical operational inefficiencies in clinical workflows by integrating patient electronic health records (EHR), dynamic doctor scheduling, multi-tier billing, and role-based staff permissions into a unified interface.
+
+### Key Capabilities
+
+* 🩺 **Patient Journey Tracking:** Complete digital intake, diagnosis records, and visit histories.
+* 📅 **Intelligent Scheduling:** Conflict-free doctor appointment slotting with automated status transitions.
+* 🔐 **Role-Based Access Control (RBAC):** Distinct permissions and dashboards for Doctors, Receptionists, and Administrators.
+* 💳 **Invoicing & Ledger:** Automated treatment billing with itemized receipt generation.
+* ⚡ **Real-Time Updates:** Immediate doctor dashboard synchronization upon patient check-in.
+
+---
+
+## 🏗️ System Architecture
 
 ```mermaid
 graph TD
